@@ -25,6 +25,8 @@ DATASETS=(
 # wget flags to ensure visible progress in common terminal environments.
 # --show-progress prints a progress bar; --progress=bar:force:noscroll keeps it readable in CI logs.
 WGET_PROGRESS_FLAGS=(--show-progress --progress=bar:force:noscroll)
+# Avoid downloading directory listing artifacts like index.html while mirroring.
+WGET_FILTER_FLAGS=("--reject=index.html*")
 
 log "Starting downloads"
 log "Target directory: $DATA_DIR"
@@ -47,7 +49,7 @@ for entry in "${DATASETS[@]}"; do
   (
     cd "$DATA_DIR"
     # shellcheck disable=SC2086
-    eval "$cmd" "${WGET_PROGRESS_FLAGS[@]}"
+    eval "$cmd" "${WGET_PROGRESS_FLAGS[@]}" "${WGET_FILTER_FLAGS[@]}"
   )
 
   echo

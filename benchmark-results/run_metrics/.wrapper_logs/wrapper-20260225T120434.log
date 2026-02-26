@@ -1,0 +1,1251 @@
+
+[2026-02-25T12:04:34] $ docker version
+Client:
+ Version:           28.2.2
+ API version:       1.50
+ Go version:        go1.23.1
+ Git commit:        28.2.2-0ubuntu1~24.04.1
+ Built:             Wed Sep 10 14:16:39 2025
+ OS/Arch:           linux/amd64
+ Context:           default
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.50/version": dial unix /var/run/docker.sock: connect: permission denied
+[exit 1]
+
+[2026-02-25T12:04:34] $ sudo docker version
+Client:
+ Version:           28.2.2
+ API version:       1.50
+ Go version:        go1.23.1
+ Git commit:        28.2.2-0ubuntu1~24.04.1
+ Built:             Wed Sep 10 14:16:39 2025
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server:
+ Engine:
+  Version:          28.2.2
+  API version:      1.50 (minimum version 1.24)
+  Go version:       go1.23.1
+  Git commit:       28.2.2-0ubuntu1~24.04.1
+  Built:            Wed Sep 10 14:16:39 2025
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.7.28
+  GitCommit:        
+ runc:
+  Version:          1.3.3-0ubuntu1~24.04.3
+  GitCommit:        
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        
+[exit 0]
+
+[2026-02-25T12:04:34] $ sudo docker image inspect ecrum19/vcf-rdfizer:latest
+[]
+Error response from daemon: No such image: ecrum19/vcf-rdfizer:latest
+[exit 1]
+
+[2026-02-25T12:04:34] $ sudo docker build -t ecrum19/vcf-rdfizer:latest .
+cwd=/home/ubuntu/VCF-RDFizer
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  985.1kB
+Step 1/22 : FROM eclipse-temurin:11-jre AS build-hdt-cpp
+11-jre: Pulling from library/eclipse-temurin
+01d7766a2e4a: Pulling fs layer
+10a84f9becb1: Pulling fs layer
+e5fdb86e26cf: Pulling fs layer
+52fc03854783: Pulling fs layer
+541c74ca5ea9: Pulling fs layer
+52fc03854783: Waiting
+541c74ca5ea9: Waiting
+10a84f9becb1: Verifying Checksum
+10a84f9becb1: Download complete
+01d7766a2e4a: Verifying Checksum
+01d7766a2e4a: Download complete
+e5fdb86e26cf: Verifying Checksum
+e5fdb86e26cf: Download complete
+52fc03854783: Download complete
+541c74ca5ea9: Download complete
+01d7766a2e4a: Pull complete
+10a84f9becb1: Pull complete
+e5fdb86e26cf: Pull complete
+52fc03854783: Pull complete
+541c74ca5ea9: Pull complete
+Digest: sha256:19ea1e9ea1c741b73df906c4d8a6ffce8477e08074c000ea2233deb4cad3a136
+Status: Downloaded newer image for eclipse-temurin:11-jre
+ ---> 0618dcdd2c04
+Step 2/22 : RUN apt-get update   && apt-get install -y --no-install-recommends     autoconf     automake     build-essential     ca-certificates     git     libserd-dev     libtool     pkg-config     zlib1g-dev   && rm -rf /var/lib/apt/lists/*
+ ---> Running in 80578af96ffb
+Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+Get:6 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1,808 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2,276 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3,471 kB]
+Get:11 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1,879 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2,017 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [38.1 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [34.6 kB]
+Get:15 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.5 kB]
+Get:16 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3,246 kB]
+Get:17 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1,208 kB]
+Get:18 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [34.8 kB]
+Fetched 36.5 MB in 1s (25.4 MB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+ca-certificates is already the newest version (20240203).
+The following additional packages will be installed:
+  autotools-dev binutils binutils-common binutils-x86-64-linux-gnu bzip2 cpp
+  cpp-13 cpp-13-x86-64-linux-gnu cpp-x86-64-linux-gnu curl dpkg-dev file g++
+  g++-13 g++-13-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-13 gcc-13-base
+  gcc-13-x86-64-linux-gnu gcc-14-base gcc-x86-64-linux-gnu git-man libasan8
+  libatomic1 libbinutils libc-dev-bin libc6-dev libcc1-0 libcrypt-dev
+  libctf-nobfd0 libctf0 libcurl3t64-gnutls libcurl4t64 libdpkg-perl
+  liberror-perl libgcc-13-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64
+  libgomp1 libgprofng0 libhwasan0 libisl23 libitm1 libjansson4 liblsan0
+  libmagic-mgc libmagic1t64 libmpc3 libmpfr6 libperl5.38t64 libpkgconf3
+  libquadmath0 libserd-0-0 libsframe1 libstdc++-13-dev libstdc++6 libtsan2
+  libubsan1 linux-libc-dev lto-disabled-list m4 make patch perl
+  perl-modules-5.38 pkgconf pkgconf-bin rpcsvc-proto xz-utils
+Suggested packages:
+  autoconf-archive gnu-standards autoconf-doc gettext binutils-doc gprofng-gui
+  bzip2-doc cpp-doc gcc-13-locales cpp-13-doc debian-keyring g++-multilib
+  g++-13-multilib gcc-13-doc gcc-multilib manpages-dev flex bison gdb gcc-doc
+  gcc-13-multilib gdb-x86-64-linux-gnu gettext-base git-daemon-run
+  | git-daemon-sysvinit git-doc git-email git-gui gitk gitweb git-cvs
+  git-mediawiki git-svn glibc-doc bzr gdbm-l10n serdi libserd-doc
+  libstdc++-13-doc libtool-doc gfortran | fortran95-compiler gcj-jdk m4-doc
+  make-doc ed diffutils-doc perl-doc libterm-readline-gnu-perl
+  | libterm-readline-perl-perl libtap-harness-archive-perl
+Recommended packages:
+  fakeroot libalgorithm-merge-perl less ssh-client manpages manpages-dev
+  libc-devtools libfile-fcntllock-perl liblocale-gettext-perl libltdl-dev
+  netbase
+The following NEW packages will be installed:
+  autoconf automake autotools-dev binutils binutils-common
+  binutils-x86-64-linux-gnu build-essential bzip2 cpp cpp-13
+  cpp-13-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev file g++ g++-13
+  g++-13-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-13 gcc-13-base
+  gcc-13-x86-64-linux-gnu gcc-x86-64-linux-gnu git git-man libasan8 libatomic1
+  libbinutils libc-dev-bin libc6-dev libcc1-0 libcrypt-dev libctf-nobfd0
+  libctf0 libcurl3t64-gnutls libdpkg-perl liberror-perl libgcc-13-dev
+  libgdbm-compat4t64 libgdbm6t64 libgomp1 libgprofng0 libhwasan0 libisl23
+  libitm1 libjansson4 liblsan0 libmagic-mgc libmagic1t64 libmpc3 libmpfr6
+  libperl5.38t64 libpkgconf3 libquadmath0 libserd-0-0 libserd-dev libsframe1
+  libstdc++-13-dev libtool libtsan2 libubsan1 linux-libc-dev lto-disabled-list
+  m4 make patch perl perl-modules-5.38 pkg-config pkgconf pkgconf-bin
+  rpcsvc-proto xz-utils zlib1g-dev
+The following packages will be upgraded:
+  curl gcc-14-base libcurl4t64 libgcc-s1 libstdc++6
+5 upgraded, 74 newly installed, 0 to remove and 2 not upgraded.
+Need to get 89.5 MB of archives.
+After this operation, 344 MB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 perl-modules-5.38 all 5.38.2-3.2ubuntu0.2 [3,110 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble/main amd64 libgdbm6t64 amd64 1.23-5.1build1 [34.4 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble/main amd64 libgdbm-compat4t64 amd64 1.23-5.1build1 [6,710 B]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libperl5.38t64 amd64 5.38.2-3.2ubuntu0.2 [4,874 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 perl amd64 5.38.2-3.2ubuntu0.2 [231 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-14-base amd64 14.2.0-4ubuntu2~24.04.1 [51.0 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libstdc++6 amd64 14.2.0-4ubuntu2~24.04.1 [792 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgcc-s1 amd64 14.2.0-4ubuntu2~24.04.1 [78.4 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble/main amd64 libmagic-mgc amd64 1:5.45-3build1 [307 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble/main amd64 libmagic1t64 amd64 1:5.45-3build1 [87.2 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/main amd64 file amd64 1:5.45-3build1 [22.0 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 libjansson4 amd64 2.14-2build2 [32.8 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 xz-utils amd64 5.6.1+really5.4.5-1ubuntu0.2 [267 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble/main amd64 m4 amd64 1.4.19-4build1 [244 kB]
+Get:15 http://archive.ubuntu.com/ubuntu noble/main amd64 autoconf all 2.71-3 [339 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble/main amd64 autotools-dev all 20220109.1 [44.9 kB]
+Get:17 http://archive.ubuntu.com/ubuntu noble/main amd64 automake all 1:1.16.5-1.3ubuntu1 [558 kB]
+Get:18 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 binutils-common amd64 2.42-4ubuntu2.8 [240 kB]
+Get:19 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libsframe1 amd64 2.42-4ubuntu2.8 [15.6 kB]
+Get:20 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libbinutils amd64 2.42-4ubuntu2.8 [576 kB]
+Get:21 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libctf-nobfd0 amd64 2.42-4ubuntu2.8 [97.9 kB]
+Get:22 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libctf0 amd64 2.42-4ubuntu2.8 [94.5 kB]
+Get:23 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgprofng0 amd64 2.42-4ubuntu2.8 [849 kB]
+Get:24 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 binutils-x86-64-linux-gnu amd64 2.42-4ubuntu2.8 [2,463 kB]
+Get:25 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 binutils amd64 2.42-4ubuntu2.8 [18.1 kB]
+Get:26 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc-dev-bin amd64 2.39-0ubuntu8.7 [20.4 kB]
+Get:27 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 linux-libc-dev amd64 6.8.0-101.101 [2,042 kB]
+Get:28 http://archive.ubuntu.com/ubuntu noble/main amd64 libcrypt-dev amd64 1:4.4.36-4build1 [112 kB]
+Get:29 http://archive.ubuntu.com/ubuntu noble/main amd64 rpcsvc-proto amd64 1.4.2-0ubuntu7 [67.4 kB]
+Get:30 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc6-dev amd64 2.39-0ubuntu8.7 [2,124 kB]
+Get:31 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-13-base amd64 13.3.0-6ubuntu2~24.04.1 [51.6 kB]
+Get:32 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libisl23 amd64 0.26-3build1.1 [680 kB]
+Get:33 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libmpfr6 amd64 4.2.1-1build1.1 [353 kB]
+Get:34 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libmpc3 amd64 1.3.1-1build1.1 [54.6 kB]
+Get:35 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 cpp-13-x86-64-linux-gnu amd64 13.3.0-6ubuntu2~24.04.1 [10.7 MB]
+Get:36 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 cpp-13 amd64 13.3.0-6ubuntu2~24.04.1 [1,042 B]
+Get:37 http://archive.ubuntu.com/ubuntu noble/main amd64 cpp-x86-64-linux-gnu amd64 4:13.2.0-7ubuntu1 [5,326 B]
+Get:38 http://archive.ubuntu.com/ubuntu noble/main amd64 cpp amd64 4:13.2.0-7ubuntu1 [22.4 kB]
+Get:39 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcc1-0 amd64 14.2.0-4ubuntu2~24.04.1 [48.0 kB]
+Get:40 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgomp1 amd64 14.2.0-4ubuntu2~24.04.1 [148 kB]
+Get:41 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libitm1 amd64 14.2.0-4ubuntu2~24.04.1 [29.7 kB]
+Get:42 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libatomic1 amd64 14.2.0-4ubuntu2~24.04.1 [10.5 kB]
+Get:43 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libasan8 amd64 14.2.0-4ubuntu2~24.04.1 [3,027 kB]
+Get:44 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 liblsan0 amd64 14.2.0-4ubuntu2~24.04.1 [1,322 kB]
+Get:45 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libtsan2 amd64 14.2.0-4ubuntu2~24.04.1 [2,772 kB]
+Get:46 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libubsan1 amd64 14.2.0-4ubuntu2~24.04.1 [1,184 kB]
+Get:47 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libhwasan0 amd64 14.2.0-4ubuntu2~24.04.1 [1,641 kB]
+Get:48 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libquadmath0 amd64 14.2.0-4ubuntu2~24.04.1 [153 kB]
+Get:49 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgcc-13-dev amd64 13.3.0-6ubuntu2~24.04.1 [2,681 kB]
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-13-x86-64-linux-gnu amd64 13.3.0-6ubuntu2~24.04.1 [21.1 MB]
+Get:51 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-13 amd64 13.3.0-6ubuntu2~24.04.1 [494 kB]
+Get:52 http://archive.ubuntu.com/ubuntu noble/main amd64 gcc-x86-64-linux-gnu amd64 4:13.2.0-7ubuntu1 [1,212 B]
+Get:53 http://archive.ubuntu.com/ubuntu noble/main amd64 gcc amd64 4:13.2.0-7ubuntu1 [5,018 B]
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libstdc++-13-dev amd64 13.3.0-6ubuntu2~24.04.1 [2,420 kB]
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 g++-13-x86-64-linux-gnu amd64 13.3.0-6ubuntu2~24.04.1 [12.2 MB]
+Get:56 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 g++-13 amd64 13.3.0-6ubuntu2~24.04.1 [16.0 kB]
+Get:57 http://archive.ubuntu.com/ubuntu noble/main amd64 g++-x86-64-linux-gnu amd64 4:13.2.0-7ubuntu1 [964 B]
+Get:58 http://archive.ubuntu.com/ubuntu noble/main amd64 g++ amd64 4:13.2.0-7ubuntu1 [1,100 B]
+Get:59 http://archive.ubuntu.com/ubuntu noble/main amd64 make amd64 4.3-4.1build2 [180 kB]
+Get:60 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libdpkg-perl all 1.22.6ubuntu6.5 [269 kB]
+Get:61 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 bzip2 amd64 1.0.8-5.1build0.1 [34.5 kB]
+Get:62 http://archive.ubuntu.com/ubuntu noble/main amd64 patch amd64 2.7.6-7build3 [104 kB]
+Get:63 http://archive.ubuntu.com/ubuntu noble/main amd64 lto-disabled-list all 47 [12.4 kB]
+Get:64 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 dpkg-dev all 1.22.6ubuntu6.5 [1,074 kB]
+Get:65 http://archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1 [4,928 B]
+Get:66 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 curl amd64 8.5.0-2ubuntu10.7 [227 kB]
+Get:67 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcurl4t64 amd64 8.5.0-2ubuntu10.7 [342 kB]
+Get:68 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcurl3t64-gnutls amd64 8.5.0-2ubuntu10.7 [334 kB]
+Get:69 http://archive.ubuntu.com/ubuntu noble/main amd64 liberror-perl all 0.17029-2 [25.6 kB]
+Get:70 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 git-man all 1:2.43.0-1ubuntu7.3 [1,100 kB]
+Get:71 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 git amd64 1:2.43.0-1ubuntu7.3 [3,680 kB]
+Get:72 http://archive.ubuntu.com/ubuntu noble/main amd64 libpkgconf3 amd64 1.8.1-2build1 [30.7 kB]
+Get:73 http://archive.ubuntu.com/ubuntu noble/universe amd64 libserd-0-0 amd64 0.32.2-1 [43.6 kB]
+Get:74 http://archive.ubuntu.com/ubuntu noble/universe amd64 libserd-dev amd64 0.32.2-1 [11.2 kB]
+Get:75 http://archive.ubuntu.com/ubuntu noble/main amd64 libtool all 2.4.7-7build1 [166 kB]
+Get:76 http://archive.ubuntu.com/ubuntu noble/main amd64 pkgconf-bin amd64 1.8.1-2build1 [20.7 kB]
+Get:77 http://archive.ubuntu.com/ubuntu noble/main amd64 pkgconf amd64 1.8.1-2build1 [16.8 kB]
+Get:78 http://archive.ubuntu.com/ubuntu noble/main amd64 pkg-config amd64 1.8.1-2build1 [7,264 B]
+Get:79 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 zlib1g-dev amd64 1:1.3.dfsg-3.1ubuntu2.1 [894 kB]
+[91mdebconf: delaying package configuration, since apt-utils is not installed
+[0mFetched 89.5 MB in 1s (124 MB/s)
+Selecting previously unselected package perl-modules-5.38.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6592 files and directories currently installed.)
+Preparing to unpack .../0-perl-modules-5.38_5.38.2-3.2ubuntu0.2_all.deb ...
+Unpacking perl-modules-5.38 (5.38.2-3.2ubuntu0.2) ...
+Selecting previously unselected package libgdbm6t64:amd64.
+Preparing to unpack .../1-libgdbm6t64_1.23-5.1build1_amd64.deb ...
+Unpacking libgdbm6t64:amd64 (1.23-5.1build1) ...
+Selecting previously unselected package libgdbm-compat4t64:amd64.
+Preparing to unpack .../2-libgdbm-compat4t64_1.23-5.1build1_amd64.deb ...
+Unpacking libgdbm-compat4t64:amd64 (1.23-5.1build1) ...
+Selecting previously unselected package libperl5.38t64:amd64.
+Preparing to unpack .../3-libperl5.38t64_5.38.2-3.2ubuntu0.2_amd64.deb ...
+Unpacking libperl5.38t64:amd64 (5.38.2-3.2ubuntu0.2) ...
+Selecting previously unselected package perl.
+Preparing to unpack .../4-perl_5.38.2-3.2ubuntu0.2_amd64.deb ...
+Unpacking perl (5.38.2-3.2ubuntu0.2) ...
+Preparing to unpack .../5-gcc-14-base_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking gcc-14-base:amd64 (14.2.0-4ubuntu2~24.04.1) over (14.2.0-4ubuntu2~24.04) ...
+Setting up gcc-14-base:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 8604 files and directories currently installed.)
+Preparing to unpack .../libstdc++6_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libstdc++6:amd64 (14.2.0-4ubuntu2~24.04.1) over (14.2.0-4ubuntu2~24.04) ...
+Setting up libstdc++6:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 8604 files and directories currently installed.)
+Preparing to unpack .../libgcc-s1_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libgcc-s1:amd64 (14.2.0-4ubuntu2~24.04.1) over (14.2.0-4ubuntu2~24.04) ...
+Setting up libgcc-s1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libmagic-mgc.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 8604 files and directories currently installed.)
+Preparing to unpack .../00-libmagic-mgc_1%3a5.45-3build1_amd64.deb ...
+Unpacking libmagic-mgc (1:5.45-3build1) ...
+Selecting previously unselected package libmagic1t64:amd64.
+Preparing to unpack .../01-libmagic1t64_1%3a5.45-3build1_amd64.deb ...
+Unpacking libmagic1t64:amd64 (1:5.45-3build1) ...
+Selecting previously unselected package file.
+Preparing to unpack .../02-file_1%3a5.45-3build1_amd64.deb ...
+Unpacking file (1:5.45-3build1) ...
+Selecting previously unselected package libjansson4:amd64.
+Preparing to unpack .../03-libjansson4_2.14-2build2_amd64.deb ...
+Unpacking libjansson4:amd64 (2.14-2build2) ...
+Selecting previously unselected package xz-utils.
+Preparing to unpack .../04-xz-utils_5.6.1+really5.4.5-1ubuntu0.2_amd64.deb ...
+Unpacking xz-utils (5.6.1+really5.4.5-1ubuntu0.2) ...
+Selecting previously unselected package m4.
+Preparing to unpack .../05-m4_1.4.19-4build1_amd64.deb ...
+Unpacking m4 (1.4.19-4build1) ...
+Selecting previously unselected package autoconf.
+Preparing to unpack .../06-autoconf_2.71-3_all.deb ...
+Unpacking autoconf (2.71-3) ...
+Selecting previously unselected package autotools-dev.
+Preparing to unpack .../07-autotools-dev_20220109.1_all.deb ...
+Unpacking autotools-dev (20220109.1) ...
+Selecting previously unselected package automake.
+Preparing to unpack .../08-automake_1%3a1.16.5-1.3ubuntu1_all.deb ...
+Unpacking automake (1:1.16.5-1.3ubuntu1) ...
+Selecting previously unselected package binutils-common:amd64.
+Preparing to unpack .../09-binutils-common_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking binutils-common:amd64 (2.42-4ubuntu2.8) ...
+Selecting previously unselected package libsframe1:amd64.
+Preparing to unpack .../10-libsframe1_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking libsframe1:amd64 (2.42-4ubuntu2.8) ...
+Selecting previously unselected package libbinutils:amd64.
+Preparing to unpack .../11-libbinutils_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking libbinutils:amd64 (2.42-4ubuntu2.8) ...
+Selecting previously unselected package libctf-nobfd0:amd64.
+Preparing to unpack .../12-libctf-nobfd0_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking libctf-nobfd0:amd64 (2.42-4ubuntu2.8) ...
+Selecting previously unselected package libctf0:amd64.
+Preparing to unpack .../13-libctf0_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking libctf0:amd64 (2.42-4ubuntu2.8) ...
+Selecting previously unselected package libgprofng0:amd64.
+Preparing to unpack .../14-libgprofng0_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking libgprofng0:amd64 (2.42-4ubuntu2.8) ...
+Selecting previously unselected package binutils-x86-64-linux-gnu.
+Preparing to unpack .../15-binutils-x86-64-linux-gnu_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking binutils-x86-64-linux-gnu (2.42-4ubuntu2.8) ...
+Selecting previously unselected package binutils.
+Preparing to unpack .../16-binutils_2.42-4ubuntu2.8_amd64.deb ...
+Unpacking binutils (2.42-4ubuntu2.8) ...
+Selecting previously unselected package libc-dev-bin.
+Preparing to unpack .../17-libc-dev-bin_2.39-0ubuntu8.7_amd64.deb ...
+Unpacking libc-dev-bin (2.39-0ubuntu8.7) ...
+Selecting previously unselected package linux-libc-dev:amd64.
+Preparing to unpack .../18-linux-libc-dev_6.8.0-101.101_amd64.deb ...
+Unpacking linux-libc-dev:amd64 (6.8.0-101.101) ...
+Selecting previously unselected package libcrypt-dev:amd64.
+Preparing to unpack .../19-libcrypt-dev_1%3a4.4.36-4build1_amd64.deb ...
+Unpacking libcrypt-dev:amd64 (1:4.4.36-4build1) ...
+Selecting previously unselected package rpcsvc-proto.
+Preparing to unpack .../20-rpcsvc-proto_1.4.2-0ubuntu7_amd64.deb ...
+Unpacking rpcsvc-proto (1.4.2-0ubuntu7) ...
+Selecting previously unselected package libc6-dev:amd64.
+Preparing to unpack .../21-libc6-dev_2.39-0ubuntu8.7_amd64.deb ...
+Unpacking libc6-dev:amd64 (2.39-0ubuntu8.7) ...
+Selecting previously unselected package gcc-13-base:amd64.
+Preparing to unpack .../22-gcc-13-base_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking gcc-13-base:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package libisl23:amd64.
+Preparing to unpack .../23-libisl23_0.26-3build1.1_amd64.deb ...
+Unpacking libisl23:amd64 (0.26-3build1.1) ...
+Selecting previously unselected package libmpfr6:amd64.
+Preparing to unpack .../24-libmpfr6_4.2.1-1build1.1_amd64.deb ...
+Unpacking libmpfr6:amd64 (4.2.1-1build1.1) ...
+Selecting previously unselected package libmpc3:amd64.
+Preparing to unpack .../25-libmpc3_1.3.1-1build1.1_amd64.deb ...
+Unpacking libmpc3:amd64 (1.3.1-1build1.1) ...
+Selecting previously unselected package cpp-13-x86-64-linux-gnu.
+Preparing to unpack .../26-cpp-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking cpp-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package cpp-13.
+Preparing to unpack .../27-cpp-13_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking cpp-13 (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package cpp-x86-64-linux-gnu.
+Preparing to unpack .../28-cpp-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb ...
+Unpacking cpp-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+Selecting previously unselected package cpp.
+Preparing to unpack .../29-cpp_4%3a13.2.0-7ubuntu1_amd64.deb ...
+Unpacking cpp (4:13.2.0-7ubuntu1) ...
+Selecting previously unselected package libcc1-0:amd64.
+Preparing to unpack .../30-libcc1-0_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libcc1-0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libgomp1:amd64.
+Preparing to unpack .../31-libgomp1_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libgomp1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libitm1:amd64.
+Preparing to unpack .../32-libitm1_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libitm1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libatomic1:amd64.
+Preparing to unpack .../33-libatomic1_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libatomic1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libasan8:amd64.
+Preparing to unpack .../34-libasan8_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libasan8:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package liblsan0:amd64.
+Preparing to unpack .../35-liblsan0_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking liblsan0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libtsan2:amd64.
+Preparing to unpack .../36-libtsan2_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libtsan2:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libubsan1:amd64.
+Preparing to unpack .../37-libubsan1_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libubsan1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libhwasan0:amd64.
+Preparing to unpack .../38-libhwasan0_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libhwasan0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libquadmath0:amd64.
+Preparing to unpack .../39-libquadmath0_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+Unpacking libquadmath0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Selecting previously unselected package libgcc-13-dev:amd64.
+Preparing to unpack .../40-libgcc-13-dev_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking libgcc-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package gcc-13-x86-64-linux-gnu.
+Preparing to unpack .../41-gcc-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking gcc-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package gcc-13.
+Preparing to unpack .../42-gcc-13_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking gcc-13 (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package gcc-x86-64-linux-gnu.
+Preparing to unpack .../43-gcc-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb ...
+Unpacking gcc-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+Selecting previously unselected package gcc.
+Preparing to unpack .../44-gcc_4%3a13.2.0-7ubuntu1_amd64.deb ...
+Unpacking gcc (4:13.2.0-7ubuntu1) ...
+Selecting previously unselected package libstdc++-13-dev:amd64.
+Preparing to unpack .../45-libstdc++-13-dev_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking libstdc++-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package g++-13-x86-64-linux-gnu.
+Preparing to unpack .../46-g++-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking g++-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package g++-13.
+Preparing to unpack .../47-g++-13_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+Unpacking g++-13 (13.3.0-6ubuntu2~24.04.1) ...
+Selecting previously unselected package g++-x86-64-linux-gnu.
+Preparing to unpack .../48-g++-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb ...
+Unpacking g++-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+Selecting previously unselected package g++.
+Preparing to unpack .../49-g++_4%3a13.2.0-7ubuntu1_amd64.deb ...
+Unpacking g++ (4:13.2.0-7ubuntu1) ...
+Selecting previously unselected package make.
+Preparing to unpack .../50-make_4.3-4.1build2_amd64.deb ...
+Unpacking make (4.3-4.1build2) ...
+Selecting previously unselected package libdpkg-perl.
+Preparing to unpack .../51-libdpkg-perl_1.22.6ubuntu6.5_all.deb ...
+Unpacking libdpkg-perl (1.22.6ubuntu6.5) ...
+Selecting previously unselected package bzip2.
+Preparing to unpack .../52-bzip2_1.0.8-5.1build0.1_amd64.deb ...
+Unpacking bzip2 (1.0.8-5.1build0.1) ...
+Selecting previously unselected package patch.
+Preparing to unpack .../53-patch_2.7.6-7build3_amd64.deb ...
+Unpacking patch (2.7.6-7build3) ...
+Selecting previously unselected package lto-disabled-list.
+Preparing to unpack .../54-lto-disabled-list_47_all.deb ...
+Unpacking lto-disabled-list (47) ...
+Selecting previously unselected package dpkg-dev.
+Preparing to unpack .../55-dpkg-dev_1.22.6ubuntu6.5_all.deb ...
+Unpacking dpkg-dev (1.22.6ubuntu6.5) ...
+Selecting previously unselected package build-essential.
+Preparing to unpack .../56-build-essential_12.10ubuntu1_amd64.deb ...
+Unpacking build-essential (12.10ubuntu1) ...
+Preparing to unpack .../57-curl_8.5.0-2ubuntu10.7_amd64.deb ...
+Unpacking curl (8.5.0-2ubuntu10.7) over (8.5.0-2ubuntu10.6) ...
+Preparing to unpack .../58-libcurl4t64_8.5.0-2ubuntu10.7_amd64.deb ...
+Unpacking libcurl4t64:amd64 (8.5.0-2ubuntu10.7) over (8.5.0-2ubuntu10.6) ...
+Selecting previously unselected package libcurl3t64-gnutls:amd64.
+Preparing to unpack .../59-libcurl3t64-gnutls_8.5.0-2ubuntu10.7_amd64.deb ...
+Unpacking libcurl3t64-gnutls:amd64 (8.5.0-2ubuntu10.7) ...
+Selecting previously unselected package liberror-perl.
+Preparing to unpack .../60-liberror-perl_0.17029-2_all.deb ...
+Unpacking liberror-perl (0.17029-2) ...
+Selecting previously unselected package git-man.
+Preparing to unpack .../61-git-man_1%3a2.43.0-1ubuntu7.3_all.deb ...
+Unpacking git-man (1:2.43.0-1ubuntu7.3) ...
+Selecting previously unselected package git.
+Preparing to unpack .../62-git_1%3a2.43.0-1ubuntu7.3_amd64.deb ...
+Unpacking git (1:2.43.0-1ubuntu7.3) ...
+Selecting previously unselected package libpkgconf3:amd64.
+Preparing to unpack .../63-libpkgconf3_1.8.1-2build1_amd64.deb ...
+Unpacking libpkgconf3:amd64 (1.8.1-2build1) ...
+Selecting previously unselected package libserd-0-0:amd64.
+Preparing to unpack .../64-libserd-0-0_0.32.2-1_amd64.deb ...
+Unpacking libserd-0-0:amd64 (0.32.2-1) ...
+Selecting previously unselected package libserd-dev:amd64.
+Preparing to unpack .../65-libserd-dev_0.32.2-1_amd64.deb ...
+Unpacking libserd-dev:amd64 (0.32.2-1) ...
+Selecting previously unselected package libtool.
+Preparing to unpack .../66-libtool_2.4.7-7build1_all.deb ...
+Unpacking libtool (2.4.7-7build1) ...
+Selecting previously unselected package pkgconf-bin.
+Preparing to unpack .../67-pkgconf-bin_1.8.1-2build1_amd64.deb ...
+Unpacking pkgconf-bin (1.8.1-2build1) ...
+Selecting previously unselected package pkgconf:amd64.
+Preparing to unpack .../68-pkgconf_1.8.1-2build1_amd64.deb ...
+Unpacking pkgconf:amd64 (1.8.1-2build1) ...
+Selecting previously unselected package pkg-config:amd64.
+Preparing to unpack .../69-pkg-config_1.8.1-2build1_amd64.deb ...
+Unpacking pkg-config:amd64 (1.8.1-2build1) ...
+Selecting previously unselected package zlib1g-dev:amd64.
+Preparing to unpack .../70-zlib1g-dev_1%3a1.3.dfsg-3.1ubuntu2.1_amd64.deb ...
+Unpacking zlib1g-dev:amd64 (1:1.3.dfsg-3.1ubuntu2.1) ...
+Setting up lto-disabled-list (47) ...
+Setting up libgdbm6t64:amd64 (1.23-5.1build1) ...
+Setting up libcurl4t64:amd64 (8.5.0-2ubuntu10.7) ...
+Setting up libgdbm-compat4t64:amd64 (1.23-5.1build1) ...
+Setting up libmagic-mgc (1:5.45-3build1) ...
+Setting up libmagic1t64:amd64 (1:5.45-3build1) ...
+Setting up binutils-common:amd64 (2.42-4ubuntu2.8) ...
+Setting up libcurl3t64-gnutls:amd64 (8.5.0-2ubuntu10.7) ...
+Setting up linux-libc-dev:amd64 (6.8.0-101.101) ...
+Setting up libctf-nobfd0:amd64 (2.42-4ubuntu2.8) ...
+Setting up m4 (1.4.19-4build1) ...
+Setting up file (1:5.45-3build1) ...
+Setting up libgomp1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up bzip2 (1.0.8-5.1build0.1) ...
+Setting up libsframe1:amd64 (2.42-4ubuntu2.8) ...
+Setting up libjansson4:amd64 (2.14-2build2) ...
+Setting up autotools-dev (20220109.1) ...
+Setting up libpkgconf3:amd64 (1.8.1-2build1) ...
+Setting up rpcsvc-proto (1.4.2-0ubuntu7) ...
+Setting up gcc-13-base:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+Setting up make (4.3-4.1build2) ...
+Setting up libmpfr6:amd64 (4.2.1-1build1.1) ...
+Setting up xz-utils (5.6.1+really5.4.5-1ubuntu0.2) ...
+update-alternatives: using /usr/bin/xz to provide /usr/bin/lzma (lzma) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzma.1.gz because associated file /usr/share/man/man1/xz.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/unlzma.1.gz because associated file /usr/share/man/man1/unxz.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzcat.1.gz because associated file /usr/share/man/man1/xzcat.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzmore.1.gz because associated file /usr/share/man/man1/xzmore.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzless.1.gz because associated file /usr/share/man/man1/xzless.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzdiff.1.gz because associated file /usr/share/man/man1/xzdiff.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzcmp.1.gz because associated file /usr/share/man/man1/xzcmp.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzgrep.1.gz because associated file /usr/share/man/man1/xzgrep.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzegrep.1.gz because associated file /usr/share/man/man1/xzegrep.1.gz (of link group lzma) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/lzfgrep.1.gz because associated file /usr/share/man/man1/xzfgrep.1.gz (of link group lzma) doesn't exist
+Setting up perl-modules-5.38 (5.38.2-3.2ubuntu0.2) ...
+Setting up libquadmath0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up libmpc3:amd64 (1.3.1-1build1.1) ...
+Setting up libatomic1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up patch (2.7.6-7build3) ...
+Setting up pkgconf-bin (1.8.1-2build1) ...
+Setting up libubsan1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up libhwasan0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up libcrypt-dev:amd64 (1:4.4.36-4build1) ...
+Setting up libasan8:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up git-man (1:2.43.0-1ubuntu7.3) ...
+Setting up curl (8.5.0-2ubuntu10.7) ...
+Setting up libperl5.38t64:amd64 (5.38.2-3.2ubuntu0.2) ...
+Setting up libtsan2:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up libbinutils:amd64 (2.42-4ubuntu2.8) ...
+Setting up libisl23:amd64 (0.26-3build1.1) ...
+Setting up libc-dev-bin (2.39-0ubuntu8.7) ...
+Setting up libcc1-0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up liblsan0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up libitm1:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+Setting up libserd-0-0:amd64 (0.32.2-1) ...
+Setting up libctf0:amd64 (2.42-4ubuntu2.8) ...
+Setting up cpp-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+Setting up pkgconf:amd64 (1.8.1-2build1) ...
+Setting up perl (5.38.2-3.2ubuntu0.2) ...
+Setting up libgprofng0:amd64 (2.42-4ubuntu2.8) ...
+Setting up pkg-config:amd64 (1.8.1-2build1) ...
+Setting up libserd-dev:amd64 (0.32.2-1) ...
+Setting up libdpkg-perl (1.22.6ubuntu6.5) ...
+Setting up autoconf (2.71-3) ...
+Setting up libgcc-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+Setting up libc6-dev:amd64 (2.39-0ubuntu8.7) ...
+Setting up libstdc++-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+Setting up binutils-x86-64-linux-gnu (2.42-4ubuntu2.8) ...
+Setting up cpp-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+Setting up automake (1:1.16.5-1.3ubuntu1) ...
+update-alternatives: using /usr/bin/automake-1.16 to provide /usr/bin/automake (automake) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/automake.1.gz because associated file /usr/share/man/man1/automake-1.16.1.gz (of link group automake) doesn't exist
+update-alternatives: warning: skip creation of /usr/share/man/man1/aclocal.1.gz because associated file /usr/share/man/man1/aclocal-1.16.1.gz (of link group automake) doesn't exist
+Setting up cpp-13 (13.3.0-6ubuntu2~24.04.1) ...
+Setting up gcc-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+Setting up binutils (2.42-4ubuntu2.8) ...
+Setting up dpkg-dev (1.22.6ubuntu6.5) ...
+Setting up liberror-perl (0.17029-2) ...
+Setting up gcc-13 (13.3.0-6ubuntu2~24.04.1) ...
+Setting up git (1:2.43.0-1ubuntu7.3) ...
+Setting up zlib1g-dev:amd64 (1:1.3.dfsg-3.1ubuntu2.1) ...
+Setting up cpp (4:13.2.0-7ubuntu1) ...
+Setting up g++-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+Setting up gcc-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+Setting up libtool (2.4.7-7build1) ...
+Setting up gcc (4:13.2.0-7ubuntu1) ...
+Setting up g++-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+Setting up g++-13 (13.3.0-6ubuntu2~24.04.1) ...
+Setting up g++ (4:13.2.0-7ubuntu1) ...
+update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/c++.1.gz because associated file /usr/share/man/man1/g++.1.gz (of link group c++) doesn't exist
+Setting up build-essential (12.10ubuntu1) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.7) ...
+ ---> Removed intermediate container 80578af96ffb
+ ---> 0a4e47b6830f
+Step 3/22 : WORKDIR /opt
+ ---> Running in 9b4b8bffe4a0
+ ---> Removed intermediate container 9b4b8bffe4a0
+ ---> 92749cc362d1
+Step 4/22 : RUN git clone --depth 1 https://github.com/rdfhdt/hdt-cpp.git
+ ---> Running in 5aed8b21d774
+[91mCloning into 'hdt-cpp'...
+[0m ---> Removed intermediate container 5aed8b21d774
+ ---> 54de045dd56a
+Step 5/22 : WORKDIR /opt/hdt-cpp
+ ---> Running in 18fc93f97661
+ ---> Removed intermediate container 18fc93f97661
+ ---> a34eab2f4dfd
+Step 6/22 : RUN ./autogen.sh   && ./configure   && make -j"$(nproc)"   && make install
+ ---> Running in 044500e280a3
+[91maclocal: installing 'm4/libtool.m4' from '/usr/share/aclocal/libtool.m4'
+[0m[91maclocal: installing 'm4/ltoptions.m4' from '/usr/share/aclocal/ltoptions.m4'
+[0m[91maclocal: installing 'm4/ltsugar.m4' from '/usr/share/aclocal/ltsugar.m4'
+[0m[91maclocal: installing 'm4/ltversion.m4' from '/usr/share/aclocal/ltversion.m4'
+[0m[91maclocal: installing 'm4/lt~obsolete.m4' from '/usr/share/aclocal/lt~obsolete.m4'
+[0m[91maclocal: installing 'm4/pkg.m4' from '/usr/share/aclocal/pkg.m4'
+[0mlibtoolize: putting auxiliary files in AC_CONFIG_AUX_DIR, 'build'.
+libtoolize: copying file 'build/ltmain.sh'
+libtoolize: putting macros in AC_CONFIG_MACRO_DIRS, 'm4'.
+libtoolize: copying file 'm4/libtool.m4'
+libtoolize: copying file 'm4/ltoptions.m4'
+libtoolize: copying file 'm4/ltsugar.m4'
+libtoolize: copying file 'm4/ltversion.m4'
+libtoolize: copying file 'm4/lt~obsolete.m4'
+[91mconfigure.ac:16: installing 'build/ar-lib'
+[0m[91mconfigure.ac:12: installing 'build/compile'
+[0m[91mconfigure.ac:17: installing 'build/config.guess'
+[0m[91mconfigure.ac:17: installing 'build/config.sub'
+[0m[91mconfigure.ac:5: installing 'build/install-sh'
+[0m[91mconfigure.ac:5: installing 'build/missing'
+[0m[91mlibcds/Makefile.am: installing 'build/depcomp'
+[0m[91mparallel-tests: installing 'build/test-driver'
+[0mchecking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a race-free mkdir -p... /usr/bin/mkdir -p
+checking for gawk... no
+checking for mawk... mawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether make supports nested variables... (cached) yes
+checking for g++... g++
+checking whether the C++ compiler works... yes
+checking for C++ compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C++... yes
+checking whether g++ accepts -g... yes
+checking for g++ option to enable C++11 features... none needed
+checking whether make supports the include directive... yes (GNU style)
+checking dependency style of g++... gcc3
+checking for gcc... gcc
+checking whether the compiler supports GNU C... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to enable C11 features... none needed
+checking whether gcc understands -c and -o together... yes
+checking dependency style of gcc... gcc3
+checking how to run the C preprocessor... gcc -E
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for Minix Amsterdam compiler... no
+checking for ar... ar
+checking for ranlib... ranlib
+checking how to run the C preprocessor... gcc -E
+checking the archiver (ar) interface... ar
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by gcc... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking how to convert x86_64-pc-linux-gnu file names to x86_64-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/bin/ld option to reload object files... -r
+checking for file... file
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for archiver @FILE support... @
+checking for strip... strip
+checking for ranlib... (cached) ranlib
+checking command to parse /usr/bin/nm -B output from gcc object... ok
+checking for sysroot... no
+checking for a working dd... /usr/bin/dd
+checking how to truncate binary pipes... /usr/bin/dd bs=4096 count=1
+checking for mt... no
+checking if : is a manifest tool... no
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if gcc supports -fno-rtti -fno-exceptions... no
+checking for gcc option to produce PIC... -fPIC -DPIC
+checking if gcc PIC flag -fPIC -DPIC works... yes
+checking if gcc static flag -static works... yes
+checking if gcc supports -c -o file.o... yes
+checking if gcc supports -c -o file.o... (cached) yes
+checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+checking how to run the C++ preprocessor... g++ -E
+checking for ld used by g++... /usr/bin/ld -m elf_x86_64
+checking if the linker (/usr/bin/ld -m elf_x86_64) is GNU ld... yes
+checking whether the g++ linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking for g++ option to produce PIC... -fPIC -DPIC
+checking if g++ PIC flag -fPIC -DPIC works... yes
+checking if g++ static flag -static works... yes
+checking if g++ supports -c -o file.o... yes
+checking if g++ supports -c -o file.o... (cached) yes
+checking whether the g++ linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking dynamic linker characteristics... (cached) GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether g++ supports C++11 features by default... yes
+checking whether to enable optimizations... yes
+checking whether to build libcds... yes
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking for zlib... yes
+checking for serd-0 >= 0.28.0... yes
+checking for _Bool... no
+checking for stdbool.h that conforms to C99... yes
+checking for inline... inline
+checking for size_t... yes
+checking for uint32_t... yes
+checking for GNU libc compatible malloc... yes
+checking for GNU libc compatible realloc... yes
+checking for select... yes
+checking whether C++ compiler handles -Werror -Wunknown-warning-option... no
+checking whether C++ compiler handles -Wall... yes
+checking whether C++ compiler handles -Wextra... yes
+checking whether C++ compiler handles -Wno-sign-compare... yes
+checking whether C++ compiler handles -Wno-unused-but-set-variable... yes
+checking whether C++ compiler handles -Wno-unused-parameter... yes
+checking whether C++ compiler handles -Wno-unknown-warning-option... no
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating libhdt/hdt.pc
+config.status: creating libhdt/Makefile
+config.status: creating libhdt/tools/Makefile
+config.status: creating libhdt/tests/Makefile
+config.status: creating libcds/cds.pc
+config.status: creating libcds/Makefile
+config.status: creating libcds/tests/Makefile
+config.status: creating build/config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
+Making all in libcds
+make[1]: Entering directory '/opt/hdt-cpp/libcds'
+Making all in .
+make[2]: Entering directory '/opt/hdt-cpp/libcds'
+  CXX      src/static/bitsequence/BitSequenceBuilderDArray.lo
+  CXX      src/static/bitsequence/BitSequenceBuilderRG.lo
+  CXX      src/static/bitsequence/BitSequenceBuilderRRR.lo
+  CXX      src/static/bitsequence/BitSequenceBuilderSDArray.lo
+  CXX      src/static/bitsequence/BitSequence.lo
+  CXX      src/static/bitsequence/BitSequenceRG.lo
+  CXX      src/static/bitsequence/BitSequenceDArray.lo
+  CXX      src/static/bitsequence/BitSequenceRRR.lo
+  CXX      src/static/bitsequence/BitSequenceSDArray.lo
+  CXX      src/static/bitsequence/sdarraySadakane.lo
+  CXX      src/static/bitsequence/TableOffsetRRR.lo
+  CXX      src/static/coders/huff.lo
+  CXX      src/static/coders/HuffmanCoder.lo
+  CXX      src/static/mapper/MapperCont.lo
+  CXX      src/static/mapper/Mapper.lo
+  CXX      src/static/mapper/MapperNone.lo
+  CXX      src/static/mapper/MapperRev.lo
+  CXX      src/static/permutation/perm.lo
+  CXX      src/static/permutation/PermutationBuilderMRRR.lo
+  CXX      src/static/permutation/PermutationBuilderWT.lo
+  CXX      src/static/permutation/Permutation.lo
+  CXX      src/static/permutation/PermutationMRRR.lo
+  CXX      src/static/permutation/PermutationWT.lo
+  CXX      src/static/sequence/BitmapsSequence.lo
+  CXX      src/static/sequence/SequenceAlphPart.lo
+  CXX      src/static/sequence/SequenceBuilderAlphPart.lo
+  CXX      src/static/sequence/SequenceBuilderGMRChunk.lo
+  CXX      src/static/sequence/SequenceBuilderGMR.lo
+  CXX      src/static/sequence/SequenceBuilderStr.lo
+  CXX      src/static/sequence/SequenceBuilderWaveletMatrix.lo
+  CXX      src/static/sequence/SequenceBuilderWaveletTree.lo
+  CXX      src/static/sequence/SequenceBuilderWaveletTreeNoptrs.lo
+  CXX      src/static/sequence/SequenceBuilderWaveletTreeNoptrsS.lo
+  CXX      src/static/sequence/Sequence.lo
+  CXX      src/static/sequence/SequenceGMRChunk.lo
+  CXX      src/static/sequence/SequenceGMR.lo
+  CXX      src/static/sequence/WaveletMatrix.lo
+  CXX      src/static/sequence/WaveletTree.lo
+  CXX      src/static/sequence/WaveletTreeNoptrs.lo
+  CXX      src/static/sequence/WaveletTreeNoptrsS.lo
+  CXX      src/static/sequence/wt_coder_binary.lo
+  CXX      src/static/sequence/wt_coder.lo
+  CXX      src/static/sequence/wt_coder_huff.lo
+  CXX      src/static/sequence/wt_node.lo
+  CXX      src/static/sequence/wt_node_internal.lo
+  CXX      src/static/sequence/wt_node_leaf.lo
+  CXX      src/static/suffixtree/factorization.lo
+  CXX      src/static/suffixtree/factorization_var.lo
+  CXX      src/static/suffixtree/LCP.lo
+  CXX      src/static/suffixtree/LCP_DAC.lo
+  CXX      src/static/suffixtree/LCP_DAC_VAR.lo
+  CXX      src/static/suffixtree/LCP_FMN.lo
+  CXX      src/static/suffixtree/LCP_naive.lo
+  CXX      src/static/suffixtree/LCP_PhiSpare.lo
+  CXX      src/static/suffixtree/LCP_PT.lo
+  CXX      src/static/suffixtree/LCP_Sad.lo
+  CXX      src/static/suffixtree/NPR_CN.lo
+  CXX      src/static/suffixtree/NPR.lo
+  CXX      src/static/suffixtree/NPR_FMN.lo
+  CXX      src/static/suffixtree/NSV.lo
+  CXX      src/static/suffixtree/PSV.lo
+  CXX      src/static/suffixtree/RMQ_succinct.lo
+  CXX      src/static/suffixtree/RMQ_succinct_lcp.lo
+  CXX      src/static/suffixtree/SuffixTree.lo
+  CXX      src/static/suffixtree/SuffixTreeY.lo
+  CXX      src/static/textindex/comparray4.lo
+  CXX      src/static/textindex/mmap.lo
+  CXX      src/static/textindex/qsufsort.lo
+  CXX      src/static/textindex/suftest3.test.lo
+  CXX      src/static/textindex/TextIndex.lo
+  CXX      src/static/textindex/TextIndexCSA.lo
+  CXX      src/utils/Array.lo
+  CXX      src/utils/BitString.lo
+  CXX      src/utils/cppUtils.lo
+  CXX      src/utils/timing.lo
+  CXXLD    libcds.la
+[91mar: `u' modifier ignored since `D' is the default (see `U')
+[0mmake[2]: Leaving directory '/opt/hdt-cpp/libcds'
+Making all in tests
+make[2]: Entering directory '/opt/hdt-cpp/libcds/tests'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/opt/hdt-cpp/libcds/tests'
+make[1]: Leaving directory '/opt/hdt-cpp/libcds'
+Making all in libhdt
+make[1]: Entering directory '/opt/hdt-cpp/libhdt'
+Making all in .
+make[2]: Entering directory '/opt/hdt-cpp/libhdt'
+  CXX      src/bitsequence/libhdt_la-BitSequence375.lo
+  CXX      src/dictionary/libhdt_la-FourSectionDictionary.lo
+  CXX      src/dictionary/libhdt_la-KyotoDictionary.lo
+  CXX      src/dictionary/libhdt_la-LiteralDictionary.lo
+  CXX      src/dictionary/libhdt_la-PlainDictionary.lo
+  CXX      src/hdt/libhdt_la-BasicHDT.lo
+  CXX      src/hdt/libhdt_la-BasicModifiableHDT.lo
+  CXX      src/hdt/libhdt_la-ControlInformation.lo
+  CXX      src/hdt/libhdt_la-HDTFactory.lo
+  CXX      src/hdt/libhdt_la-HDTManager.lo
+  CXX      src/hdt/libhdt_la-HDTSpecification.lo
+  CXX      src/hdt/libhdt_la-TripleIDStringIterator.lo
+  CXX      src/header/libhdt_la-PlainHeader.lo
+  CXX      src/huffman/libhdt_la-huff.lo
+  CXX      src/huffman/libhdt_la-Huffman.lo
+  CXX      src/libdcs/libhdt_la-CSD_Cache2.lo
+  CXX      src/libdcs/libhdt_la-CSD_Cache.lo
+  CXX      src/libdcs/libhdt_la-CSD.lo
+  CXX      src/libdcs/libhdt_la-CSD_FMIndex.lo
+  CXX      src/libdcs/libhdt_la-CSD_HTFC.lo
+  CXX      src/libdcs/libhdt_la-CSD_PFC.lo
+  CXX      src/libdcs/libhdt_la-VByte.lo
+  CXX      src/libdcs/fmindex/libhdt_la-SSA.lo
+  CXX      src/libdcs/fmindex/libhdt_la-SuffixArray.lo
+  CXX      src/rdf/libhdt_la-RDFParser.lo
+  CXX      src/rdf/libhdt_la-RDFParserNtriples.lo
+  CXX      src/rdf/libhdt_la-RDFParserSerd.lo
+  CXX      src/rdf/libhdt_la-RDFSerializer.lo
+  CXX      src/rdf/libhdt_la-RDFSerializerNTriples.lo
+  CXX      src/rdf/libhdt_la-RDFSerializerSerd.lo
+  CXX      src/sequence/libhdt_la-AdjacencyList.lo
+  CXX      src/sequence/libhdt_la-ArraySequence.lo
+  CXX      src/sequence/libhdt_la-HuffmanSequence.lo
+  CXX      src/sequence/libhdt_la-IntSequence.lo
+  CXX      src/sequence/libhdt_la-LogSequence2.lo
+  CXX      src/sequence/libhdt_la-LogSequence.lo
+  CXX      src/sequence/libhdt_la-WaveletSequence.lo
+  CXX      src/sparql/libhdt_la-IndexJoinBinding.lo
+  CXX      src/sparql/libhdt_la-JoinAlgorithms.lo
+  CXX      src/sparql/libhdt_la-MergeJoinBinding.lo
+  CXX      src/sparql/libhdt_la-QueryProcessor.lo
+  CXX      src/sparql/libhdt_la-SortBinding.lo
+  CXX      src/sparql/libhdt_la-TriplePatternBinding.lo
+  CXX      src/triples/libhdt_la-BitmapTriples.lo
+  CXX      src/triples/libhdt_la-BitmapTriplesIterators.lo
+  CXX      src/triples/libhdt_la-PlainTriples.lo
+  CXX      src/triples/libhdt_la-predicateindex.lo
+  CXX      src/triples/libhdt_la-TripleIterators.lo
+  CXX      src/triples/libhdt_la-TripleListDisk.lo
+  CXX      src/triples/libhdt_la-TripleOrderConvert.lo
+  CXX      src/triples/libhdt_la-TriplesComparator.lo
+  CXX      src/triples/libhdt_la-TriplesKyoto.lo
+  CXX      src/triples/libhdt_la-TriplesList.lo
+  CXX      src/util/libhdt_la-bitutil.lo
+  CXX      src/util/libhdt_la-crc16.lo
+  CXX      src/util/libhdt_la-crc32.lo
+  CXX      src/util/libhdt_la-crc8.lo
+  CXX      src/util/libhdt_la-filemap.lo
+  CXX      src/util/libhdt_la-fileUtil.lo
+  CXX      src/util/libhdt_la-propertyutil.lo
+  CXX      src/util/libhdt_la-StopWatch.lo
+  CC       src/util/libhdt_la-getopt.lo
+  CXX      third/libhdt_la-gzstream.lo
+  CXXLD    libhdt.la
+[91mar: `u' modifier ignored since `D' is the default (see `U')
+[0mmake[2]: Leaving directory '/opt/hdt-cpp/libhdt'
+Making all in tools
+make[2]: Entering directory '/opt/hdt-cpp/libhdt/tools'
+  CXX      hdt2rdf.o
+  CXX      hdtInfo.o
+  CXX      hdtSearch.o
+  CXX      modifyHeader.o
+  CXX      rdf2hdt.o
+  CXX      replaceHeader.o
+  CXX      searchHeader.o
+  CXXLD    hdt2rdf
+  CXXLD    replaceHeader
+  CXXLD    searchHeader
+  CXXLD    hdtInfo
+  CXXLD    rdf2hdt
+  CXXLD    modifyHeader
+  CXXLD    hdtSearch
+make[2]: Leaving directory '/opt/hdt-cpp/libhdt/tools'
+Making all in tests
+make[2]: Entering directory '/opt/hdt-cpp/libhdt/tests'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/opt/hdt-cpp/libhdt/tests'
+make[1]: Leaving directory '/opt/hdt-cpp/libhdt'
+make[1]: Entering directory '/opt/hdt-cpp'
+make[1]: Nothing to be done for 'all-am'.
+make[1]: Leaving directory '/opt/hdt-cpp'
+Making install in libcds
+make[1]: Entering directory '/opt/hdt-cpp/libcds'
+Making install in .
+make[2]: Entering directory '/opt/hdt-cpp/libcds'
+make[3]: Entering directory '/opt/hdt-cpp/libcds'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /bin/bash ../libtool   --mode=install /usr/bin/install -c   libcds.la '/usr/local/lib'
+libtool: install: /usr/bin/install -c .libs/libcds.so.0.0.0 /usr/local/lib/libcds.so.0.0.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libcds.so.0.0.0 libcds.so.0 || { rm -f libcds.so.0 && ln -s libcds.so.0.0.0 libcds.so.0; }; })
+libtool: install: (cd /usr/local/lib && { ln -s -f libcds.so.0.0.0 libcds.so || { rm -f libcds.so && ln -s libcds.so.0.0.0 libcds.so; }; })
+libtool: install: /usr/bin/install -c .libs/libcds.lai /usr/local/lib/libcds.la
+libtool: install: /usr/bin/install -c .libs/libcds.a /usr/local/lib/libcds.a
+libtool: install: chmod 644 /usr/local/lib/libcds.a
+libtool: install: ranlib /usr/local/lib/libcds.a
+libtool: finish: PATH="/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin" ldconfig -n /usr/local/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/install -c -m 644 include/Array.h include/BitmapsSequence.h include/BitSequenceBuilderDArray.h include/BitSequenceBuilder.h include/BitSequenceBuilderRG.h include/BitSequenceBuilderRRR.h include/BitSequenceBuilderSDArray.h include/BitSequenceDArray.h include/BitSequence.h include/BitSequenceRG.h include/BitSequenceRRR.h include/BitSequenceSDArray.h include/BitString.h include/Coder.h include/comparray4.h include/cppUtils.h include/factorization.h include/factorization_var.h include/huff.h include/HuffmanCoder.h include/interface.h include/LCP_DAC.h include/LCP_DAC_VAR.h include/LCP_FMN.h include/LCP.h include/LCP_naive.h include/LCP_PhiSpare.h include/LCP_PT.h include/LCP_Sad.h include/libcdsBasics.h include/libcdsSDArray.h include/libcdsTrees.h include/MapperCont.h include/Mapper.h include/MapperNone.h include/MapperRev.h include/mmap.h include/NPR_CN.h include/NPR_FMN.h include/NPR.h '/usr/local/include'
+ /usr/bin/install -c -m 644 include/NSV.h include/perm.h include/PermutationBuilder.h include/PermutationBuilderMRRR.h include/PermutationBuilderWT.h include/Permutation.h include/PermutationMRRR.h include/PermutationWT.h include/PSV.h include/RMQ_succinct.h include/RMQ_succinct_lcp.h include/sdarraySadakane.h include/SequenceAlphPart.h include/SequenceBuilderAlphPart.h include/SequenceBuilderGMRChunk.h include/SequenceBuilderGMR.h include/SequenceBuilder.h include/SequenceBuilderStr.h include/SequenceBuilderWaveletMatrix.h include/SequenceBuilderWaveletTree.h include/SequenceBuilderWaveletTreeNoptrs.h include/SequenceBuilderWaveletTreeNoptrsS.h include/SequenceGMRChunk.h include/SequenceGMR.h include/Sequence.h include/SuffixTree.h include/SuffixTreeY.h include/TableOffsetRRR.h include/TextIndexCSA.h include/TextIndex.h include/timing.h include/WaveletMatrix.h include/WaveletTree.h include/WaveletTreeNoptrs.h include/WaveletTreeNoptrsS.h include/wt_coder_binary.h include/wt_coder.h include/wt_coder_huff.h include/wt_node.h include/wt_node_internal.h '/usr/local/include'
+ /usr/bin/install -c -m 644 include/wt_node_leaf.h '/usr/local/include'
+ /usr/bin/mkdir -p '/usr/local/lib/pkgconfig'
+ /usr/bin/install -c -m 644 cds.pc '/usr/local/lib/pkgconfig'
+make[3]: Leaving directory '/opt/hdt-cpp/libcds'
+make[2]: Leaving directory '/opt/hdt-cpp/libcds'
+Making install in tests
+make[2]: Entering directory '/opt/hdt-cpp/libcds/tests'
+make[3]: Entering directory '/opt/hdt-cpp/libcds/tests'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hdt-cpp/libcds/tests'
+make[2]: Leaving directory '/opt/hdt-cpp/libcds/tests'
+make[1]: Leaving directory '/opt/hdt-cpp/libcds'
+Making install in libhdt
+make[1]: Entering directory '/opt/hdt-cpp/libhdt'
+Making install in .
+make[2]: Entering directory '/opt/hdt-cpp/libhdt'
+make[3]: Entering directory '/opt/hdt-cpp/libhdt'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /bin/bash ../libtool   --mode=install /usr/bin/install -c   libhdt.la '/usr/local/lib'
+[91mlibtool: warning: relinking 'libhdt.la'
+[0mlibtool: install: (cd /opt/hdt-cpp/libhdt; /bin/bash "/opt/hdt-cpp/libtool"  --silent --tag CXX --mode=relink g++ -g -O2 -std=c++11 -lserd-0 -lz -o libhdt.la -rpath /usr/local/lib src/bitsequence/libhdt_la-BitSequence375.lo src/dictionary/libhdt_la-FourSectionDictionary.lo src/dictionary/libhdt_la-KyotoDictionary.lo src/dictionary/libhdt_la-LiteralDictionary.lo src/dictionary/libhdt_la-PlainDictionary.lo src/hdt/libhdt_la-BasicHDT.lo src/hdt/libhdt_la-BasicModifiableHDT.lo src/hdt/libhdt_la-ControlInformation.lo src/hdt/libhdt_la-HDTFactory.lo src/hdt/libhdt_la-HDTManager.lo src/hdt/libhdt_la-HDTSpecification.lo src/hdt/libhdt_la-TripleIDStringIterator.lo src/header/libhdt_la-PlainHeader.lo src/huffman/libhdt_la-huff.lo src/huffman/libhdt_la-Huffman.lo src/libdcs/libhdt_la-CSD_Cache2.lo src/libdcs/libhdt_la-CSD_Cache.lo src/libdcs/libhdt_la-CSD.lo src/libdcs/libhdt_la-CSD_FMIndex.lo src/libdcs/libhdt_la-CSD_HTFC.lo src/libdcs/libhdt_la-CSD_PFC.lo src/libdcs/libhdt_la-VByte.lo src/libdcs/fmindex/libhdt_la-SSA.lo src/libdcs/fmindex/libhdt_la-SuffixArray.lo src/rdf/libhdt_la-RDFParser.lo src/rdf/libhdt_la-RDFParserNtriples.lo src/rdf/libhdt_la-RDFParserSerd.lo src/rdf/libhdt_la-RDFSerializer.lo src/rdf/libhdt_la-RDFSerializerNTriples.lo src/rdf/libhdt_la-RDFSerializerSerd.lo src/sequence/libhdt_la-AdjacencyList.lo src/sequence/libhdt_la-ArraySequence.lo src/sequence/libhdt_la-HuffmanSequence.lo src/sequence/libhdt_la-IntSequence.lo src/sequence/libhdt_la-LogSequence2.lo src/sequence/libhdt_la-LogSequence.lo src/sequence/libhdt_la-WaveletSequence.lo src/sparql/libhdt_la-IndexJoinBinding.lo src/sparql/libhdt_la-JoinAlgorithms.lo src/sparql/libhdt_la-MergeJoinBinding.lo src/sparql/libhdt_la-QueryProcessor.lo src/sparql/libhdt_la-SortBinding.lo src/sparql/libhdt_la-TriplePatternBinding.lo src/triples/libhdt_la-BitmapTriples.lo src/triples/libhdt_la-BitmapTriplesIterators.lo src/triples/libhdt_la-PlainTriples.lo src/triples/libhdt_la-predicateindex.lo src/triples/libhdt_la-TripleIterators.lo src/triples/libhdt_la-TripleListDisk.lo src/triples/libhdt_la-TripleOrderConvert.lo src/triples/libhdt_la-TriplesComparator.lo src/triples/libhdt_la-TriplesKyoto.lo src/triples/libhdt_la-TriplesList.lo src/util/libhdt_la-bitutil.lo src/util/libhdt_la-crc16.lo src/util/libhdt_la-crc32.lo src/util/libhdt_la-crc8.lo src/util/libhdt_la-filemap.lo src/util/libhdt_la-fileUtil.lo src/util/libhdt_la-propertyutil.lo src/util/libhdt_la-StopWatch.lo src/util/libhdt_la-getopt.lo third/libhdt_la-gzstream.lo ../libcds/libcds.la )
+libtool: install: /usr/bin/install -c .libs/libhdt.so.0.0.0T /usr/local/lib/libhdt.so.0.0.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libhdt.so.0.0.0 libhdt.so.0 || { rm -f libhdt.so.0 && ln -s libhdt.so.0.0.0 libhdt.so.0; }; })
+libtool: install: (cd /usr/local/lib && { ln -s -f libhdt.so.0.0.0 libhdt.so || { rm -f libhdt.so && ln -s libhdt.so.0.0.0 libhdt.so; }; })
+libtool: install: /usr/bin/install -c .libs/libhdt.lai /usr/local/lib/libhdt.la
+libtool: install: /usr/bin/install -c .libs/libhdt.a /usr/local/lib/libhdt.a
+libtool: install: chmod 644 /usr/local/lib/libhdt.a
+libtool: install: ranlib /usr/local/lib/libhdt.a
+libtool: finish: PATH="/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin" ldconfig -n /usr/local/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/install -c -m 644 include/ControlInformation.hpp include/Dictionary.hpp include/HDTEnums.hpp include/HDT.hpp include/HDTListener.hpp include/HDTManager.hpp include/HDTSpecification.hpp include/HDTVersion.hpp include/HDTVocabulary.hpp include/Header.hpp include/Iterator.hpp include/RDF.hpp include/RDFParser.hpp include/RDFSerializer.hpp include/SingleTriple.hpp include/Triples.hpp '/usr/local/include'
+ /usr/bin/mkdir -p '/usr/local/lib/pkgconfig'
+ /usr/bin/install -c -m 644 hdt.pc '/usr/local/lib/pkgconfig'
+make[3]: Leaving directory '/opt/hdt-cpp/libhdt'
+make[2]: Leaving directory '/opt/hdt-cpp/libhdt'
+Making install in tools
+make[2]: Entering directory '/opt/hdt-cpp/libhdt/tools'
+make[3]: Entering directory '/opt/hdt-cpp/libhdt/tools'
+ /usr/bin/mkdir -p '/usr/local/bin'
+  /bin/bash ../../libtool   --mode=install /usr/bin/install -c hdt2rdf hdtInfo hdtSearch modifyHeader rdf2hdt replaceHeader searchHeader '/usr/local/bin'
+libtool: install: /usr/bin/install -c .libs/hdt2rdf /usr/local/bin/hdt2rdf
+libtool: install: /usr/bin/install -c .libs/hdtInfo /usr/local/bin/hdtInfo
+libtool: install: /usr/bin/install -c .libs/hdtSearch /usr/local/bin/hdtSearch
+libtool: install: /usr/bin/install -c .libs/modifyHeader /usr/local/bin/modifyHeader
+libtool: install: /usr/bin/install -c .libs/rdf2hdt /usr/local/bin/rdf2hdt
+libtool: install: /usr/bin/install -c .libs/replaceHeader /usr/local/bin/replaceHeader
+libtool: install: /usr/bin/install -c .libs/searchHeader /usr/local/bin/searchHeader
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hdt-cpp/libhdt/tools'
+make[2]: Leaving directory '/opt/hdt-cpp/libhdt/tools'
+Making install in tests
+make[2]: Entering directory '/opt/hdt-cpp/libhdt/tests'
+make[3]: Entering directory '/opt/hdt-cpp/libhdt/tests'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hdt-cpp/libhdt/tests'
+make[2]: Leaving directory '/opt/hdt-cpp/libhdt/tests'
+make[1]: Leaving directory '/opt/hdt-cpp/libhdt'
+make[1]: Entering directory '/opt/hdt-cpp'
+make[2]: Entering directory '/opt/hdt-cpp'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/opt/hdt-cpp'
+make[1]: Leaving directory '/opt/hdt-cpp'
+ ---> Removed intermediate container 044500e280a3
+ ---> a9448d8e2170
+Step 7/22 : FROM eclipse-temurin:11-jre
+ ---> 0618dcdd2c04
+Step 8/22 : ARG RMLSTREAMER_VERSION=2.5.0
+ ---> Running in 2f0f0c337594
+ ---> Removed intermediate container 2f0f0c337594
+ ---> 523ea29ee164
+Step 9/22 : RUN apt-get update   && apt-get install -y --no-install-recommends     bash     brotli     ca-certificates     coreutils     curl     findutils     gawk     gzip     libserd-0-0     nodejs   && rm -rf /var/lib/apt/lists/*
+ ---> Running in a80d225f70da
+Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:3 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [34.8 kB]
+Get:4 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1,879 kB]
+Get:5 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1,208 kB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3,246 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1,808 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [38.1 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3,471 kB]
+Get:15 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2,276 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2,017 kB]
+Get:17 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [34.6 kB]
+Get:18 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.5 kB]
+Fetched 36.5 MB in 1s (25.7 MB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+bash is already the newest version (5.2.21-2ubuntu4).
+ca-certificates is already the newest version (20240203).
+coreutils is already the newest version (9.4-3ubuntu6.1).
+findutils is already the newest version (4.9.0-5build1).
+gzip is already the newest version (1.12-1ubuntu3.1).
+The following additional packages will be installed:
+  libcares2 libcurl4t64 libicu74 libmpfr6 libnode109 libsigsegv2 libuv1t64
+  node-acorn node-busboy node-cjs-module-lexer node-undici node-xtend
+Suggested packages:
+  gawk-doc serdi npm
+Recommended packages:
+  nodejs-doc
+The following NEW packages will be installed:
+  brotli gawk libcares2 libicu74 libmpfr6 libnode109 libserd-0-0 libsigsegv2
+  libuv1t64 node-acorn node-busboy node-cjs-module-lexer node-undici
+  node-xtend nodejs
+The following packages will be upgraded:
+  curl libcurl4t64
+2 upgraded, 15 newly installed, 0 to remove and 5 not upgraded.
+Need to get 25.0 MB of archives.
+After this operation, 95.3 MB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libmpfr6 amd64 4.2.1-1build1.1 [353 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble/main amd64 libsigsegv2 amd64 2.14-1ubuntu2 [15.0 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble/main amd64 gawk amd64 1:5.2.1-2build3 [463 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libicu74 amd64 74.2-1ubuntu3.1 [10.9 MB]
+Get:5 http://archive.ubuntu.com/ubuntu noble/main amd64 libuv1t64 amd64 1.48.0-1.1build1 [97.3 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble/universe amd64 brotli amd64 1.1.0-2build2 [70.8 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 curl amd64 8.5.0-2ubuntu10.7 [227 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcurl4t64 amd64 8.5.0-2ubuntu10.7 [342 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble/main amd64 libcares2 amd64 1.27.0-1.0ubuntu1 [73.7 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble/universe amd64 node-xtend all 4.0.2-3 [3,902 B]
+Get:11 http://archive.ubuntu.com/ubuntu noble/universe amd64 nodejs amd64 18.19.1+dfsg-6ubuntu5 [306 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/universe amd64 node-acorn all 8.8.1+ds+~cs25.17.7-2 [115 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble/universe amd64 node-cjs-module-lexer all 1.2.3+dfsg-1 [32.1 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble/universe amd64 node-busboy all 1.6.0+~cs2.6.0-2 [17.3 kB]
+Get:15 http://archive.ubuntu.com/ubuntu noble/universe amd64 node-undici all 5.26.3+dfsg1+~cs23.10.12-2 [325 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble/universe amd64 libnode109 amd64 18.19.1+dfsg-6ubuntu5 [11.6 MB]
+Get:17 http://archive.ubuntu.com/ubuntu noble/universe amd64 libserd-0-0 amd64 0.32.2-1 [43.6 kB]
+[91mdebconf: delaying package configuration, since apt-utils is not installed
+[0mFetched 25.0 MB in 1s (41.7 MB/s)
+Selecting previously unselected package libmpfr6:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6592 files and directories currently installed.)
+Preparing to unpack .../libmpfr6_4.2.1-1build1.1_amd64.deb ...
+Unpacking libmpfr6:amd64 (4.2.1-1build1.1) ...
+Selecting previously unselected package libsigsegv2:amd64.
+Preparing to unpack .../libsigsegv2_2.14-1ubuntu2_amd64.deb ...
+Unpacking libsigsegv2:amd64 (2.14-1ubuntu2) ...
+Setting up libmpfr6:amd64 (4.2.1-1build1.1) ...
+Setting up libsigsegv2:amd64 (2.14-1ubuntu2) ...
+Selecting previously unselected package gawk.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6609 files and directories currently installed.)
+Preparing to unpack .../00-gawk_1%3a5.2.1-2build3_amd64.deb ...
+Unpacking gawk (1:5.2.1-2build3) ...
+Selecting previously unselected package libicu74:amd64.
+Preparing to unpack .../01-libicu74_74.2-1ubuntu3.1_amd64.deb ...
+Unpacking libicu74:amd64 (74.2-1ubuntu3.1) ...
+Selecting previously unselected package libuv1t64:amd64.
+Preparing to unpack .../02-libuv1t64_1.48.0-1.1build1_amd64.deb ...
+Unpacking libuv1t64:amd64 (1.48.0-1.1build1) ...
+Selecting previously unselected package brotli.
+Preparing to unpack .../03-brotli_1.1.0-2build2_amd64.deb ...
+Unpacking brotli (1.1.0-2build2) ...
+Preparing to unpack .../04-curl_8.5.0-2ubuntu10.7_amd64.deb ...
+Unpacking curl (8.5.0-2ubuntu10.7) over (8.5.0-2ubuntu10.6) ...
+Preparing to unpack .../05-libcurl4t64_8.5.0-2ubuntu10.7_amd64.deb ...
+Unpacking libcurl4t64:amd64 (8.5.0-2ubuntu10.7) over (8.5.0-2ubuntu10.6) ...
+Selecting previously unselected package libcares2:amd64.
+Preparing to unpack .../06-libcares2_1.27.0-1.0ubuntu1_amd64.deb ...
+Unpacking libcares2:amd64 (1.27.0-1.0ubuntu1) ...
+Selecting previously unselected package node-xtend.
+Preparing to unpack .../07-node-xtend_4.0.2-3_all.deb ...
+Unpacking node-xtend (4.0.2-3) ...
+Selecting previously unselected package nodejs.
+Preparing to unpack .../08-nodejs_18.19.1+dfsg-6ubuntu5_amd64.deb ...
+Unpacking nodejs (18.19.1+dfsg-6ubuntu5) ...
+Selecting previously unselected package node-acorn.
+Preparing to unpack .../09-node-acorn_8.8.1+ds+~cs25.17.7-2_all.deb ...
+Unpacking node-acorn (8.8.1+ds+~cs25.17.7-2) ...
+Selecting previously unselected package node-cjs-module-lexer.
+Preparing to unpack .../10-node-cjs-module-lexer_1.2.3+dfsg-1_all.deb ...
+Unpacking node-cjs-module-lexer (1.2.3+dfsg-1) ...
+Selecting previously unselected package node-busboy.
+Preparing to unpack .../11-node-busboy_1.6.0+~cs2.6.0-2_all.deb ...
+Unpacking node-busboy (1.6.0+~cs2.6.0-2) ...
+Selecting previously unselected package node-undici.
+Preparing to unpack .../12-node-undici_5.26.3+dfsg1+~cs23.10.12-2_all.deb ...
+Unpacking node-undici (5.26.3+dfsg1+~cs23.10.12-2) ...
+Selecting previously unselected package libnode109:amd64.
+Preparing to unpack .../13-libnode109_18.19.1+dfsg-6ubuntu5_amd64.deb ...
+Unpacking libnode109:amd64 (18.19.1+dfsg-6ubuntu5) ...
+Selecting previously unselected package libserd-0-0:amd64.
+Preparing to unpack .../14-libserd-0-0_0.32.2-1_amd64.deb ...
+Unpacking libserd-0-0:amd64 (0.32.2-1) ...
+Setting up libcurl4t64:amd64 (8.5.0-2ubuntu10.7) ...
+Setting up gawk (1:5.2.1-2build3) ...
+Setting up libuv1t64:amd64 (1.48.0-1.1build1) ...
+Setting up node-cjs-module-lexer (1.2.3+dfsg-1) ...
+Setting up libcares2:amd64 (1.27.0-1.0ubuntu1) ...
+Setting up libicu74:amd64 (74.2-1ubuntu3.1) ...
+Setting up curl (8.5.0-2ubuntu10.7) ...
+Setting up node-xtend (4.0.2-3) ...
+Setting up libserd-0-0:amd64 (0.32.2-1) ...
+Setting up brotli (1.1.0-2build2) ...
+Setting up node-busboy (1.6.0+~cs2.6.0-2) ...
+Setting up node-undici (5.26.3+dfsg1+~cs23.10.12-2) ...
+Setting up node-acorn (8.8.1+ds+~cs25.17.7-2) ...
+Setting up libnode109:amd64 (18.19.1+dfsg-6ubuntu5) ...
+Setting up nodejs (18.19.1+dfsg-6ubuntu5) ...
+update-alternatives: using /usr/bin/nodejs to provide /usr/bin/js (js) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/js.1.gz because associated file /usr/share/man/man1/nodejs.1.gz (of link group js) doesn't exist
+Processing triggers for libc-bin (2.39-0ubuntu8.7) ...
+ ---> Removed intermediate container a80d225f70da
+ ---> 04b5477df45f
+Step 10/22 : RUN mkdir -p /opt/rmlstreamer   && curl -fsSL     -o /opt/rmlstreamer/RMLStreamer-v${RMLSTREAMER_VERSION}-standalone.jar     https://github.com/RMLio/RMLStreamer/releases/download/v${RMLSTREAMER_VERSION}/RMLStreamer-v${RMLSTREAMER_VERSION}-standalone.jar
+ ---> Running in c4ca72dadcbe
+ ---> Removed intermediate container c4ca72dadcbe
+ ---> 1ea27afd3629
+Step 11/22 : COPY --from=build-hdt-cpp /usr/local/bin/rdf2hdt /usr/local/bin/rdf2hdt
+ ---> 5324c3c1ada4
+Step 12/22 : COPY --from=build-hdt-cpp /usr/local/bin/hdt2rdf /usr/local/bin/hdt2rdf
+ ---> 6a44907935ba
+Step 13/22 : COPY --from=build-hdt-cpp /usr/local/lib/libcds* /usr/local/lib/
+ ---> 88f6f57e463d
+Step 14/22 : COPY --from=build-hdt-cpp /usr/local/lib/libhdt* /usr/local/lib/
+ ---> b80f19747a36
+Step 15/22 : COPY src/*.sh /opt/vcf-rdfizer/
+ ---> 9e8876ca494f
+Step 16/22 : RUN chmod +x /opt/vcf-rdfizer/*.sh   && chmod +x /usr/local/bin/rdf2hdt   && chmod +x /usr/local/bin/hdt2rdf
+ ---> Running in 091b763e0a6c
+ ---> Removed intermediate container 091b763e0a6c
+ ---> d4c2f061dfeb
+Step 17/22 : ENV RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v${RMLSTREAMER_VERSION}-standalone.jar
+ ---> Running in 0fbe93e9faa3
+ ---> Removed intermediate container 0fbe93e9faa3
+ ---> ea2148cc1717
+Step 18/22 : ENV JAR=/opt/rmlstreamer/RMLStreamer-v${RMLSTREAMER_VERSION}-standalone.jar
+ ---> Running in 3c6ee3725623
+ ---> Removed intermediate container 3c6ee3725623
+ ---> 0b61250c48f9
+Step 19/22 : ENV RDF2HDT_BIN=/usr/local/bin/rdf2hdt
+ ---> Running in 5a70f6cf6fe7
+ ---> Removed intermediate container 5a70f6cf6fe7
+ ---> 32257adae52d
+Step 20/22 : ENV HDT2RDF_BIN=/usr/local/bin/hdt2rdf
+ ---> Running in 1e74ad201508
+ ---> Removed intermediate container 1e74ad201508
+ ---> 857ab0ae7f93
+Step 21/22 : ENV LD_LIBRARY_PATH=/usr/local/lib
+ ---> Running in b44ea7e80717
+ ---> Removed intermediate container b44ea7e80717
+ ---> 91a4129a0cf1
+Step 22/22 : WORKDIR /work
+ ---> Running in 5f6e099469a3
+ ---> Removed intermediate container 5f6e099469a3
+ ---> 99a2c1aac568
+Successfully built 99a2c1aac568
+Successfully tagged ecrum19/vcf-rdfizer:latest
+[exit 0]
+
+[2026-02-25T12:05:41] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/test_vcf_files:/data/in:ro -v /home/ubuntu/VCF-RDFizer/tsv:/data/tsv ecrum19/vcf-rdfizer:latest bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/test-10k.vcf /data/tsv
+✅ Wrote: /data/tsv/test-10k.records.tsv
+✅ Wrote: /data/tsv/test-10k.header_lines.tsv
+✅ Wrote: /data/tsv/test-10k.file_metadata.tsv
+[exit 0]
+
+[2026-02-25T12:05:41] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/run_metrics/_generated_rules:/data/rules:ro -v /home/ubuntu/VCF-RDFizer/tsv:/data/tsv:ro -v /home/ubuntu/VCF-RDFizer/out:/data/out -v /home/ubuntu/VCF-RDFizer/run_metrics:/data/metrics -w /data/rules -e JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar -e IN=/data/rules/test-10k.rules.ttl -e OUT_DIR=/data/out -e OUT_NAME=test-10k -e AGGREGATE_RDF=1 -e RUN_ID=20260225T120434 -e TIMESTAMP=2026-02-25T12:04:34 -e IN_VCF=/data/in/test-10k.vcf -e LOGDIR=/data/metrics ecrum19/vcf-rdfizer:latest bash /opt/vcf-rdfizer/run_conversion.sh
+WARNING: metrics header mismatch; backed up to /data/metrics/metrics.csv.bak-20260225T120434 and creating new metrics file.
+Done.
+JSON: /data/metrics/conversion-metrics-test-10k-20260225T120434.json
+CSV:  /data/metrics/metrics.csv
+[exit 0]
+
+[2026-02-25T12:05:56] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/out/test-10k:/data/in:ro -v /home/ubuntu/VCF-RDFizer/out/test-10k:/data/out ecrum19/vcf-rdfizer:latest bash -lc 'set -euo pipefail; rm -f /data/out/test-10k.hdt; HDT_BIN="${RDF2HDT_BIN:-$(command -v rdf2hdt || true)}"; if [[ -z "$HDT_BIN" ]]; then for candidate in /usr/local/bin/rdf2hdt /opt/hdt-cpp/bin/rdf2hdt; do [[ -x "$candidate" ]] && HDT_BIN="$candidate" && break; done; fi; if [[ -z "$HDT_BIN" || ! -x "$HDT_BIN" ]]; then echo "Missing rdf2hdt binary in container" >&2; exit 127; fi; "$HDT_BIN" /data/in/test-10k.nt /data/out/test-10k.hdt'
+[exit 0]
+
+[2026-02-25T12:05:57] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/out/test-10k:/data/in:ro -v /home/ubuntu/VCF-RDFizer/out/test-10k:/data/out ecrum19/vcf-rdfizer:latest bash -lc 'set -euo pipefail; rm -f /data/out/test-10k.nt.br; brotli -q 7 -c /data/in/test-10k.nt > /data/out/test-10k.nt.br'
+[exit 0]
+
+[2026-02-25T12:05:58] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/out/test-10k:/data/in:ro -v /home/ubuntu/VCF-RDFizer/out/test-10k:/data/out ecrum19/vcf-rdfizer:latest bash -lc 'set -euo pipefail; rm -f /data/out/test-10k.nt.gz; gzip -c /data/in/test-10k.nt > /data/out/test-10k.nt.gz'
+[exit 0]

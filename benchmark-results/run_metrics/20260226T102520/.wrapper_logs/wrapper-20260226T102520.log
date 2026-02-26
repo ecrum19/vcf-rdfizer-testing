@@ -1,0 +1,124 @@
+
+[2026-02-26T10:25:20] $ docker version
+Client:
+ Version:           28.2.2
+ API version:       1.50
+ Go version:        go1.23.1
+ Git commit:        28.2.2-0ubuntu1~24.04.1
+ Built:             Wed Sep 10 14:16:39 2025
+ OS/Arch:           linux/amd64
+ Context:           default
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.50/version": dial unix /var/run/docker.sock: connect: permission denied
+[exit 1]
+
+[2026-02-26T10:25:20] $ sudo docker version
+Client:
+ Version:           28.2.2
+ API version:       1.50
+ Go version:        go1.23.1
+ Git commit:        28.2.2-0ubuntu1~24.04.1
+ Built:             Wed Sep 10 14:16:39 2025
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server:
+ Engine:
+  Version:          28.2.2
+  API version:      1.50 (minimum version 1.24)
+  Go version:       go1.23.1
+  Git commit:       28.2.2-0ubuntu1~24.04.1
+  Built:            Wed Sep 10 14:16:39 2025
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.7.28
+  GitCommit:        
+ runc:
+  Version:          1.3.3-0ubuntu1~24.04.3
+  GitCommit:        
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        
+[exit 0]
+
+[2026-02-26T10:25:20] $ sudo docker image inspect ecrum19/vcf-rdfizer:latest
+[
+    {
+        "Id": "sha256:99a2c1aac568bfe3021eb91604d6a385a43754e0fe6ac87aa8d8e648982adfe8",
+        "RepoTags": [
+            "ecrum19/vcf-rdfizer:latest"
+        ],
+        "RepoDigests": [],
+        "Parent": "sha256:91a4129a0cf1fc40e4152d0595aef8160a0ce1e15114d36b9ed0a023e5f761e9",
+        "Comment": "",
+        "Created": "2026-02-25T11:05:41.104669805Z",
+        "DockerVersion": "28.2.2",
+        "Author": "",
+        "Config": {
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-11.0.30+7",
+                "RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "RDF2HDT_BIN=/usr/local/bin/rdf2hdt",
+                "HDT2RDF_BIN=/usr/local/bin/hdt2rdf",
+                "LD_LIBRARY_PATH=/usr/local/lib"
+            ],
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.version": "24.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 708539435,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/db188c70b0a442ad2e29d019a7d6c34b7fac29681791a6ad4253ad9603fcab39/diff:/var/lib/docker/overlay2/59a5b41eb036142fadbf53ecd05d7ef9de76786e81f3c684213608a309ec611c/diff:/var/lib/docker/overlay2/d5768dedcabd366dcf5f256cb454f0721ce0e451e2941f9c2404a251c1fdd23b/diff:/var/lib/docker/overlay2/c2d9e69fbea4cc4778d51b467630e6bf4460a548a64d8936c6cb409d5b4075a8/diff:/var/lib/docker/overlay2/f3ca09479d9626bd53062d60b21b5227f697ea7fdf78c5dfabbf0432a58abdde/diff:/var/lib/docker/overlay2/a62a57ccb3b05f6ebbb7d63ab37761b2ab81c0c7a17a280f88c29929cf29b1d2/diff:/var/lib/docker/overlay2/236d0b498f98fb497dd0ddf54d7cf40610ff5e217385b1e65ab8c211c413eb7d/diff:/var/lib/docker/overlay2/499b0a1e2d2927e1cc74dafa5f5920742c61f17b6e9c6822817bd48d17f3f694/diff:/var/lib/docker/overlay2/6f7e7ec03354291d6dd157b5e39e3a54ea5731b05acb8e032b51e460d7f015fb/diff:/var/lib/docker/overlay2/e1e66fd3f7d47a820d182aa946eb4fe37c974972bb4fa0528ce1c2da9235a02c/diff:/var/lib/docker/overlay2/515c083ab47146c439e9b97be7973e5706f2a4d08d2e5e770acb50605c36c2f2/diff:/var/lib/docker/overlay2/09422afb1deccac0f8288df742f873a0ee26e0502342eba91a74f9ef22f99490/diff:/var/lib/docker/overlay2/e4147f699ab714f3550e91e02a2a8b65c79583918af2a11104c789c4a8a7cc93/diff",
+                "MergedDir": "/var/lib/docker/overlay2/ca78099198d652e4a55cd1c719c5a4bb671601e033a53fc1ad7224b583be3381/merged",
+                "UpperDir": "/var/lib/docker/overlay2/ca78099198d652e4a55cd1c719c5a4bb671601e033a53fc1ad7224b583be3381/diff",
+                "WorkDir": "/var/lib/docker/overlay2/ca78099198d652e4a55cd1c719c5a4bb671601e033a53fc1ad7224b583be3381/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:efafae78d70c98626c521c246827389128e7d7ea442db31bc433934647f0c791",
+                "sha256:bcdf5e21eead9d204e4862720d958e286d7a1be054d74ea48bddf1023ea04254",
+                "sha256:d537356b339a21a857f96efcc06e4cf810a3157bad1adadef0feab9e00c55945",
+                "sha256:dcb875afd77da69dbf7bcda30a0c418da77c9688f547f7e90703886e653a3e41",
+                "sha256:b89dbd946d82942e8a8e57f310efe655bee29be45c7814c5661a092e12fa1f88",
+                "sha256:b18a11ebd2e2f290bacbad804edb82800197dd3bca3dd7cf18349358ffafef06",
+                "sha256:ee1a5c43de3fa02d7743e9d2b1747711eead4c65b2c77bbc800594077d04b8b6",
+                "sha256:e8825cffd44122b89980d20c3a6ba7ea14c1b8d67a5697c4b53af3a34e2f8040",
+                "sha256:a1f3b044c379b765b8889f352650f9170fa133329202f31f5cb7dcad707f9299",
+                "sha256:d52b1bd24483b7e3c699a5a8e636cbec22e12f293e8a4b64fd9e107198e9998b",
+                "sha256:8fd954eebaf1166e9ce8b09c319db645f616e9e445adaba25fc790ade2c0f0ba",
+                "sha256:95580b515b375b6ee740555d8036a246dd5714c21464c253d1835d4cce2b9249",
+                "sha256:89df54f0705e4f121fa41f8cd97566a713fc60520dbca6f3e38dc3d6de17e3bf",
+                "sha256:ad74e2f72b7390ab3cc9e7f110248cdb6e425c4874b339ef1367d1adf07dd775"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-02-25T12:05:41.113482187+01:00"
+        }
+    }
+]
+[exit 0]
+
+[2026-02-26T10:25:20] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/vcf_data:/data/in:ro -v /home/ubuntu/VCF-RDFizer/tsv:/data/tsv ecrum19/vcf-rdfizer:latest bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/NG131FQA1I.vcf.gz /data/tsv
+✅ Wrote: /data/tsv/NG131FQA1I.records.tsv
+✅ Wrote: /data/tsv/NG131FQA1I.header_lines.tsv
+✅ Wrote: /data/tsv/NG131FQA1I.file_metadata.tsv
+[exit 0]
+
+[2026-02-26T10:26:03] $ sudo docker run --rm --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/run_metrics/20260226T102520/_generated_rules:/data/rules:ro -v /home/ubuntu/VCF-RDFizer/tsv:/data/tsv:ro -v /home/ubuntu/VCF-RDFizer/out:/data/out -v /home/ubuntu/VCF-RDFizer/run_metrics/20260226T102520:/data/metrics -w /data/rules -e JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar -e IN=/data/rules/NG131FQA1I.rules.ttl -e OUT_DIR=/data/out -e OUT_NAME=NG131FQA1I -e AGGREGATE_RDF=0 -e RUN_ID=20260226T102520 -e TIMESTAMP=2026-02-26T10:25:20 -e IN_VCF=/data/in/NG131FQA1I.vcf.gz -e LOGDIR=/data/metrics ecrum19/vcf-rdfizer:latest bash /opt/vcf-rdfizer/run_conversion.sh
