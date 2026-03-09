@@ -1,0 +1,34 @@
+{
+  "run_id": "20260305T102641",
+  "timestamp": "2026-03-05T10:26:41",
+  "command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/60820188475559.rules.ttl -o /data/out/60820188475559 ",
+  "exit_code": 0,
+  "timing": {
+    "wall_seconds": 872.160,
+    "user_seconds": 6543.68,
+    "sys_seconds": 195.08,
+    "max_rss_kb": 1583460
+  },
+  "artifacts": {
+    "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+    "input_path": "/data/rules/60820188475559.rules.ttl",
+    "input_size_bytes": 8791,
+    "input_vcf_size_bytes": 1233024002,
+    "output_path": "/data/out/60820188475559",
+    "output_size_bytes": 37955578350,
+    "output_triples": {
+  "/data/out/60820188475559/1.nt": 24663240,
+  "/data/out/60820188475559/2.nt": 24667899,
+  "/data/out/60820188475559/3.nt": 24979244,
+  "/data/out/60820188475559/4.nt": 24677786,
+  "/data/out/60820188475559/5.nt": 24744885,
+  "/data/out/60820188475559/6.nt": 24702776,
+  "/data/out/60820188475559/7.nt": 24887814,
+  "/data/out/60820188475559/8.nt": 24715695,
+  "TOTAL": 198039339
+}
+  },
+  "java": {
+    "version_header": "openjdk version \"11.0.30\" 2026-01-20"
+  }
+}

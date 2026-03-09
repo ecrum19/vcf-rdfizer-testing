@@ -1,0 +1,33 @@
+% Requires: \usepackage{booktabs}, \usepackage{tabularx}, \usepackage{siunitx}, \usepackage{array}
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X
+S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]
+S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]@{}}
+\toprule
+\textbf{Input file} &
+\multicolumn{5}{c}{\textbf{Time (s)}} &
+\multicolumn{5}{c}{\textbf{Size (MB)}} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+&
+\textbf{HDT} &
+\textbf{Gzip} &
+\textbf{Brotli} &
+\textbf{HDT+Gz} &
+\textbf{HDT+Br} &
+\textbf{HDT} &
+\textbf{Gzip} &
+\textbf{Brotli} &
+\textbf{HDT+Gz} &
+\textbf{HDT+Br} \\
+\midrule
+\texttt{0GOOR\_HG002} & 227.0 & 187.1 & 274.6 & 24.5 & 60.1 & 2102.6 & 883.2 & 480.9 & 215.8 & 182.0 \\
+\texttt{60820188474283} & 212.0 & 231.6 & 347.9 & 36.9 & 91.8 & 1887.4 & 1189.2 & 731.4 & 357.6 & 291.6 \\
+\texttt{60820188475559} & 205.0 & 245.9 & 362.7 & 38.0 & 92.6 & 2020.6 & 1271.7 & 775.8 & 371.0 & 318.9 \\
+\bottomrule
+\end{tabularx}
+\caption{Compression statistics per input file. Times are wall-clock seconds; sizes are decimal MB.}
+\label{tab:compression-sizes}
+\end{table*}

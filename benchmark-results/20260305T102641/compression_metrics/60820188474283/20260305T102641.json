@@ -1,0 +1,65 @@
+{
+  "run_id": "20260305T102641",
+  "timestamp": "2026-03-05T10:26:41",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmark-results/v1.1",
+  "output_name": "60820188474283",
+  "compression_methods": "gzip,brotli,hdt,hdt_gzip,hdt_brotli",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmark-results/v1.1/60820188474283",
+  "combined_rdf_size_bytes": 35408066803,
+  "hdt_source": "generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 1189191191,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 231.63,
+      "user_seconds": 219.38,
+      "sys_seconds": 10.99,
+      "max_rss_kb": 4096
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 731433433,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 347.89,
+      "user_seconds": 341.14000000000004,
+      "sys_seconds": 6.4,
+      "max_rss_kb": 51116
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "",
+    "output_hdt_size_bytes": 1887377476,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 212.0,
+      "user_seconds": 64673.020000000004,
+      "sys_seconds": 39.37,
+      "max_rss_kb": 2883320
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 357561291,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 36.86,
+      "user_seconds": 36.32,
+      "sys_seconds": 0.47,
+      "max_rss_kb": 4096
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 291629662,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 91.75,
+      "user_seconds": 88.81,
+      "sys_seconds": 2.89,
+      "max_rss_kb": 101708
+    }
+  }
+}
