@@ -228,19 +228,6 @@ def _docker_version() -> Optional[str]:
 def _python_version() -> str:
     return platform.python_version()
 
-
-def _java_version() -> Optional[str]:
-    if not shutil.which("java"):
-        return None
-    code, out, err = _run(["java", "-version"])
-    text = out or err
-    if code != 0 or not text:
-        return None
-    first_line = text.splitlines()[0].strip()
-    match = re.search(r'version\s+"([^"]+)"', first_line)
-    return match.group(1) if match else first_line
-
-
 def _collect_environment() -> Dict[str, Any]:
     os_name = _parse_os_release() or platform.platform()
     kernel = platform.release()
@@ -264,7 +251,6 @@ def _collect_environment() -> Dict[str, Any]:
         "software": {
             "docker": _docker_version(),
             "python": _python_version(),
-            "java": _java_version(),
         },
     }
 
@@ -309,14 +295,12 @@ def _sentence(env: Dict[str, Any]) -> str:
 
     docker = env["software"].get("docker") or "unknown"
     python = env["software"].get("python") or "unknown"
-    java = env["software"].get("java") or "unknown"
-
     article = _article_for(cpu_model)
     return (
         f"All experiments were conducted on a workstation running {env['os_name']} with "
         f"{article} {cpu_text}, {ram_text} and a {storage_text}, "
         f"Kernel version {env['kernel_version']}. "
-        f"Software versions: Docker {docker}, Python {python}, Java {java}."
+        f"Software versions: Docker {docker}, Python {python}."
     )
 
 

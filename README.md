@@ -101,7 +101,7 @@ python3 scripts/export_latex_tables.py \
   --output-dir benchmark-results/latex
 ```
 
-### 4) Report System/Test Conditions for Paper Methods
+### 4) Report System/Test Conditions
 
 Script: `scripts/report_system_conditions.py`
 
