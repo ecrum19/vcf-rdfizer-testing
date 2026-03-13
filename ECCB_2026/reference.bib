@@ -1,18 +1,13 @@
 ## Introduction
-@article{mcleod_cancer_2013,
-	title = {Cancer Pharmacogenomics: Early Promise, But Concerted Effort Needed},
-	volume = {339},
-	issn = {0036-8075, 1095-9203},
-	doi = {10.1126/science.1234139},
-	shorttitle = {Cancer Pharmacogenomics},
-	pages = {1563--1566},
-	number = {6127},
-	journaltitle = {Science},
-	shortjournal = {Science},
-	author = {{McLeod}, H. L.},
-	date = {2013-03-29},
-    year = {2013},
-    month = mar
+@article{pharmcat,
+author = {Li, Binglan and Sangkuhl, Katrin and Keat, Karl and Whaley, Ryan M. and Woon, Mark and Verma, Shefali and Dudek, Scott and Tuteja, Sony and Verma, Anurag and Whirl-Carrillo, Michelle and Ritchie, Marylyn D. and Klein, Teri E.},
+title = {How to Run the Pharmacogenomics Clinical Annotation Tool (PharmCAT)},
+journal = {Clinical Pharmacology \& Therapeutics},
+volume = {113},
+number = {5},
+pages = {1036-1047},
+doi = {https://doi.org/10.1002/cpt.2790},
+year = {2023}
 }
 @article{souche_recommendations_2022,
 	title = {Recommendations for whole genome sequencing in diagnostics for rare diseases},
@@ -21,11 +16,11 @@
 	doi = {10.1038/s41431-022-01113-x},
 	pages = {1017--1021},
 	number = {9},
-	journaltitle = {European Journal of Human Genetics},
+	journal = {European Journal of Human Genetics},
 	shortjournal = {Eur J Hum Genet},
 	author = {Souche, Erika and Beltran, Sergi and Brosens, Erwin and Belmont, John W. and Fossum, Magdalena and Riess, Olaf and Gilissen, Christian and Ardeshirdavani, Amin and Houge, Gunnar and Van Gijn, Marielle and Clayton-Smith, Jill and Synofzik, Matthis and De Leeuw, Nicole and Deans, Zandra C. and Dincer, Yasemin and Eck, Sebastian H. and Van Der Crabben, Saskia and Balasubramanian, Meena and Graessner, Holm and Sturm, Marc and Firth, Helen and Ferlini, Alessandra and Nabbout, Rima and De Baere, Elfride and Liehr, Thomas and Macek, Milan and Matthijs, Gert and Scheffer, Hans and Bauer, Peter and Yntema, Helger G. and Weiss, Marjan M.},
 	month = sep,
-    year = {2022}
+  year = {2022}
 }
 @misc{odrl_2018,
 	title = {{ODRL} {Information} {Model} 2.2},
@@ -35,6 +30,33 @@
 	author = {Iannella, Renato and Villata, Serena},
 	month = feb,
 	year = {2018},
+}
+@misc{W3CLinkedDataWiki,
+  author       = {{World Wide Web Consortium (W3C)}},
+  title        = {LinkedData},
+  year         = {n.d.},
+  url = https://www.w3.org/wiki/LinkedData,
+	urldate = {2026-03-04},
+}
+@article{BCFtools,
+  author  = {Danecek, Petr and Bonfield, James K and Liddle, Jennifer and Marshall, John and Ohan, Valeriu and Pollard, Martin O and Whitwham, Andrew and Keane, Thomas and McCarthy, Shane A and Davies, Robert M and Li, Heng},
+  title   = {Twelve years of SAMtools and BCFtools},
+  journal = {GigaScience},
+  volume  = {10},
+  number  = {2},
+  pages   = {giab008},
+  year    = {2021},
+  doi     = {10.1093/gigascience/giab008}
+}
+@article{HTSlib,
+  author  = {Bonfield, James K and Marshall, John and Danecek, Petr and Li, Heng and Ohan, Valeriu and Whitwham, Andrew and Keane, Thomas and Davies, Robert M},
+  title   = {HTSlib: C library for reading/writing high-throughput sequencing data},
+  journal = {GigaScience},
+  volume  = {10},
+  number  = {2},
+  pages   = {giab007},
+  year    = {2021},
+  doi     = {10.1093/gigascience/giab007}
 }
 @misc{rdf,
 	title = {RDF 1.1: Concepts and Abstract Syntax},
@@ -71,12 +93,12 @@
 	month = sep,
 	year = {2012},
 }
-@misc{nquads_2014,
-	title = {{RDF} 1.1 {N}-{Quads}},
-	url = {https://www.w3.org/TR/n-quads/},
+@misc{ntriples_2014,
+	title = {{RDF} 1.1 {N}-{Triples}},
+	url = {https://www.w3.org/TR/n-triples/},
 	urldate = {2025-11-27},
 	publisher = {W3C},
-	author = {Carothers, Gavin},
+	author = {Carothers, Gavin and Seaborne, Andy},
 	month = feb,
 	year = {2014},
 }
@@ -108,7 +130,22 @@
 	year = {2011},
 	pages = {2156--2158},
 }
-
+@article{JVarkit_2015,
+author = "Pierre Lindenbaum",
+title = "{JVarkit: java-based utilities for Bioinformatics}",
+year = "2015",
+month = "5",
+url = "https://figshare.com/articles/journal_contribution/JVarkit_java_based_utilities_for_Bioinformatics/1425030",
+doi = "10.6084/m9.figshare.1425030.v1"
+}
+@online{ruby_rdf_vcf,
+	title = {ruby-rdf/rdf-vcf: RDF VCF parser},
+	url = {https://github.com/ruby-rdf/rdf-vcf},
+	urldate = {2025-03-01},
+	author = {Arto Bendiken and Raoul J.P. Bonnal and Francesco Strozzi},
+	month = nov,
+	year = {2025},
+}
 
 ## Related Work
 
@@ -230,18 +267,14 @@ publisher={Elsevier}
   url          = {https://comunica.dev/}
 }
 @inproceedings{cottas_2025,
- author = {Arenas-Guerrero, Julián and Ferrada, Sebastián},
- booktitle = {The Semantic Web -- ISWC 2025},
- publisher = {Springer},
- title = {COTTAS: Columnar Triple Table Storage for Efficient and Compressed RDF Management},
- year = {2025}
+	author = {Arenas-Guerrero, Julián and Ferrada, Sebastián},
+	booktitle = {The Semantic Web -- ISWC 2025},
+	publisher = {Springer},
+	title = {COTTAS: Columnar Triple Table Storage for Efficient and Compressed RDF Management},
+	year = {2025}
 }
 
-
-
-
-
-@article{sib_swiss_institute_of_bioinformatics_rdf_group_members_sib_2024,
+@article{sib_2024,
 	title = {The {SIB} {Swiss} {Institute} of {Bioinformatics} {Semantic} {Web} of data},
 	volume = {52},
 	copyright = {https://creativecommons.org/licenses/by/4.0/},
@@ -395,6 +428,17 @@ Version Number: 2},
 	year = {2022},
 	pages = {44},
 }
+@software{ga4gh2025VRS,
+  author       = {Wagner, Alex H. and Hart, Reece and Babb, Larry and Kuzma, Kori and Schuilenburg, Helen and Stevenson, James and ONeill, Terry and Epic, Mrinal-Thomas and Holmes, Brad and Moyer, Eric and Baudis, Michael and Robinson, Peter and Cline, Melissa and Patel, Ronak Y. and Freimuth, Robert R.},
+  title        = {{ga4gh/vrs: 2.0.1}},
+  year         = {2025},
+  publisher    = {Zenodo},
+  version      = {2.0.1},
+  doi          = {10.5281/zenodo.15059674},
+  url          = {https://doi.org/10.5281/zenodo.15059674},
+	urldate = {2026-03-02}
+}
+
 @inproceedings{sowinski_jelly_2025,
   title        = {Jelly: a fast and convenient RDF serialization format},
   author       = {Sowi{\'n}ski, Piotr and Bogacka, Karolina and Danilenka, Anastasiya and Kozlov, Nikita},

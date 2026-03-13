@@ -34,6 +34,20 @@ DATA_DIR=vcf_data bash scripts/download_test_data.sh
 
 The script now rejects `index.html*` artifacts during mirroring.
 
+
+## Replicating Conversion & Compression Tests
+
+TSV Benchmarks only:
+```bash
+vcf_rdfizer --mode tsv --input vcf-rdfizer-testing/vcf_data/ --out vcf-rdfizer-testing/benchmark-results/v1.1 --build
+```
+
+Full Run Benchmarks (including all compression types):
+```bash
+vcf_rdfizer --mode full --input vcf-rdfizer-testing/vcf_data/ --spark-partitions 8 --rdf-layout batch --out vcf-rdfizer-testing/benchmark-results/v1.1 --compression gzip,brotli,hdt,hdt_gzip,hdt_brotli --build
+```
+
+
 ## Metrics and Reporting Scripts
 
 ### 1) Combine Conversion + Compression Metrics
