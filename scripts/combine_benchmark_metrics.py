@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Combine conversion and compression metrics into a single JSON file.
+"""Combine conversion, TSV, and compression metrics into a single JSON file.
 
 The output JSON intentionally contains two views:
 1) datasets: one row per dataset (convenient for paper tables)
@@ -50,6 +50,13 @@ def _load_json(path: Path) -> Dict[str, Any]:
         return json.load(handle)
 
 
+def _strip_known_suffixes(name: str) -> str:
+    for suffix in (".vcf.gz", ".vcf", ".gz", ".tsv"):
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return Path(name).stem
+
+
 def _select_latest(
     current: Optional[Dict[str, Any]], candidate: Dict[str, Any]
 ) -> Dict[str, Any]:
@@ -75,6 +82,18 @@ def _dataset_from_compression_path(payload: Dict[str, Any], path: Path) -> str:
     output_name = payload.get("output_name")
     if output_name:
         return str(output_name)
+    return path.parent.name
+
+
+def _dataset_from_prefixed_input_path(payload: Dict[str, Any], path: Path) -> str:
+    prefix = payload.get("prefix")
+    if prefix:
+        return str(prefix)
+
+    input_path = payload.get("input_path")
+    if input_path:
+        return _strip_known_suffixes(Path(str(input_path)).name)
+
     return path.parent.name
 
 
@@ -108,6 +127,27 @@ def _extract_conversion(payload: Dict[str, Any], source_file: Path) -> Dict[str,
         "rdf_bytes_per_triple": _safe_div(rdf_size_bytes, total_triples),
         "conversion_command": payload.get("command"),
         "conversion_metrics_file": str(source_file),
+    }
+
+
+def _extract_tsv(payload: Dict[str, Any], source_file: Path) -> Dict[str, Any]:
+    artifacts = payload.get("artifacts") or {}
+    timing = payload.get("timing") or {}
+    output_paths = artifacts.get("output_paths") or []
+
+    return {
+        "run_id": payload.get("run_id"),
+        "timestamp": payload.get("timestamp"),
+        "tsv_exit_code": payload.get("exit_code"),
+        "tsv_wall_seconds": timing.get("wall_seconds"),
+        "tsv_user_seconds": timing.get("user_seconds"),
+        "tsv_sys_seconds": timing.get("sys_seconds"),
+        "tsv_max_rss_kb": timing.get("max_rss_kb"),
+        "tsv_input_path": payload.get("input_path"),
+        "tsv_output_paths": output_paths,
+        "tsv_output_file_count": len(output_paths),
+        "tsv_size_bytes": artifacts.get("output_size_bytes"),
+        "tsv_metrics_file": str(source_file),
     }
 
 
@@ -156,6 +196,7 @@ def _iter_metric_files(run_dir: Path, section: str) -> Iterable[Path]:
 
 def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
     conversion_by_dataset: Dict[str, Dict[str, Any]] = {}
+    tsv_by_dataset: Dict[str, Dict[str, Any]] = {}
     compression_by_dataset: Dict[str, Dict[str, Any]] = {}
     methods_by_dataset: Dict[str, Dict[str, Dict[str, Any]]] = {}
     run_directory = str(run_dir.resolve())
@@ -168,6 +209,13 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
         existing = conversion_by_dataset.get(dataset)
         conversion_by_dataset[dataset] = _select_latest(existing, candidate)
 
+    for tsv_file in _iter_metric_files(run_dir, "tsv_metrics"):
+        payload = _load_json(tsv_file)
+        dataset = _dataset_from_prefixed_input_path(payload, tsv_file)
+        candidate = _extract_tsv(payload, tsv_file)
+        existing = tsv_by_dataset.get(dataset)
+        tsv_by_dataset[dataset] = _select_latest(existing, candidate)
+
     for comp_file in _iter_metric_files(run_dir, "compression_metrics"):
         payload = _load_json(comp_file)
         dataset = _dataset_from_compression_path(payload, comp_file)
@@ -178,13 +226,16 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
             compression_by_dataset[dataset] = summary
             methods_by_dataset[dataset] = methods
 
-    all_datasets = sorted(set(conversion_by_dataset) | set(compression_by_dataset))
+    all_datasets = sorted(
+        set(conversion_by_dataset) | set(tsv_by_dataset) | set(compression_by_dataset)
+    )
 
     dataset_rows: List[Dict[str, Any]] = []
     method_rows: List[Dict[str, Any]] = []
 
     for dataset in all_datasets:
         conversion = conversion_by_dataset.get(dataset, {})
+        tsv = tsv_by_dataset.get(dataset, {})
         compression = compression_by_dataset.get(dataset, {})
         methods = methods_by_dataset.get(dataset, {})
 
@@ -192,17 +243,22 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
             "dataset": dataset,
             "run_directory": run_directory,
             "run_name": run_name,
-            "run_id": conversion.get("run_id") or compression.get("run_id"),
-            "timestamp": conversion.get("timestamp") or compression.get("timestamp"),
+            "run_id": conversion.get("run_id") or tsv.get("run_id") or compression.get("run_id"),
+            "timestamp": conversion.get("timestamp") or tsv.get("timestamp") or compression.get("timestamp"),
             "conversion_present": bool(conversion),
+            "tsv_present": bool(tsv),
             "compression_present": bool(compression),
         }
         row.update(conversion)
+        row.update(tsv)
         row.update(compression)
 
         rdf_size_bytes = row.get("rdf_size_bytes") or row.get("combined_rdf_size_bytes")
         input_vcf_size_bytes = row.get("input_vcf_size_bytes")
+        tsv_size_bytes = row.get("tsv_size_bytes")
         row["rdf_size_bytes_for_ratios"] = rdf_size_bytes
+        row["tsv_size_ratio_vs_vcf"] = _safe_div(tsv_size_bytes, input_vcf_size_bytes)
+        row["tsv_size_ratio_vs_rdf"] = _safe_div(tsv_size_bytes, rdf_size_bytes)
 
         successful_for_size: List[Dict[str, Any]] = []
         successful_for_time: List[Dict[str, Any]] = []
@@ -287,11 +343,12 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
         dataset_rows.append(row)
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "run_directory": run_directory,
         "run_name": run_name,
         "dataset_count": len(dataset_rows),
+        "tsv_record_count": sum(1 for row in dataset_rows if row.get("tsv_present")),
         "compression_record_count": len(method_rows),
         "datasets": dataset_rows,
         "compression_by_method": method_rows,
@@ -310,6 +367,7 @@ def build_combined_metrics(run_dirs: Sequence[Path]) -> Dict[str, Any]:
                 "run_directory": result["run_directory"],
                 "run_name": result["run_name"],
                 "dataset_count": result["dataset_count"],
+                "tsv_record_count": result["tsv_record_count"],
                 "compression_record_count": result["compression_record_count"],
             }
         )
@@ -317,12 +375,13 @@ def build_combined_metrics(run_dirs: Sequence[Path]) -> Dict[str, Any]:
         method_rows.extend(result["compression_by_method"])
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "run_count": len(run_results),
         "run_directories": [entry["run_directory"] for entry in run_results],
         "runs": run_results,
         "dataset_count": len(dataset_rows),
+        "tsv_record_count": sum(1 for row in dataset_rows if row.get("tsv_present")),
         "compression_record_count": len(method_rows),
         "datasets": dataset_rows,
         "compression_by_method": method_rows,
