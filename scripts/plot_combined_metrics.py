@@ -7,7 +7,7 @@ import argparse
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 
 def _to_scaled(values: List[Dict[str, Any]], key: str, scale: float) -> List[float]:
@@ -21,15 +21,15 @@ def _to_scaled(values: List[Dict[str, Any]], key: str, scale: float) -> List[flo
     return scaled
 
 
-def _row_label(row: Dict[str, Any], multi_run: bool) -> str:
+def _row_label(row: Dict[str, Any], duplicate_datasets: Set[str], multi_run: bool) -> str:
     dataset = str(row.get("dataset", "unknown"))
     run_name = str(row.get("run_name") or row.get("run_id") or "")
-    if multi_run and run_name:
+    if multi_run and dataset in duplicate_datasets and run_name:
         return f"{run_name}:{dataset}"
     return dataset
 
 
-def _load_rows(metrics_path: Path) -> Tuple[List[Dict[str, Any]], bool]:
+def _load_rows(metrics_path: Path) -> Tuple[List[Dict[str, Any]], bool, Set[str]]:
     with metrics_path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
 
@@ -40,12 +40,19 @@ def _load_rows(metrics_path: Path) -> Tuple[List[Dict[str, Any]], bool]:
     rows = sorted(
         rows,
         key=lambda row: (
-            str(row.get("run_name") or row.get("run_id") or ""),
+            float(row.get("input_vcf_size_bytes") or float("inf")),
             str(row.get("dataset") or ""),
         ),
     )
     run_count = int(payload.get("run_count") or 1)
-    return rows, run_count > 1
+    seen: Set[str] = set()
+    duplicate_datasets: Set[str] = set()
+    for row in rows:
+        dataset = str(row.get("dataset", "unknown"))
+        if dataset in seen:
+            duplicate_datasets.add(dataset)
+        seen.add(dataset)
+    return rows, run_count > 1, duplicate_datasets
 
 
 def _bar_offsets(num_series: int, width: float) -> List[float]:
@@ -62,8 +69,8 @@ def make_figure(metrics_path: Path, output_path: Path, title: str, show: bool) -
             "python3 -m pip install matplotlib"
         ) from exc
 
-    rows, multi_run = _load_rows(metrics_path)
-    labels = [_row_label(row, multi_run) for row in rows]
+    rows, multi_run, duplicate_datasets = _load_rows(metrics_path)
+    labels = [_row_label(row, duplicate_datasets, multi_run) for row in rows]
     x = list(range(len(rows)))
 
     fig, axes = plt.subplots(3, 1, figsize=(13, 14), sharex=True)

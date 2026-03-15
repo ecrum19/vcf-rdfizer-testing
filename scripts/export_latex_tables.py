@@ -58,7 +58,7 @@ def _load_dataset_rows(path: Path) -> List[Dict[str, Any]]:
     return sorted(
         rows,
         key=lambda row: (
-            str(row.get("run_name") or row.get("run_id") or ""),
+            float(row.get("input_vcf_size_bytes") or float("inf")),
             str(row.get("dataset") or ""),
         ),
     )
@@ -83,8 +83,8 @@ def _conversion_table(rows: List[Dict[str, Any]]) -> str:
 \\begin{{table*}}[t]
 \\centering
 \\small
-\\setlength{{\\tabcolsep}}{{4pt}}
-\\begin{{tabular}}{{@{{}}p{{0.28\\textwidth}}
+\\setlength{{\\tabcolsep}}{{0pt}}
+\\begin{{tabular*}}{{\\textwidth}}{{@{{\\extracolsep{{\\fill}}}}p{{0.28\\textwidth}}
 S[table-format=6.1]
 S[table-format=6.1]
 S[table-format=7.1]
@@ -100,7 +100,7 @@ S[table-format=10.0]@{{}}}}
 \\midrule
 {body}
 \\bottomrule
-\\end{{tabular}}
+\\end{{tabular*}}
 \\caption{{Conversion statistics per input file. Sizes are decimal MB.}}
 \\label{{tab:conversion-stats}}
 \\end{{table*}}

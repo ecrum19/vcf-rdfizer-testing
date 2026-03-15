@@ -1,0 +1,34 @@
+{
+  "run_id": "20260306T092411",
+  "timestamp": "2026-03-06T09:24:11",
+  "command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/NG131FQA1I.rules.ttl -o /data/out/NG131FQA1I ",
+  "exit_code": 0,
+  "timing": {
+    "wall_seconds": 630.710,
+    "user_seconds": 4139.48,
+    "sys_seconds": 131.51,
+    "max_rss_kb": 2075948
+  },
+  "artifacts": {
+    "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+    "input_path": "/data/rules/NG131FQA1I.rules.ttl",
+    "input_size_bytes": 8747,
+    "input_vcf_size_bytes": 1215509730,
+    "output_path": "/data/out/NG131FQA1I",
+    "output_size_bytes": 25969283526,
+    "output_triples": {
+  "/data/out/NG131FQA1I/1.nt": 18571484,
+  "/data/out/NG131FQA1I/2.nt": 18432422,
+  "/data/out/NG131FQA1I/3.nt": 18451458,
+  "/data/out/NG131FQA1I/4.nt": 18458187,
+  "/data/out/NG131FQA1I/5.nt": 18508239,
+  "/data/out/NG131FQA1I/6.nt": 18440373,
+  "/data/out/NG131FQA1I/7.nt": 18418541,
+  "/data/out/NG131FQA1I/8.nt": 18429423,
+  "TOTAL": 147710127
+}
+  },
+  "java": {
+    "version_header": "openjdk version \"11.0.30\" 2026-01-20"
+  }
+}
