@@ -42,4 +42,4 @@ MPLBACKEND=Agg python3 scripts/plot_combined_metrics.py \
 ```
 
 As a result, the aggregated `combined_metrics*.json` files, LaTeX tables, and
-figure copies in `ECCB_2026/` now reflect corrected compression wall times.
+figure copies in `ECCB_2026/` reflect corrected compression wall times.

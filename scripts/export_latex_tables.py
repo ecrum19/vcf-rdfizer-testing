@@ -130,8 +130,11 @@ def _compression_table(rows: List[Dict[str, Any]]) -> str:
     return f"""% Requires: \\usepackage{{booktabs}}, \\usepackage{{tabularx}}, \\usepackage{{siunitx}}, \\usepackage{{array}}
 \\begin{{table*}}[t]
 \\centering
-\\small
+\\scriptsize
 \\setlength{{\\tabcolsep}}{{4pt}}
+\\renewcommand{{\\arraystretch}}{{0.92}}
+\\setlength{{\\aboverulesep}}{{0.15ex}}
+\\setlength{{\\belowrulesep}}{{0.15ex}}
 \\begin{{tabularx}}{{\\linewidth}}{{@{{}}>{{\\raggedright\\arraybackslash}}X
 S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]
 S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]@{{}}}}
