@@ -1,0 +1,36 @@
+% Requires: \usepackage{booktabs}, \usepackage{tabularx}, \usepackage{siunitx}, \usepackage{array}
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X
+S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]
+S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]@{}}
+\toprule
+\textbf{Input file} &
+\multicolumn{5}{c}{\textbf{Time (s)}} &
+\multicolumn{5}{c}{\textbf{Size (MB)}} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+&
+\textbf{HDT} &
+\textbf{Gzip} &
+\textbf{Brotli} &
+\textbf{HDT+Gz} &
+\textbf{HDT+Br} &
+\textbf{HDT} &
+\textbf{Gzip} &
+\textbf{Brotli} &
+\textbf{HDT+Gz} &
+\textbf{HDT+Br} \\
+\midrule
+\texttt{0GOOR\_HG002} & 70915.0 & 192.0 & 276.0 & 26.0 & 64.0 & 2102.6 & 883.2 & 480.9 & 215.8 & 182.0 \\
+\texttt{60820188474283} & 64720.0 & 237.0 & 348.0 & 40.0 & 96.0 & 1887.4 & 1189.2 & 731.4 & 357.6 & 291.6 \\
+\texttt{NG131FQA1I} & 92266.0 & 183.0 & 328.0 & 38.0 & 106.0 & 1876.3 & 974.2 & 614.0 & 320.0 & 293.2 \\
+\texttt{60820188475559} & 87931.0 & 249.0 & 366.0 & 40.0 & 99.3 & 2020.6 & 1271.7 & 775.8 & 371.0 & 318.9 \\
+\texttt{NB72462M} & 91409.0 & 204.0 & 350.0 & 40.0 & 117.0 & 1975.9 & 1032.6 & 652.8 & 349.6 & 311.5 \\
+\texttt{NG1N86S6FC} & 627977.0 & 577.0 & 868.0 & 87.0 & 195.7 & 5359.7 & 2800.3 & 1592.7 & 682.1 & 682.4 \\
+\bottomrule
+\end{tabularx}
+\caption{Compression statistics per input file. Times are wall-clock seconds; sizes are decimal MB.}
+\label{tab:compression-sizes}
+\end{table*}

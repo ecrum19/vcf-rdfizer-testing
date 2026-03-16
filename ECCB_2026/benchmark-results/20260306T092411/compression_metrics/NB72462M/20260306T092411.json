@@ -1,0 +1,65 @@
+{
+  "run_id": "20260306T092411",
+  "timestamp": "2026-03-06T09:24:11",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmark-results/v1.1",
+  "output_name": "NB72462M",
+  "compression_methods": "gzip,brotli,hdt,hdt_gzip,hdt_brotli",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmark-results/v1.1/NB72462M",
+  "combined_rdf_size_bytes": 26764617212,
+  "hdt_source": "generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 1032556050,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 204.0,
+      "user_seconds": 177.75,
+      "sys_seconds": 11.850000000000001,
+      "max_rss_kb": 4096
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 652792888,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 350.0,
+      "user_seconds": 341.68000000000006,
+      "sys_seconds": 7.329999999999999,
+      "max_rss_kb": 52312
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "",
+    "output_hdt_size_bytes": 1975863540,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 91409.0,
+      "user_seconds": 91348.47999999998,
+      "sys_seconds": 48.849999999999994,
+      "max_rss_kb": 2725144
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 349600551,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 40.0,
+      "user_seconds": 37.15,
+      "sys_seconds": 0.51,
+      "max_rss_kb": 4096
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 311478579,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 117.0,
+      "user_seconds": 108.75,
+      "sys_seconds": 3.12,
+      "max_rss_kb": 106456
+    }
+  }
+}
