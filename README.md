@@ -34,6 +34,8 @@ DATA_DIR=vcf_data bash scripts/download_test_data.sh
 
 The script now rejects `index.html*` artifacts during mirroring.
 
+The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After the download succeeds, the script extracts the archive in a temporary directory, keeps only the `.vcf.gz` member whose rounded decimal size is 379 MB, renames it to `NG1N86S6FC.vcf.gz`, and removes the other extracted files and archive. The other downloaded files are likewise normalized to the six canonical names shown in the table above.
+
 
 ## Replicating Conversion & Compression Tests
 
