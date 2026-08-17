@@ -4,12 +4,30 @@ set -euo pipefail
 # Optional overrides:
 #   VCF_RDFIZER_VERSION=1.0.0 bash scripts/install_vcf_rdfizer_ubuntu.sh
 #   VCF_RDFIZER_VENV="$HOME/.venvs/vcf-rdfizer" bash scripts/install_vcf_rdfizer_ubuntu.sh
+#   bash scripts/install_vcf_rdfizer_ubuntu.sh --docker-only
 VCF_RDFIZER_VERSION="${VCF_RDFIZER_VERSION:-}"
 VCF_RDFIZER_VENV="${VCF_RDFIZER_VENV:-$HOME/.local/share/vcf-rdfizer/venv}"
 USER_BIN="${HOME}/.local/bin"
+INSTALL_PYTHON_CLI=1
 
 log() { printf '[vcf-rdfizer-install] %s\n' "$*"; }
 fail() { printf '[vcf-rdfizer-install] ERROR: %s\n' "$*" >&2; exit 1; }
+
+case "${1:-}" in
+  "") ;;
+  --docker-only)
+    INSTALL_PYTHON_CLI=0
+    ;;
+  --help|-h)
+    printf 'Usage: %s [--docker-only]\n' "$(basename "$0")"
+    printf '\nBy default, install Docker and the VCF-RDFizer Python CLI.\n'
+    printf '%s\n' '--docker-only: install and configure Docker without installing VCF-RDFizer.'
+    exit 0
+    ;;
+  *)
+    fail "Unknown option: $1 (use --help for usage)"
+    ;;
+esac
 
 [[ "${EUID}" -ne 0 ]] || fail "Run this script as your normal user, not with sudo. It uses sudo only where needed."
 command -v sudo >/dev/null 2>&1 || fail "sudo is required."
@@ -119,11 +137,18 @@ configure_path() {
 
 install_docker
 configure_docker
-install_python_cli
-configure_path
+
+if (( INSTALL_PYTHON_CLI )); then
+  install_python_cli
+  configure_path
+else
+  log "Docker-only mode: skipping VCF-RDFizer installation and PATH changes."
+fi
 
 log "Installation complete."
-log "Current shell commands:"
-log "  $USER_BIN/vcf-rdfizer --help"
-log "  $USER_BIN/vcf_rdfizer --help"
+if (( INSTALL_PYTHON_CLI )); then
+  log "Current shell commands:"
+  log "  $USER_BIN/vcf-rdfizer --help"
+  log "  $USER_BIN/vcf_rdfizer --help"
+fi
 log "Open a new login shell before running Docker without sudo."
