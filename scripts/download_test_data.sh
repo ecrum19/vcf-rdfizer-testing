@@ -9,9 +9,9 @@ ts() { date +"%Y-%m-%d %H:%M:%S"; }
 log() { echo "[$(ts)] $*"; }
 
 # Each entry:
-# canonical_name|source_name|profile_url|size|label|download_mode|download_target|postprocess
+# canonical_name|source_name|profile_url|size|label|download_mode|download_target|postprocess|archive_member
 DATASETS=(
-"NG1N86S6FC.vcf.gz|SequencingdotcomVCFs.zip|https://my.pgp-hms.org/profile/hu416394|379 MB|Sequencing.com|mirror|https://f26290bdbc3bf08190edec227f21635c-291.collections.ac2it.arvadosapi.com/_/|extract-379mb"
+"NG1N86S6FC.vcf.gz|SequencingdotcomVCFs.zip|https://my.pgp-hms.org/profile/hu416394|379 MB|Sequencing.com|mirror|https://f26290bdbc3bf08190edec227f21635c-291.collections.ac2it.arvadosapi.com/_/|extract-member|KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz"
 "NG131FQA1I.vcf.gz|NG131FQA1I.vcf.gz|https://my.pgp-hms.org/profile/huFFFE77|224 MB|Dante Labs|mirror|https://5aa905ff32eca70008e6d6d8aca1f238-200.collections.ac2it.arvadosapi.com/_/|none"
 "NB72462M.vcf.gz|NB72462M.vcf.gz|https://my.pgp-hms.org/profile/huF7A4DE|341 MB|Nebula Genomics|mirror|https://531155966bc06bca5de62439c00ce64b-282.collections.ac2it.arvadosapi.com/_/|none"
 "60820188475559.vcf.gz|60820188475559.filtered.snp.vcf.gz|https://my.pgp-hms.org/profile/hu1C1368|325 MB|Filtered SNPs|mirror|https://e17abc964664035c2efe6041b954e4f1-300.collections.ac2it.arvadosapi.com/_/|none"
@@ -35,20 +35,11 @@ find_downloaded_file() {
   return 1
 }
 
-file_size_bytes() {
-  local path="$1"
-
-  if stat -c '%s' "$path" >/dev/null 2>&1; then
-    stat -c '%s' "$path"
-  else
-    stat -f '%z' "$path"
-  fi
-}
-
-extract_sequencingcom_vcf() {
+extract_archive_member() {
   local canonical_name="$1"
   local archive_name="$2"
-  local archive_path temp_dir candidate selected size_bytes size_mb
+  local member_name="$3"
+  local archive_path temp_dir selected
 
   if [[ -f "$DATA_DIR/$canonical_name" ]]; then
     return 0
@@ -62,32 +53,17 @@ extract_sequencingcom_vcf() {
   temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/sequencingcom-vcfs.XXXXXX")"
   unzip -q "$archive_path" -d "$temp_dir"
 
-  selected=""
-  while IFS= read -r -d '' candidate; do
-    size_bytes="$(file_size_bytes "$candidate")"
-    size_mb="$(awk -v bytes="$size_bytes" 'BEGIN { printf "%.0f", bytes / 1000000 }')"
-    log "Archive member: $(basename "$candidate") (${size_mb} MB)"
-
-    if [[ "$size_mb" == "379" ]]; then
-      if [[ -n "$selected" ]]; then
-        rm -rf "$temp_dir"
-        log "Error: more than one archive member rounds to 379 MB"
-        return 1
-      fi
-      selected="$candidate"
-    fi
-  done < <(find "$temp_dir" -type f -name '*.vcf.gz' -print0)
-
+  selected="$(find "$temp_dir" -type f -name "$member_name" -print -quit || true)"
   if [[ -z "$selected" ]]; then
     rm -rf "$temp_dir"
-    log "Error: no .vcf.gz archive member rounds to 379 MB"
+    log "Error: archive member not found: $member_name"
     return 1
   fi
 
   mv "$selected" "$DATA_DIR/$canonical_name"
   rm -rf "$temp_dir"
   rm -f "$archive_path"
-  log "Extracted and normalized: $(basename "$selected") -> $canonical_name"
+  log "Extracted and normalized: $member_name -> $canonical_name"
 }
 
 normalize_downloaded_file() {
@@ -163,7 +139,7 @@ echo
 i=0
 for entry in "${DATASETS[@]}"; do
   i=$((i + 1))
-  IFS='|' read -r canonical_name source_name profile size label mode target postprocess <<< "$entry"
+  IFS='|' read -r canonical_name source_name profile size label mode target postprocess archive_member <<< "$entry"
 
   log "[$i/${#DATASETS[@]}] Dataset: $canonical_name"
   log "    Provider/label : $label"
@@ -175,8 +151,8 @@ for entry in "${DATASETS[@]}"; do
   echo
 
   run_download "$mode" "$target" "$canonical_name"
-  if [[ "$postprocess" == "extract-379mb" ]]; then
-    extract_sequencingcom_vcf "$canonical_name" "$source_name"
+  if [[ "$postprocess" == "extract-member" ]]; then
+    extract_archive_member "$canonical_name" "$source_name" "$archive_member"
   else
     normalize_downloaded_file "$canonical_name" "$source_name" || true
   fi
