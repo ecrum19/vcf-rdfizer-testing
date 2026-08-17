@@ -37,6 +37,20 @@ The script now rejects `index.html*` artifacts during mirroring.
 The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After the download succeeds, the script extracts the archive in a temporary directory, keeps the member `KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz`, renames it to `NG1N86S6FC.vcf.gz`, and removes the other extracted files and archive. The other downloaded files are likewise normalized to the six canonical names shown in the table above.
 
 
+## Automated Ubuntu Setup
+
+On Ubuntu, the setup script installs Docker Engine from Docker's official apt repository, enables the Docker service, adds the current user to the `docker` group, installs the VCF-RDFizer Python CLI in a dedicated virtual environment, and adds `~/.local/bin` to the user's `PATH`:
+
+```bash
+bash scripts/install_vcf_rdfizer_ubuntu.sh
+```
+
+Open a new login shell after the script completes so the Docker group membership takes effect. A specific VCF-RDFizer release can be installed with:
+
+```bash
+VCF_RDFIZER_VERSION=1.0.0 bash scripts/install_vcf_rdfizer_ubuntu.sh
+```
+
 ## Replicating Conversion & Compression Tests
 
 TSV Benchmarks only:
