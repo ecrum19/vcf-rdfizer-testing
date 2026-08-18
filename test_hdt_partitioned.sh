@@ -16,9 +16,9 @@ python3 ../VCF-RDFizer/vcf_rdfizer.py \
   --rdf-layout batch \
   --compression hdt \
   --hdt-strategy partitioned \
-  --hdt-target-chunk-bytes 536870912 \
-  --hdt-min-chunk-bytes 134217728 \
-  --hdt-max-chunk-bytes 1073741824 \
+  --chunk-target-bytes 536870912 \
+  --chunk-min-bytes 134217728 \
+  --chunk-max-bytes 1073741824 \
   --out "$OUTPUT_DIR" \
   --keep-rdf \
   --build
