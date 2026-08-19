@@ -17,6 +17,10 @@ The table below lists the datasets used in the experiments, including file name,
 | 4 | `60820188475559.vcf.gz` | https://my.pgp-hms.org/profile/hu1C1368 | 325 MB | Filtered SNPs | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://e17abc964664035c2efe6041b954e4f1-300.collections.ac2it.arvadosapi.com/_/'` |
 | 5 | `60820188474283.vcf.gz` | https://my.pgp-hms.org/profile/hu6ABACE | 222 MB | Dante Labs WGS | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://b42c5de31c35c2184a7119ddee4b049d-208.collections.ac2it.arvadosapi.com/_/'` |
 | 6 | `0GOOR_HG002.vcf.gz` | https://precision.fda.gov/challenges/10/results | 69 MB | Genome in a Bottle Truth Challenge v2 | `wget https://data.nist.gov/od/ds/ark:/88434/mds2-2336/submission_vcfs/0GOOR/0GOOR_HG002.vcf.gz` |
+| 7 | `1000G_phase3_chr20.vcf.gz` | https://www.internationalgenome.org/data-portal/data-collections/phase3/ | 327 MB | 1000 Genomes Phase 3 batch; 2,504 samples; GRCh37 | `wget 'https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz' -O 1000G_phase3_chr20.vcf.gz` |
+| 8 | `HGSVC2_freeze3_sv_alt.vcf.gz` | https://internationalgenome.org/data-portal/data-collections/hgsvc2/ | 31.5 MB | HGSVC2 structural-variant batch; 32 samples; GRCh38 | `wget 'https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/HGSVC2/release/v1.0/integrated_callset/freeze3.sv.alt.vcf.gz' -O HGSVC2_freeze3_sv_alt.vcf.gz` |
+| 9 | `HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` | https://www.nist.gov/programs-projects/genome-bottle | 149 MB | Genome in a Bottle HG004 benchmark; single sample; GRCh38 | `wget 'https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG004_NA24143_mother/NISTv4.2.1/GRCh38/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz' -O HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` |
+| 10 | `HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` | https://www.nist.gov/programs-projects/genome-bottle | 139 MB | Genome in a Bottle HG005 benchmark; single sample; GRCh38 | `wget 'https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/ChineseTrio/HG005_NA24631_son/NISTv4.2.1/GRCh38/HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz' -O HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` |
 
 ## Downloading the Datasets
 
@@ -34,7 +38,21 @@ DATA_DIR=vcf_data bash scripts/download_test_data.sh
 
 The script now rejects `index.html*` artifacts during mirroring.
 
-The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After the download succeeds, the script extracts the archive in a temporary directory, keeps the member `KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz`, renames it to `NG1N86S6FC.vcf.gz`, and removes the other extracted files and archive. The other downloaded files are likewise normalized to the six canonical names shown in the table above.
+The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After the download succeeds, the script extracts the archive in a temporary directory, keeps the member `KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz`, renames it to `NG1N86S6FC.vcf.gz`, and removes the other extracted files and archive. The other downloaded files are likewise normalized to the ten canonical names shown in the table above.
+
+The four additional datasets are direct downloads from the public IGSR and NIST FTP servers. The 1000 Genomes Phase 3 chromosome-20 file is a phased GRCh37 batch VCF with 2,504 samples. The HGSVC2 `freeze3.sv.alt.vcf.gz` file is a GRCh38 structural-variant batch VCF with 32 samples; it uses sequence alleles in the `REF`/`ALT` columns rather than the symbolic-allele representation. The HG004 and HG005 files are single-sample GRCh38 Genome in a Bottle benchmark VCFs covering chromosomes 1–22. Their canonical names and download URLs are listed in the table above and are also used directly by `scripts/download_test_data.sh`.
+
+## Scripts
+
+| Script | Description |
+|---|---|
+| `scripts/combine_benchmark_metrics.py` | Combines conversion, TSV, and compression metrics from one or more benchmark runs into a consolidated JSON file. |
+| `scripts/download_test_data.sh` | Downloads the public VCF inputs, extracts the Sequencing.com archive member, and normalizes all files to the canonical names used by the benchmarks. |
+| `scripts/export_latex_tables.py` | Converts consolidated benchmark metrics into LaTeX-ready conversion and compression tables. |
+| `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and the VCF-RDFizer Python CLI on Ubuntu; supports a `--docker-only` mode. |
+| `scripts/plot_combined_metrics.py` | Generates a comparison figure from consolidated benchmark metrics. |
+| `scripts/repair_compression_wall_times.py` | Reconstructs incorrect historical compression wall times from wrapper logs and updates the affected benchmark artifacts. |
+| `scripts/report_system_conditions.py` | Collects host and software details and emits paper-ready system-condition text or JSON. |
 
 
 ## Automated Ubuntu Setup
