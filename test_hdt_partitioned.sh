@@ -29,4 +29,5 @@ python3 VCF-RDFizer/vcf_rdfizer.py \
   --representations cottas \
   --artifact-compression none \
   --out "$OUTPUT_DIR" \
-  --build
+  --image vcf-rdfizer:local \
+  --no-build
