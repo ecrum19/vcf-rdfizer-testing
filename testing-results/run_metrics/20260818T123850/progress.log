@@ -1,0 +1,13 @@
+[2026-08-18T12:38:50] Run started (mode=full)
+[2026-08-18T12:38:50] Checking Docker availability
+[2026-08-18T12:38:50] Docker availability check passed
+[2026-08-18T12:38:50] Ensuring image available: ecrum19/vcf-rdfizer:latest
+[2026-08-18T12:39:48] Image ready
+[2026-08-18T12:39:48] Writeability checks passed
+[2026-08-18T12:39:48] Full pipeline started
+[2026-08-18T12:39:48] Input 1/1 started: 0GOOR_HG002
+[2026-08-18T12:40:34] Input 1: TSV conversion completed for 0GOOR_HG002
+[2026-08-18T13:37:35] Input 1: RDF conversion completed for 0GOOR_HG002
+[2026-08-18T19:17:44] Input 1/1 failed at compression for 0GOOR_HG002: partitioned compression failed for '0GOOR_HG002'. See log: /home/ubuntu/vcf-rdfizer-expts/vcf-rdfizer-testing/testing-results/run_metrics/20260818T123850/wrapper_logs/20260818T123850.log
+[2026-08-18T19:17:44] Full pipeline completed with failures (1/1). Report: /home/ubuntu/vcf-rdfizer-expts/vcf-rdfizer-testing/testing-results/run_metrics/20260818T123850/failed_inputs.csv
+[2026-08-18T19:17:44] Run finished (exit_code=1)
