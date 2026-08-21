@@ -26,7 +26,7 @@ python3 VCF-RDFizer/vcf_rdfizer.py \
   --mode compress \
   --rdf "$RDF_INPUT" \
   --rdf-compression none \
-  --representations cottas \
+  --representations hdt \
   --artifact-compression none \
   --out "$OUTPUT_DIR" \
   --image vcf-rdfizer:local \
