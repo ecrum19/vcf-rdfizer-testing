@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # Edit these paths for the test you want to run.
-INPUT_VCF="VCF-RDFizer/test/test_vcf_files/test-larger.vcf.gz"
+INPUT_VCF="vcf-rdfizer-testing/vcf_data/"
 RDF_INPUT="vcf-rdfizer-testing/test-results/test-larger/test-larger.nt.gz"
-OUTPUT_DIR="vcf-rdfizer-testing/test-results"
+OUTPUT_DIR="vcf-rdfizer-testing/experiments"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"

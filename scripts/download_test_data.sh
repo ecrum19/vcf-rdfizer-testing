@@ -154,11 +154,21 @@ for entry in "${DATASETS[@]}"; do
   log "    Source         : $target"
   echo
 
-  run_download "$mode" "$target" "$canonical_name"
-  if [[ "$postprocess" == "extract-member" ]]; then
-    extract_archive_member "$canonical_name" "$source_name" "$archive_member"
+  existing_source=""
+  if [[ -f "$DATA_DIR/$canonical_name" ]]; then
+    log "Already present: $canonical_name; skipping download."
+  elif existing_source="$(find_downloaded_file "$source_name")"; then
+    log "Already downloaded: $(basename "$existing_source"); skipping download."
   else
-    normalize_downloaded_file "$canonical_name" "$source_name" || true
+    run_download "$mode" "$target" "$canonical_name"
+  fi
+
+  if [[ ! -f "$DATA_DIR/$canonical_name" ]]; then
+    if [[ "$postprocess" == "extract-member" ]]; then
+      extract_archive_member "$canonical_name" "$source_name" "$archive_member"
+    else
+      normalize_downloaded_file "$canonical_name" "$source_name" || true
+    fi
   fi
 
   echo

@@ -38,6 +38,8 @@ DATA_DIR=vcf_data bash scripts/download_test_data.sh
 
 The script now rejects `index.html*` artifacts during mirroring.
 
+Before downloading each dataset, the script checks for its canonical filename in `vcf_data/`. If that file, or the original downloaded filename/archive, is already present, `wget` is skipped and only the required normalization or extraction step is performed.
+
 The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After the download succeeds, the script extracts the archive in a temporary directory, keeps the member `KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz`, renames it to `NG1N86S6FC.vcf.gz`, and removes the other extracted files and archive. The other downloaded files are likewise normalized to the ten canonical names shown in the table above.
 
 The four additional datasets are direct downloads from the public IGSR and NIST FTP servers. The 1000 Genomes Phase 3 chromosome-20 file is a phased GRCh37 batch VCF with 2,504 samples. The HGSVC2 `freeze3.sv.alt.vcf.gz` file is a GRCh38 structural-variant batch VCF with 32 samples; it uses sequence alleles in the `REF`/`ALT` columns rather than the symbolic-allele representation. The HG004 and HG005 files are single-sample GRCh38 Genome in a Bottle benchmark VCFs covering chromosomes 1–22. Their canonical names and download URLs are listed in the table above and are also used directly by `scripts/download_test_data.sh`.
