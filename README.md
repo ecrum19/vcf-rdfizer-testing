@@ -60,7 +60,7 @@ The four additional datasets are direct downloads from the public IGSR and NIST 
 
 ## Automated Ubuntu Setup
 
-On Ubuntu, the setup script installs Docker Engine from Docker's official apt repository, enables the Docker service, and adds the current user to the `docker` group. By default it also installs the VCF-RDFizer Python CLI in a dedicated virtual environment and adds `~/.local/bin` to the user's `PATH`:
+On Ubuntu, the setup script ensures `unzip` is installed, installs Docker Engine from Docker's official apt repository, enables the Docker service, and adds the current user to the `docker` group. By default it also installs the VCF-RDFizer Python CLI in a dedicated virtual environment and adds `~/.local/bin` to the user's `PATH`:
 
 ```bash
 bash scripts/install_vcf_rdfizer_ubuntu.sh
@@ -71,6 +71,12 @@ Open a new login shell after the script completes so the Docker group membership
 ```bash
 VCF_RDFIZER_VERSION=1.0.0 bash scripts/install_vcf_rdfizer_ubuntu.sh
 ```
+
+The installer is safe to rerun: it installs only missing apt packages, downloads
+Docker's signing key and repository configuration only when absent, and skips
+the VCF-RDFizer package download when the requested package is already present.
+If `VCF_RDFIZER_VERSION` is set, it reinstalls only when that exact version is
+not already available.
 
 To install and activate Docker only, while running VCF-RDFizer from an existing git checkout:
 

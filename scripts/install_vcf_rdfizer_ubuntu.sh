@@ -13,6 +13,30 @@ INSTALL_PYTHON_CLI=1
 log() { printf '[vcf-rdfizer-install] %s\n' "$*"; }
 fail() { printf '[vcf-rdfizer-install] ERROR: %s\n' "$*" >&2; exit 1; }
 
+apt_package_is_installed() {
+  dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q '^install ok installed$'
+}
+
+install_missing_apt_packages() {
+  local missing_packages=()
+  local package
+
+  for package in "$@"; do
+    if ! apt_package_is_installed "$package"; then
+      missing_packages+=("$package")
+    fi
+  done
+
+  if ((${#missing_packages[@]} == 0)); then
+    log "Requested apt packages are already installed: $*"
+    return
+  fi
+
+  log "Installing missing apt packages: ${missing_packages[*]}"
+  sudo apt-get update
+  sudo apt-get install -y "${missing_packages[@]}"
+}
+
 case "${1:-}" in
   "") ;;
   --docker-only)
@@ -40,20 +64,51 @@ fi
 source /etc/os-release
 [[ "${ID:-}" == "ubuntu" ]] || fail "This installer supports Ubuntu only; detected ${ID:-unknown}."
 
+# unzip is needed by the VCF-RDFizer workflow in both normal and Docker-only
+# modes, so ensure it independently of whether Docker is already installed.
+install_missing_apt_packages unzip
+
 install_docker() {
   if command -v docker >/dev/null 2>&1; then
     log "Docker CLI already installed: $(docker --version)"
     return
   fi
 
+  local docker_packages=(
+    docker-ce
+    docker-ce-cli
+    containerd.io
+    docker-buildx-plugin
+    docker-compose-plugin
+  )
+  local missing_docker_packages=()
+  local package
+
+  for package in "${docker_packages[@]}"; do
+    if ! apt_package_is_installed "$package"; then
+      missing_docker_packages+=("$package")
+    fi
+  done
+
+  if ((${#missing_docker_packages[@]} == 0)); then
+    log "Docker packages are already installed."
+    return
+  fi
+
   log "Installing Docker Engine from Docker's official apt repository"
-  sudo apt-get update
-  sudo apt-get install -y ca-certificates curl
+  install_missing_apt_packages ca-certificates curl
   sudo install -m 0755 -d /etc/apt/keyrings
-  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+  if [[ ! -s /etc/apt/keyrings/docker.asc ]]; then
+    log "Downloading Docker's apt signing key"
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  else
+    log "Docker's apt signing key already present"
+  fi
   sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-  sudo tee /etc/apt/sources.list.d/docker.sources >/dev/null <<EOF
+  if [[ ! -s /etc/apt/sources.list.d/docker.sources ]]; then
+    sudo tee /etc/apt/sources.list.d/docker.sources >/dev/null <<EOF
 Types: deb
 URIs: https://download.docker.com/linux/ubuntu
 Suites: ${UBUNTU_CODENAME:-${VERSION_CODENAME:-}}
@@ -61,14 +116,11 @@ Components: stable
 Architectures: $(dpkg --print-architecture)
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF
+  else
+    log "Docker apt repository configuration already present"
+  fi
 
-  sudo apt-get update
-  sudo apt-get install -y \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io \
-    docker-buildx-plugin \
-    docker-compose-plugin
+  install_missing_apt_packages "${missing_docker_packages[@]}"
 }
 
 configure_docker() {
@@ -94,17 +146,33 @@ configure_docker() {
 
 install_python_cli() {
   log "Installing Python prerequisites"
-  sudo apt-get update
-  sudo apt-get install -y python3 python3-venv
+  install_missing_apt_packages python3 python3-venv
 
-  log "Creating VCF-RDFizer virtual environment at $VCF_RDFIZER_VENV"
-  python3 -m venv "$VCF_RDFIZER_VENV"
-  "$VCF_RDFIZER_VENV/bin/python" -m pip install --upgrade pip
+  if [[ ! -x "$VCF_RDFIZER_VENV/bin/python" ]]; then
+    log "Creating VCF-RDFizer virtual environment at $VCF_RDFIZER_VENV"
+    python3 -m venv "$VCF_RDFIZER_VENV"
+  else
+    log "VCF-RDFizer virtual environment already present at $VCF_RDFIZER_VENV"
+  fi
 
-  if [[ -n "$VCF_RDFIZER_VERSION" ]]; then
+  if [[ ! -x "$VCF_RDFIZER_VENV/bin/pip" ]]; then
+    log "Bootstrapping pip in the VCF-RDFizer virtual environment"
+    "$VCF_RDFIZER_VENV/bin/python" -m ensurepip --upgrade
+  fi
+
+  local installed_version
+  installed_version="$("$VCF_RDFIZER_VENV/bin/python" -c 'from importlib.metadata import version; print(version("vcf-rdfizer"))' 2>/dev/null || true)"
+
+  if [[ -n "$installed_version" && -z "$VCF_RDFIZER_VERSION" ]]; then
+    log "VCF-RDFizer already installed in the virtual environment: $installed_version"
+  elif [[ -n "$installed_version" && "$installed_version" == "$VCF_RDFIZER_VERSION" ]]; then
+    log "Requested VCF-RDFizer version already installed: $installed_version"
+  elif [[ -n "$VCF_RDFIZER_VERSION" ]]; then
+    log "Installing requested VCF-RDFizer version: $VCF_RDFIZER_VERSION"
     "$VCF_RDFIZER_VENV/bin/python" -m pip install --upgrade "vcf-rdfizer==${VCF_RDFIZER_VERSION}"
   else
-    "$VCF_RDFIZER_VENV/bin/python" -m pip install --upgrade vcf-rdfizer
+    log "VCF-RDFizer is not installed; downloading the current package"
+    "$VCF_RDFIZER_VENV/bin/python" -m pip install vcf-rdfizer
   fi
 
   mkdir -p "$USER_BIN"
