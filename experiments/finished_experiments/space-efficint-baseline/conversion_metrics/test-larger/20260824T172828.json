@@ -1,0 +1,43 @@
+{
+  "run_id": "20260824T172828",
+  "timestamp": "2026-08-24T17:28:28",
+  "command": "java -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-larger.rules.ttl -o /data/out/test-larger/.rmlstreamer-parts-test-larger-1 ",
+  "exit_code": 0,
+  "timing": {
+    "wall_seconds": 155.180,
+    "user_seconds": 1105.34,
+    "sys_seconds": 37.32,
+    "max_rss_kb": 1580176
+  },
+  "artifacts": {
+    "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+    "input_path": "/data/rules/test-larger.rules.ttl",
+    "input_size_bytes": 8286,
+    "input_vcf_size_bytes": 295859765,
+    "output_path": "/data/out/test-larger/test-larger.nt.gz",
+    "output_size_bytes": 225847863,
+    "output_triples": {
+  "/data/out/test-larger/test-larger.nt.gz": 35887848,
+  "TOTAL": 35887848
+}
+  },
+  "rdf_storage": {
+    "mode": "space-optimized",
+    "compressed": true,
+    "serialization": "ntriples"
+  },
+  "tsv_generation": {
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 12.393217,
+      "user_seconds": 11.170000,
+      "sys_seconds": 0.650000,
+      "max_rss_kb": 7680
+    },
+    "output_size_bytes": 325988139,
+    "output_path": "/data/tsv/test-larger.records.tsv|/data/tsv/test-larger.header_lines.tsv|/data/tsv/test-larger.file_metadata.tsv"
+  },
+  "java": {
+    "version_header": "openjdk version \"11.0.32\" 2026-07-21"
+  }
+}
