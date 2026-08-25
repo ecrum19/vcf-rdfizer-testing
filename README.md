@@ -49,6 +49,7 @@ The four additional datasets are direct downloads from the public IGSR and NIST 
 | Script | Description |
 |---|---|
 | `scripts/combine_benchmark_metrics.py` | Combines conversion, TSV, and compression metrics from one or more benchmark runs into a consolidated JSON file. |
+| `scripts/localize_experiment.py` | Copies a timestamped run into a named `experiments/finished_experiments/` directory and rebuilds the aggregate metrics JSON for all named runs. |
 | `scripts/download_test_data.sh` | Downloads the public VCF inputs, extracts the Sequencing.com archive member, and normalizes all files to the canonical names used by the benchmarks. |
 | `scripts/export_latex_tables.py` | Converts consolidated benchmark metrics into LaTeX-ready conversion and compression tables. |
 | `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and the VCF-RDFizer Python CLI on Ubuntu; supports a `--docker-only` mode. |
@@ -117,7 +118,30 @@ python3 scripts/combine_benchmark_metrics.py \
   -o benchmark-results/combined_metrics_all_runs.json
 ```
 
-### 2) Generate Comparison Figure
+### 2) Localize a Finished Experiment
+
+After a VCF-RDFizer run has written metrics to
+`experiments/run_metrics/<run-id>`, give it a human-readable name and add it
+to the aggregate archive:
+
+```bash
+python3 scripts/localize_experiment.py \
+  20260824T173012 \
+  --name plain-hdt-cottas
+```
+
+This copies the run to
+`experiments/finished_experiments/plain-hdt-cottas/` and writes or refreshes
+`experiments/finished_experiments/combined_metrics_multi_run.json` using every
+named run already in `finished_experiments`. The original run ID and timestamp
+remain available in the copied metric files, while the aggregate uses the
+chosen directory name as `run_name`.
+
+Use `--source-root`, `--finished-root`, or `--output` when working with a
+different layout. An existing name is protected by default; pass
+`--overwrite` only when replacing that localized copy is intentional.
+
+### 3) Generate Comparison Figure
 
 Script: `scripts/plot_combined_metrics.py`
 
@@ -135,7 +159,7 @@ python3 scripts/plot_combined_metrics.py \
   -o benchmark-results/20260305T102641/combined_metrics_figure.png
 ```
 
-### 3) Export LaTeX Tables (Conversion + Compression)
+### 4) Export LaTeX Tables (Conversion + Compression)
 
 Script: `scripts/export_latex_tables.py`
 
@@ -157,7 +181,7 @@ python3 scripts/export_latex_tables.py \
   --output-dir benchmark-results/latex
 ```
 
-### 4) Report System/Test Conditions
+### 5) Report System/Test Conditions
 
 Script: `scripts/report_system_conditions.py`
 
