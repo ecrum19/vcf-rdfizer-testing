@@ -1,0 +1,126 @@
+{
+  "run_id": "20260824T173012",
+  "timestamp": "2026-08-24T17:30:12",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/experiments/test-larger",
+  "output_name": "test-larger",
+  "compression_methods": "hdt,cottas",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/test-larger/test-larger.nt",
+  "combined_rdf_size_bytes": 5003443267,
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/test-larger/test-larger.cottas",
+    "output_cottas_size_bytes": 80926268,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 1757.3732802320028,
+      "user_seconds": 11401.039999999999,
+      "sys_seconds": 203.20999999999998,
+      "max_rss_kb": 12156192
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 35887848,
+      "decoded_triples": 35887848,
+      "expected_triples": 35887848,
+      "count_match": true,
+      "validator": "pycottas.cottas2rdf",
+      "timing": {
+        "wall_seconds": 29.150844030998996,
+        "user_seconds": 35.45,
+        "sys_seconds": 3.1,
+        "max_rss_kb": 329072
+      }
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/test-larger/test-larger.hdt",
+    "output_hdt_size_bytes": 397470698,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 3022.1676811309917,
+      "user_seconds": 3087.879999999999,
+      "sys_seconds": 19.299999999999997,
+      "max_rss_kb": 1726696
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 35887848,
+      "decoded_triples": 35887848,
+      "expected_triples": 35887848,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 47.760744731996965,
+        "user_seconds": 56.92,
+        "sys_seconds": 6.41,
+        "max_rss_kb": 396928
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  }
+}
