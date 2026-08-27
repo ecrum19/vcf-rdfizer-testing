@@ -13,7 +13,7 @@ PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 # Build locally so the container includes the index-only COTTAS adapter.
-docker build --tag "$DOCKER_IMAGE" VCF-RDFizer
+# docker build --tag "$DOCKER_IMAGE" VCF-RDFizer
 
 python3 VCF-RDFizer/vcf_rdfizer.py \
   --mode index \
