@@ -15,7 +15,7 @@ cd "$PROJECT_ROOT"
 # Build locally so the container includes the index-only COTTAS adapter.
 # docker build --tag "$DOCKER_IMAGE" VCF-RDFizer
 
-python3 VCF-RDFizer/vcf_rdfizer.py \
+HDT_INDEX_MEMORY_LIMIT=512M python3 VCF-RDFizer/vcf_rdfizer.py \
   --mode index \
   --hdt "$HDT_INPUT" \
   --image "$DOCKER_IMAGE" \
