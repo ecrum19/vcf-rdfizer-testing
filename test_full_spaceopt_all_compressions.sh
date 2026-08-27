@@ -49,6 +49,3 @@ python3 VCF-RDFizer/vcf_rdfizer.py \
   --image "$DOCKER_LOCAL" \
   --out "$OUTPUT_DIR" \
   --no-build
-
-
-Input 1/1 failed at tsv-derivation for 1000G_phase3_chr20: failed generating sample helper TSVs for '1000G_phase3_chr20': [Errno 28] No space left on device.
