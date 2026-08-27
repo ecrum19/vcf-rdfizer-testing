@@ -12,6 +12,7 @@ fi
 VCF_NAME="$1"
 OUTPUT_DIR="vcf-rdfizer-testing/experiments"
 DOCKER_IMAGE="ecrum19/vcf-rdfizer:v2.1.0"
+DOCKER_LOCAL="vcf-rdfizer:local"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
@@ -35,7 +36,7 @@ if [[ ! -f "$INPUT_VCF" ]]; then
   exit 1
 fi
 
-docker pull "$DOCKER_IMAGE"
+# docker pull "$DOCKER_IMAGE"
 
 python3 VCF-RDFizer/vcf_rdfizer.py \
   --mode full \
@@ -45,6 +46,9 @@ python3 VCF-RDFizer/vcf_rdfizer.py \
   --representations hdt,cottas \
   --artifact-compression gzip,brotli \
   --hdt-strategy partitioned \
-  --image "$DOCKER_IMAGE" \
+  --image "$DOCKER_LOCAL" \
   --out "$OUTPUT_DIR" \
   --no-build
+
+
+Input 1/1 failed at tsv-derivation for 1000G_phase3_chr20: failed generating sample helper TSVs for '1000G_phase3_chr20': [Errno 28] No space left on device.
