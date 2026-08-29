@@ -7,7 +7,9 @@ The output JSON intentionally contains two views:
 
 Metric JSON files are the primary evidence. The combiner retains their source
 paths, reads both current and legacy `raw_metrics` locations, and never
-creates rows for compression methods that a run did not select.
+creates rows for compression methods that a run did not select or that did not
+record a result. Selected methods without a result remain visible in the
+integrity audit instead of being represented as null-valued measurements.
 """
 
 from __future__ import annotations
@@ -383,15 +385,7 @@ def _missing_compression_wall_times(
         for method, values in methods.items():
             exit_code = values.get("exit_code")
             wall_seconds = values.get("wall_seconds")
-            if exit_code is None:
-                missing.append(
-                    {
-                        "dataset": dataset,
-                        "method": method,
-                        "reason": "selected method has no recorded result",
-                    }
-                )
-            elif exit_code == 0 and not isinstance(wall_seconds, (int, float)):
+            if exit_code == 0 and not isinstance(wall_seconds, (int, float)):
                 missing.append(
                     {
                         "dataset": dataset,
@@ -400,6 +394,30 @@ def _missing_compression_wall_times(
                     }
                 )
     return missing
+
+
+def _unrecorded_selected_compression_methods(
+    methods_by_dataset: Dict[str, Dict[str, Dict[str, Any]]]
+) -> List[Dict[str, str]]:
+    """Return selected methods that never produced a result record.
+
+    These are not timing measurements and must not appear as null-valued
+    compression records. They are retained in the audit because they explain
+    why a selected method is absent from ``compression_by_method``.
+    """
+
+    unrecorded: List[Dict[str, str]] = []
+    for dataset, methods in methods_by_dataset.items():
+        for method, values in methods.items():
+            if values.get("exit_code") is None:
+                unrecorded.append(
+                    {
+                        "dataset": dataset,
+                        "method": method,
+                        "reason": "selected method has no recorded result",
+                    }
+                )
+    return unrecorded
 
 
 def _run_completion(run_dir: Path) -> Dict[str, Any]:
@@ -538,6 +556,11 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
         row["rdf_size_bytes_for_ratios"] = rdf_size_bytes
         row["tsv_size_ratio_vs_vcf"] = _safe_div(tsv_size_bytes, input_vcf_size_bytes)
         row["tsv_size_ratio_vs_rdf"] = _safe_div(tsv_size_bytes, rdf_size_bytes)
+        row["compression_unrecorded_selected_methods"] = sorted(
+            method
+            for method, values in methods.items()
+            if values.get("exit_code") is None
+        )
 
         successful_for_size: List[Dict[str, Any]] = []
         successful_for_time: List[Dict[str, Any]] = []
@@ -549,6 +572,12 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
             size_bytes = values.get("size_bytes")
             wall_seconds = values.get("wall_seconds")
             exit_code = values.get("exit_code")
+
+            # A selected method that never reported an exit status has no
+            # measurement to aggregate. Keep it in the integrity audit and
+            # selected-method list, but do not manufacture a null metric row.
+            if exit_code is None:
+                continue
 
             ratio_vs_rdf = _safe_div(size_bytes, rdf_size_bytes)
             ratio_vs_vcf = _safe_div(size_bytes, input_vcf_size_bytes)
@@ -675,7 +704,7 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
         dataset_rows.append(row)
 
     return {
-        "schema_version": "1.2",
+        "schema_version": "1.3",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "run_directory": run_directory,
         "run_name": run_name,
@@ -686,6 +715,9 @@ def build_combined_metrics_for_run(run_dir: Path) -> Dict[str, Any]:
         "integrity": {
             "missing_compression_wall_times": _missing_compression_wall_times(
                 methods_by_dataset
+            ),
+            "unrecorded_selected_compression_methods": (
+                _unrecorded_selected_compression_methods(methods_by_dataset)
             ),
         },
         "datasets": dataset_rows,
@@ -698,6 +730,7 @@ def build_combined_metrics(run_dirs: Sequence[Path]) -> Dict[str, Any]:
     dataset_rows: List[Dict[str, Any]] = []
     method_rows: List[Dict[str, Any]] = []
     missing_compression_wall_times: List[Dict[str, str]] = []
+    unrecorded_selected_compression_methods: List[Dict[str, str]] = []
     unverified_runs: List[Dict[str, Any]] = []
 
     for run_dir in run_dirs:
@@ -708,6 +741,10 @@ def build_combined_metrics(run_dirs: Sequence[Path]) -> Dict[str, Any]:
             unverified_runs.append({"run_name": run_name, **completion})
         for issue in result["integrity"]["missing_compression_wall_times"]:
             missing_compression_wall_times.append({"run_name": run_name, **issue})
+        for issue in result["integrity"]["unrecorded_selected_compression_methods"]:
+            unrecorded_selected_compression_methods.append(
+                {"run_name": run_name, **issue}
+            )
         run_results.append(
             {
                 "run_directory": result["run_directory"],
@@ -719,13 +756,16 @@ def build_combined_metrics(run_dirs: Sequence[Path]) -> Dict[str, Any]:
                 "missing_compression_wall_time_count": len(
                     result["integrity"]["missing_compression_wall_times"]
                 ),
+                "unrecorded_selected_compression_method_count": len(
+                    result["integrity"]["unrecorded_selected_compression_methods"]
+                ),
             }
         )
         dataset_rows.extend(result["datasets"])
         method_rows.extend(result["compression_by_method"])
 
     return {
-        "schema_version": "1.2",
+        "schema_version": "1.3",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "run_count": len(run_results),
         "run_directories": [entry["run_directory"] for entry in run_results],
@@ -740,6 +780,12 @@ def build_combined_metrics(run_dirs: Sequence[Path]) -> Dict[str, Any]:
                 missing_compression_wall_times
             ),
             "missing_compression_wall_times": missing_compression_wall_times,
+            "all_selected_compression_methods_recorded": not bool(
+                unrecorded_selected_compression_methods
+            ),
+            "unrecorded_selected_compression_methods": (
+                unrecorded_selected_compression_methods
+            ),
         },
         "datasets": dataset_rows,
         "compression_by_method": method_rows,
@@ -760,7 +806,7 @@ def _require_compression_wall_times(combined: Dict[str, Any]) -> None:
     )
     raise SystemExit(
         "Refusing to write an aggregate with missing compression wall times. "
-        f"Repair or investigate the source metrics first: {details}"
+        f"Repair or investigate the successful compression metrics first: {details}"
     )
 
 
@@ -816,8 +862,9 @@ def parse_args() -> argparse.Namespace:
         "--require-compression-wall-times",
         action="store_true",
         help=(
-            "Fail instead of writing output when a selected compression method "
-            "is missing its result or a successful method is missing wall_seconds."
+            "Fail instead of writing output when a successful compression method "
+            "is missing wall_seconds. Selected methods with no recorded result "
+            "are retained in the integrity audit, not emitted as null metrics."
         ),
     )
     return parser.parse_args()

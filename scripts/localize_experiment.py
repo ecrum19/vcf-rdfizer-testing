@@ -6,7 +6,9 @@ run ID is normally a timestamp.  This script gives that run a stable,
 human-readable directory name below ``experiments/finished_experiments``.
 Before rebuilding the aggregate, it runs ``repair_compression_wall_times.py``
 for every named archive and refuses to publish an aggregate when a successful
-selected compression method still lacks a wall-clock measurement.
+compression method still lacks a wall-clock measurement. A selected method
+with no recorded result is retained in the aggregate's integrity audit rather
+than represented as a null-valued measurement.
 """
 
 from __future__ import annotations

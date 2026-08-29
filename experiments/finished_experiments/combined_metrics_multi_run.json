@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.2",
-  "generated_at_utc": "2026-08-28T08:18:16.389878+00:00",
+  "schema_version": "1.3",
+  "generated_at_utc": "2026-08-29T10:06:12.763552+00:00",
   "run_count": 3,
   "run_directories": [
     "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/experiments/finished_experiments/bm-full-0GOOR_HG002-1",
@@ -18,7 +18,8 @@
       "dataset_count": 1,
       "tsv_record_count": 1,
       "compression_record_count": 0,
-      "missing_compression_wall_time_count": 0
+      "missing_compression_wall_time_count": 0,
+      "unrecorded_selected_compression_method_count": 0
     },
     {
       "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/experiments/finished_experiments/plain-baseline",
@@ -30,7 +31,8 @@
       "dataset_count": 1,
       "tsv_record_count": 1,
       "compression_record_count": 2,
-      "missing_compression_wall_time_count": 0
+      "missing_compression_wall_time_count": 0,
+      "unrecorded_selected_compression_method_count": 0
     },
     {
       "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/experiments/finished_experiments/space-efficint-baseline",
@@ -42,7 +44,8 @@
       "dataset_count": 1,
       "tsv_record_count": 1,
       "compression_record_count": 2,
-      "missing_compression_wall_time_count": 0
+      "missing_compression_wall_time_count": 0,
+      "unrecorded_selected_compression_method_count": 0
     }
   ],
   "dataset_count": 3,
@@ -60,7 +63,9 @@
       }
     ],
     "all_successful_compression_wall_times_present": true,
-    "missing_compression_wall_times": []
+    "missing_compression_wall_times": [],
+    "all_selected_compression_methods_recorded": true,
+    "unrecorded_selected_compression_methods": []
   },
   "datasets": [
     {
@@ -110,6 +115,7 @@
       "rdf_size_bytes_for_ratios": 721817950,
       "tsv_size_ratio_vs_vcf": 1.4843386586739722,
       "tsv_size_ratio_vs_rdf": 0.7975812336060637,
+      "compression_unrecorded_selected_methods": [],
       "best_method_by_size": null,
       "best_size_bytes": null,
       "best_size_ratio_vs_rdf": null,
@@ -177,6 +183,7 @@
       "rdf_size_bytes_for_ratios": 5003443267,
       "tsv_size_ratio_vs_vcf": 1.101833292539795,
       "tsv_size_ratio_vs_rdf": 0.06515276013021694,
+      "compression_unrecorded_selected_methods": [],
       "hdt_size_bytes": 397470698,
       "hdt_exit_code": 0,
       "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/test-larger/test-larger.hdt",
@@ -286,6 +293,7 @@
       "rdf_size_bytes_for_ratios": 225847863,
       "tsv_size_ratio_vs_vcf": 1.101833292539795,
       "tsv_size_ratio_vs_rdf": 1.4433970491011465,
+      "compression_unrecorded_selected_methods": [],
       "hdt_size_bytes": 397470698,
       "hdt_exit_code": 0,
       "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/test-larger/test-larger.hdt",
