@@ -152,9 +152,13 @@ python3 scripts/localize_experiment.py \
 This copies the run to
 `experiments/finished_experiments/plain-hdt-cottas/` and writes or refreshes
 `experiments/finished_experiments/combined_metrics_multi_run.json` using every
-named run already in `finished_experiments`. The original run ID and timestamp
-remain available in the copied metric files, while the aggregate uses the
-chosen directory name as `run_name`.
+named run already in `finished_experiments`. Before aggregation, it repairs
+recoverable compression wall times across all named runs and verifies that every
+successful selected compression method has a recorded wall-clock time. It
+refuses to publish an aggregate if the remaining source data are incomplete,
+rather than inventing a value. The original run ID and timestamp remain
+available in the copied metric files, while the aggregate uses the chosen
+directory name as `run_name`.
 
 Use `--source-root`, `--finished-root`, or `--output` when working with a
 different layout. An existing name is protected by default; pass

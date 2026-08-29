@@ -3,9 +3,10 @@
 
 VCF-RDFizer stores a run below ``experiments/run_metrics/<run-id>`` where the
 run ID is normally a timestamp.  This script gives that run a stable,
-human-readable directory name below ``experiments/finished_experiments`` and
-then invokes ``combine_benchmark_metrics.py`` for every named run in that
-directory.
+human-readable directory name below ``experiments/finished_experiments``.
+Before rebuilding the aggregate, it runs ``repair_compression_wall_times.py``
+for every named archive and refuses to publish an aggregate when a successful
+selected compression method still lacks a wall-clock measurement.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE_ROOT = REPOSITORY_ROOT / "experiments" / "run_metrics"
 DEFAULT_FINISHED_ROOT = REPOSITORY_ROOT / "experiments" / "finished_experiments"
 COMBINER_SCRIPT = Path(__file__).resolve().with_name("combine_benchmark_metrics.py")
+REPAIR_SCRIPT = Path(__file__).resolve().with_name("repair_compression_wall_times.py")
 
 
 def _resolve_path(path: Path) -> Path:
@@ -146,6 +148,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         raise SystemExit("The source run and destination run are the same directory.")
     if not COMBINER_SCRIPT.is_file():
         raise SystemExit(f"Combiner script not found: {COMBINER_SCRIPT}")
+    if not REPAIR_SCRIPT.is_file():
+        raise SystemExit(f"Compression-time repair script not found: {REPAIR_SCRIPT}")
 
     finished_root.mkdir(parents=True, exist_ok=True)
 
@@ -166,6 +170,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if not run_directories:
         raise SystemExit(f"No localized experiment directories found in {finished_root}")
 
+    repair_command = [
+        sys.executable,
+        str(REPAIR_SCRIPT),
+        *(str(run_directory) for run_directory in run_directories),
+    ]
+    print(
+        "Repairing compression timings for: "
+        + ", ".join(path.name for path in run_directories),
+        flush=True,
+    )
+    subprocess.run(repair_command, check=True)
+
     output_file.parent.mkdir(parents=True, exist_ok=True)
     command = [
         sys.executable,
@@ -173,6 +189,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         *(str(run_directory) for run_directory in run_directories),
         "--output",
         str(output_file),
+        "--require-compression-wall-times",
     ]
     print(
         "Rebuilding aggregate metrics for: "

@@ -9,6 +9,10 @@ The repair updates:
 - compression_time/<method>/<dataset>/*.txt
 - compression_metrics/<dataset>/*.json
 - metrics.csv rows whose output_name matches the dataset
+
+Runs without any compression artifacts are reported as not applicable instead
+of failing. A missing wall time is never fabricated: only durations that can be
+reconstructed from wrapper-command timestamps are written.
 """
 
 from __future__ import annotations
@@ -28,6 +32,9 @@ METHOD_COLUMN_MAP = {
     "hdt": "wall_seconds_hdt",
     "hdt_gzip": "wall_seconds_gzip_on_hdt",
     "hdt_brotli": "wall_seconds_brotli_on_hdt",
+    "cottas": "wall_seconds_cottas",
+    "cottas_gzip": "wall_seconds_gzip_on_cottas",
+    "cottas_brotli": "wall_seconds_brotli_on_cottas",
 }
 
 METHOD_JSON_PATH_MAP = {
@@ -36,13 +43,20 @@ METHOD_JSON_PATH_MAP = {
     "hdt": ("hdt_conversion", "timing", "wall_seconds"),
     "hdt_gzip": ("gzip_on_hdt", "timing", "wall_seconds"),
     "hdt_brotli": ("brotli_on_hdt", "timing", "wall_seconds"),
+    "cottas": ("cottas_conversion", "timing", "wall_seconds"),
+    "cottas_gzip": ("gzip_on_cottas", "timing", "wall_seconds"),
+    "cottas_brotli": ("brotli_on_cottas", "timing", "wall_seconds"),
 }
 
 LOG_COMMAND_RE = re.compile(r"^\[(?P<timestamp>[^\]]+)\] \$ (?P<command>.*)$")
 TIME_FILE_RE = re.compile(
-    r"/data/out/\.(?P<part>\d+)\.(?P<method>hdt_brotli|hdt_gzip|brotli|gzip|hdt)\.time"
+    r"/data/out/\.(?P<part>[^/.\s]+)\.(?P<method>"
+    r"cottas_brotli|cottas_gzip|hdt_brotli|hdt_gzip|brotli|gzip|cottas|hdt"
+    r")\.time"
 )
-DATASET_RE = re.compile(r"/benchmark-results/[^/]+/(?P<dataset>[^:/\s]+):/data/in:ro")
+DATASET_RE = re.compile(
+    r"/(?:benchmark-results/[^/]+|experiments)/(?P<dataset>[^:/\s]+):/data/in:ro"
+)
 
 
 def _format_seconds(value: float) -> str:
@@ -202,13 +216,36 @@ def _update_metrics_csv(path: Path, recovered: Mapping[Tuple[str, str], float]) 
     return True
 
 
+def _has_compression_artifacts(run_dir: Path) -> bool:
+    for root, pattern in (
+        (run_dir / "compression_time", "*.txt"),
+        (run_dir / "compression_metrics", "*.json"),
+        (run_dir / "raw_metrics" / "compression_metrics", "*.json"),
+    ):
+        if root.exists() and any(root.rglob(pattern)):
+            return True
+    return False
+
+
 def repair_run(run_dir: Path) -> Dict[str, int]:
-    recovered = _recover_wall_seconds(run_dir)
     changed_counts = {
         "compression_time_files": 0,
         "compression_metrics_files": 0,
         "metrics_csv_files": 0,
+        "recovered_measurements": 0,
+        "not_applicable": 0,
     }
+    if not _has_compression_artifacts(run_dir):
+        changed_counts["not_applicable"] = 1
+        return changed_counts
+
+    try:
+        recovered = _recover_wall_seconds(run_dir)
+    except FileNotFoundError:
+        # The aggregate validator will reject a successful selected method with
+        # no timing. Do not manufacture a value when repair evidence is absent.
+        return changed_counts
+    changed_counts["recovered_measurements"] = len(recovered)
 
     grouped_by_dataset: Dict[str, Dict[str, float]] = {}
     for (dataset, method), seconds in recovered.items():
@@ -257,7 +294,9 @@ def main() -> int:
             f"Repaired {run_dir}: "
             f"{changed_counts['compression_time_files']} timing files, "
             f"{changed_counts['compression_metrics_files']} compression metrics files, "
-            f"{changed_counts['metrics_csv_files']} metrics.csv files"
+            f"{changed_counts['metrics_csv_files']} metrics.csv files, "
+            f"{changed_counts['recovered_measurements']} recovered measurements"
+            + (" (no compression artifacts)" if changed_counts["not_applicable"] else "")
         )
 
     return 0
