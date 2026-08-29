@@ -1,0 +1,127 @@
+{
+  "run_id": "20260828T095207",
+  "timestamp": "2026-08-28T09:52:07",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283",
+  "output_name": "60820188474283",
+  "compression_methods": "gzip,brotli,hdt,hdt_gzip,hdt_brotli,cottas,cottas_gzip,cottas_brotli",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.nt.gz",
+  "combined_rdf_size_bytes": 957859389,
+  "index_warnings": [],
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.nt.gz",
+    "output_gz_size_bytes": 957859389,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 0.0,
+      "user_seconds": 0.0,
+      "sys_seconds": 0.0,
+      "max_rss_kb": 0
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.nt.br",
+    "output_brotli_size_bytes": 674860747,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 316.0,
+      "user_seconds": 308.8,
+      "sys_seconds": 17.3,
+      "max_rss_kb": 52348
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.cottas",
+    "output_cottas_size_bytes": 354084104,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 25138.83870540315,
+      "user_seconds": 179427.82,
+      "sys_seconds": 1784.9000000000003,
+      "max_rss_kb": 30226888
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 185443019,
+      "decoded_triples": 185443019,
+      "expected_triples": 185443019,
+      "count_match": true,
+      "validator": "pycottas.cottas2rdf",
+      "timing": {
+        "wall_seconds": 154.0411985309911,
+        "user_seconds": 182.73,
+        "sys_seconds": 15.44,
+        "max_rss_kb": 356560
+      }
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.hdt",
+    "output_hdt_size_bytes": 1682664134,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 11736.374317077163,
+      "user_seconds": 12359.619999999997,
+      "sys_seconds": 115.68999999999998,
+      "max_rss_kb": 6214848
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 185443019,
+      "decoded_triples": 185443019,
+      "expected_triples": 185443019,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 271.621995197027,
+        "user_seconds": 327.8,
+        "sys_seconds": 38.3,
+        "max_rss_kb": 1664000
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.hdt.gz",
+    "output_hdt_gz_size_bytes": 329839816,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 34.428509504010435,
+      "user_seconds": 33.32,
+      "sys_seconds": 1.03,
+      "max_rss_kb": 2176
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.hdt.br",
+    "output_hdt_br_size_bytes": 287160416,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 123.7338144860114,
+      "user_seconds": 122.85,
+      "sys_seconds": 0.86,
+      "max_rss_kb": 93704
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.cottas.gz",
+    "output_cottas_gz_size_bytes": 333902543,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 10.3493668899755,
+      "user_seconds": 10.11,
+      "sys_seconds": 0.23,
+      "max_rss_kb": 2048
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/60820188474283/60820188474283.cottas.br",
+    "output_cottas_br_size_bytes": 304690009,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 25.540005506947637,
+      "user_seconds": 25.25,
+      "sys_seconds": 0.27,
+      "max_rss_kb": 53736
+    }
+  }
+}
