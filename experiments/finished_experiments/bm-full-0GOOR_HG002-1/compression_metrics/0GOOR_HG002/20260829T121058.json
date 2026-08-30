@@ -1,0 +1,127 @@
+{
+  "run_id": "20260829T121058",
+  "timestamp": "2026-08-29T12:10:58",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002",
+  "output_name": "0GOOR_HG002",
+  "compression_methods": "gzip,brotli,hdt,hdt_gzip,hdt_brotli,cottas,cottas_gzip,cottas_brotli",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.nt.gz",
+  "combined_rdf_size_bytes": 721817996,
+  "index_warnings": [],
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.nt.gz",
+    "output_gz_size_bytes": 721817996,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 0.0,
+      "user_seconds": 0.0,
+      "sys_seconds": 0.0,
+      "max_rss_kb": 0
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.nt.br",
+    "output_brotli_size_bytes": 425893402,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 237.0,
+      "user_seconds": 228.11,
+      "sys_seconds": 17.46,
+      "max_rss_kb": 48604
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.cottas",
+    "output_cottas_size_bytes": 266899568,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 14359.543726348376,
+      "user_seconds": 97848.21,
+      "sys_seconds": 1605.32,
+      "max_rss_kb": 31646956
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 167958298,
+      "decoded_triples": 167958298,
+      "expected_triples": 167958298,
+      "count_match": true,
+      "validator": "pycottas.cottas2rdf",
+      "timing": {
+        "wall_seconds": 137.3377832180122,
+        "user_seconds": 164.34,
+        "sys_seconds": 13.67,
+        "max_rss_kb": 367080
+      }
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.hdt",
+    "output_hdt_size_bytes": 1719892341,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 9652.560837012308,
+      "user_seconds": 10277.269999999995,
+      "sys_seconds": 100.43999999999998,
+      "max_rss_kb": 5899808
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 167958298,
+      "decoded_triples": 167958298,
+      "expected_triples": 167958298,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 232.24526317499112,
+        "user_seconds": 277.32,
+        "sys_seconds": 35.12,
+        "max_rss_kb": 1699712
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.hdt.gz",
+    "output_hdt_gz_size_bytes": 183951048,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 20.160817249969114,
+      "user_seconds": 19.21,
+      "sys_seconds": 0.92,
+      "max_rss_kb": 2176
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.hdt.br",
+    "output_hdt_br_size_bytes": 158513268,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 83.82253986300202,
+      "user_seconds": 82.81,
+      "sys_seconds": 0.99,
+      "max_rss_kb": 106996
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.cottas.gz",
+    "output_cottas_gz_size_bytes": 232651067,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 8.546498882991727,
+      "user_seconds": 8.35,
+      "sys_seconds": 0.18,
+      "max_rss_kb": 2048
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "/home/ubuntu/vcf-rdfizer-testing/experiments/0GOOR_HG002/0GOOR_HG002.cottas.br",
+    "output_cottas_br_size_bytes": 181491500,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 19.701928257010877,
+      "user_seconds": 19.48,
+      "sys_seconds": 0.21,
+      "max_rss_kb": 55044
+    }
+  }
+}
