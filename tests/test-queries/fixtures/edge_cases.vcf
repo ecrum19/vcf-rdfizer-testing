@@ -1,0 +1,27 @@
+##fileformat=VCFv4.3
+##fileDate=20260831
+##source=vcf-rdfizer-semantic-equivalence-fixture
+##reference=fixture-reference
+##contig=<ID=1,length=2000000>
+##contig=<ID=2,length=2000000>
+##FILTER=<ID=q10,Description="Quality below 10">
+##FILTER=<ID=LowQual,Description="Low-quality call">
+##ALT=<ID=DEL,Description="Deletion">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	S1	S2	S3
+1	1	.	A	G	50	PASS	.	GT:DP	0/0:10	0|1:8	1/1:7
+1	1000001	.	A	C	.	.	.	GT	0/1	1|0	./.
+1	10	.	A	AT	20	q10	.	GT	0/1	1/1	0/.
+1	11	.	AT	A	20	LowQual;q10	.	GT	0/0	0/1	./.
+1	12	.	AC	GT	40	PASS	.	GT	1/1	0/0	0/1
+1	13	.	A	C,G	40	PASS	.	GT	1/2	0/2	0/1
+2	14	.	N	<DEL>	40	PASS	.	GT	0/1	1/1	0/0
+2	15	.	A	*	40	PASS	.	GT	0/1	0/0	1/1
+2	16	.	N	N]2:321682]	40	PASS	.	GT	0/1	0/0	1/1
+2	17	.	A	.	.	.	.	GT	.	.	.
+2	18	.	A	T	20	q10	.	GT	0	1	0
+2	19	.	G	A	40	PASS	.	GT	1|1	0/0	1/2
+2	20	.	C	T	40	PASS	.	GT	0/0/1	1/1/1	0/0/0
+2	21	.	A	ATG	40	PASS	.	GT	0/1	0/0	1/1
+2	22	.	N	A	40	PASS	.	DP	5	6	7

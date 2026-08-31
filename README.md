@@ -111,6 +111,32 @@ selects raw RDF `gzip,brotli`, both `hdt,cottas` representations, and gzip plus
 Brotli packaging for each representation. (`space-optimized` is the
 VCF-RDFizer CLI spelling of the space-efficient mode.)
 
+## Semantic VCF Query Equivalence Tests
+
+The Dockerized suite in [`tests/test-queries`](tests/test-queries/README.md)
+compares six bioinformatic summaries computed independently from a source VCF
+and its converted N-Triples: genomic density, allele shape, Ti/Tv, exact FILTER
+distribution, per-sample genotype classes/call rate, and genotype-derived
+AC/AN. Run its edge-case fixture with:
+
+```bash
+tests/test-queries/run_in_docker.sh
+```
+
+For a real conversion, provide one VCF and its corresponding `.nt` file or
+partition directory:
+
+```bash
+tests/test-queries/run_in_docker.sh \
+  --vcf vcf_data/HG004_GRCh38.vcf.gz \
+  --rdf path/to/HG004/rdf \
+  --dataset-id HG004_GRCh38
+```
+
+See the [test-specific README](tests/test-queries/README.md) for exact query
+semantics, multiple-partition usage, provenance options, result files, status
+interpretation, and large-dataset memory guidance.
+
 
 ## Metrics and Reporting Scripts
 
