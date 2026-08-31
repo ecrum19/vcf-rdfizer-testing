@@ -44,9 +44,9 @@ stored in Git because of their size.
 | 5 | `60820188474283.vcf.gz` | 222 MB | Dante Labs whole-genome VCF |
 | 6 | `0GOOR_HG002.vcf.gz` | 69 MB | Genome in a Bottle HG002 truth-challenge VCF |
 | 7 | `1000G_phase3_chr20.vcf.gz` | 327 MB | 1000 Genomes Phase 3 chromosome 20; 2,504 samples; GRCh37 |
-| 8 | `HGSVC2_freeze3_sv_alt.vcf.gz` | 31.5 MB | HGSVC2 structural-variant batch; 32 samples; GRCh38 |
-| 9 | `HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` | 149 MB | Genome in a Bottle HG004 benchmark; single sample; GRCh38 |
-| 10 | `HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` | 139 MB | Genome in a Bottle HG005 benchmark; single sample; GRCh38 |
+| 8 | `HGSVC2.vcf.gz` | 31.5 MB | HGSVC2 structural-variant batch; 32 samples; GRCh38 |
+| 9 | `HG004_GRCh38.vcf.gz` | 149 MB | Genome in a Bottle HG004 benchmark; single sample; GRCh38 |
+| 10 | `HG005_GRCh38.vcf.gz` | 139 MB | Genome in a Bottle HG005 benchmark; single sample; GRCh38 |
 
 The approximate sizes are descriptive metadata, not measured benchmark
 results. Before running, record the exact byte size and SHA-256 checksum of

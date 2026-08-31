@@ -66,9 +66,9 @@ The supplied project README identifies ten inputs [R14]:
 | 5 | `60820188474283.vcf.gz` | Dante Labs WGS profile |
 | 6 | `0GOOR_HG002.vcf.gz` | GIAB Truth Challenge submission |
 | 7 | `1000G_phase3_chr20.vcf.gz` | GRCh37, chromosome 20, phased, 2,504 samples; principal multi-sample stress case |
-| 8 | `HGSVC2_freeze3_sv_alt.vcf.gz` | GRCh38 structural variants, 32 samples; sequence REF/ALT alleles rather than only symbolic ALT values |
-| 9 | `HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` | GIAB, single sample, GRCh38 chromosomes 1–22 |
-| 10 | `HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz` | GIAB, single sample, GRCh38 chromosomes 1–22 |
+| 8 | `HGSVC2.vcf.gz` | GRCh38 structural variants, 32 samples; sequence REF/ALT alleles rather than only symbolic ALT values |
+| 9 | `HG004_GRCh38.vcf.gz` | GIAB, single sample, GRCh38 chromosomes 1–22 |
+| 10 | `HG005_GRCh38.vcf.gz` | GIAB, single sample, GRCh38 chromosomes 1–22 |
 
 ### Applicability rules
 
@@ -468,7 +468,7 @@ Every `(variantClass, recordCount)` row must match exactly.
 
 ### Dataset-specific value
 
-Q2 is especially important for `HGSVC2_freeze3_sv_alt.vcf.gz`, whose structural variants are described as sequence alleles. A test that recognizes only `<DEL>`-style symbolic ALT would miss this stress case.
+Q2 is especially important for `HGSVC2.vcf.gz`, whose structural variants are described as sequence alleles. A test that recognizes only `<DEL>`-style symbolic ALT would miss this stress case.
 
 ---
 
@@ -1531,8 +1531,8 @@ The result can therefore be reported as a **representation-equivalence validatio
 | `60820188474283` |  |  |  |  |  |  |  |  |
 | `0GOOR_HG002` |  |  |  |  |  |  |  |  |
 | `1000G_phase3_chr20` |  |  |  |  |  |  |  |  |
-| `HGSVC2_freeze3_sv_alt` |  |  |  |  |  |  |  |  |
-| `HG004_GRCh38_1_22_v4.2.1_benchmark` |  |  |  |  |  |  |  |  |
-| `HG005_GRCh38_1_22_v4.2.1_benchmark` |  |  |  |  |  |  |  |  |
+| `HGSVC2` |  |  |  |  |  |  |  |  |
+| `HG004_GRCh38` |  |  |  |  |  |  |  |  |
+| `HG005_GRCh38` |  |  |  |  |  |  |  |  |
 
 Suggested status values: `PASS`, `MISMATCH`, `NOT_APPLICABLE_VERIFIED`, `EXECUTION_FAILED`, and `BLOCKED_BY_PREFLIGHT`.
