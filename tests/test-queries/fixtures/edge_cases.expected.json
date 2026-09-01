@@ -1,0 +1,57 @@
+{
+  "q01_record_density_1mb": [
+    {"chrom": "1", "windowIndex": 0, "recordCount": 5},
+    {"chrom": "1", "windowIndex": 1, "recordCount": 1},
+    {"chrom": "2", "windowIndex": 0, "recordCount": 9}
+  ],
+  "q02_variant_shape_counts": [
+    {"variantClass": "DELETION_SHAPE", "recordCount": 1},
+    {"variantClass": "INSERTION_SHAPE", "recordCount": 2},
+    {"variantClass": "MNV_OR_EQUAL_LENGTH_SUBSTITUTION", "recordCount": 1},
+    {"variantClass": "MULTIALLELIC", "recordCount": 1},
+    {"variantClass": "NO_ALT", "recordCount": 1},
+    {"variantClass": "SNV", "recordCount": 6},
+    {"variantClass": "SYMBOLIC_OR_BREAKEND", "recordCount": 3}
+  ],
+  "q03_titv": {
+    "biallelicSnvCount": 5,
+    "transitionCount": 3,
+    "transversionCount": 2
+  },
+  "q04_filter_distribution": [
+    {"filterStatus": "FAILED", "filterLexical": "LowQual;q10", "recordCount": 1},
+    {"filterStatus": "FAILED", "filterLexical": "q10", "recordCount": 2},
+    {"filterStatus": "NOT_APPLIED", "filterLexical": ".", "recordCount": 2},
+    {"filterStatus": "PASS", "filterLexical": "PASS", "recordCount": 10}
+  ],
+  "q05_sample_genotype_counts": [
+    {"sampleId": "S1", "genotypeClass": "HAPLOID_REF", "callCount": 1},
+    {"sampleId": "S1", "genotypeClass": "HET", "callCount": 7},
+    {"sampleId": "S1", "genotypeClass": "HOM_ALT", "callCount": 2},
+    {"sampleId": "S1", "genotypeClass": "HOM_REF", "callCount": 2},
+    {"sampleId": "S1", "genotypeClass": "MISSING", "callCount": 1},
+    {"sampleId": "S1", "genotypeClass": "NO_GT_FIELD", "callCount": 1},
+    {"sampleId": "S1", "genotypeClass": "OTHER_PLOIDY", "callCount": 1},
+    {"sampleId": "S2", "genotypeClass": "HAPLOID_ALT", "callCount": 1},
+    {"sampleId": "S2", "genotypeClass": "HET", "callCount": 4},
+    {"sampleId": "S2", "genotypeClass": "HOM_ALT", "callCount": 2},
+    {"sampleId": "S2", "genotypeClass": "HOM_REF", "callCount": 5},
+    {"sampleId": "S2", "genotypeClass": "MISSING", "callCount": 1},
+    {"sampleId": "S2", "genotypeClass": "NO_GT_FIELD", "callCount": 1},
+    {"sampleId": "S2", "genotypeClass": "OTHER_PLOIDY", "callCount": 1},
+    {"sampleId": "S3", "genotypeClass": "HAPLOID_REF", "callCount": 1},
+    {"sampleId": "S3", "genotypeClass": "HET", "callCount": 3},
+    {"sampleId": "S3", "genotypeClass": "HOM_ALT", "callCount": 4},
+    {"sampleId": "S3", "genotypeClass": "HOM_REF", "callCount": 1},
+    {"sampleId": "S3", "genotypeClass": "MISSING", "callCount": 4},
+    {"sampleId": "S3", "genotypeClass": "NO_GT_FIELD", "callCount": 1},
+    {"sampleId": "S3", "genotypeClass": "OTHER_PLOIDY", "callCount": 1}
+  ],
+  "q06_ac_an_distribution": [
+    {"an": 3, "ac": 1, "siteCount": 1},
+    {"an": 4, "ac": 1, "siteCount": 1},
+    {"an": 4, "ac": 2, "siteCount": 2},
+    {"an": 4, "ac": 3, "siteCount": 1},
+    {"an": 6, "ac": 3, "siteCount": 6}
+  ]
+}
