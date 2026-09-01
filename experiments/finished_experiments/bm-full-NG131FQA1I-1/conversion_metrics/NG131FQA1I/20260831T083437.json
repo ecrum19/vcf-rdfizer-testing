@@ -1,0 +1,50 @@
+{
+  "run_id": "20260831T083437",
+  "timestamp": "2026-08-31T08:34:37",
+  "command": "java -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/NG131FQA1I.rules.ttl -o /data/out/NG131FQA1I/.rmlstreamer-parts-NG131FQA1I-1 ",
+  "exit_code": 0,
+  "timing": {
+    "wall_seconds": 180.89,
+    "user_seconds": 1293.09,
+    "sys_seconds": 54.41,
+    "max_rss_kb": 1460660
+  },
+  "artifacts": {
+    "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+    "input_path": "/data/rules/NG131FQA1I.rules.ttl",
+    "input_size_bytes": 8461,
+    "input_vcf_size_bytes": 1215509730,
+    "output_path": "/data/out/NG131FQA1I/NG131FQA1I.nt.gz",
+    "output_size_bytes": 810607259,
+    "output_triples": {
+      "/data/out/NG131FQA1I/NG131FQA1I.nt.gz": 147710127,
+      "TOTAL": 147710127
+    }
+  },
+  "rdf_storage": {
+    "mode": "space-optimized",
+    "compressed": true,
+    "serialization": "ntriples"
+  },
+  "tsv_generation": {
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 44.066657,
+      "user_seconds": 45.41,
+      "sys_seconds": 3.06,
+      "max_rss_kb": 7424
+    },
+    "output_size_bytes": 1337706757,
+    "output_path": "/data/tsv/NG131FQA1I.records.tsv|/data/tsv/NG131FQA1I.header_lines.tsv|/data/tsv/NG131FQA1I.file_metadata.tsv"
+  },
+  "java": {
+    "version_header": "openjdk version \"11.0.32\" 2026-07-21"
+  },
+  "sample_streaming": {
+    "records": 4741304,
+    "sample_calls": 4741304,
+    "format_values": 25529863,
+    "triples": 90813501,
+    "appended_bytes": 416512265
+  }
+}
