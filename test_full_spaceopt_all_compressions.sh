@@ -41,6 +41,7 @@ fi
 python3 VCF-RDFizer/vcf_rdfizer.py \
   --mode full \
   --input "$INPUT_VCF" \
+  --sample-representation dense \
   --rdf-storage-mode space-optimized \
   --rdf-compression gzip,brotli \
   --representations hdt,cottas \
