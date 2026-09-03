@@ -9,7 +9,7 @@ fi
 
 # Pass either a VCF basename from VCF-RDFizer/test/test_vcf_files/, or a path
 # relative to the current directory/repository (absolute paths also work).
-VCF_NAME="$1"
+RDF_NAME="$1"
 OUTPUT_DIR="vcf-rdfizer-testing/experiments"
 DOCKER_LOCAL="vcf-rdfizer:local"
 
@@ -20,25 +20,17 @@ PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 # VCF-RDFizer checkout and this repository can be addressed by name.
 cd "$PROJECT_ROOT"
 
-if [[ "$VCF_NAME" == /* ]]; then
-  INPUT_VCF="$VCF_NAME"
-elif [[ -f "$VCF_NAME" ]]; then
-  INPUT_VCF="$VCF_NAME"
-elif [[ -f "vcf-rdfizer-testing/$VCF_NAME" ]]; then
-  INPUT_VCF="vcf-rdfizer-testing/$VCF_NAME"
-else
-  INPUT_VCF="VCF-RDFizer/test/test_vcf_files/$VCF_NAME"
-fi
+INPUT_RDF="vcf-rdfizer-testing/$RDF_NAME"
 
-if [[ ! -f "$INPUT_VCF" ]]; then
-  echo "VCF file not found: $INPUT_VCF" >&2
+if [[ ! -f "$INPUT_RDF" ]]; then
+  echo "RDF file not found: $INPUT_RDF" >&2
   exit 1
 fi
 
 
 python3 VCF-RDFizer/vcf_rdfizer.py \
   --mode compress \
-  --rdf "$RDF_INPUT" \
+  --rdf "$INPUT_RDF" \
   --rdf-compression none \
   --representations cottas \
   --artifact-compression none \
