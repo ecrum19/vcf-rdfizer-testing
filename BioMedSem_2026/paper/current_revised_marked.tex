@@ -1,0 +1,802 @@
+%Version 3.1 December 2024
+% See section 11 of the User Manual for version history
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%=========================================================================================%%
+%% the documentclass is set to pdflatex as default. You can delete it if not appropriate.  %%
+%%=========================================================================================%%
+
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%Note: the following reference styles support Namedate and Numbered referencing. By default the style follows the most common style. To switch between the options you can add or remove �Numbered� in the optional parenthesis. 
+%%The option is available for: sn-basic.bst, sn-chicago.bst%  
+
+%%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+%%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
+%%\documentclass[pdflatex,sn-vancouver-ay]{sn-jnl}% Vancouver Author Year Reference Style
+%%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+
+% [ADDED 2026-08-31: visible manuscript revision markup]
+\usepackage[normalem]{ulem}%
+\definecolor{revisionblue}{RGB}{0,74,173}%
+\definecolor{revisionred}{RGB}{170,0,0}%
+\definecolor{queryorange}{RGB}{177,94,0}%
+\newenvironment{revision}{\begingroup\color{revisionblue}}{\endgroup}%
+\newcommand{\deleted}[1]{{\color{revisionred}\sout{#1}}}%
+\newcommand{\authorquery}[1]{%
+  \par\smallskip\noindent
+  {\color{queryorange}\textbf{[AUTHOR QUERY: #1]}}%
+  \par\smallskip
+}%
+
+% --- Tables & figures helpers ---
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{siunitx}
+\usepackage[section]{placeins}
+\sisetup{
+  detect-all,
+  group-separator = {,},
+  group-minimum-digits = 4
+}
+\sisetup{detect-weight=true, detect-family=true}
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title[VCF-RDFizer]{VCF-RDFizer: A Conversion Tool to Represent Variant Data as a Knowledge Graph}
+
+%%=============================================================%%
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% \author*[1,2]{\fnm{Joergen W.} \spfx{van der} \sur{Ploeg} 
+%%  \sfx{IV}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+\author*[1,2]{\fnm{Elias} \sur{Crum}\ORCID{0009-0005-3991-754X}}\email{elias.crum@ugent.be}
+\author[1]{Bart Buelens\ORCID{0000-0001-7734-3747}}
+\author[2]{Ruben Taelman\ORCID{0000-0001-5118-256X}}
+\author[1]{Gökhan Ertaylan\ORCID{0000-0001-5602-6435}}
+
+\affil[2]{\orgdiv{IDLab, Department of Electronics and Information Systems}, \orgname{Ghent University -- imec}, \orgaddress{\street{Technologiepark-Zwijnaarde 116}, \postcode{9052}, \country{Belgium}}}
+\affil[1]{\orgdiv{Digital Biological Systems}, \orgname{Flemish institute for Technological Research (VITO)}, \orgaddress{\street{Boeretang 200}, \postcode{2400}, \country{Belgium}}}
+
+
+%%==================================%%
+%% Sample for unstructured abstract %%
+%%==================================%%
+
+% [REVISED 2026-08-31: COTTAS, current compression architecture, expanded corpus, and semantic-equivalence queries]
+\abstract{{\color{revisionblue}
+\textbf{Purpose:} The Variant Call Format (VCF) is the dominant standard for representing genomic variation and underpins population genomics, clinical sequencing, and precision-medicine workflows. As VCF datasets are increasingly interpreted together with sample metadata, clinical observations, public biomedical resources, and governance information, a Resource Description Framework (RDF) representation can provide a common graph model for linkage and declarative querying. 
+\textbf{Methods:} We present VCF-RDFizer, a command-line tool distributed through PyPI, Conda-Forge, and Docker that converts VCF into RDF using a public VCF-oriented vocabulary and modular RML mappings. In addition to raw N-Triples and general-purpose gzip/Brotli artifacts, the current workflow produces two queryable compressed representations: HDT and COTTAS. A storage-aware chunk pipeline incrementally reads a plain or concatenated-gzip RDF aggregate, materializes only one newline-safe uncompressed chunk at a time, converts that chunk into the selected representation(s), deletes the chunk, and merges the representation parts. We further define six paired bioinformatic queries to be evaluated over RDF with SPARQL and over the source VCF with VCF-native software to test representation equivalence. 
+\textbf{Results:} The completed baseline benchmark reported in this draft covers six original VCF inputs and demonstrates tractable RDF conversion on workstation-class hardware. The reproducibility corpus has now been expanded to ten inputs, adding a phased 2,504-sample 1000 Genomes chromosome-20 VCF, a 32-sample HGSVC2 structural-variant VCF, and two Genome in a Bottle v4.2.1 benchmark VCFs. Current-pipeline HDT/COTTAS measurements and SPARQL-versus-VCF-parser query measurements are not yet reported; placeholders are retained to prevent unsupported performance or equivalence claims. 
+\textbf{Conclusion:} VCF-RDFizer provides a reproducible route from VCF to interoperable and optionally queryable compressed RDF, supporting both semantic integration and testable preservation of core variant and genotype information.%
+}}
+\keywords{\color{revisionblue}Knowledge Representation, Genomic Variant Data, Variant Call Format, RDF, SPARQL, HDT, COTTAS, Semantic Validation}
+
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+\maketitle
+
+% [ADDED 2026-08-31: revision legend; remove before final submission]
+\begin{revision}
+\noindent\textbf{Revision-marking key.} Blue text denotes additions or substantively revised passages. Red strikethrough, where used, denotes superseded wording. Orange \textbf{[AUTHOR QUERY]} statements identify information that is not supported by the supplied artifacts and must be resolved before submission.
+\end{revision}
+\authorquery{Please confirm whether all ten inputs have completed conversion with the current \texttt{dev} implementation. If so, replace the cautious Results wording in the abstract with the measured ten-file findings and add the corresponding numerical ranges.}
+
+\section{Introduction}\label{sec1}
+
+%% VCF Intro - what is it? how can we improve its usage?
+\textbf{Variant Call Format}.
+The Variant Call Format (VCF) is the dominant standard for representing and exchanging genomic variants across research and clinical sequencing pipelines, including pharmacogenomics and precision medicine applications \cite{vcf_spec_2024,pharmcat,souche_recommendations_2022}. 
+As clinical sequencing expands, variant datasets are increasingly interpreted alongside external biomedical resources, patient or sample metadata, and governance constraints controlling access to sensitive genomic information. 
+Operational semantic-genomics initiatives already demonstrate the value of linking variant observations to curated biomedical databases and controlled-access frameworks \cite{togovar_2022,sphn_semantic_2023}.
+
+These emerging use cases expose limitations of the traditional VCF representation.
+First, clinical interpretation frequently requires linking variants to external knowledge sources such as protein annotations, disease databases, or pharmacogenomic resources. 
+While VCF supports annotation fields, it provides limited mechanisms for structured, machine-interpretable linkage between variant records and external resources. 
+Second, genomic datasets frequently require fine-grained privacy controls, such as restricting access to particular genomic regions or subsets of variants, which the VCF specification does not natively support.
+Third, querying variant collections across multiple VCF files, for example, identifying clinically relevant mutations or retrieving variants within genomic position intervals, typically relies on specialized command-line utilities (e.g., bcftools \cite{BCFtools}) or custom pipelines rather than interoperable, declarative query mechanisms.
+
+In other domains, semantic web and policy frameworks, such as Linked Data \cite{W3CLinkedDataWiki} and the Open Digital Rights Language (ODRL) \cite{odrl_2018}, enable structured linkage between datasets, external knowledge resources, and access control policies. 
+Applying similar approaches to genomic variant data could enable richer integration with biomedical knowledge bases and more expressive query capabilities.
+
+
+%% RDF Intro - What is it? How can it help enrich VCF data?
+% [CORRECTED 2026-08-31: RDF expands to Resource Description Framework]
+\textbf{\color{revisionblue}Resource Description Framework}.
+The Resource Description Framework (RDF) \cite{rdf} provides a widely adopted graph-based data model for representing relationships between entities identified by globally unique identifiers (IRIs).
+For variant data, RDF enables (i) structured linkage between variant data and external biomedical resources \cite{bio2rdf_2008,openbiolink_2019,sib_2024}, (ii) native declarative querying via the SPARQL query language \cite{sparqllang}, and (iii) fine-grained privacy policy enforcement over variant data and linkages \cite{odrl_2018}.
+In practice, this could enable, for instance, a user to query a collection of VCF-derived datasets to identify variants whose alternative alleles occur in a specific gene, are associated with a given phenotype, and are accessible under particular policy restrictions.
+
+
+%% How do we turn VCF into RDF? Why is it hard?
+\textbf{From VCF to RDF}.
+Transforming VCF into RDF requires \textit{semantic lifting}: converting the row-based structure of VCF files into graph statements. 
+Relevant VCF elements such as genomic position, alleles, genotypes, and sample identifiers are assigned IRIs, and fields are translated into subject–predicate–object triples. 
+Ontology-aligned predicates provide consistent semantics which enable datasets to be queried and linked.
+
+This transformation requires two components: 
+(i) a semantic vocabulary describing VCF concepts and relationships, and 
+(ii) a mapping process that converts VCF file content into RDF using this vocabulary. 
+Such mappings must be systematic and reproducible due to the structural heterogeneity permitted by the VCF specification \cite{vcf_spec_2024}. 
+INFO fields may contain semi-structured annotations, FORMAT and genotype columns vary across datasets, and multi-sample files aggregate multiple genotypes within shared variant records, complicating the creation of consistent semantic representations.
+
+
+%% Related work table
+\begin{table*}[t]
+\caption{Comparison of prior VCF-to-RDF tooling and workflows against engineering-completeness criteria considered in this study. 
+Columns indicate whether a system provides: a command-line interface (CLI) for direct pipeline use; a publicly documented semantic vocabulary describing the RDF model (Public vocab.); an end-to-end reproducible transformation workflow (Reprod. pipeline); support for representing VCF metadata, genotype, and sample-level information (Metadata + genotype); modular and user-extensible transformation rules (Modular mappings); integrated strategies for mitigating RDF storage expansion through compression (Compression pipeline); and publicly distributed software packaging for reuse (Public packaging). 
+Status codes: Y = explicitly supported, P = partially supported, N = not supported. Inline qualifier: sub. = subset-level support.}\label{tab:intro-tool-comparison}%
+\centering
+\tiny
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{0.95}
+\resizebox{0.95\textwidth}{!}{%
+\begin{tabular}{@{}p{0.21\textwidth}cccccccc@{}}
+\toprule
+\textbf{Tool/workflow} &
+\textbf{\shortstack{Code\\language}} &
+\textbf{CLI} &
+\textbf{Public vocab.} &
+\textbf{\shortstack{Reprod.\\pipeline}} &
+\textbf{\shortstack{Metadata +\\genotype}} &
+\textbf{\shortstack{Modular\\mappings}} &
+\textbf{\shortstack{Compression\\pipeline}} &
+\textbf{\shortstack{Public\\packaging}} \\
+\midrule
+\textbf{VCF-RDFizer (this study)} & \textbf{Python} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} \\
+\midrule
+VCF2RDF (TOGOvar) \cite{togovar_2022} & Rust & Y & N & P & P (sub.) & N & N & N \\
+\midrule
+JVarKit VcfToRdf \cite{JVarkit_2015} & Java & Y & N & P & P (sub.) & N & N & Y \\
+\midrule
+ruby-rdf/rdf-vcf \cite{ruby_rdf_vcf} & Ruby & P & N & P & P (sub.) & N & N & Y \\
+\midrule
+Semantic beacons workflow \cite{semantic_beac_2025} & YAML & N & Y & P & P (sub.) & N & N & N \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+
+Several efforts have explored representing VCF data in RDF. 
+Table~\ref{tab:intro-tool-comparison} compares the capabilities of existing tools including \textit{VCF2RDF} within TOGOvar \cite{togovar_2022}, JVarkit’s \textit{VcfToRdf} \cite{JVarkit_2015}, the \textit{ruby-rdf/rdf-vcf} library \cite{ruby_rdf_vcf}, and the \textit{semantic beacons} workflow \cite{semantic_beac_2025}. 
+While these systems demonstrate the feasibility of semantic representations of genomic variants, several limitations remain.
+
+
+%% What VCF-as-RDF work has been done before? (Related Work)
+\textbf{Related Work}.
+Several existing efforts demonstrate that VCF data can be represented in RDF. 
+Table~\ref{tab:intro-tool-comparison} summarizes the capabilities of the most advanced VCF-to-RDF tools available at the time of writing, including \textit{VCF2RDF} within TOGOvar \cite{togovar_2022}, JVarkit’s \textit{VcfToRdf} \cite{JVarkit_2015}, the \textit{ruby-rdf/rdf-vcf} library \cite{ruby_rdf_vcf}, and the \textit{semantic beacons} workflow \cite{semantic_beac_2025}. 
+In terms of access channels, VCF-RDFizer is distributed through PyPI, Conda-Forge, and DockerHub, JVarkit is available as a JAR utility, ruby-rdf/rdf-vcf is available as a Ruby gem and GitHub repository, while TOGOvar and semantic-beacons implementations are primarily accessed as platform/workflow resources rather than standalone packaged conversion CLIs.
+While these systems demonstrate the feasibility of semantic representations of genomic variants, Table~\ref{tab:intro-tool-comparison} highlights several capabilities that remain only partially addressed across existing tools.
+
+%% Public semantic vocabulary
+\textbf{Open Challenges}.
+\textit{First}, most approaches lack a publicly documented vocabulary describing the structural semantics of VCF data. 
+As shown in Table~\ref{tab:intro-tool-comparison}, only the semantic beacons workflow publishes a vocabulary, and it covers only a subset of VCF fields. 
+Although genomic ontologies such as GA4GH Variant Representation \cite{ga4gh_varschema_2021}, FALDO \cite{faldo_2016}, Sequence Ontology \cite{seq_ont_2005}, GENO, and SNPO describe biological entities, they do not define a reusable semantic model of VCF file structure.
+
+%% Declarative modular mappings
+\textit{Second}, many converters rely on hard-coded parsing logic or ad-hoc transformation rules. 
+For example, the semantic beacons workflow uses YAML-based rule specifications \cite{yaml-spec_2025}. 
+Declarative mapping languages provide a more robust alternative. 
+RML (RDF Mapping Language) \cite{rml_2024} supports mapping semi-structured and heterogeneous data sources to RDF and is therefore well-suited to the irregular structure of VCF files. 
+Its ecosystem includes engines such as RMLStreamer \cite{rmlstreamer_2022} for scalable transformation workflows. 
+By separating semantic mappings from implementation logic, RML enables modular rules that can be shared, adapted, and extended for dataset-specific structures.
+
+% [REVISED 2026-08-31: distinguish archival and queryable compression; add COTTAS]
+\begin{revision}
+\textit{Third}, Table~\ref{tab:intro-tool-comparison} shows that most tools do not address the storage implications of semantic lifting. 
+Expanding compact formats such as VCF into explicit RDF triples increases storage size, particularly when globally unique IRIs repeat across records \cite{rdf}. 
+Compression strategies therefore play an important role, but archival and queryable compression serve different purposes. 
+General-purpose compressors such as gzip and Brotli \cite{brotli_2019} reduce transfer and storage costs but require decompression before direct RDF querying. 
+HDT (Header--Dictionary--Triples) \cite{hdt_2013} provides a compressed binary RDF representation with triple-pattern access, whereas COTTAS represents RDF as a columnar triple table in Apache Parquet and uses columnar indexes to support queries over the compressed representation \cite{cottas_2025}. 
+Offering both classes of output allows a workflow to prioritize compact archival artifacts, directly queryable RDF, or both.
+\end{revision}
+
+%% So what + Aims of study
+% [REVISED 2026-08-31: add queryable representations and validation aim]
+\begin{revision}
+\textbf{Study Aims}.
+Taken together, these limitations motivate the development of a reusable and reproducible VCF-to-RDF transformation tool whose output can be independently validated. 
+Here we present \textit{VCF-RDFizer}, which integrates a publicly documented vocabulary, modular RML-based mappings, storage-aware conversion, general-purpose compression, and queryable HDT and COTTAS representations.
+As summarized in Table~\ref{tab:intro-tool-comparison}, VCF-RDFizer combines capabilities that are typically disconnected in existing approaches: a standalone CLI \url{https://github.com/ecrum19/VCF-RDFizer}, a public vocabulary \url{https://w3id.org/vcf-rdfizer/vocab\#}, modular declarative mappings, a reproducible pipeline, queryable compressed outputs, and public packaging \url{https://pypi.org/project/vcf-rdfizer/}. 
+In addition to measuring conversion and compression costs, this study defines a paired SPARQL/VCF-parser workload to determine whether the RDF representation reproduces established variant and genotype summaries exactly.
+\end{revision}
+
+
+\section{VCF-RDFizer CLI Tool}\label{sec2}
+VCF-RDFizer is a command-line tool that converts input VCF files into semantically enriched RDF using a reproducible mapping pipeline. 
+The workflow integrates pre-processing, mapping, RDF conversion, and optional compression/decompression functionalities. 
+An overview of these workflows is shown in Figure~\ref{fig1}.
+
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{vcf2rdf.pdf}
+\caption{\textbf{VCF-RDFizer Pipeline Workflow}
+The flowchart depicts end-to-end conversion from VCF input to semantically enriched, compressed RDF outputs.
+\textbf{Conversion}: VCF-RDFizer converts VCF file into TSV intermediates, uses RML mappings and RMLStreamer to generate N-Triples, and optionally aggregates VCF RDF outputs to a single N-Triples (\texttt{.nt}) file. 
+% [REVISED 2026-08-31: add COTTAS and clarify queryable vs packaged artifacts]
+\textbf{Compression and representations}: VCF-RDFizer can emit general-purpose gzip/Brotli artifacts and queryable HDT and COTTAS representations. HDT and COTTAS artifacts may additionally be packaged with gzip or Brotli for distribution; those packaged artifacts must be unpacked before direct querying.
+\textbf{Storage-aware construction}: In space-optimized mode, a concatenated-gzip N-Triples aggregate is read incrementally, only one uncompressed record-safe chunk is materialized at a time, each selected representation consumes that chunk, and the chunk is deleted before the next is produced.
+\textbf{Decompression and validation}: General-purpose packaging is reversible, and generated HDT/COTTAS artifacts are decoded through their native readers for triple-count validation.
+} \label{fig1}
+\end{figure}
+\authorquery{The caption now describes COTTAS and the one-raw-chunk-at-a-time workflow, but the supplied \texttt{vcf2rdf.pdf} artwork was not available for editing. Please regenerate Figure~\ref{fig1} so that the diagram itself shows the new storage modes, COTTAS branch, balanced merges, validation, and packaging distinction.}
+
+\subsection{Semantic Model}\label{subsec2.1}
+The semantic model we developed to represent VCF data combines a dedicated VCF-RDFizer vocabulary (\url{https://w3id.org/vcf-rdfizer/vocab#}) with terms aligned with established biological ontologies to maximize interoperability and reuse.
+Term equivalencies are defined for genomic coordinates (FALDO \cite{faldo_2016}), variant typing (the Sequence Ontology \cite{seq_ont_2005}), genotype/sample constructs (HERO \cite{hero-genomics_2025}), and features of the GA4GH VRS schema v2.0.1 \cite{ga4gh2025VRS}.
+This hybrid strategy retains VCF-specific semantics while avoiding duplication of mature ontology terms.
+
+The model preserves three information layers: metadata/header assertions, variant-level assertions, and genotype/sample assertions.
+Core entities are minted using deterministic IRI templates derived from stable VCF attributes (e.g., chromosome, position, reference allele, etc.), which keeps identifiers reproducible across runs.
+The vocabulary website also provides a suggested canonical IRI pattern for instances of the core classes, which can be used as a reference for users who want to generate their own RDF from VCF files using the provided vocabulary and mappings.
+A visual representation of the core components of the vocabulary is shown in Figure~\ref{fig2}, and a more detailed and interactive version is available on the companion website: \url{https://ecrum19.github.io/VCF-RDFizer-vocabulary/}.
+On the website are also examples of how a VCF file will look after conversion to RDF (as well as an example for multi-sample cases).
+
+
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{class-hierarchy-paper.png}
+\caption{\textbf{VCF-RDFizer Vocabulary Semantic Model (simplified)}
+The figure depicts a simplified representation of the semantic hierarchy of core terms of the VCF-RDFizer vocabulary.
+All \textit{vcfr:} prefixes are an abbreviation for \url{https://w3id.org/vcf-rdfizer/vocab\#}.
+Genotype/sample class relationships are not represented in this figure for simplicity, but more details are available in the interactive representation of the vocabulary at: \url{https://ecrum19.github.io/VCF-RDFizer-vocabulary/}.
+} \label{fig2}
+\end{figure}
+
+
+\subsection{Tool Workflow}\label{subsec2.2}
+% [REVISED 2026-08-31: current storage modes and HDT/COTTAS construction]
+\begin{revision}
+VCF-RDFizer is implemented as a Python command-line tool that coordinates five stages: 
+(1) conversion of each VCF into records, header-line, and file-metadata TSV logical sources; 
+(2) TSV-to-RDF transformation with modular RML mappings and RMLStreamer; 
+(3) construction of one logical N-Triples aggregate in either plain or space-optimized storage mode; 
+(4) optional creation of raw-RDF gzip/Brotli artifacts and/or queryable HDT and COTTAS representations; and 
+(5) native representation validation, packaging, cleanup, and run-metric reporting. 
+The command-line interface separates these concerns through \texttt{--rdf-storage-mode}, \texttt{--rdf-compression}, \texttt{--representations}, and \texttt{--artifact-compression}. Thus, an unwrapped \texttt{.hdt} or \texttt{.cottas} file can be retained for querying while an additional \texttt{.gz} or \texttt{.br} package is created for transport or archival storage.
+
+Mapping rules are authored in Turtle as modular RML rule sets that mediate the conversion from VCF to RDF. 
+This modularity allows rules to be extended or modified without rewriting the full pipeline. 
+To execute the mappings, we use RMLStreamer \cite{rmlstreamer_2022}; the baseline experiments used version 2.5.0 through its standalone command-line interface.
+
+\textbf{Aggregate storage modes.}
+In \texttt{plain} mode, RMLStreamer parts are appended to one uncompressed \texttt{<sample>.nt} aggregate and deleted after consumption. 
+In \texttt{space-optimized} mode, each line-oriented RMLStreamer part is gzip-compressed, appended as a member of one concatenated-gzip \texttt{<sample>.nt.gz} stream, and then deleted. Standard gzip readers expose the concatenated members as one logical N-Triples sequence. This avoids retaining all RMLStreamer parts and a second full uncompressed aggregate simultaneously.
+
+\textbf{One-chunk-at-a-time representation construction.}
+The current implementation incrementally reads the plain or gzip aggregate, respects newline-terminated N-Triples record boundaries, and materializes one raw chunk in a Docker-managed workspace. Each selected representation builder consumes that chunk before the raw chunk is deleted and the next chunk is created:
+\[
+\texttt{.nt.gz aggregate} \rightarrow \texttt{one raw chunk} \rightarrow \texttt{HDT/COTTAS conversion} \rightarrow \texttt{delete chunk} \rightarrow \cdots
+\]
+Consequently, at most one uncompressed RDF chunk exists at a time. The final HDT/COTTAS parts, merge intermediates, indexes, and converter scratch space still require storage, but the pipeline no longer creates a full decompressed duplicate of the aggregate.
+
+\textbf{HDT construction.}
+Each chunk is converted with \texttt{rdf2hdt}. Intermediate HDT files are merged pairwise in a balanced tree with HDTCat \cite{Diefenbach2020HDTCat}; an unpaired file is carried into the next merge round. After the final HDT is produced, it is opened with the bundled HDT Java reader to create the final sibling \texttt{.hdt.index.v1-1} index without executing a large query. Intermediate indexes are not retained because the final merged dictionary and triple layout are authoritative.
+
+\textbf{COTTAS construction.}
+COTTAS encodes RDF in an Apache Parquet triple table and supports compressed triple-pattern evaluation through columnar pruning and indexes \cite{cottas_2025,pycottas_2026}. VCF-RDFizer invokes \texttt{pycottas.rdf2cottas} with \texttt{disk=True} for each chunk and merges intermediate files pairwise with \texttt{pycottas.cat} with \texttt{remove\_input\_files=True}. The final merged COTTAS output rebuilds its selected \texttt{spo} indexes. Each pycottas operation runs in an isolated temporary working directory so that its local DuckDB scratch database cannot be accidentally reused by a later chunk or merge.
+
+\textbf{Validation and metrics.}
+Before packaging or raw-RDF cleanup, every base HDT or COTTAS artifact is opened with its native reader and decoded as a stream. The decoded triple count is compared with the source count recorded by RMLStreamer or the partition planner; no full decoded RDF file is written for this check. A missing decoder, unreadable artifact, or count mismatch fails the representation stage and prevents source cleanup. Chunk conversion, merging, final indexing, validation, and packaging are timed separately, while sample-level metrics report cumulative wall/user/system time, maximum resident set size, output sizes, and cleanup status.
+
+Gzip and Brotli \cite{brotli_2019} remain available for raw RDF and artifact packaging. The baseline experiments used Brotli level 7 of 11 because higher levels increased runtime with little observed size improvement. For constrained workspaces, the documented lower-peak fallback sets \texttt{--chunk-min-bytes 67108864}, \texttt{--chunk-target-bytes 134217728}, and \texttt{--chunk-max-bytes 268435456} (64, 128, and 256 MiB, respectively), trading additional chunks and merges for lower temporary peak usage.
+\end{revision}
+\authorquery{Please confirm (i) the exact VCF-RDFizer commit or release to cite, (ii) the installed HDT Java/\texttt{rdf2hdt}/HDTCat and pycottas versions, (iii) the default chunk-size values, and (iv) the chunk-size values actually used for the new experiments. The 64/128/256 MiB values above are documented as a low-peak fallback, not assumed benchmark settings. Also confirm that every source-checkout rerun used \texttt{--build} and record the resulting Docker image digest.}
+
+The implementation and default RML mappings are available at \url{https://github.com/ecrum19/VCF-RDFizer}. 
+
+From a user-experience perspective, each tagged VCF-RDFizer version is published across PyPI, Conda-Forge, and DockerHub so users can choose pip-, conda-, or container-based installation with matched versions.
+The GitHub README serves as the primary user guide, including quick-start commands, end-to-end usage examples, command-line option documentation, and troubleshooting notes.
+For maintainability, the project follows a release-oriented workflow with versioned changelogs, public issue triage, planned periodic dependency/container updates, and extensive unit-testing with the tool to preserve reproducibility over time.
+
+\subsection{Tool Testing}\label{subsec2.3}
+
+% [REVISED 2026-08-31: expand six-file baseline to ten-file reproducibility corpus]
+\begin{revision}
+\textbf{VCF Test Data}.
+The original performance baseline used five publicly accessible Personal Genome Project-associated VCFs \cite{personal_genome_proj} and one HG002 precisionFDA/Genome in a Bottle challenge VCF \cite{nist_gib_2025}. The reproducibility corpus has now been expanded with four direct-download public files chosen to test structures not represented adequately by the original baseline: (i) the phased 1000 Genomes Phase 3 chromosome-20 call set with 2,504 samples on GRCh37 \cite{thousand_genomes_2015}; (ii) an HGSVC2 structural-variant call set with 32 samples on GRCh38, using sequence-resolved REF/ALT alleles \cite{hgsvc_2021}; and (iii--iv) the HG004 and HG005 Genome in a Bottle v4.2.1 single-sample GRCh38 benchmark VCFs covering chromosomes 1--22 \cite{giab_v421_2022}. Table~\ref{tab:test-corpus} distinguishes the completed six-file baseline from the expanded validation and stress-test inputs. Download commands and filename normalization are versioned in the testing repository: \url{https://github.com/ecrum19/vcf-rdfizer-testing}.
+\end{revision}
+
+\begin{revision}
+\begin{table*}[t]
+\caption{VCF-RDFizer ten-file reproducibility corpus. Approximate compressed sizes are those documented by the testing repository and are not substituted into the legacy benchmark tables. ``Header preflight'' indicates metadata that must be read from the source VCF rather than inferred from a provider profile.}\label{tab:test-corpus}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabularx}{\textwidth}{@{}p{0.255\textwidth}r p{0.12\textwidth}r X@{}}
+\toprule
+\textbf{Canonical input} & \textbf{Approx. MB} & \textbf{Assembly} & \textbf{Samples} & \textbf{Evaluation role} \\
+\midrule
+\texttt{NG1N86S6FC.vcf.gz} & 379 & Header preflight & TBD$^{*}$ & Original personal-WGS conversion baseline; heterogeneous metadata/annotation profile \\
+\texttt{NG131FQA1I.vcf.gz} & 224 & Header preflight & TBD$^{*}$ & Original personal-WGS conversion baseline \\
+\texttt{NB72462M.vcf.gz} & 341 & Header preflight & TBD$^{*}$ & Original personal-WGS conversion baseline \\
+\texttt{60820188475559.vcf.gz} & 325 & Header preflight & TBD$^{*}$ & Original filtered-SNP profile \\
+\texttt{60820188474283.vcf.gz} & 222 & Header preflight & TBD$^{*}$ & Original personal-WGS conversion baseline \\
+\texttt{0GOOR\_HG002.vcf.gz} & 69 & Header preflight & 1 & Original HG002 precisionFDA/GIAB challenge baseline \\
+\midrule
+\texttt{1000G\_phase3\_chr20.vcf.gz} & 327 & GRCh37 & 2,504 & Phased population-scale multi-sample stress case; genotype aggregation and call-rate queries \\
+\texttt{HGSVC2\_freeze3\_sv\_alt.vcf.gz} & 31.5 & GRCh38 & 32 & Multi-sample structural-variant and long sequence-allele stress case \\
+\texttt{HG004\_GRCh38\_1\_22\_v4.2.1\_benchmark.vcf.gz} & 149 & GRCh38 & 1 & Independent GIAB benchmark genome across autosomes \\
+\texttt{HG005\_GRCh38\_1\_22\_v4.2.1\_benchmark.vcf.gz} & 139 & GRCh38 & 1 & Independent GIAB benchmark genome across autosomes \\
+\bottomrule
+\end{tabularx}
+\vspace{1mm}
+\parbox{0.97\textwidth}{\footnotesize $^{*}$The existing draft described the first five provider/profile inputs as single-sample. The attached testing specification recommends verifying sample count, assembly, GT availability, and header conventions from each VCF header rather than assuming them from provenance pages.}
+\end{table*}
+\end{revision}
+\authorquery{Please replace the header-preflight placeholders with exact assembly, sample-count, and VCF-version values captured from the files. Also reconcile the repository's approximate compressed sizes with Table~\ref{tab:conversion-stats}; for example, the repository lists \texttt{0GOOR\_HG002.vcf.gz} as approximately 69 MB whereas the legacy table reports 387.9 MB under a column labeled \texttt{.vcf.gz}. Confirm whether the old values are uncompressed sizes, different downloads, or mislabeled units.}
+
+\begin{revision}
+The first six inputs remain the provenance of the numerical baseline results currently shown in Tables~\ref{tab:conversion-stats} and~\ref{tab:compression-sizes}. The four added inputs broaden the test design but must not be described as completed benchmark runs until their conversion, compression, validation, and query artifacts are present in the archived experiment manifests.
+\end{revision}
+\authorquery{Which of the four added inputs have completed (a) RDF conversion, (b) HDT construction, (c) COTTAS construction, and (d) all six paired queries? Please provide the finished experiment/run names so the Results placeholders can be populated without guessing.}
+
+\textbf{Testing Environment}
+% [REVISED 2026-08-31: distinguish baseline environment from pending reruns]
+\begin{revision}
+The hardware and software description below applies to the completed six-file legacy baseline unless a current-pipeline rerun manifest explicitly records the same conditions.
+\end{revision}
+VCF-RDFizer automatically logs wall time, user time, CPU time, peak memory (via resident set size (RSS)), output directory size, and total triple counts, along with many other metrics, to support reproducible performance comparisons across datasets and hardware setups. 
+All metrics are collected via bash scripts at tool run-time to ensure reproducibility and consistent measurement across all experiments. 
+Output validation in this study included syntax checks and targeted inspection of variant, genotype, and metadata nodes to verify that semantic links and datatypes were generated as intended.
+
+All performance experiments were conducted on a workstation running Ubuntu 24.04.4 LTS with an Intel(R) Xeon(R) Silver 4309Y CPU @ 2.80GHz (8 cores, 2.8 GHz), 33.6 GB RAM and a 210 GB SSD, Kernel version 6.8.0-45-generic. Software versions: Docker 28.2.2, Python 3.12.3.
+\authorquery{Confirm whether the current HDT/COTTAS and query reruns use this same workstation. If not, report the new CPU, core count, RAM, storage medium/free space, operating system/kernel, Docker image digest, Node.js/Comunica versions, Java/HDT versions, pycottas version, cyvcf2 version, and bcftools/HTSlib versions separately.}
+
+% [ADDED 2026-08-31: paired bioinformatic query validation]
+\begin{revision}
+\subsection{Semantic-equivalence and bioinformatic query workload}\label{subsec2.4}
+Syntax and triple-count checks establish that an output is readable, but they do not establish that biologically relevant VCF content can be recovered from the RDF graph. We therefore define six paired operations for independent execution over (i) one VCF and its corresponding RDF representation and (ii) the source VCF with a VCF-native implementation. The workload is summarized in Table~\ref{tab:semantic-queries}. It is grounded in standard VCF inspection and quality-control operations exposed by VCFtools, bcftools, and programmatic VCF libraries \cite{vcf_intro,BCFtools,cyvcf2_2017}.
+
+\begin{table*}[t]
+\caption{Paired semantic-equivalence query workload. Each SPARQL result is normalized and compared with an independently calculated VCF-side result for the same source and explicitly matched scope.}\label{tab:semantic-queries}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.98}
+\begin{tabularx}{\textwidth}{@{}p{0.04\textwidth}p{0.22\textwidth}p{0.18\textwidth}X p{0.17\textwidth}@{}}
+\toprule
+\textbf{ID} & \textbf{Operation} & \textbf{VCF/RDF elements tested} & \textbf{Real-world purpose} & \textbf{VCF-side oracle} \\
+\midrule
+Q1 & Record density by contig and 1-Mb window & \texttt{CHROM}, \texttt{POS}; \texttt{vcfr:chrom}, \texttt{vcfr:pos} & Locates genomic windows with unusually high/low call density and checks preservation of coordinates and integer position semantics & cyvcf2 iteration; VCFtools SNP-density analogue \\
+Q2 & Record-level allele-shape distribution & \texttt{REF}, \texttt{ALT}; \texttt{vcfr:ref}, \texttt{vcfr:alt} & Summarizes SNV, multiallelic, insertion-shape, deletion-shape, MNV, symbolic/breakend, and no-ALT records; stresses sequence-resolved SV alleles & Explicit cyvcf2 classifier using the same ordered rules \\
+Q3 & Biallelic SNV transition/transversion counts & \texttt{REF}, \texttt{ALT} & Reproduces the established Ti/Tv call-set QC statistic and detects allele corruption or case/lexical errors & cyvcf2; VCFtools Ti/Tv analogue \\
+Q4 & FILTER state and exact FILTER-value distribution & \texttt{FILTER}; \texttt{vcfr:filter} & Distinguishes \texttt{PASS}, filtering-not-applied (\texttt{.}), and failed filter codes; validates complete FILTER lexical preservation & \texttt{bcftools query} for exact FILTER text; cyvcf2 fallback \\
+Q5 & Per-sample genotype classes and call rate & Sample IDs and \texttt{GT}; sample-call and FORMAT-value links & Measures missingness and genotype composition per sample; directly stresses deep sample linkage in 32- and 2,504-sample files & cyvcf2 raw genotype allele indexes \\
+Q6 & GT-derived alternate-allele count/number distribution & Single-ALT records, sample \texttt{GT} & Recomputes AC and AN from complete haploid/diploid genotypes instead of trusting INFO tags; tests aggregation across all calls at a site & cyvcf2, with optional bcftools \texttt{fill-tags} cross-check \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+Q1--Q4 apply to every file because they use fixed VCF fields represented by the current mapping. Q5--Q6 apply only when the source contains sample columns and a \texttt{GT} FORMAT field; an empty result is accepted only after header preflight confirms that GT is genuinely absent. GRCh37 and GRCh38 datasets are evaluated separately, and all RDF partitions belonging to one VCF are treated as one logical source.
+
+For raw N-Triples, the queries are executed with the local-file Comunica package \texttt{@comunica/query-sparql-file} \cite{Taelman2018Comunica,comunica_file_docs_2026}. For HDT, the same SPARQL text can be evaluated with \texttt{@comunica/query-sparql-hdt}, which accepts an \texttt{hdt@path/to/file.hdt} source \cite{comunica_hdt_docs_2026}. COTTAS can be evaluated through pycottas' triple-pattern interface or its RDFLib-compatible SPARQL integration \cite{cottas_2025,pycottas_2026}; whether it is included in the cross-engine performance table is treated as a separate experimental decision because its execution stack differs from Comunica. On the VCF side, cyvcf2 provides the primary programmatic oracle, while \texttt{bcftools query} preserves the exact FILTER token needed for Q4 \cite{BCFtools,cyvcf2_2017}.
+
+The primary correctness contract is exact equality of normalized integer counts, not approximate biological plausibility. Ratios such as Ti/Tv, call rate, and allele frequency are derived only after their underlying counts agree. The comparator preserves contig and sample identifiers, distinguishes \texttt{PASS} from \texttt{.}, applies the same rules to phased/unphased and missing genotypes, and emits missing/extra/differing rows for localization. Preflight checks additionally validate N-Triples syntax, one-to-one cardinality of core record properties, position datatypes, source/output hashes, tool versions, and record/triple counts.
+
+This workload establishes \emph{representation equivalence} for the stated fields: a SPARQL engine and a conventional VCF parser should derive the same deterministic summaries from two representations of the same source. It does not establish that the source calls are biologically correct, normalized, left-aligned, or concordant with a truth set. The GIAB inputs can support a later reference-aware truth-concordance layer, but that requires confident regions and normalization beyond the present semantic-equivalence test.
+\end{revision}
+\authorquery{The attached testing specification reports that \texttt{QUAL} is retained in the intermediate records TSV but is not emitted by the audited default RML mapping, and that INFO remains available primarily as \texttt{infoRaw}. Please verify the current \texttt{dev} mapping. If QUAL or structured INFO/FORMAT keys have since been added, update this section, the capability table, and the query suite; otherwise do not claim complete support for QUAL.}
+\authorquery{Please confirm whether the six \texttt{.rq} files, cyvcf2 oracle, normalizer, and comparator are already committed and executed, or whether they currently remain a specification. The manuscript deliberately says ``define'' rather than ``validated successfully'' until result manifests are available.}
+
+%% RDF Conversion Stats
+\begin{table*}[t]
+% [REVISED 2026-08-31: label historical scope]
+\caption{Conversion statistics for the original six-file legacy baseline. Sizes are decimal MB. These values should not be interpreted as measurements of the expanded ten-file corpus.}\label{tab:conversion-stats}%
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}p{0.28\textwidth}
+S[table-format=6.1]
+S[table-format=6.1]
+S[table-format=7.1]
+S[table-format=7.1]
+S[table-format=10.0]@{}}
+\toprule
+\textbf{Input VCF} &
+{\textbf{\shortstack{Input \texttt{.vcf.gz}\\size (MB)}}} &
+{\textbf{\shortstack{Wall time\\(s)}}} &
+{\textbf{\shortstack{Max RSS\\(MB)}}} &
+{\textbf{\shortstack{Output raw RDF\\size (MB)}}} &
+{\textbf{\# triples}} \\
+\midrule
+\texttt{0GOOR\_HG002} & 387.9 & 621.0 & 1602.4 & 31181.3 & 167958298 \\
+\texttt{60820188474283} & 1054.8 & 719.0 & 1674.0 & 35408.1 & 185443019 \\
+\texttt{NG131FQA1I} & 1215.5 & 630.7 & 2027.3 & 25969.3 & 147710127 \\
+\texttt{60820188475559} & 1233.0 & 872.2 & 1546.3 & 37955.6 & 198039339 \\
+\texttt{NB72462M} & 1337.0 & 700.2 & 1878.5 & 26764.6 & 155532530 \\
+\texttt{NG1N86S6FC} & 2076.8 & 1693.5 & 1943.2 & 77729.7 & 457412987 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+
+\section{Results}\label{sec3}
+
+% [ADDED 2026-08-31: explicit result provenance]
+\begin{revision}
+\textbf{Scope of the currently populated results.}
+The numerical values in Tables~\ref{tab:conversion-stats} and~\ref{tab:compression-sizes} come from the original six-file evaluation and the earlier batch-oriented compression implementation. They are retained here as a legacy baseline so that the completed work is not silently conflated with the redesigned storage pipeline. The current one-chunk-at-a-time HDT/COTTAS implementation, the four added files, and the paired SPARQL/VCF-parser workload require new result manifests before numerical claims can be updated.
+\end{revision}
+\authorquery{Before submission, choose one reporting strategy: (1) replace both legacy tables and all derived ranges with a complete current-version rerun, which is preferred; or (2) retain a clearly labeled legacy baseline and add a separate current-version table. Do not mix old HDT timings with new COTTAS/current-HDT output sizes in one table.}
+
+\textbf{VCF TSV Intermediate Generation (legacy baseline)}.
+VCF inputs were first transformed into TSV intermediates to provide a compatible logical source for RMLStreamer and enable consistent field-level extraction during mapping.
+Across all six datasets, TSV generation completed in 11.9--47.6 seconds with peak RSS of only 4.4--5.4 MB.
+Each input produced three TSV artifacts (records, header lines, and file metadata) totaling 554.7--2582.3 MB, corresponding to 1.09$\times$--1.43$\times$ the compressed VCF input size but only 1.78--5.44\% of the final RDF output size.
+Relative to RDF conversion, TSV generation accounted for just 0.7--7.1\% of conversion wall time, indicating minimal computational overhead while providing a stable logical source for declarative mapping execution.
+
+
+\textbf{RDF Conversion (legacy baseline)}.
+RMLStreamer conversions completed successfully with wall-clock times of 621.0--1693.5 seconds (10.4--28.2 minutes) and peak RSS of 1546.3--2027.3 MB.
+Each dataset produced eight partitioned RDF outputs with well-balanced triple counts (e.g., 20.91--21.08 million triples per partition for 0GOOR\_HG002), indicating stable parallel execution.
+
+VCF-RDFizer was executed in \textit{batch} output mode, which preserves partitioned RDF outputs for compression.
+Reported compression runtimes therefore represent dataset-level totals across all partition files rather than the cost of compressing a single aggregated RDF file.
+
+Table~\ref{tab:conversion-stats} summarizes conversion results for six VCF datasets.
+Inputs ranged from 387.9--2076.8 MB and produced 25{,}969.3--77{,}729.7 MB of RDF, corresponding to semantic expansion factors of 20.0$\times$--80.4$\times$ relative to compressed VCF input.
+Outputs contained 147.71--457.41 million triples, demonstrating that the workflow scales across substantially different dataset sizes.
+Overall, conversion remained tractable on commodity workstation hardware, although memory usage was non-trivial.
+Under this batch configuration, general-purpose compression required minutes, whereas HDT generation dominated end-to-end runtime.
+
+%% RDF Compression Stats
+\begin{table*}[t]
+% [REVISED 2026-08-31: label historical implementation]
+\caption{Compression statistics for the original six-file, batch-oriented legacy implementation. Times are wall-clock seconds; sizes are decimal MB. These HDT values predate the current one-chunk-at-a-time HDT/COTTAS pipeline and require a current-version rerun for direct tool claims.}\label{tab:compression-sizes}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{0.92}
+\setlength{\aboverulesep}{0.15ex}
+\setlength{\belowrulesep}{0.15ex}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l
+S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]
+S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]@{}}
+\toprule
+\textbf{Input file} &
+\multicolumn{5}{c}{\textbf{Time (s)}} &
+\multicolumn{5}{c}{\textbf{Size (MB)}} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+&
+\textbf{HDT} &
+\textbf{Gzip} &
+\textbf{Brotli} &
+\textbf{HDT+Gz} &
+\textbf{HDT+Br} &
+\textbf{HDT} &
+\textbf{Gzip} &
+\textbf{Brotli} &
+\textbf{HDT+Gz} &
+\textbf{HDT+Br} \\
+\midrule
+\texttt{0GOOR\_HG002} & 70915.0 & 192.0 & 276.0 & 26.0 & 64.0 & 2102.6 & 883.2 & 480.9 & 215.8 & 182.0 \\
+\texttt{60820188474283} & 64720.0 & 237.0 & 348.0 & 40.0 & 96.0 & 1887.4 & 1189.2 & 731.4 & 357.6 & 291.6 \\
+\texttt{NG131FQA1I} & 92266.0 & 183.0 & 328.0 & 38.0 & 106.0 & 1876.3 & 974.2 & 614.0 & 320.0 & 293.2 \\
+\texttt{60820188475559} & 87931.0 & 249.0 & 366.0 & 40.0 & 99.3 & 2020.6 & 1271.7 & 775.8 & 371.0 & 318.9 \\
+\texttt{NB72462M} & 91409.0 & 204.0 & 350.0 & 40.0 & 117.0 & 1975.9 & 1032.6 & 652.8 & 349.6 & 311.5 \\
+\texttt{NG1N86S6FC} & 627977.0 & 577.0 & 868.0 & 87.0 & 195.7 & 5359.7 & 2800.3 & 1592.7 & 682.1 & 682.4 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\textbf{RDF Output Compression (legacy baseline)}.
+Compression results are summarized in Table~\ref{tab:compression-sizes}.
+All methods substantially reduced RDF size but differed in compression ratio, runtime, and memory requirements.
+
+\textit{HDT Compression (legacy baseline)}.
+HDT reduced RDF outputs to 1876.3--5359.7 MB (92.62--94.68\% reduction).
+However, it required the longest runtimes (64720.0--627977.0 seconds; 18.0--174.4 hours) and the highest memory usage (2566.1--6447.8 MB RSS).
+Across datasets, HDT accounted for 97.3\% of total wall time.
+Runtime varied by 563257.0 seconds (156.5 hours), corresponding to a 9.7$\times$ increase between datasets \textit{60820188474283} and \textit{NG1N86S6FC}; the latter alone contributed 60.7\% of total HDT processing time.
+User and wall times were nearly identical (99.9\%), indicating a strongly CPU-bound stage consistent with HDT dictionary and index construction overhead.
+
+\textit{Gzip Compression}.
+Gzip reduced RDF size to 883.2--2800.3 MB (96.14--97.17\% reduction) with runtimes of 183.0--577.0 seconds and peak RSS of $\sim$4 MB.
+These results confirm gzip as a fast, low-memory archival compression baseline.
+
+
+\textit{Brotli Compression}.
+Brotli produced smaller outputs than gzip for all datasets (480.9--1592.7 MB; 97.56--98.46\% reduction) but required longer runtimes (276.0--868.0 seconds; 4.6--14.5 minutes).
+Peak RSS remained modest at 47.0--51.1 MB, indicating that the additional cost is primarily CPU time.
+Brotli therefore provides improved compression ratios with moderate runtime overhead while maintaining low memory requirements.
+
+
+\textit{Compound Compression}.
+Applying general-purpose compression after HDT produced the smallest artifacts.
+HDT+gzip reduced outputs to 215.8--682.1 MB (98.69--99.31\% reduction) with an additional 26.0--87.0 seconds of runtime and negligible memory overhead ($\sim$4 MB RSS).
+HDT+brotli produced the smallest files overall (182.0--682.4 MB; 98.84--99.42\% reduction) with an additional 64.0--195.7 seconds of runtime and 79.1--110.2 MB peak RSS.
+Overall, HDT+gzip provided the fastest secondary compression, whereas HDT+brotli consistently achieved the smallest final outputs.
+
+% [ADDED 2026-08-31: publication-ready placeholders for unfinished current experiments]
+\begin{revision}
+\subsection{Current HDT/COTTAS and query evaluation placeholders}\label{subsec3.1}
+Table~\ref{tab:current-compression-placeholder} is reserved for measurements from the current storage-aware implementation. In addition to final size, construction time, and maximum RSS, the rerun should report peak Docker-workspace usage because the redesign specifically targets temporary disk amplification. Native decode/triple-count validation must be reported independently of query correctness.
+
+\begin{table*}[t]
+\caption{Placeholder for current-version queryable-representation construction. Replace every \textbf{TBD} cell from versioned experiment manifests; do not estimate values.}\label{tab:current-compression-placeholder}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}p{0.23\textwidth}rrrrrrX@{}}
+\toprule
+\textbf{Dataset} & \textbf{HDT MB} & \textbf{COTTAS MB} & \textbf{HDT s} & \textbf{COTTAS s} & \textbf{Max RSS MB} & \textbf{Peak workspace MB} & \textbf{Native decode/count validation} \\
+\midrule
+Original six-file baseline (per dataset) & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+\texttt{1000G\_phase3\_chr20} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+\texttt{HGSVC2\_freeze3\_sv\_alt} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+\texttt{HG004\_GRCh38\_1\_22\_v4.2.1} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+\texttt{HG005\_GRCh38\_1\_22\_v4.2.1} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+Table~\ref{tab:query-placeholder} is reserved for both semantic-equivalence outcomes and execution costs. Correctness and performance must be reported separately: a timeout is \texttt{EXECUTION\_FAILED}, not a semantic mismatch, and a plausible-looking but unequal aggregate is not a pass.
+
+\begin{table*}[t]
+\caption{Placeholder for paired RDF/VCF query results. Suggested values for the match column are \texttt{PASS}, \texttt{MISMATCH}, \texttt{NOT\_APPLICABLE\_VERIFIED}, and \texttt{EXECUTION\_FAILED}. Timing summaries should be computed only after the run protocol is fixed.}\label{tab:query-placeholder}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}p{0.05\textwidth}p{0.22\textwidth}p{0.14\textwidth}rrrrX@{}}
+\toprule
+\textbf{ID} & \textbf{Operation} & \textbf{Exact matches / applicable datasets} & \textbf{Comunica NT s} & \textbf{Comunica HDT s} & \textbf{VCF parser s} & \textbf{COTTAS s} & \textbf{Notes / mismatches} \\
+\midrule
+Q1 & Density by contig/window & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+Q2 & Allele-shape distribution & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+Q3 & Transition/transversion counts & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+Q4 & FILTER distribution & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+Q5 & Per-sample genotype/call rate & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+Q6 & GT-derived AC/AN & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} & \textbf{TBD} \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+\end{revision}
+\authorquery{Define the query benchmark protocol before filling Table~\ref{tab:query-placeholder}: parser(s) and exact commands; bgzip/BCF/index state; Comunica package and version; HDT sidecar/index state; whether COTTAS/RDFLib is included; cold versus warm cache; repetitions and summary statistic; timeout; concurrency; result materialization; and whether representation-build/index time is reported separately from query time.}
+
+\section{Discussion}\label{sec4}
+%% General discussion intro and summary of findings
+% [REVISED 2026-08-31: distinguish legacy evidence from current design and replace speculation with expanded test design]
+\begin{revision}
+VCF-RDFizer provides a reproducible pathway for converting heterogeneous VCF datasets into structured RDF representations using a public semantic vocabulary and modular declarative mappings. 
+The original six-file benchmark indicates that conversion was practical for the six baseline inputs: the legacy inputs reported in Table~\ref{tab:conversion-stats} were converted in 10.4--28.2 minutes with peak RSS of approximately 1.5--2.0 GB, while semantic lifting expanded them to tens of gigabytes of N-Triples. General-purpose gzip and Brotli substantially reduced those outputs at low memory cost. The original HDT measurements, however, characterize the superseded batch-oriented build path and should not be used to infer current HDT or COTTAS construction performance.
+
+The current implementation addresses a different operational bottleneck: temporary disk amplification during queryable-representation construction. Incremental reading and one-raw-chunk-at-a-time conversion remove the full decompressed RDF duplicate, although final representation parts and balanced-merge workspaces still consume disk. The impact of this change must be quantified with current reruns, including peak workspace usage rather than only final artifact size.
+
+Rather than continuing to speculate about multi-sample behavior, the expanded corpus now includes a 32-sample structural-variant file and a phased 2,504-sample population file. These inputs directly test whether record-to-sample graph expansion, genotype aggregation, query execution, and temporary storage scale differently from the original files. Until those measurements are populated, the manuscript treats multi-sample scalability as an evaluation target rather than a demonstrated performance result.
+\end{revision}
+
+% [REVISED 2026-08-31: remove unverified release-specific and blanket support claims]
+\begin{revision}
+Table~\ref{tab:capabilities-summary} summarizes the implementation and evaluation status supported by the supplied manuscript artifacts. Because the exact release tag, development commit, and active default mapping must be pinned for the final experiments, version-specific and blanket ``fully supported'' claims are deferred to the individual rows and author queries below.
+\end{revision}
+
+
+% [REVISED 2026-08-31: align capability claims with audited mapping and expanded corpus]
+\begin{revision}
+\begin{table*}[t]
+\caption{Current VCF-RDFizer capability status and evaluation scope. ``Supported'' refers to the implementation described by the supplied change log/testing specification; ``evaluation pending'' prevents corpus inclusion from being mistaken for a completed result.}\label{tab:capabilities-summary}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.96}
+\begin{tabularx}{\textwidth}{@{}p{0.22\textwidth}p{0.13\textwidth}p{0.13\textwidth}X@{}}
+\toprule
+\textbf{VCF component / capability} & \textbf{Implementation status} & \textbf{Evaluation status} & \textbf{Notes / limitations} \\
+\midrule
+Core record fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported & Q1--Q4 defined & Used for coordinate, allele-shape, Ti/Tv, and FILTER equivalence tests \\
+QUAL & Author confirmation required & Not in core queries & Testing audit reports QUAL in the records TSV but absent from the audited default RDF mapping \\
+INFO & Partial & Raw preservation testable & Complete INFO string is available as \texttt{infoRaw}; structured key/value semantics remain limited \\
+FORMAT and sample/genotype values & Partial & Q5--Q6 defined & Sample-call/value nodes are emitted, but explicit field-key representation and heterogeneous ploidy/multiallelic semantics remain areas for extension \\
+HEADER metadata & Partial & Structural inspection only & Header assertions are represented; complete semantic coverage and declaration-to-use validation remain future work \\
+Multi-sample conversion & Implemented in model/pipeline & Expanded corpus; results pending & 32-sample HGSVC2 and 2,504-sample 1000 Genomes inputs are included for direct validation and performance testing \\
+Structural and symbolic/sequence alleles & Lexically supported; semantic typing partial & HGSVC2/Q2 results pending & ALT is currently preserved as the source lexical field; allele-level decomposition and richer SV semantics remain limited \\
+Queryable HDT output & Supported & Current rerun pending & Record-safe chunks, balanced HDTCat merge, final sidecar index, native decode/count validation \\
+Queryable COTTAS output & Supported & Current rerun pending & pycottas disk conversion, balanced cat merge, rebuilt \texttt{spo} indexes, native decode/count validation \\
+Gzip/Brotli artifact packaging & Supported & Legacy results populated; current rerun pending & Packaged HDT/COTTAS files must be unpacked before direct querying \\
+Provenance/policy annotations & Not implemented in conversion pipeline & Not evaluated & RDF permits later linkage, but governance semantics are not generated by the current default mapping \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+\end{revision}
+\authorquery{Resolve the QUAL row against the exact \texttt{dev} mapping commit used for the manuscript. Also confirm whether COTTAS indexes are fixed to \texttt{spo} or user-selectable in the release being evaluated.}
+
+\subsection{Semantic Representation of VCF Challenges}\label{subsec4.1}
+%% discuss the impact of the vocabulary here --> how the vocabulary is novel and useful
+Because VCF encodes both biological observations and file-structure semantics, representation in RDF requires a vocabulary that explicitly models the structural elements of the format itself.
+Existing ontologies capture important aspects of genomic variation, including FALDO for genomic coordinates, the Sequence Ontology (SO) \cite{seq_ont_2005} for variant types, GENO for genotype modeling \cite{gene_ont_2000}, and HERO for clinically oriented genomic semantics \cite{hero-genomics_2025}, but none fully represent the structural semantics of the VCF specification. 
+
+To address this gap, we developed the publicly available VCF-RDFizer vocabulary (https://w3id.org/vcf-rdfizer/vocab\#), which provides a lightweight semantic layer aligned with the structural components of the VCF specification while remaining interoperable with existing genomic ontologies. 
+% [REVISED 2026-08-31: semantic validation and expanded multi-sample corpus]
+\begin{revision}
+Future work will extend the vocabulary to better capture heterogeneous INFO and FORMAT field semantics, explicit FORMAT keys, ordered alternate alleles, typed missing values, and richer structural-variant semantics. SHACL constraints can complement the paired queries by checking graph shape, whereas the paired SPARQL/VCF-parser workload tests whether standard summaries can be reproduced from actual data.
+The completed numerical baseline focused on the original six inputs, but the evaluation corpus now includes two multi-sample files. Their purpose is to test sample linkage and genotype aggregation rather than to imply that multi-sample scalability has already been demonstrated. Moreover, exact agreement with a VCF parser establishes preservation of represented values, not biological correctness of the source calls.
+\end{revision}
+
+
+\subsection{The Published VCF-RDFizer Software Tool}\label{subsec4.2}
+%% discuss the tool / how it is packaged + impact here --> Tool was made very nice, how will it help people?
+
+% [REVISED 2026-08-31: scope architecture/performance claims to available evidence]
+\begin{revision}
+\textbf{Transformation Architecture and Performance}.
+RML provides a declarative framework in which semantic intent is separated from procedural parsing logic, allowing transformation rules to be versioned and reused across datasets. In the original six-input baseline, RMLStreamer completed conversion in 10.4--28.2 minutes with peak RSS of approximately 1.5--2.0 GB. These measurements show feasibility for those inputs on the reported workstation; they do not yet establish behavior for the two new multi-sample datasets or the current compression implementation.
+
+The pipeline includes a lightweight preprocessing step that converts VCF files into tabular intermediates compatible with existing RML engines. Because VCF is not yet supported as a native logical source within RML, this step enables stable field extraction and declarative mapping execution. Future extensions to the RML ecosystem could support VCF as a native logical source and eliminate the preprocessing stage.
+
+The baseline demonstrates successful pipeline completion and production of syntactically inspectable RDF, while the paired SPARQL/VCF-parser workload is intended to supply stronger, field-level evidence that the semantic lifting preserves the defined variant and genotype summaries. The substantial expansion in raw RDF size remains an operational limitation and motivates both archival compression and directly queryable compressed representations.
+\end{revision}
+
+% [REVISED 2026-08-31: current HDT/COTTAS implementation; correct COTTAS/Jelly attribution]
+\begin{revision}
+\textbf{Compression Strategies for Semantic Genomic Data}.
+The legacy results establish gzip as a fast, low-memory archival baseline and Brotli as a stronger general-purpose compressor with moderately greater CPU cost. General-purpose compression remains useful for transfer and preservation, but a \texttt{.nt.gz}, \texttt{.hdt.gz}, or \texttt{.cottas.br} package is not the artifact queried directly; it must first be unpacked.
+
+For compressed RDF that remains queryable, VCF-RDFizer now offers both HDT and COTTAS. HDT combines a dictionary and compressed triple structure with indexed triple-pattern access \cite{hdt_2013}. COTTAS stores RDF as a Parquet triple table and uses columnar organization and block-range indexes to evaluate patterns over compressed data; its pycottas implementation translates RDF access into operations over the columnar representation \cite{cottas_2025}. These formats provide complementary design points, and the COTTAS paper's general RDF benchmarks must not be assumed to predict VCF-RDFizer-specific size or query performance.
+
+The earlier draft described balanced HDTCat construction as future work and attributed the COTTAS citation to Jelly. Both statements are superseded. The current pipeline already converts record-safe chunks, merges HDT parts pairwise with HDTCat \cite{Diefenbach2020HDTCat}, merges COTTAS parts pairwise with pycottas, rebuilds final indexes, and validates each final representation through native streamed decoding and a source/decoded triple-count comparison. Jelly is a separate RDF streaming serialization \cite{sowinski_jelly_2025}; it is not the COTTAS output implemented here.
+
+The key storage optimization is that an incrementally decompressed aggregate produces only one raw chunk at a time. This removes the largest temporary duplicate while preserving the ability to build both representations. It does not eliminate the space required by HDT/COTTAS part files, balanced merge rounds, indexes, or DuckDB/converter scratch data. Consequently, current evaluation should report final compression ratio, build time, maximum RSS, and peak workspace consumption. No claim that HDT or COTTAS is faster, smaller, or more scalable for VCF-derived RDF should be made until Table~\ref{tab:current-compression-placeholder} is populated.
+\end{revision}
+
+
+\textbf{Tool Availability and Community Impact}.
+Following best practices for research software publication \cite{jimenez_2017_f1000}, VCF-RDFizer is distributed as open-source software with public version control and synchronized releases across GitHub, PyPI, Conda-Forge, and DockerHub under the MIT License. 
+Public issue tracking, release notes, and a documented maintenance plan support transparency and long-term sustainability.
+
+
+% [REVISED 2026-08-31: impact of SPARQL querying and fair VCF-parser comparison]
+\begin{revision}
+\textbf{Queryable Genomic RDF as a Complementary Access Layer}.
+The selected workload illustrates the practical scope of SPARQL even before external annotations are linked. Density windows, allele-shape summaries, Ti/Tv, FILTER distributions, per-sample missingness/genotype classes, and genotype-derived AC/AN are recognizable bioinformatic operations rather than synthetic graph queries. Reproducing them from RDF tests whether genomic coordinates, alleles, filter semantics, sample identities, FORMAT values, and record-to-sample relationships survive semantic lifting.
+
+The longer-term value of SPARQL is not limited to reproducing operations that VCF-native tools already perform well. Once variant records use stable IRIs and ontology-aligned predicates, a query can combine variant/genotype constraints with linked gene, phenotype, pharmacogenomic, provenance, or policy statements without exporting each relation into a new ad hoc table. Multiple VCF-derived graphs can be queried through the same data model, and Comunica's source-oriented architecture can query one or more local HDT files through a common SPARQL interface \cite{Taelman2018Comunica,comunica_hdt_docs_2026}. COTTAS provides another compressed query path through pycottas/RDFLib \cite{cottas_2025,pycottas_2026}. These capabilities could support cohort QC across independently produced VCFs, integrated variant prioritization, knowledge-graph enrichment, and governance-aware retrieval using standards such as ODRL \cite{odrl_2018}.
+
+VCF-native tools remain an essential comparator and, for many format-specific operations, are likely to remain the operational baseline. bcftools and cyvcf2 operate directly over VCF/BCF and expose highly optimized parsing, indexing, and genotype access \cite{BCFtools,cyvcf2_2017}. The RDF pathway adds conversion and representation-build costs in exchange for a generic graph query model and semantic joins. It should therefore be positioned as complementary infrastructure rather than an unconditional replacement for VCF/BCF.
+
+A fair comparison must separate one-time conversion/index construction from repeated query execution; apply identical scopes and allele/genotype rules; distinguish indexed regional access from whole-file scans; record cold/warm-cache conditions, result cardinality, timeout, wall time, CPU time, and maximum RSS; and verify result equality before comparing speed. The present draft intentionally leaves these values as placeholders. Until they are measured, the manuscript can discuss anticipated use cases and experimental design but cannot claim that Comunica/HDT, COTTAS, or raw N-Triples outperform existing VCF parsers.
+\end{revision}
+\authorquery{Please select the intended comparator set (at minimum cyvcf2 and/or bcftools), state whether tabix/CSI indexes are available, and decide whether the primary comparison is end-to-end cost or repeated-query cost after all representations are built. Also confirm whether COTTAS query timing should appear beside Comunica/HDT or remain a separate experiment.}
+
+\subsection{Impact and Future Work}\label{subsec4.3}
+%% this should be short and punchy --> clearly state what needs improvement, what we want to do next, and how it will impact the computational biology community
+This work demonstrates that VCF datasets can be systematically transformed into RDF using declarative RML semantic mappings. 
+More importantly, we show that traditionally static file-based genomic variant data can be reliably converted to structured knowledge graphs, capable of linking, semantic querying, and governance-aware data sharing.
+
+% [REVISED 2026-08-31: current evaluation tasks and future biological validation]
+\begin{revision}
+Immediate work is to complete and archive the current-version ten-file rerun, populate HDT/COTTAS construction metrics, execute all applicable paired queries, and report exact match/mismatch results before interpreting query performance. The 32- and 2,504-sample inputs will show whether sample expansion and genotype aggregation are practical at cohort scale; the result should be reported rather than assumed.
+
+Subsequent work will extend semantic coverage of heterogeneous INFO, FORMAT, genotype, header, ordered alternate-allele, and structural-variant constructs; evaluate VCF as a native RML logical source; and develop richer links to clinical and biomedical resources. A separate GIAB truth-concordance experiment could test biological call accuracy, but it must use the appropriate benchmark regions and reference-aware normalization and must remain distinct from representation equivalence.
+
+Ultimately, VCF-RDFizer represents a step toward semantically interoperable genomic data infrastructure in which variant datasets can be compressed, linked, queried, validated, and governed as part of a broader biomedical knowledge-graph ecosystem.
+\end{revision}
+
+% TODO
+\section*{Declarations}
+
+\subsection{Conflicts of interest}
+None declared.
+
+\subsection{Funding}
+Elias Crum acknowledges support from the Research Foundation – Flanders (FWO) (SB Fellowship 1S27825N).
+Bart Buelens acknowledges support from ...
+Ruben Taelman acknowledges support from ...
+Gokhan Ertaylan acknowledges support from ...
+
+% [REVISED 2026-08-31: distinguish source datasets, experiment artifacts, and tool code]
+\begin{revision}
+\subsection{Data availability}
+The large VCF inputs are downloaded from their original public providers rather than redistributed in Git. Canonical filenames, source URLs/download commands, experiment manifests, query files, normalized outputs, and comparison reports are maintained at \url{https://github.com/ecrum19/vcf-rdfizer-testing}. Each reported run should include hashes for the source VCF, all RDF/representation artifacts, and each query.
+
+\subsection{Code availability}
+The VCF-RDFizer source and container workflow are available at \url{https://github.com/ecrum19/VCF-RDFizer}; testing and paper artifacts are available at \url{https://github.com/ecrum19/vcf-rdfizer-testing}. A release tag or immutable commit and Docker image digest must be cited for the final experiments.
+\end{revision}
+\authorquery{Replace the development-branch reference with the exact release tag/commit and container digest used for all final results.}
+
+\subsection{Author contributions statement}
+E.C. and G.E. conceived the tool and the experiments.
+E.C. implemented the conversion workflow and executed the experiments.
+E.C. and R.T. analyzed the results.
+E.C. wrote the manuscript draft.
+E.C., R.T., G.E., and B.B. reviewed and edited the manuscript.
+
+\subsection{Acknowledgments}
+All benchmarking computation was performed using the resources of IDLab at Ghent University.
+
+% TODO:
+\begin{itemize} 
+\item Ethics approval and consent to participate
+\item Consent for publication
+\item Materials availability
+\end{itemize}
+
+% [REVISED 2026-08-31: bibliography augmented for COTTAS, datasets, cyvcf2, and Comunica file/HDT documentation]
+\bibliography{reference_revised}% common bib file
+
+\end{document}
