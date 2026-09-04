@@ -133,6 +133,9 @@ tests/test-queries/run_in_docker.sh \
   --dataset-id HG004_GRCh38
 ```
 
+The query runner consumes `.nt` only; decode generated `.hdt`/`.cottas` output
+with VCF-RDFizer first (details in the [test-specific README](tests/test-queries/README.md)).
+
 See the [test-specific README](tests/test-queries/README.md) for exact query
 semantics, multiple-partition usage, provenance options, result files, status
 interpretation, and large-dataset memory guidance.
