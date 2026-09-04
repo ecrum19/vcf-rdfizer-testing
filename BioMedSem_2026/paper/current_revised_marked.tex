@@ -139,12 +139,23 @@
 %% Sample for unstructured abstract %%
 %%==================================%%
 
-% [REVISED 2026-08-31: COTTAS, current compression architecture, expanded corpus, and semantic-equivalence queries]
 \abstract{{\color{revisionblue}
-\textbf{Purpose:} The Variant Call Format (VCF) is the dominant standard for representing genomic variation and underpins population genomics, clinical sequencing, and precision-medicine workflows. As VCF datasets are increasingly interpreted together with sample metadata, clinical observations, public biomedical resources, and governance information, a Resource Description Framework (RDF) representation can provide a common graph model for linkage and declarative querying. 
-\textbf{Methods:} We present VCF-RDFizer, a command-line tool distributed through PyPI, Conda-Forge, and Docker that converts VCF into RDF using a public VCF-oriented vocabulary and modular RML mappings. In addition to raw N-Triples and general-purpose gzip/Brotli artifacts, the current workflow produces two queryable compressed representations: HDT and COTTAS. A storage-aware chunk pipeline incrementally reads a plain or concatenated-gzip RDF aggregate, materializes only one newline-safe uncompressed chunk at a time, converts that chunk into the selected representation(s), deletes the chunk, and merges the representation parts. We further define six paired bioinformatic queries to be evaluated over RDF with SPARQL and over the source VCF with VCF-native software to test representation equivalence. 
-\textbf{Results:} The completed baseline benchmark reported in this draft covers six original VCF inputs and demonstrates tractable RDF conversion on workstation-class hardware. The reproducibility corpus has now been expanded to ten inputs, adding a phased 2,504-sample 1000 Genomes chromosome-20 VCF, a 32-sample HGSVC2 structural-variant VCF, and two Genome in a Bottle v4.2.1 benchmark VCFs. Current-pipeline HDT/COTTAS measurements and SPARQL-versus-VCF-parser query measurements are not yet reported; placeholders are retained to prevent unsupported performance or equivalence claims. 
-\textbf{Conclusion:} VCF-RDFizer provides a reproducible route from VCF to interoperable and optionally queryable compressed RDF, supporting both semantic integration and testable preservation of core variant and genotype information.%
+\textbf{Purpose:} 
+The Variant Call Format (VCF) is the dominant standard for representing genomic variation and underpins population genomics, clinical sequencing, and precision-medicine workflows. 
+As VCF datasets are increasingly interpreted together with sample metadata, clinical observations, public biomedical resources, and governance information, a Resource Description Framework (RDF) representation can provide a common graph model for linkage and declarative querying. 
+
+\textbf{Methods:} 
+We present VCF-RDFizer, a command-line tool distributed through PyPI, Conda-Forge, and Docker that converts VCF into RDF using a public VCF-oriented vocabulary and modular RML mappings. 
+In addition to raw N-Triples and general-purpose gzip/Brotli artifacts, the current workflow produces two queryable compressed representations: HDT and COTTAS. A storage-aware chunk pipeline incrementally reads a plain or concatenated-gzip RDF aggregate, materializes only one newline-safe uncompressed chunk at a time, converts that chunk into the selected representation(s), deletes the chunk, and merges the representation parts. 
+We further define six paired bioinformatic queries to be evaluated over RDF with SPARQL and over the source VCF with VCF-native software to test representation equivalence. 
+
+\textbf{Results:} 
+The completed baseline benchmark reported in this draft covers six original VCF inputs and demonstrates tractable RDF conversion on workstation-class hardware. 
+The reproducibility corpus has now been expanded to ten inputs, adding a phased 2,504-sample 1000 Genomes chromosome-20 VCF, a 32-sample HGSVC2 structural-variant VCF, and two Genome in a Bottle v4.2.1 benchmark VCFs. 
+Current-pipeline HDT/COTTAS measurements and SPARQL-versus-VCF-parser query measurements are not yet reported; placeholders are retained to prevent unsupported performance or equivalence claims. 
+
+\textbf{Conclusion:} 
+VCF-RDFizer provides a reproducible route from VCF to interoperable and optionally queryable compressed RDF, supporting both semantic integration and testable preservation of core variant and genotype information.%
 }}
 \keywords{\color{revisionblue}Knowledge Representation, Genomic Variant Data, Variant Call Format, RDF, SPARQL, HDT, COTTAS, Semantic Validation}
 
@@ -180,9 +191,9 @@ Applying similar approaches to genomic variant data could enable richer integrat
 
 
 %% RDF Intro - What is it? How can it help enrich VCF data?
-% [CORRECTED 2026-08-31: RDF expands to Resource Description Framework]
-\textbf{\color{revisionblue}Resource Description Framework}.
+\textbf{Resource Description Framework and Knowledge Graphs}.
 The Resource Description Framework (RDF) \cite{rdf} provides a widely adopted graph-based data model for representing relationships between entities identified by globally unique identifiers (IRIs).
+Such graph-structured data can be organized as \textit{knowledge graphs}, in which nodes represent entities of interest and edges capture relationships between them, with the graph serving to accumulate and convey knowledge \cite{hogan_knowledge_graphs_2021}.
 For variant data, RDF enables (i) structured linkage between variant data and external biomedical resources \cite{bio2rdf_2008,openbiolink_2019,sib_2024}, (ii) native declarative querying via the SPARQL query language \cite{sparqllang}, and (iii) fine-grained privacy policy enforcement over variant data and linkages \cite{odrl_2018}.
 In practice, this could enable, for instance, a user to query a collection of VCF-derived datasets to identify variants whose alternative alleles occur in a specific gene, are associated with a given phenotype, and are accessible under particular policy restrictions.
 
@@ -202,87 +213,175 @@ INFO fields may contain semi-structured annotations, FORMAT and genotype columns
 
 %% Related work table
 \begin{table*}[t]
-\caption{Comparison of prior VCF-to-RDF tooling and workflows against engineering-completeness criteria considered in this study. 
-Columns indicate whether a system provides: a command-line interface (CLI) for direct pipeline use; a publicly documented semantic vocabulary describing the RDF model (Public vocab.); an end-to-end reproducible transformation workflow (Reprod. pipeline); support for representing VCF metadata, genotype, and sample-level information (Metadata + genotype); modular and user-extensible transformation rules (Modular mappings); integrated strategies for mitigating RDF storage expansion through compression (Compression pipeline); and publicly distributed software packaging for reuse (Public packaging). 
-Status codes: Y = explicitly supported, P = partially supported, N = not supported. Inline qualifier: sub. = subset-level support.}\label{tab:intro-tool-comparison}%
+\caption{Comparison of VCF-to-RDF tools and related semantic genomic-variation workflows against the capabilities considered in this study.
+Approach distinguishes dedicated VCF-to-RDF converters from general VCF-processing tools and systems that expose genomic variation through virtual RDF access.
+Columns indicate whether a system provides: a command-line interface (CLI) for direct pipeline use; a publicly documented RDF model or vocabulary describing the generated representation (Documented RDF model); 
+a documented and reproducible workflow from genomic-variation input to RDF access or materialization (Reprod. workflow); 
+support for representing VCF metadata together with genotype and sample-level information (Metadata + genotype); 
+user-extensible transformation rules or mappings that can be modified without changing the core converter implementation (Extensible mappings); 
+integrated support for reducing RDF storage requirements through compressed RDF representations or compression-aware processing (RDF compression); 
+and a publicly distributed reusable software artifact such as a package, executable, container, or maintained application distribution (Public distribution).
+Status codes: Y = explicitly supported and documented; P = partially supported, configurable, indirect, or limited to a subset of the relevant functionality; N = no integrated support identified in the publicly available documentation reviewed.}\label{tab:intro-tool-comparison}%
 \centering
 \tiny
 \setlength{\tabcolsep}{1.5pt}
 \renewcommand{\arraystretch}{0.95}
-\resizebox{0.95\textwidth}{!}{%
-\begin{tabular}{@{}p{0.21\textwidth}cccccccc@{}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}p{0.205\textwidth}p{0.135\textwidth}ccccccc@{}}
 \toprule
 \textbf{Tool/workflow} &
-\textbf{\shortstack{Code\\language}} &
+\textbf{Approach} &
 \textbf{CLI} &
-\textbf{Public vocab.} &
-\textbf{\shortstack{Reprod.\\pipeline}} &
-\textbf{\shortstack{Metadata +\\genotype}} &
-\textbf{\shortstack{Modular\\mappings}} &
-\textbf{\shortstack{Compression\\pipeline}} &
-\textbf{\shortstack{Public\\packaging}} \\
+\textbf{\shortstack{Documented\RDF model}} &
+\textbf{\shortstack{Reprod.\workflow}} &
+\textbf{\shortstack{Metadata +\genotype}} &
+\textbf{\shortstack{Extensible\mappings}} &
+\textbf{\shortstack{RDF\compression}} &
+\textbf{\shortstack{Public\distribution}} \
 \midrule
-\textbf{VCF-RDFizer (this study)} & \textbf{Python} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} & \textbf{Y} \\
+\textbf{VCF-RDFizer (this study)} &
+\textbf{Dedicated converter} &
+\textbf{Y} &
+\textbf{Y} &
+\textbf{Y} &
+\textbf{Y} &
+\textbf{Y} &
+\textbf{Y} &
+\textbf{Y} \
 \midrule
-VCF2RDF (TOGOvar) \cite{togovar_2022} & Rust & Y & N & P & P (sub.) & N & N & N \\
+VCF2RDF (TOGOvar) \cite{togovar_2022} &
+Dedicated converter &
+Y &
+P &
+Y &
+P &
+P &
+N &
+Y \
 \midrule
-JVarKit VcfToRdf \cite{JVarkit_2015} & Java & Y & N & P & P (sub.) & N & N & Y \\
+JVarkit VcfToRdf \cite{JVarkit_2015} &
+Dedicated converter &
+Y &
+P &
+Y &
+P &
+N &
+N &
+Y \
 \midrule
-ruby-rdf/rdf-vcf \cite{ruby_rdf_vcf} & Ruby & P & N & P & P (sub.) & N & N & Y \\
+VCFr / VCF2RDF \cite{vcfr_2017} &
+Web-based converter &
+P &
+Y &
+P &
+P &
+N &
+N &
+P \
 \midrule
-Semantic beacons workflow \cite{semantic_beac_2025} & YAML & N & Y & P & P (sub.) & N & N & N \\
+SPARQLing Genomics vcf2rdf \cite{sparqling_genomics_2018} &
+Dedicated converter &
+Y &
+P &
+Y &
+Y &
+P &
+N &
+P \
+\midrule
+bio-vcf \cite{bio_vcf} &
+General VCF processor &
+Y &
+N &
+Y &
+P &
+Y &
+N &
+Y \
+\midrule
+ruby-rdf/rdf-vcf \cite{ruby_rdf_vcf} &
+Legacy RDF reader/converter &
+Y &
+N &
+P &
+P &
+N &
+N &
+Y \
+\midrule
+Semantic Beacons \cite{semantic_beac_2025} &
+Virtual semantic access &
+N &
+P &
+P &
+P &
+Y &
+N &
+P \
 \bottomrule
 \end{tabular}%
 }
 \end{table*}
 
 
-Several efforts have explored representing VCF data in RDF. 
-Table~\ref{tab:intro-tool-comparison} compares the capabilities of existing tools including \textit{VCF2RDF} within TOGOvar \cite{togovar_2022}, JVarkit’s \textit{VcfToRdf} \cite{JVarkit_2015}, the \textit{ruby-rdf/rdf-vcf} library \cite{ruby_rdf_vcf}, and the \textit{semantic beacons} workflow \cite{semantic_beac_2025}. 
-While these systems demonstrate the feasibility of semantic representations of genomic variants, several limitations remain.
+Several efforts have explored semantic representations of VCF and genomic-variation data, ranging from direct VCF-to-RDF converters to systems that expose genomic variation through RDF and SPARQL interfaces.
 
+Early approaches include the \textit{rdf-vcf} reader and \textit{VCFr}, the latter introducing an isomorphic mapping between VCF and RDF/JSON-LD \cite{ruby_rdf_vcf,vcfr_2017}.
+Dedicated conversion utilities include JVarkit's \textit{VcfToRdf}, the Rust-based \textit{VCF2RDF} utility developed for TOGOvar \cite{JVarkit_2015,togovar_2022}, and the \textit{vcf2rdf} component of SPARQLing Genomics \cite{sparqling_genomics_2020,sparqling_genomics_software}.
+The latter has also been used in more recent genomic knowledge-graph applications, including VariantKG \cite{variantkg_2025}.
+More general VCF-processing frameworks such as \textit{bio-vcf} can additionally serialize VCF-derived information as RDF or JSON-LD through configurable output templates \cite{bio_vcf}.
+In contrast to these materializing approaches, \textit{Semantic Beacons} uses declarative RML mappings to expose genomic-variation data obtained through the Beacon API as RDF, enabling federated SPARQL access without functioning as a conventional VCF-to-RDF converter \cite{semantic_beac_2025}.
 
-%% What VCF-as-RDF work has been done before? (Related Work)
-\textbf{Related Work}.
-Several existing efforts demonstrate that VCF data can be represented in RDF. 
-Table~\ref{tab:intro-tool-comparison} summarizes the capabilities of the most advanced VCF-to-RDF tools available at the time of writing, including \textit{VCF2RDF} within TOGOvar \cite{togovar_2022}, JVarkit’s \textit{VcfToRdf} \cite{JVarkit_2015}, the \textit{ruby-rdf/rdf-vcf} library \cite{ruby_rdf_vcf}, and the \textit{semantic beacons} workflow \cite{semantic_beac_2025}. 
-In terms of access channels, VCF-RDFizer is distributed through PyPI, Conda-Forge, and DockerHub, JVarkit is available as a JAR utility, ruby-rdf/rdf-vcf is available as a Ruby gem and GitHub repository, while TOGOvar and semantic-beacons implementations are primarily accessed as platform/workflow resources rather than standalone packaged conversion CLIs.
-While these systems demonstrate the feasibility of semantic representations of genomic variants, Table~\ref{tab:intro-tool-comparison} highlights several capabilities that remain only partially addressed across existing tools.
+Table~\ref{tab:intro-tool-comparison} compares these approaches according to their semantic modeling, transformation workflow, support for metadata and genotype information, extensibility, compression, and software distribution.
+The comparison illustrates that previous systems address different portions of the VCF-to-semantic-data workflow.
+Some prioritize lightweight and efficient conversion, others provide highly customizable serialization or virtual semantic access, while several expose only a subset of VCF structure or rely on implementation-specific RDF models.
+VCF-RDFizer is designed to combine these concerns within a single reproducible workflow by providing a publicly documented VCF semantic model, declarative and extensible mappings, systematic representation of record-, metadata-, and sample-level information, and integrated production of both conventional and compressed queryable RDF representations.
+
 
 %% Public semantic vocabulary
+
 \textbf{Open Challenges}.
-\textit{First}, most approaches lack a publicly documented vocabulary describing the structural semantics of VCF data. 
-As shown in Table~\ref{tab:intro-tool-comparison}, only the semantic beacons workflow publishes a vocabulary, and it covers only a subset of VCF fields. 
-Although genomic ontologies such as GA4GH Variant Representation \cite{ga4gh_varschema_2021}, FALDO \cite{faldo_2016}, Sequence Ontology \cite{seq_ont_2005}, GENO, and SNPO describe biological entities, they do not define a reusable semantic model of VCF file structure.
+
+%% Explicit semantic definitions
+\textit{First}, existing VCF-to-RDF approaches differ substantially in how explicitly and completely they define the semantics of the generated RDF.
+Some systems document an RDF representation or mapping of VCF concepts, such as the isomorphic VCF-to-RDF model proposed by VCFr \cite{vcfr_2017}, while others use lightweight or implementation-specific RDF structures optimized for particular conversion or application requirements \cite{togovar_2022,JVarkit_2015}.
+More general tools such as \textit{bio-vcf} allow users to define custom RDF serializations, but do not prescribe a reusable semantic model of VCF structure.
+
+Consequently, a remaining challenge is the availability of a standalone, publicly documented vocabulary that systematically captures the structural semantics of VCF itself, including file- and header-level metadata, variant records, INFO and FORMAT definitions and values, sample-level calls, and genotype relationships.
+Existing genomic ontologies and data models such as GA4GH Variant Representation \cite{ga4gh_varschema_2021}, FALDO \cite{faldo_2016}, the Sequence Ontology \cite{seq_ont_2005}, GENO, and SNPO provide important semantics for genomic locations, variation, and biological entities, but were not designed to represent the complete structure and serialization semantics of a VCF document.
+A dedicated VCF semantic layer can therefore complement these resources while reusing their established biological concepts where appropriate.
 
 %% Declarative modular mappings
-\textit{Second}, many converters rely on hard-coded parsing logic or ad-hoc transformation rules. 
-For example, the semantic beacons workflow uses YAML-based rule specifications \cite{yaml-spec_2025}. 
-Declarative mapping languages provide a more robust alternative. 
-RML (RDF Mapping Language) \cite{rml_2024} supports mapping semi-structured and heterogeneous data sources to RDF and is therefore well-suited to the irregular structure of VCF files. 
-Its ecosystem includes engines such as RMLStreamer \cite{rmlstreamer_2022} for scalable transformation workflows. 
-By separating semantic mappings from implementation logic, RML enables modular rules that can be shared, adapted, and extended for dataset-specific structures.
+\textit{Second}, extensibility is supported through different mechanisms across existing converters, but semantic transformation rules are often coupled to implementation logic, configuration files, or application-specific templates.
+For example, TOGOvar's \textit{VCF2RDF} exposes configurable namespaces, INFO-field selection, and reference mappings through YAML configuration \cite{togovar_2022}, while \textit{bio-vcf} provides highly flexible output templates capable of generating customized RDF representations.
+Such mechanisms are useful for adapting output, but the resulting transformation semantics remain closely associated with the particular software or template implementation.
 
-% [REVISED 2026-08-31: distinguish archival and queryable compression; add COTTAS]
-\begin{revision}
-\textit{Third}, Table~\ref{tab:intro-tool-comparison} shows that most tools do not address the storage implications of semantic lifting. 
-Expanding compact formats such as VCF into explicit RDF triples increases storage size, particularly when globally unique IRIs repeat across records \cite{rdf}. 
-Compression strategies therefore play an important role, but archival and queryable compression serve different purposes. 
-General-purpose compressors such as gzip and Brotli \cite{brotli_2019} reduce transfer and storage costs but require decompression before direct RDF querying. 
-HDT (Header--Dictionary--Triples) \cite{hdt_2013} provides a compressed binary RDF representation with triple-pattern access, whereas COTTAS represents RDF as a columnar triple table in Apache Parquet and uses columnar indexes to support queries over the compressed representation \cite{cottas_2025}. 
-Offering both classes of output allows a workflow to prioritize compact archival artifacts, directly queryable RDF, or both.
-\end{revision}
+Declarative mapping languages provide a complementary approach by representing transformation rules independently from the execution engine.
+RML (RDF Mapping Language) \cite{rml_2024} supports mappings from heterogeneous data sources into RDF and enables mapping definitions to be reused, inspected, versioned, and extended independently of the software executing them.
+This approach is also employed by Semantic Beacons, which uses RML mappings to transform Beacon API responses into RDF for on-demand semantic access \cite{semantic_beac_2025}.
+The RML ecosystem additionally includes engines such as RMLStreamer \cite{rmlstreamer_2022}, which support scalable execution of declarative mappings.
+For VCF conversion, separating the semantic model and mapping rules from procedural parsing logic provides a mechanism for adapting dataset-specific INFO, FORMAT, metadata, or ontology alignments without requiring modifications to the core conversion implementation.
+
+%% RDF compression
+\textit{Third}, most existing VCF-to-RDF workflows do not integrate strategies for addressing the storage expansion introduced by semantic lifting.
+Expanding compact genomic formats such as VCF into explicit RDF triples can substantially increase storage requirements, particularly because identifiers and structural relationships that are implicit in VCF become explicit and may be repeated across large numbers of triples \cite{rdf}.
+
+Compression strategies therefore play an important role, but archival and queryable compression address different requirements.
+General-purpose compressors such as gzip and Brotli \cite{brotli_2019} can substantially reduce storage and transfer costs, but the resulting artifacts ordinarily require decompression before they can be queried as RDF.
+In contrast, RDF-specific representations such as HDT (Header--Dictionary--Triples) \cite{hdt_2013} combine compression with indexed triple-pattern access.
+More recently, COTTAS represents RDF as a columnar triple table using Apache Parquet and block-range indexes, enabling triple-pattern evaluation directly over the compressed representation \cite{cottas_2025}.
+Integrating both archival and queryable representations within a VCF-to-RDF workflow therefore allows users to select storage strategies according to whether the resulting genomic knowledge graph is intended primarily for distribution, long-term storage, direct querying, or a combination of these purposes.
+
 
 %% So what + Aims of study
-% [REVISED 2026-08-31: add queryable representations and validation aim]
-\begin{revision}
+% (1) semantic completeness and reuse, (2) mapping portability and extensibility, and (3) storage and queryability
 \textbf{Study Aims}.
 Taken together, these limitations motivate the development of a reusable and reproducible VCF-to-RDF transformation tool whose output can be independently validated. 
 Here we present \textit{VCF-RDFizer}, which integrates a publicly documented vocabulary, modular RML-based mappings, storage-aware conversion, general-purpose compression, and queryable HDT and COTTAS representations.
 As summarized in Table~\ref{tab:intro-tool-comparison}, VCF-RDFizer combines capabilities that are typically disconnected in existing approaches: a standalone CLI \url{https://github.com/ecrum19/VCF-RDFizer}, a public vocabulary \url{https://w3id.org/vcf-rdfizer/vocab\#}, modular declarative mappings, a reproducible pipeline, queryable compressed outputs, and public packaging \url{https://pypi.org/project/vcf-rdfizer/}. 
 In addition to measuring conversion and compression costs, this study defines a paired SPARQL/VCF-parser workload to determine whether the RDF representation reproduces established variant and genotype summaries exactly.
-\end{revision}
 
+% Left off here... 
 
 \section{VCF-RDFizer CLI Tool}\label{sec2}
 VCF-RDFizer is a command-line tool that converts input VCF files into semantically enriched RDF using a reproducible mapping pipeline. 
