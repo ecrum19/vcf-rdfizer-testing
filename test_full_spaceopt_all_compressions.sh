@@ -1,52 +1,74 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <vcf-file-name-or-path>" >&2
-  echo "Example: $0 test-larger.vcf.gz" >&2
+if (( $# == 0 )); then
+  echo "Usage: $0 <vcf-file-name-or-path> [more-vcf-files-or-paths ...]" >&2
+  echo "Example: $0 test-larger.vcf.gz vcf_data/another-sample.vcf.gz" >&2
   exit 2
 fi
 
-# Pass either a VCF basename from VCF-RDFizer/test/test_vcf_files/, or a path
-# relative to the current directory/repository (absolute paths also work).
-VCF_NAME="$1"
-OUTPUT_DIR="vcf-rdfizer-testing/experiments"
-DOCKER_IMAGE="ecrum19/vcf-rdfizer:v2.1.0"
+# Pass one or more VCF basenames from VCF-RDFizer/test/test_vcf_files/, or
+# paths relative to the invoking directory/repository (absolute paths work).
 DOCKER_LOCAL="vcf-rdfizer:local"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+CALLER_DIR="$(pwd -P)"
+OUTPUT_DIR="$SCRIPT_DIR/experiments"
+RDFIZER_DIR="$PROJECT_ROOT/vcf-rdfizer"
 
-# Existing benchmark scripts run from the parent directory so both the
-# VCF-RDFizer checkout and this repository can be addressed by name.
-cd "$PROJECT_ROOT"
-
-if [[ "$VCF_NAME" == /* ]]; then
-  INPUT_VCF="$VCF_NAME"
-elif [[ -f "$VCF_NAME" ]]; then
-  INPUT_VCF="$VCF_NAME"
-elif [[ -f "vcf-rdfizer-testing/$VCF_NAME" ]]; then
-  INPUT_VCF="vcf-rdfizer-testing/$VCF_NAME"
-else
-  INPUT_VCF="VCF-RDFizer/test/test_vcf_files/$VCF_NAME"
+if [[ ! -f "$RDFIZER_DIR/vcf_rdfizer.py" && -f "$PROJECT_ROOT/VCF-RDFizer/vcf_rdfizer.py" ]]; then
+  RDFIZER_DIR="$PROJECT_ROOT/VCF-RDFizer"
 fi
 
-if [[ ! -f "$INPUT_VCF" ]]; then
-  echo "VCF file not found: $INPUT_VCF" >&2
+if [[ ! -f "$RDFIZER_DIR/vcf_rdfizer.py" ]]; then
+  echo "VCF-RDFizer entry point not found: $RDFIZER_DIR/vcf_rdfizer.py" >&2
   exit 1
 fi
 
-# docker pull "$DOCKER_IMAGE"
+resolve_vcf() {
+  local requested_path="$1"
+  local candidate_path
 
-python3 VCF-RDFizer/vcf_rdfizer.py \
-  --mode full \
-  --input "$INPUT_VCF" \
-  --sample-representation dense \
-  --rdf-storage-mode space-optimized \
-  --rdf-compression gzip,brotli \
-  --representations hdt,cottas \
-  --artifact-compression gzip,brotli \
-  --hdt-strategy partitioned \
-  --image "$DOCKER_LOCAL" \
-  --out "$OUTPUT_DIR" \
-  --no-build
+  if [[ "$requested_path" == /* ]]; then
+    candidate_path="$requested_path"
+  elif [[ -f "$CALLER_DIR/$requested_path" ]]; then
+    candidate_path="$CALLER_DIR/$requested_path"
+  elif [[ -f "$SCRIPT_DIR/$requested_path" ]]; then
+    candidate_path="$SCRIPT_DIR/$requested_path"
+  else
+    candidate_path="$RDFIZER_DIR/test/test_vcf_files/$requested_path"
+  fi
+
+  if [[ ! -f "$candidate_path" ]]; then
+    echo "VCF file not found: $candidate_path" >&2
+    return 1
+  fi
+
+  printf '%s/%s\n' "$(cd -- "$(dirname -- "$candidate_path")" && pwd -P)" "$(basename -- "$candidate_path")"
+}
+
+INPUT_VCFS=()
+for VCF_NAME in "$@"; do
+  INPUT_VCFS+=("$(resolve_vcf "$VCF_NAME")")
+done
+
+for INPUT_VCF in "${INPUT_VCFS[@]}"; do
+  printf 'Running all-compressions benchmark for: %s\n' "$INPUT_VCF"
+
+  python3 "$RDFIZER_DIR/vcf_rdfizer.py" \
+    --mode full \
+    --input "$INPUT_VCF" \
+    --sample-representation expanded \
+    --rdf-storage-mode space-optimized \
+    --rdf-compression gzip,brotli \
+    --representations hdt,cottas \
+    --artifact-compression gzip,brotli \
+    --hdt-strategy partitioned \
+    --image "$DOCKER_LOCAL" \
+    --out "$OUTPUT_DIR" \
+    --validate \
+    --validate-artifacts all \
+    --validation-engine all \
+    --no-build
+done

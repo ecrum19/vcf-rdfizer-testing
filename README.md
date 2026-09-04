@@ -98,18 +98,21 @@ Full Run Benchmarks (including all compression types):
 vcf_rdfizer --mode full --input vcf-rdfizer-testing/vcf_data/ --spark-partitions 8 --rdf-layout batch --out vcf-rdfizer-testing/benchmark-results/v1.1 --compression gzip,brotli,hdt,hdt_gzip,hdt_brotli --build
 ```
 
-Full space-optimized run for one VCF with all supported raw-RDF and artifact
-compression options:
+Full space-optimized run for one or more VCFs with all supported raw-RDF and
+artifact compression options:
 
 ```bash
-bash test_full_spaceopt_all_compressions.sh test-larger.vcf.gz
+bash test_full_spaceopt_all_compressions.sh \
+  test-larger.vcf.gz \
+  vcf_data/another-sample.vcf.gz
 ```
 
-The argument may be a basename in `VCF-RDFizer/test/test_vcf_files/`, a path
-relative to the current directory/repository, or an absolute path. The script
-selects raw RDF `gzip,brotli`, both `hdt,cottas` representations, and gzip plus
-Brotli packaging for each representation. (`space-optimized` is the
-VCF-RDFizer CLI spelling of the space-efficient mode.)
+Each argument may be a basename in `VCF-RDFizer/test/test_vcf_files/`, a path
+relative to the invoking directory or this repository, or an absolute path.
+The script runs each VCF in turn, selecting raw RDF `gzip,brotli`, both
+`hdt,cottas` representations, and gzip plus Brotli packaging for each
+representation. (`space-optimized` is the VCF-RDFizer CLI spelling of the
+space-efficient mode.)
 
 ## Semantic VCF Query Equivalence Tests
 
