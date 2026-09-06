@@ -57,7 +57,7 @@ for INPUT_VCF in "${INPUT_VCFS[@]}"; do
   printf 'Running all-compressions benchmark for: %s\n' "$INPUT_VCF"
 
 # docker pull "$DOCKER_IMAGE"
-  python3 VCF-RDFizer/vcf_rdfizer.py \
+  python3 ../VCF-RDFizer/vcf_rdfizer.py \
     --mode full \
     --input "$INPUT_VCF" \
     --sample-representation condensed \
