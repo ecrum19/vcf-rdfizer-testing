@@ -57,19 +57,19 @@ for INPUT_VCF in "${INPUT_VCFS[@]}"; do
   printf 'Running all-compressions benchmark for: %s\n' "$INPUT_VCF"
 
 # docker pull "$DOCKER_IMAGE"
-
-python3 VCF-RDFizer/vcf_rdfizer.py \
-  --mode full \
-  --input "$INPUT_VCF" \
-  --sample-representation condensed \
-  --rdf-storage-mode space-optimized \
-  --rdf-compression gzip,brotli \
-  --representations hdt,cottas \
-  --artifact-compression gzip,brotli \
-  --hdt-strategy partitioned \
-  --image "$DOCKER_LOCAL" \
-  --out "$OUTPUT_DIR" \
-  --validate \
-  --validate-artifacts all \
-  --validation-engine all \
-  --no-build
+  python3 VCF-RDFizer/vcf_rdfizer.py \
+    --mode full \
+    --input "$INPUT_VCF" \
+    --sample-representation condensed \
+    --rdf-storage-mode space-optimized \
+    --rdf-compression gzip,brotli \
+    --representations hdt,cottas \
+    --artifact-compression gzip,brotli \
+    --hdt-strategy partitioned \
+    --image "$DOCKER_LOCAL" \
+    --out "$OUTPUT_DIR" \
+    --validate \
+    --validate-artifacts all \
+    --validation-engine all \
+    --no-build
+done
