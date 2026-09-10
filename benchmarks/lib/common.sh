@@ -329,9 +329,13 @@ pathlib.Path(sys.argv[1], "bench.json").write_text(json.dumps(
   BM_LAST_RC="$rc"
   BM_LAST_DIR="$cell_dir"
 
+  # All thirteen values the record unpacks, in order. The image trio is not
+  # optional: bench.json is what lets a number be attributed to an image
+  # later, and 00_environment.sh records the same three for the session.
   python3 - "$cell_dir" "$experiment" "$label" "$rc" "$start" "$end" \
     "$(bm_sampler_peak "$samples")" "$(bm_dir_bytes "$out_dir")" \
-    "$(bm_tool_commit)" "$BM_TOOL" <<'PYEOF'
+    "$(bm_tool_commit)" "$BM_TOOL" \
+    "$BM_IMAGE_REF" "$BM_IMAGE_DIGEST" "$BM_IMAGE_MODE" <<'PYEOF'
 import json, pathlib, sys
 (cell, experiment, label, rc, start, end, peak, final, commit, tool,
  image_ref, image_digest, image_mode) = sys.argv[1:14]
