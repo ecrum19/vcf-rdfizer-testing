@@ -9,18 +9,38 @@ The table below lists the datasets used in the experiments, including file name,
 
 > Note: the `wget --mirror ... '/_/'` URLs point to collection roots. Depending on what is hosted there, one or more files may be downloaded.
 
-| # | File name | Profile / provenance | Size | Provider / label | Download command |
-|---:|---|---|---:|---|---|
-| 1 | `NG1N86S6FC.vcf.gz` | https://my.pgp-hms.org/profile/hu416394 | 379 MB | Sequencing.com | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://f26290bdbc3bf08190edec227f21635c-291.collections.ac2it.arvadosapi.com/_/'` |
-| 2 | `NG131FQA1I.vcf.gz` | https://my.pgp-hms.org/profile/huFFFE77 | 224 MB | Dante Labs | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://5aa905ff32eca70008e6d6d8aca1f238-200.collections.ac2it.arvadosapi.com/_/'` |
-| 3 | `NB72462M.vcf.gz` | https://my.pgp-hms.org/profile/huF7A4DE | 341 MB | Nebula Genomics | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://531155966bc06bca5de62439c00ce64b-282.collections.ac2it.arvadosapi.com/_/'` |
-| 4 | `60820188475559.vcf.gz` | https://my.pgp-hms.org/profile/hu1C1368 | 325 MB | Filtered SNPs | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://e17abc964664035c2efe6041b954e4f1-300.collections.ac2it.arvadosapi.com/_/'` |
-| 5 | `60820188474283.vcf.gz` | https://my.pgp-hms.org/profile/hu6ABACE | 222 MB | Dante Labs WGS | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://b42c5de31c35c2184a7119ddee4b049d-208.collections.ac2it.arvadosapi.com/_/'` |
-| 6 | `0GOOR_HG002.vcf.gz` | https://precision.fda.gov/challenges/10/results | 69 MB | Genome in a Bottle Truth Challenge v2 | `wget https://data.nist.gov/od/ds/ark:/88434/mds2-2336/submission_vcfs/0GOOR/0GOOR_HG002.vcf.gz` |
-| 7 | `1000G_phase3_chr20.vcf.gz` | https://www.internationalgenome.org/data-portal/data-collections/phase3/ | 327 MB | 1000 Genomes Phase 3 batch; 2,504 samples; GRCh37 | `wget 'https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz' -O 1000G_phase3_chr20.vcf.gz` |
-| 8 | `HGSVC2.vcf.gz` | https://internationalgenome.org/data-portal/data-collections/hgsvc2/ | 31.5 MB | HGSVC2 structural-variant batch; 32 samples; GRCh38 | `wget 'https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/HGSVC2/release/v1.0/integrated_callset/freeze3.sv.alt.vcf.gz' -O HGSVC2.vcf.gz` |
-| 9 | `HG004_GRCh38.vcf.gz` | https://www.nist.gov/programs-projects/genome-bottle | 149 MB | Genome in a Bottle HG004 benchmark; single sample; GRCh38 | `wget 'https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG004_NA24143_mother/NISTv4.2.1/GRCh38/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz' -O HG004_GRCh38.vcf.gz` |
-| 10 | `HG005_GRCh38.vcf.gz` | https://www.nist.gov/programs-projects/genome-bottle | 139 MB | Genome in a Bottle HG005 benchmark; single sample; GRCh38 | `wget 'https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/ChineseTrio/HG005_NA24631_son/NISTv4.2.1/GRCh38/HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz' -O HG005_GRCh38.vcf.gz` |
+| # | File name | VCF version | Profile / provenance | Size | Provider / label | Download command |
+|---:|---|---|---|---:|---|---|
+| 1 | `NG1N86S6FC.vcf.gz` | VCFv4.2 | https://my.pgp-hms.org/profile/hu416394 | 379 MB | Sequencing.com | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://f26290bdbc3bf08190edec227f21635c-291.collections.ac2it.arvadosapi.com/_/'` |
+| 2 | `NG131FQA1I.vcf.gz` | VCFv4.2 | https://my.pgp-hms.org/profile/huFFFE77 | 224 MB | Dante Labs | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://5aa905ff32eca70008e6d6d8aca1f238-200.collections.ac2it.arvadosapi.com/_/'` |
+| 3 | `NB72462M.vcf.gz` | VCFv4.2 | https://my.pgp-hms.org/profile/huF7A4DE | 341 MB | Nebula Genomics | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://531155966bc06bca5de62439c00ce64b-282.collections.ac2it.arvadosapi.com/_/'` |
+| 4 | `60820188475559.vcf.gz` | VCFv4.2 | https://my.pgp-hms.org/profile/hu1C1368 | 325 MB | Filtered SNPs | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://e17abc964664035c2efe6041b954e4f1-300.collections.ac2it.arvadosapi.com/_/'` |
+| 5 | `60820188474283.vcf.gz` | VCFv4.2 | https://my.pgp-hms.org/profile/hu6ABACE | 222 MB | Dante Labs WGS | `wget --mirror --no-parent --no-host --cut-dirs=1 'https://b42c5de31c35c2184a7119ddee4b049d-208.collections.ac2it.arvadosapi.com/_/'` |
+| 6 | `0GOOR_HG002.vcf.gz` | VCFv4.2 | https://precision.fda.gov/challenges/10/results | 69 MB | Genome in a Bottle Truth Challenge v2 | `wget https://data.nist.gov/od/ds/ark:/88434/mds2-2336/submission_vcfs/0GOOR/0GOOR_HG002.vcf.gz` |
+| 7 | `1000G_phase3_chr20.vcf.gz` | VCFv4.1 | https://www.internationalgenome.org/data-portal/data-collections/phase3/ | 327 MB | 1000 Genomes Phase 3 batch; 2,504 samples; GRCh37 | `wget 'https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz' -O 1000G_phase3_chr20.vcf.gz` |
+| 8 | `HGSVC2.vcf.gz` | VCFv4.2 | https://internationalgenome.org/data-portal/data-collections/hgsvc2/ | 31.5 MB | HGSVC2 structural-variant batch; 32 samples; GRCh38 | `wget 'https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/HGSVC2/release/v1.0/integrated_callset/freeze3.sv.alt.vcf.gz' -O HGSVC2.vcf.gz` |
+| 9 | `HG004_GRCh38.vcf.gz` | VCFv4.2 | https://www.nist.gov/programs-projects/genome-bottle | 149 MB | Genome in a Bottle HG004 benchmark; single sample; GRCh38 | `wget 'https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG004_NA24143_mother/NISTv4.2.1/GRCh38/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz' -O HG004_GRCh38.vcf.gz` |
+| 10 | `HG005_GRCh38.vcf.gz` | VCFv4.2 | https://www.nist.gov/programs-projects/genome-bottle | 139 MB | Genome in a Bottle HG005 benchmark; single sample; GRCh38 | `wget 'https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/ChineseTrio/HG005_NA24631_son/NISTv4.2.1/GRCh38/HG005_GRCh38_1_22_v4.2.1_benchmark.vcf.gz' -O HG005_GRCh38.vcf.gz` |
+
+The `VCF version` column is the value of the `##fileformat` declaration on the
+first line of each file. It was read without downloading the full datasets, by
+requesting only the first 128 KB of each file over HTTP and decompressing that
+prefix:
+
+```bash
+curl -sL -r 0-131071 '<url>' | gzip -dc 2>/dev/null | head -1
+```
+
+For an already-downloaded copy, the equivalent local check is:
+
+```bash
+for f in vcf_data/*.vcf.gz; do printf '%s\t' "$f"; gzip -dc "$f" 2>/dev/null | head -1; done
+```
+
+Dataset 1 is distributed inside `SequencingdotcomVCFs.zip`; the version shown is
+that of the archive member `KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz`.
+Dataset 6 was verified from a local copy with the command above, because the
+NIST distribution endpoint did not serve the file over HTTP during the check.
 
 ## Downloading the Datasets
 
@@ -143,6 +163,28 @@ See the [test-specific README](tests/test-queries/README.md) for exact query
 semantics, multiple-partition usage, provenance options, result files, status
 interpretation, and large-dataset memory guidance.
 
+
+## Benchmark Suite
+
+[`benchmarks/`](benchmarks/) is the runnable form of
+[`benchmarking_suggestions.md`](benchmarking_suggestions.md): one script per
+plan section, a driver, and an analysis layer that emits CSV/JSON.
+
+```bash
+bash benchmarks/00_environment.sh     # capture the environment manifest first
+bash benchmarks/run_all.sh cheap      # skips the large-input experiments
+python3 benchmarks/analysis/collect_metrics.py --all
+```
+
+`BM_DRY_RUN=1` prints every command without running anything, which is the
+quickest way to see what a sweep will do. See
+[`benchmarks/README.md`](benchmarks/README.md) for the run order, the
+per-experiment table, and the handful of gotchas that actually matter.
+
+The older `test_full_*.sh` scripts in the repository root are the previous
+single-configuration runners. They still work, but they couple conversion to
+`--validate-artifacts all --validation-engine all`, which is the coupling the
+suite exists to undo.
 
 ## Metrics and Reporting Scripts
 

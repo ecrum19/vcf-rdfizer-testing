@@ -25,3 +25,12 @@ BioMedSem_2026/paper/*
 !*.tex
 !*.bib
 !*.png
+
+# Benchmark suite: keep the analysis outputs and the run records (small, and
+# the reason a number is interpretable later); drop the bulk. Note the
+# negation for derived-input provenance — vcf_data/ is ignored wholesale, but
+# those JSONs are what makes a derived ladder reproducible.
+benchmarks/results/**/out/
+benchmarks/results/**/*.log
+benchmarks/results/**/workspace_bytes.tsv
+!vcf_data/derived/*.provenance.json

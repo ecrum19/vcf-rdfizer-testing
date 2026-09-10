@@ -511,6 +511,18 @@ The first six inputs remain the provenance of the numerical baseline results cur
 \end{revision}
 \authorquery{Which of the four added inputs have completed (a) RDF conversion, (b) HDT construction, (c) COTTAS construction, and (d) all six paired queries? Please provide the finished experiment/run names so the Results placeholders can be populated without guessing.}
 
+% [REVISED 2026-09-08: document VCF version coverage of the corpus and of published data]
+\begin{revision}
+\textbf{VCF Version Coverage}.
+Every input in the corpus declares a \texttt{\#\#fileformat} of either VCFv4.1 or VCFv4.2, nine at VCFv4.2 and the 1000 Genomes Phase 3 chromosome-20 call set at VCFv4.1.
+This distribution reflects the state of published variant data rather than a restriction imposed during corpus construction.
+Although the specification has since advanced through VCFv4.3, VCFv4.4, and VCFv4.5 \cite{vcf_spec_2024}, we were unable to identify any large public dataset distributed above VCFv4.2.
+A survey of the \texttt{\#\#fileformat} declarations of major public variant resources, conducted on 8 September 2026, returned VCFv4.2 for dbSNP build 156 \cite{dbsnp_b156} and gnomAD v4.1 \cite{gnomad_v41}, and VCFv4.1 for ClinVar \cite{clinvar_vcf}, the 1000 Genomes 30x GRCh38 phased call set \cite{kgp_30x_grch38}, and Ensembl variation \cite{ensembl_variation}.
+Conformance to VCFv4.3 and above can therefore presently be exercised only against the example and conformance files distributed with the specification itself \cite{vcf_spec_2024}, and not against production-scale data.
+The corpus consequently characterizes VCF-RDFizer on the versions that data producers actually emit, and support for the newer revisions, in particular the local-allele \texttt{FORMAT} fields introduced in VCFv4.4 and VCFv4.5, remains to be evaluated separately.
+\end{revision}
+\authorquery{A stronger draft formulation of the paragraph above asserted that ``essentially every caller (DeepVariant, DRAGEN, GATK, Sniffles) still emits VCFv4.2''. That caller-level claim could not be substantiated for this revision: the version literal does not appear in the VCF-related source files of the public DeepVariant or Sniffles repositories, and DRAGEN is closed-source. The wording above is therefore deliberately limited to the reference resources whose headers were measured directly. If you wish to retain the caller-level statement, please supply per-tool evidence (release notes, or \texttt{\#\#fileformat} lines from your own outputs), as it would otherwise be an unsupported generalization.}
+
 \textbf{Testing Environment}
 % [REVISED 2026-08-31: distinguish baseline environment from pending reruns]
 \begin{revision}

@@ -1,0 +1,12 @@
+##fileformat=VCFv4.4
+##contig=<ID=20,length=64444167>
+##reference=file:///ref/GRCh38.fa
+##FILTER=<ID=LowQual,Description="Low quality">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total depth">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele frequency">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">
+##FORMAT=<ID=PS,Number=1,Type=Integer,Description="Phase set">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE_A
+20	100	.	A	G	50	PASS	DP=30;AF=0.5	GT:DP:PS	|0/1:30:100
+20	300	.	C	G,T	40	PASS	DP=18;AF=0.1,0.2	GT:DP:PS	1|2:18:100

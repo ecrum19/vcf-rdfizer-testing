@@ -1,0 +1,96 @@
+{
+  "generated_utc": "2026-09-10T13:03:55Z",
+  "generator": "benchmarks/lib/make_fixtures.py",
+  "fixtures": [
+    {
+      "file": "version_4.1.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "version_4.2.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "version_4.3.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "version_4.4.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "version_4.5.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "version_missing_declaration.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "version_4.0_declared.vcf",
+      "kind": "version",
+      "expectation": null
+    },
+    {
+      "file": "awkward_sites_only.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. No FORMAT or sample columns at all; Q5/Q6 are not applicable."
+    },
+    {
+      "file": "awkward_symbolic_alleles.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. Symbolic alleles are not sequence alleles; the graph must not treat '<DEL>' as a base string."
+    },
+    {
+      "file": "awkward_breakend.vcf",
+      "kind": "awkward",
+      "expectation": "Convert, or refuse with a clear diagnostic. Breakend ALT syntax is not a plain allele string."
+    },
+    {
+      "file": "awkward_high_ploidy.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. Ploidy is 4 then 3; vcfc:ploidy must follow the data, not assume 2."
+    },
+    {
+      "file": "awkward_half_and_haploid_calls.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. Half-call, haploid, single-missing and fully-missing genotypes are four distinct cases and must not collapse."
+    },
+    {
+      "file": "awkward_filter_variants.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. PASS, '.' (no filter applied) and a failed filter are three different states \u2014 Q4 checks the exact lexical value. Note 'q10' is undeclared in the header, which is also worth surfacing."
+    },
+    {
+      "file": "awkward_missing_values.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. Missing QUAL, FILTER, INFO and FORMAT values must be absent from the graph, not emitted as the literal '.'."
+    },
+    {
+      "file": "awkward_declared_format_absent.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. AD is declared in the header but never used in a record; the header declaration should still be represented."
+    },
+    {
+      "file": "awkward_no_records.vcf",
+      "kind": "awkward",
+      "expectation": "Convert to a header-only graph, or refuse clearly. Zero data records must not be reported as success with a silently empty artifact."
+    },
+    {
+      "file": "awkward_crlf.vcf",
+      "kind": "awkward",
+      "expectation": "Convert. CRLF line endings must not leave a stray \\r inside the last field's literal."
+    },
+    {
+      "file": "awkward_truncated.vcf.gz",
+      "kind": "awkward",
+      "expectation": "Refuse with a clear decompression diagnostic. This must NOT be reported as a successful conversion of a partial graph."
+    }
+  ]
+}

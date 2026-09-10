@@ -1,0 +1,468 @@
+#!/usr/bin/env bash
+# Shared helpers for the VCF-RDFizer benchmark suite.
+#
+# Source this, do not execute it:
+#   source "$(dirname "$0")/lib/common.sh"
+#
+# Every experiment script uses bm_run() so that all runs are recorded the same
+# way: fresh --out per cell (the wrapper refuses to overwrite planned
+# artifacts), a sampled peak host workspace footprint, the tool commit, and the
+# exact command line. Analysis reads only what bm_run writes.
+
+set -euo pipefail
+
+# --------------------------------------------------------------------------
+# Layout
+# --------------------------------------------------------------------------
+BM_LIB_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+BM_ROOT="$(cd -- "$BM_LIB_DIR/.." && pwd -P)"          # benchmarks/
+BM_REPO="$(cd -- "$BM_ROOT/.." && pwd -P)"             # vcf-rdfizer-testing/
+BM_RESULTS="${BM_RESULTS:-$BM_ROOT/results}"
+BM_DERIVED="${BM_DERIVED:-$BM_REPO/vcf_data/derived}"
+BM_VCF_DATA="${BM_VCF_DATA:-$BM_REPO/vcf_data}"
+BM_SAMPLE_INTERVAL="${BM_SAMPLE_INTERVAL:-5}"          # workspace sampler, seconds
+BM_DRY_RUN="${BM_DRY_RUN:-0}"
+
+# --------------------------------------------------------------------------
+# Docker image: local build by default, pinned release on request
+# --------------------------------------------------------------------------
+# Two modes, and exactly one is active per session:
+#
+#   LOCAL (default)   Build the image once from the tool checkout and tag it
+#                     with the commit that built it — vcf-rdfizer:local-<sha>.
+#                     This is what you want while developing: it tests the code
+#                     you are actually changing, and the tag records which
+#                     commit that was.
+#
+#   PINNED            Set BM_IMAGE_VERSION=1.1.0 to use a published release
+#                     instead. The tool pulls exactly that tag. This is what a
+#                     future reproduction run uses.
+#
+# Whichever mode is active, the image is resolved ONCE per session and every
+# cell then runs with `--image <exact ref> --no-build`. Two reasons that
+# matters: `--build` on each cell would rebuild the image for all 30 cells of
+# experiment 01, and `--no-build` guarantees a cell can never silently rebuild
+# into something different halfway through a sweep.
+#
+# For reference, the tool's own resolution order is: --build, then a local
+# image, then a pull if --image-version was given, then --no-build errors,
+# then build-if-Dockerfile-else-pull. The consequence worth knowing is that a
+# bare `:latest` NEVER pulls — so an unpinned published image would silently be
+# whatever happens to be on the machine.
+BM_IMAGE_VERSION="${BM_IMAGE_VERSION:-}"     # set -> pinned published release
+BM_IMAGE="${BM_IMAGE:-ecrum19/vcf-rdfizer}"  # repo for the pinned mode
+BM_LOCAL_IMAGE="${BM_LOCAL_IMAGE:-}"         # override the local tag
+BM_REBUILD="${BM_REBUILD:-0}"                # force a rebuild in local mode
+
+# --------------------------------------------------------------------------
+# Tool resolution
+# --------------------------------------------------------------------------
+# Prefer an explicit VCF_RDFIZER; else a sibling checkout; else the installed
+# console script. Benchmarks must know exactly which one ran, so the resolved
+# path and its git commit go into every bench.json.
+bm_resolve_tool() {
+  if [[ -n "${VCF_RDFIZER:-}" ]]; then
+    BM_TOOL_KIND="explicit"; BM_TOOL="$VCF_RDFIZER"; return 0
+  fi
+  local candidate
+  for candidate in "$BM_REPO/../vcf-rdfizer/vcf_rdfizer.py" \
+                   "$BM_REPO/../VCF-RDFizer/vcf_rdfizer.py"; do
+    if [[ -f "$candidate" ]]; then
+      BM_TOOL_KIND="checkout"
+      BM_TOOL="$(cd -- "$(dirname -- "$candidate")" && pwd -P)/$(basename -- "$candidate")"
+      return 0
+    fi
+  done
+  if command -v vcf-rdfizer >/dev/null 2>&1; then
+    BM_TOOL_KIND="installed"; BM_TOOL="$(command -v vcf-rdfizer)"; return 0
+  fi
+  bm_die "no VCF-RDFizer found. Set VCF_RDFIZER=/path/to/vcf_rdfizer.py"
+}
+
+# The argv prefix that invokes the tool.
+bm_tool_argv() {
+  case "$BM_TOOL_KIND" in
+    installed) printf '%s\n' "$BM_TOOL" ;;
+    *)         printf '%s\n%s\n' "${PYTHON:-python3}" "$BM_TOOL" ;;
+  esac
+}
+
+# The image arguments every measured run gets. Kept in one place so no
+# experiment script can forget to pin, and so the exact reference is visible in
+# the recorded command line of every cell.
+#
+# BM_IMAGE_REF is resolved once, at the bottom of this file.
+bm_image_argv() {
+  printf '%s\n%s\n%s\n' "--image" "$BM_IMAGE_REF" "--no-build"
+}
+
+# True when this session builds from the checkout rather than pulling a release.
+bm_image_is_local() { [[ -z "$BM_IMAGE_VERSION" ]]; }
+
+# The local tag encodes the commit that built it, so the image reference alone
+# says which source produced a result. A dirty tree gets `-dirty`, and is
+# rebuilt every session because the tag cannot distinguish two dirty trees.
+bm_local_image_tag() {
+  if [[ -n "$BM_LOCAL_IMAGE" ]]; then printf '%s\n' "$BM_LOCAL_IMAGE"; return 0; fi
+  local dir short dirty=""
+  dir="$(dirname -- "$BM_TOOL")"
+  if git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
+    short="$(git -C "$dir" rev-parse --short HEAD)"
+    git -C "$dir" diff --quiet 2>/dev/null || dirty="-dirty"
+    printf 'vcf-rdfizer:local-%s%s\n' "$short" "$dirty"
+  else
+    printf 'vcf-rdfizer:local\n'
+  fi
+}
+
+bm_image_digest() {
+  local value
+  # A failed `docker image inspect` can still emit a blank line on stdout, so
+  # each candidate is captured and checked rather than chained with ||.
+  value="$(docker image inspect --format '{{if .RepoDigests}}{{index .RepoDigests 0}}{{end}}' \
+    "$BM_IMAGE_REF" 2>/dev/null | tr -d '\n' || true)"
+  if [[ -n "$value" ]]; then printf '%s\n' "$value"; return 0; fi
+  value="$(docker image inspect --format '{{.Id}}' "$BM_IMAGE_REF" 2>/dev/null | tr -d '\n' || true)"
+  if [[ -n "$value" ]]; then printf '%s\n' "$value"; return 0; fi
+  printf 'not-present-locally\n'
+}
+
+# Build the local image once per session. No-op when it already exists, unless
+# BM_REBUILD=1 or the working tree is dirty (whose tag cannot be trusted to
+# mean one particular state).
+bm_ensure_local_image() {
+  bm_image_is_local || return 0
+  [[ "$BM_DRY_RUN" == "1" ]] && return 0
+
+  local dockerfile_dir
+  dockerfile_dir="$(dirname -- "$BM_TOOL")"
+  if [[ ! -f "$dockerfile_dir/Dockerfile" ]]; then
+    bm_die "local image mode needs a Dockerfile in $dockerfile_dir.
+Either point VCF_RDFIZER at a source checkout, or pin a published release:
+  export BM_IMAGE_VERSION=1.1.0"
+  fi
+
+  local exists=0
+  docker image inspect "$BM_IMAGE_REF" >/dev/null 2>&1 && exists=1
+  local dirty=0
+  [[ "$BM_IMAGE_REF" == *-dirty ]] && dirty=1
+
+  if (( exists )) && [[ "$BM_REBUILD" != "1" ]] && (( ! dirty )); then
+    bm_step "image $BM_IMAGE_REF already built"
+    return 0
+  fi
+
+  if (( dirty )); then
+    bm_warn "the tool checkout has uncommitted changes, so $BM_IMAGE_REF is
+rebuilt every session and does not identify one particular source state.
+Commit before a run whose numbers you intend to publish."
+  fi
+
+  bm_info "Building $BM_IMAGE_REF (once for this session)"
+  if ! docker build -t "$BM_IMAGE_REF" "$dockerfile_dir" > "${BM_BUILD_LOG:-/dev/stdout}" 2>&1; then
+    bm_die "docker build failed for $BM_IMAGE_REF${BM_BUILD_LOG:+ (see $BM_BUILD_LOG)}"
+  fi
+}
+
+bm_tool_commit() {
+  local dir
+  case "$BM_TOOL_KIND" in
+    installed) printf 'installed:%s\n' "$($BM_TOOL --version 2>/dev/null | head -1)"; return 0 ;;
+  esac
+  dir="$(dirname -- "$BM_TOOL")"
+  if git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
+    printf '%s%s\n' \
+      "$(git -C "$dir" rev-parse HEAD)" \
+      "$(git -C "$dir" diff --quiet 2>/dev/null || printf -- '-dirty')"
+  else
+    printf 'unknown\n'
+  fi
+}
+
+# --------------------------------------------------------------------------
+# Small utilities
+# --------------------------------------------------------------------------
+bm_die()  { printf 'benchmark error: %s\n' "$*" >&2; exit 1; }
+bm_warn() { printf 'benchmark warning: %s\n' "$*" >&2; }
+bm_info() { printf '\033[1m==>\033[0m %s\n' "$*"; }
+bm_step() { printf '    - %s\n' "$*"; }
+
+bm_now_epoch() { date -u +%s; }
+bm_now_iso()   { date -u +%Y-%m-%dT%H:%M:%SZ; }
+
+# Directory size in bytes, portable. GNU du has -b; BSD/macOS du does not, and
+# its -k is the only unit both agree on. Never use `du -sb` in this suite.
+bm_dir_bytes() {
+  local target="$1" kib
+  [[ -e "$target" ]] || { printf '0\n'; return 0; }
+  kib="$(du -sk "$target" 2>/dev/null | awk 'NR==1{print $1}')"
+  [[ -n "$kib" ]] || kib=0
+  printf '%s\n' "$(( kib * 1024 ))"
+}
+
+bm_file_bytes() {
+  local target="$1"
+  [[ -f "$target" ]] || { printf '0\n'; return 0; }
+  # wc -c is portable where stat's flags are not.
+  wc -c < "$target" | tr -d ' '
+}
+
+bm_require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || bm_die "required command not found: $1${2:+ ($2)}"
+}
+
+# Escape a string for embedding in JSON.
+bm_json_escape() {
+  python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))'
+}
+
+# JSON array of the remaining arguments.
+bm_json_argv() {
+  python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.argv[1:]))' "$@"
+}
+
+# --------------------------------------------------------------------------
+# Peak workspace sampler
+# --------------------------------------------------------------------------
+# Samples the size of the run's --out tree, which is where the aggregate lives
+# and therefore where plain vs space-optimized actually differs on the host.
+#
+# It does NOT see the ephemeral Docker volume used by the partitioned stage.
+# That workspace is reported by the tool itself in
+# stages/partitioned/<sample>.json ("workspace free-space samples"), which
+# collect_metrics.py reads separately. Peak *host* footprint and peak *volume*
+# footprint are two different numbers; do not add them or use one for the other.
+bm_sampler_start() {
+  local target="$1" out_file="$2"
+  : > "$out_file"
+  (
+    while :; do
+      printf '%s\t%s\n' "$(bm_now_epoch)" "$(bm_dir_bytes "$target")" >> "$out_file"
+      sleep "$BM_SAMPLE_INTERVAL"
+    done
+  ) &
+  BM_SAMPLER_PID=$!
+}
+
+bm_sampler_stop() {
+  if [[ -n "${BM_SAMPLER_PID:-}" ]] && kill -0 "$BM_SAMPLER_PID" 2>/dev/null; then
+    kill "$BM_SAMPLER_PID" 2>/dev/null || true
+    wait "$BM_SAMPLER_PID" 2>/dev/null || true
+  fi
+  BM_SAMPLER_PID=""
+}
+
+bm_sampler_peak() {
+  local out_file="$1"
+  [[ -s "$out_file" ]] || { printf '0\n'; return 0; }
+  awk -F'\t' 'BEGIN{m=0} {if ($2+0 > m) m=$2+0} END{print m}' "$out_file"
+}
+
+# --------------------------------------------------------------------------
+# bm_run: the single entry point for every measured invocation
+# --------------------------------------------------------------------------
+# Usage: bm_run <experiment> <cell-label> -- <tool arguments without --out>
+#
+# Creates $BM_RESULTS/<experiment>/<cell-label>/, passes it as --out, samples
+# the workspace, and writes bench.json. Returns the tool's exit code; it does
+# NOT abort the script, because a refusal or an OOM is frequently the result an
+# experiment is looking for (see 09_awkward_inputs.sh and 10_feasibility.sh).
+bm_run() {
+  local experiment="$1" label="$2"; shift 2
+  [[ "${1:-}" == "--" ]] || bm_die "bm_run: expected -- before tool arguments"
+  shift
+
+  local cell_dir="$BM_RESULTS/$experiment/$label"
+  if [[ -e "$cell_dir" ]]; then
+    bm_die "cell already exists: $cell_dir
+Each cell needs a fresh --out (the wrapper refuses to overwrite planned
+artifacts). Move or remove it, or set BM_RESULTS to a new root."
+  fi
+  mkdir -p "$cell_dir"
+
+  local out_dir="$cell_dir/out"
+  local samples="$cell_dir/workspace_bytes.tsv"
+  # Portable read loop rather than mapfile, so nothing here needs bash 4.
+  local -a argv=()
+  local token
+  while IFS= read -r token; do argv+=("$token"); done < <(bm_tool_argv)
+  argv+=("$@")
+  while IFS= read -r token; do argv+=("$token"); done < <(bm_image_argv)
+  argv+=(--out "$out_dir")
+
+  bm_step "$label"
+  if [[ "$BM_DRY_RUN" == "1" ]]; then
+    bm_json_argv "${argv[@]}" > "$cell_dir/command.json"
+    printf '%s\n' "${argv[*]}" > "$cell_dir/command.txt"
+    python3 -c '
+import json, pathlib, sys
+pathlib.Path(sys.argv[1], "bench.json").write_text(json.dumps(
+    {"experiment": sys.argv[2], "cell": sys.argv[3], "dry_run": True,
+     "skipped": True, "reason": "BM_DRY_RUN=1",
+     "command": json.loads(pathlib.Path(sys.argv[1], "command.json").read_text())},
+    indent=2) + "\n")
+' "$cell_dir" "$experiment" "$label"
+    # So the assertions below stay no-ops rather than failing on a plan-only run.
+    BM_LAST_RC=0
+    BM_LAST_DIR="$cell_dir"
+    BM_LAST_DRY_RUN=1
+    return 0
+  fi
+  BM_LAST_DRY_RUN=0
+
+  bm_json_argv "${argv[@]}" > "$cell_dir/command.json"
+  printf '%s\n' "${argv[*]}" > "$cell_dir/command.txt"
+
+  mkdir -p "$out_dir"
+  bm_sampler_start "$out_dir" "$samples"
+
+  local start end rc=0
+  start="$(bm_now_epoch)"
+  set +e
+  "${argv[@]}" > "$cell_dir/stdout.log" 2> "$cell_dir/stderr.log"
+  rc=$?
+  set -e
+  end="$(bm_now_epoch)"
+
+  bm_sampler_stop
+
+  BM_LAST_RC="$rc"
+  BM_LAST_DIR="$cell_dir"
+
+  python3 - "$cell_dir" "$experiment" "$label" "$rc" "$start" "$end" \
+    "$(bm_sampler_peak "$samples")" "$(bm_dir_bytes "$out_dir")" \
+    "$(bm_tool_commit)" "$BM_TOOL" <<'PYEOF'
+import json, pathlib, sys
+(cell, experiment, label, rc, start, end, peak, final, commit, tool,
+ image_ref, image_digest, image_mode) = sys.argv[1:14]
+cell = pathlib.Path(cell)
+record = {
+    "experiment": experiment,
+    "cell": label,
+    "exit_code": int(rc),
+    "started_epoch": int(start),
+    "ended_epoch": int(end),
+    "wrapper_wall_seconds": int(end) - int(start),
+    "peak_out_tree_bytes": int(peak),
+    "final_out_tree_bytes": int(final),
+    "tool_commit": commit,
+    "tool_path": tool,
+    "image_ref": image_ref,
+    "image_digest": image_digest,
+    "image_mode": image_mode,
+    "command": json.loads((cell / "command.json").read_text()),
+}
+(cell / "bench.json").write_text(json.dumps(record, indent=2) + "\n")
+PYEOF
+
+  if (( rc != 0 )); then
+    bm_step "  exit $rc (recorded; see $cell_dir/stderr.log)"
+  fi
+  return 0
+}
+
+# Abort unless the last bm_run succeeded. Use in experiments where a failure
+# invalidates everything downstream; omit where a non-zero exit is the result.
+bm_expect_ok() {
+  [[ "${BM_LAST_DRY_RUN:-0}" == "1" ]] && return 0
+  [[ "${BM_LAST_RC:-1}" == "0" ]] || bm_die "expected success but exit was ${BM_LAST_RC:-?}
+See ${BM_LAST_DIR:-?}/stderr.log"
+}
+
+# Abort unless the last bm_run failed with the given message fragment.
+bm_expect_refusal() {
+  local fragment="$1"
+  [[ "${BM_LAST_DRY_RUN:-0}" == "1" ]] && return 0
+  [[ "${BM_LAST_RC:-0}" != "0" ]] || bm_die "expected a refusal but the run succeeded: ${BM_LAST_DIR:-?}"
+  grep -qF -- "$fragment" "${BM_LAST_DIR}/stderr.log" \
+    || bm_die "refusal did not mention '$fragment': ${BM_LAST_DIR}/stderr.log"
+}
+
+# --------------------------------------------------------------------------
+# Input resolution
+# --------------------------------------------------------------------------
+# Resolve a corpus or fixture name to an absolute path. Accepts an absolute
+# path, a name under vcf_data/, one under vcf_data/derived/, or a fixture from
+# the tool checkout's test/test_vcf_files/.
+# Locate an input without dying. Prints the path and returns 0, or returns 1.
+# This is the primitive; bm_vcf and bm_have_vcf are both built on it.
+#
+# Keep it that way. An earlier version had bm_have_vcf call bm_vcf with stderr
+# redirected, which looks like a safe probe and is not: a redirection is not a
+# subshell, so bm_die's `exit 1` tore down the whole script — silently, because
+# the message went to /dev/null. Every "input missing -> skip the cell" path in
+# the suite depends on this function not exiting.
+bm_find_vcf() {
+  local name="$1" candidate
+  if [[ "$name" == /* ]]; then
+    [[ -f "$name" ]] || return 1
+    printf '%s\n' "$name"
+    return 0
+  fi
+  for candidate in "$BM_VCF_DATA/$name" "$BM_DERIVED/$name" \
+                   "$(dirname -- "$BM_TOOL")/test/test_vcf_files/$name"; do
+    if [[ -f "$candidate" ]]; then printf '%s\n' "$candidate"; return 0; fi
+  done
+  return 1
+}
+
+# Resolve an input or abort. Use only where a missing input is fatal.
+bm_vcf() {
+  local resolved
+  if resolved="$(bm_find_vcf "$1")"; then
+    printf '%s\n' "$resolved"
+    return 0
+  fi
+  bm_die "input not found: $1
+Looked in $BM_VCF_DATA, $BM_DERIVED, and the tool checkout's test/test_vcf_files.
+Corpus files are downloaded by scripts/download_test_data.sh; derived ladders
+are built by benchmarks/02_derive_ladders.sh."
+}
+
+# True when the named input exists. Never exits.
+bm_have_vcf() { bm_find_vcf "$1" >/dev/null; }
+
+# First existing file matching a glob under a directory, or empty. `find`
+# returns non-zero on a missing directory, which under `set -e` would abort the
+# script mid-experiment, so every lookup goes through here.
+bm_first_file() {
+  local root="$1" pattern="$2" depth="${3:-3}"
+  [[ -d "$root" ]] || { printf '\n'; return 0; }
+  find "$root" -maxdepth "$depth" -name "$pattern" 2>/dev/null | head -1
+}
+
+# Skip a cell with a recorded reason rather than failing the sweep.
+bm_skip() {
+  local experiment="$1" label="$2" reason="$3"
+  local cell_dir="$BM_RESULTS/$experiment/$label"
+  mkdir -p "$cell_dir"
+  python3 -c '
+import json, pathlib, sys
+pathlib.Path(sys.argv[1], "bench.json").write_text(
+    json.dumps({"experiment": sys.argv[2], "cell": sys.argv[3],
+                "skipped": True, "reason": sys.argv[4]}, indent=2) + "\n")
+' "$cell_dir" "$experiment" "$label" "$reason"
+  bm_step "$label — SKIPPED: $reason"
+}
+
+bm_banner() {
+  printf '\n=== %s ===\n' "$*"
+}
+
+bm_resolve_tool
+
+# One image reference for the whole session, resolved before anything runs.
+if bm_image_is_local; then
+  BM_IMAGE_REF="$(bm_local_image_tag)"
+  BM_IMAGE_MODE="local-build"
+else
+  BM_IMAGE_REF="${BM_IMAGE}:${BM_IMAGE_VERSION}"
+  BM_IMAGE_MODE="pinned-release"
+fi
+
+# Build now if needed, so the first cell does not pay for it and a build
+# failure surfaces before any measurement is taken.
+bm_ensure_local_image
+
+# Resolved once, so 30 cells do not each shell out to Docker.
+BM_IMAGE_DIGEST="$(bm_image_digest)"
