@@ -34,3 +34,10 @@ benchmarks/results/**/out/
 benchmarks/results/**/*.log
 benchmarks/results/**/workspace_bytes.tsv
 !vcf_data/derived/*.provenance.json
+
+# The benchmark VM points the suite at benchmarks_outputs/ via BM_RESULTS.
+# Mirror the benchmarks/results/ policy for that path: keep the analysis
+# outputs and run records, drop the bulk.
+benchmarks_outputs/**/out/
+benchmarks_outputs/**/*.log
+benchmarks_outputs/**/workspace_bytes.tsv
