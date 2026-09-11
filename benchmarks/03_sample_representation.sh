@@ -92,6 +92,10 @@ for pair in "1000G_phase3_chr20.vcf.gz:cohort" "HG004_GRCh38.vcf.gz:single"; do
   fi
   vcf="$(bm_vcf "$input")"
   for mode in expanded condensed; do
+    # The cohort anchor at expanded is ~2 TB and cannot finish; its condensed
+    # counterpart is the half of the contrast that can, and "expanded does not
+    # scale to a 2,504-sample cohort" is itself what §2 claims.
+    bm_skip_if_cohort_scale "$EXPERIMENT" "anchor_${role}__${mode}" "$vcf" "$mode" && continue
     bm_run "$EXPERIMENT" "anchor_${role}__${mode}" -- \
       --mode full \
       --input "$vcf" \

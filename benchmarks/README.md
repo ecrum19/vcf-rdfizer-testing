@@ -43,17 +43,28 @@ its experiments default to a 1.16M-record or 139 MB input, which is hours.
 Every value the profile sets is a default, so an explicit env var still wins.
 Results from a smoke run are not measurements; do not report them.
 
-**A cohort file is guarded out of §3.2.** The expanded representation emits per
-sample per record, so cost is records x samples. `1000G_phase3_chr20.vcf.gz` is
-327 MB gzipped but 1,812,841 records x 2,504 samples = 4.5e9 sample calls,
-whose N-Triples run to hundreds of GB — it grinds for days and then dies on
-disk, with every later file in the serial loop stuck behind it.
-`05_corpus_breadth.sh` therefore skips any corpus input with more than
-`BM_CORPUS_MAX_SAMPLES` (default 1000) sample columns. Every other corpus file
-is single-sample or a 32-sample SV batch, so the default excludes exactly the
-cohort case, and the skip is recorded in the results with its reason — the
-breadth table says the case was considered and why it was not run. Raise the
-variable if you have the disk.
+**Cohort-scale inputs are guarded out of the `expanded` cells.** The expanded
+representation emits per sample per record, so cost is records x samples. A
+cohort file is small on disk and enormous once expanded:
+`1000G_phase3_chr20.vcf.gz` is 327 MB gzipped, but at 1,812,841 records x 2,504
+samples it reached **23 GB after 20,000 variants (1.1%)** — about **2.1 TB** for
+the whole file, against a 189 GB volume. Unguarded it fills the disk and dies,
+and because every experiment loop is serial, everything after it waits behind a
+cell that cannot finish.
+
+`bm_skip_if_cohort_scale` (in `lib/common.sh`) skips such a cell when the input
+has more than `BM_CORPUS_MAX_SAMPLES` (default 1000) sample columns. It is used
+in two places, which are the two that run full cohort files:
+
+- `05_corpus_breadth.sh` — §3.2 runs everything at expanded
+- `03_sample_representation.sh` — the §2.4 real-cohort anchors
+
+**Only `expanded` is affected.** `condensed` is ~S + (V x F) and stays
+tractable, so the cohort file still gets its condensed cell — which is the
+comparison §2 is actually making. The skip is recorded as a real result with
+its reason, so the table shows the case was considered rather than quietly
+absent; "expanded does not scale to a 2,504-sample cohort" is a finding, not a
+gap. Raise the variable if you have the disk.
 
 `00_environment.sh` must run first and once per session. Run **one experiment at
 a time** — two concurrent runs invalidate every timing and memory number.

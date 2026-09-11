@@ -460,6 +460,34 @@ bm_vcf_samples() {
   bm_cat_vcf "$1" | awk -F'\t' '/^#CHROM/ { print (NF > 9 ? NF - 9 : 0); exit }'
 }
 
+# Skip a cell whose sample count makes the expanded representation infeasible.
+#
+# The expanded representation emits per sample per record, so cost is
+# records x samples. A cohort file is small on disk and enormous once expanded:
+# 1000G_phase3_chr20 is 327 MB gzipped, but at 1,812,841 records x 2,504
+# samples it reached 23 GB after 20,000 variants (1.1%) -- about 2.1 TB for the
+# whole file, against a 189 GB volume. Unguarded it fills the disk and dies,
+# and because every experiment loop is serial, everything after it waits behind
+# a cell that cannot finish.
+#
+# Guard on samples rather than bytes, because the fan-out is per-sample. Only
+# `expanded` is affected; `condensed` is ~S + (V x F) and stays tractable, so a
+# cohort file still gets its condensed cell -- which is the comparison §2 is
+# actually making.
+#
+# Returns 0 when it skipped (caller should `continue`), 1 to proceed.
+bm_skip_if_cohort_scale() {
+  local experiment="$1" label="$2" vcf="$3" mode="${4:-expanded}"
+  [[ "$mode" == "expanded" ]] || return 1
+  local max="${BM_CORPUS_MAX_SAMPLES:-1000}" samples
+  samples="$(bm_vcf_samples "$vcf")"
+  [[ -n "$samples" ]] || return 1
+  (( samples > max )) || return 1
+  bm_skip "$experiment" "$label" \
+    "$samples sample columns exceeds BM_CORPUS_MAX_SAMPLES=$max; the expanded representation emits records x samples calls, which does not fit this volume. The condensed cell for the same input still runs. Raise BM_CORPUS_MAX_SAMPLES to force it."
+  return 0
+}
+
 bm_skip() {
   local experiment="$1" label="$2" reason="$3"
   local cell_dir="$BM_RESULTS/$experiment/$label"
