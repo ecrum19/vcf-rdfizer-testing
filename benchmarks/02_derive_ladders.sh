@@ -57,31 +57,6 @@ bm_sha256() {
   else printf 'unavailable\n'; fi
 }
 
-# Stream a VCF, gzipped or not.
-#
-# Every caller below pipes this into an awk that stops early (`exit` at the
-# #CHROM line, or after N records). The reader closing the pipe kills the
-# decompressor with SIGPIPE, which bash reports as 141 -- and under
-# `set -euo pipefail` in lib/common.sh that aborted the whole script.
-#
-# It only bites on a source large enough that the decompressor is still
-# streaming when awk exits, which is why it went unnoticed until
-# 1000G_phase3_chr20.vcf.gz (327 MB gzipped, 18.4 GB inflated): §2.1 died
-# immediately, before printing the sample count. A small VCF finishes
-# decompressing first and never signals.
-#
-# A truncated read is the intended behaviour at every call site here, so 141
-# is success. Any other non-zero status is still propagated.
-bm_cat_vcf() {
-  local rc=0
-  case "$1" in
-    *.gz) gzip -dc -- "$1" || rc=$? ;;
-    *)    cat -- "$1" || rc=$? ;;
-  esac
-  if (( rc == 141 )); then return 0; fi
-  return "$rc"
-}
-
 # Write a provenance record beside each derived file. Derived inputs are
 # irreproducible without this (§5.4).
 bm_write_provenance() {

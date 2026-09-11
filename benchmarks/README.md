@@ -30,9 +30,30 @@ rebuilt every session, with a warning — commit before a publishable run.
 
 ```bash
 ./run_all.sh              # everything, in order
-./run_all.sh cheap        # skips the large-input experiments (01, 05, 10)
+./run_all.sh cheap        # skips the large-input experiments (01, 04, 05, 10)
+./run_all.sh smoke        # fast end-to-end pass — see below
 ./run_all.sh 03 06        # selected only
 ```
+
+**`smoke` is for "does this still work", never for numbers.** It selects the
+same scripts as `cheap` and then shrinks every input: one replicate, a two-rung
+samples ladder, 2,000-record derived bases, and `test-1k`/`test-10k` in place of
+`test-larger.vcf.gz` and `HG005`. `cheap` on its own is *not* fast — several of
+its experiments default to a 1.16M-record or 139 MB input, which is hours.
+Every value the profile sets is a default, so an explicit env var still wins.
+Results from a smoke run are not measurements; do not report them.
+
+**A cohort file is guarded out of §3.2.** The expanded representation emits per
+sample per record, so cost is records x samples. `1000G_phase3_chr20.vcf.gz` is
+327 MB gzipped but 1,812,841 records x 2,504 samples = 4.5e9 sample calls,
+whose N-Triples run to hundreds of GB — it grinds for days and then dies on
+disk, with every later file in the serial loop stuck behind it.
+`05_corpus_breadth.sh` therefore skips any corpus input with more than
+`BM_CORPUS_MAX_SAMPLES` (default 1000) sample columns. Every other corpus file
+is single-sample or a 32-sample SV batch, so the default excludes exactly the
+cohort case, and the skip is recorded in the results with its reason — the
+breadth table says the case was considered and why it was not run. Raise the
+variable if you have the disk.
 
 `00_environment.sh` must run first and once per session. Run **one experiment at
 a time** — two concurrent runs invalidate every timing and memory number.

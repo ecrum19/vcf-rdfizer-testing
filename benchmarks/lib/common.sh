@@ -436,6 +436,30 @@ bm_first_file() {
 }
 
 # Skip a cell with a recorded reason rather than failing the sweep.
+# Stream a VCF, gzipped or not.
+#
+# A reader that stops early (awk `exit`, head) closes this pipe and the
+# decompressor is killed with SIGPIPE -> 141, which under `set -euo pipefail`
+# aborts the whole script. It only bites when the source is large enough that
+# the decompressor is still streaming when the reader quits, which is why it
+# went unnoticed until 1000G_phase3_chr20.vcf.gz (327 MB gzipped, 18.4 GB
+# inflated). A truncated read is intended at every call site, so 141 is
+# success; any other status still propagates.
+bm_cat_vcf() {
+  local rc=0
+  case "$1" in
+    *.gz) gzip -dc -- "$1" || rc=$? ;;
+    *)    cat -- "$1" || rc=$? ;;
+  esac
+  if (( rc == 141 )); then return 0; fi
+  return "$rc"
+}
+
+# Sample-column count from a VCF header. Reads only as far as #CHROM.
+bm_vcf_samples() {
+  bm_cat_vcf "$1" | awk -F'\t' '/^#CHROM/ { print (NF > 9 ? NF - 9 : 0); exit }'
+}
+
 bm_skip() {
   local experiment="$1" label="$2" reason="$3"
   local cell_dir="$BM_RESULTS/$experiment/$label"

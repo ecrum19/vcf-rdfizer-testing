@@ -32,6 +32,20 @@ consumer_wgs:60820188475559.vcf.gz
 consumer_wgs:60820188474283.vcf.gz
 "
 
+# The expanded representation emits per sample, per record, so cost here is
+# records x samples. A cohort file is small on disk and enormous once expanded:
+# 1000G_phase3_chr20 is 327 MB gzipped but 1,812,841 records x 2,504 samples =
+# 4.5e9 sample calls, whose N-Triples run to hundreds of GB. Left unguarded it
+# grinds for days and then dies on disk -- and because this loop is serial,
+# everything after it waits behind a cell that cannot finish.
+#
+# Guard on sample count rather than file size, because the fan-out is
+# per-sample. Every other corpus file is single-sample or a 32-sample SV batch,
+# so the default excludes exactly the cohort file. Raise it if you have the
+# disk; the skip is recorded with its reason either way, so the breadth table
+# says the cohort case was considered and why it was not run.
+MAX_SAMPLES="${BM_CORPUS_MAX_SAMPLES:-1000}"
+
 bm_banner "§3.2 corpus breadth (one config, one rep per file)"
 
 for entry in $CORPUS; do
@@ -42,6 +56,13 @@ for entry in $CORPUS; do
     continue
   fi
   vcf="$(bm_vcf "$input")"
+
+  samples="$(bm_vcf_samples "$vcf")"
+  if [[ -n "$samples" ]] && (( samples > MAX_SAMPLES )); then
+    bm_skip "$EXPERIMENT" "${family}__${stem}__too_many_samples" \
+      "$samples sample columns exceeds BM_CORPUS_MAX_SAMPLES=$MAX_SAMPLES; the expanded representation would emit records x samples calls. Raise BM_CORPUS_MAX_SAMPLES to include it."
+    continue
+  fi
   bm_run "$EXPERIMENT" "${family}__${stem}" -- \
     --mode full \
     --input "$vcf" \
