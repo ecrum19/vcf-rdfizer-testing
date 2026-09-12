@@ -43,9 +43,13 @@ read_common
 # INFO representation. Two inputs: a single-sample WGS file (where INFO cost
 # competes with sample cost) and the SV batch (whose records carry heavy INFO).
 # --------------------------------------------------------------------------
+# Overridable for the same reason as §2.4's anchors: these are full corpus
+# files, so a fast end-to-end pass has to be able to swap them for fixtures.
+INFO_INPUTS="${BM_INFO_INPUTS:-HG005_GRCh38.vcf.gz HGSVC2.vcf.gz}"
+
 bm_banner "§4.2 --info-representation (paired, $REPS reps)"
 
-for input in HG005_GRCh38.vcf.gz HGSVC2.vcf.gz; do
+for input in $INFO_INPUTS; do
   stem="${input%%.*}"
   if ! bm_have_vcf "$input"; then
     bm_skip "$EXPERIMENT" "info__${stem}__missing" "corpus input not available: $input"

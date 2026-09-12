@@ -82,9 +82,17 @@ for rung in $TIMING_RUNGS; do
 done
 
 # §2.4 — two anchors on unsubsetted real files. Anchors, not the evidence.
+#
+# Overridable because these are full real files and ignore the rung parameters
+# above: for the real experiment they dominate this script's cost (17.7h of
+# 17.8h in one measured smoke pass, against 2.7 minutes for the eight ladder
+# cells). A fast end-to-end pass points them at fixtures instead; `run_all.sh
+# smoke` does exactly that.
+ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-1000G_phase3_chr20.vcf.gz:cohort HG004_GRCh38.vcf.gz:single}"
+
 bm_banner "§2.4 real-cohort anchors"
 
-for pair in "1000G_phase3_chr20.vcf.gz:cohort" "HG004_GRCh38.vcf.gz:single"; do
+for pair in $ANCHOR_PAIRS; do
   input="${pair%%:*}"; role="${pair##*:}"
   if ! bm_have_vcf "$input"; then
     bm_skip "$EXPERIMENT" "anchor_${role}__missing" "corpus input not available: $input"

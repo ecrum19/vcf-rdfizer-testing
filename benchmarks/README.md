@@ -36,10 +36,26 @@ rebuilt every session, with a warning — commit before a publishable run.
 ```
 
 **`smoke` is for "does this still work", never for numbers.** It selects the
-same scripts as `cheap` and then shrinks every input: one replicate, a two-rung
-samples ladder, 2,000-record derived bases, and `test-1k`/`test-10k` in place of
-`test-larger.vcf.gz` and `HG005`. `cheap` on its own is *not* fast — several of
-its experiments default to a 1.16M-record or 139 MB input, which is hours.
+same scripts as `cheap` and shrinks everything they read: one replicate, a
+two-rung samples ladder, 2,000-record derived bases, fixtures in place of every
+corpus file, and a single SPARQL engine. `cheap` on its own is *not* fast —
+several of its experiments default to a 1.16M-record or 139 MB input.
+
+Two classes of cell had to be parameterised for this to work, because they
+ignore the ladder rungs by design and run whole real files: §2.4's real-cohort
+anchors (`BM_ANCHOR_PAIRS`) and §4.2's INFO inputs (`BM_INFO_INPUTS`). Measured
+on one smoke pass before they were overridable, §2.4 alone took **17.7 h of
+`03`'s 17.8 h**, while the eight cells the rungs *did* shrink took **2.7
+minutes** — so shrinking rungs without shrinking those is close to no saving at
+all. `BM_VALIDATION_ENGINES` and `BM_QUERY_ENGINES` drop to one engine for the
+same reason: validation setup is per engine per artifact, so `all` multiplies a
+cheap graph by twelve engine startups.
+
+The smoke anchors use `test-larger-multisample.vcf.gz` (2,504 samples) against
+`test-10k.vcf` (1 sample), which keeps the cohort-vs-single contrast the
+section is about and still exercises the cohort guard, since the multisample
+expanded cell is skipped by it.
+
 Every value the profile sets is a default, so an explicit env var still wins.
 Results from a smoke run are not measurements; do not report them.
 

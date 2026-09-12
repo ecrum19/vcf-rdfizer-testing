@@ -41,7 +41,20 @@ case "${1:-all}" in
     export BM_EQUIV_INPUT="${BM_EQUIV_INPUT:-test-10k.vcf}"
     export BM_QUERY_SMALL="${BM_QUERY_SMALL:-test-1k.vcf}"
     export BM_QUERY_LARGE="${BM_QUERY_LARGE:-test-10k.vcf}"
-    bm_warn "smoke profile: 1 replicate, tiny inputs. Results are not measurements."
+    # The cells that ignore the rung parameters, because they deliberately run
+    # whole real files: §2.4's anchors and §4.2's INFO inputs. Measured on one
+    # smoke pass, §2.4 alone was 17.7h of that script's 17.8h while the eight
+    # cells the rungs *did* shrink took 2.7 minutes. Point them at fixtures.
+    # test-larger-multisample keeps the cohort/single contrast (2,504 samples
+    # vs 1), and its expanded cell is still skipped by the cohort guard --
+    # which exercises the guard too.
+    export BM_ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-test-larger-multisample.vcf.gz:cohort test-10k.vcf:single}"
+    export BM_INFO_INPUTS="${BM_INFO_INPUTS:-test-10k.vcf}"
+    # One engine, not four. Validation setup is per engine per artifact, so
+    # `all` multiplies a cheap graph by twelve engine startups.
+    export BM_VALIDATION_ENGINES="${BM_VALIDATION_ENGINES:-comunica}"
+    export BM_QUERY_ENGINES="${BM_QUERY_ENGINES:-comunica}"
+    bm_warn "smoke profile: 1 replicate, fixtures instead of corpus files, one engine. Results are not measurements."
     ;;
   *)     SELECTED="$*" ;;
 esac
