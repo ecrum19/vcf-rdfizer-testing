@@ -23,6 +23,12 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
 EXPERIMENT="01_storage_mode"
 REPS="${BM_REPS:-5}"
+# Replicates exist to bound the CI, and run-to-run variance is a property of
+# the machine rather than the input -- measured sd was ~1% of the mean across
+# five replicates. So the corridor can be established on the cheapest size,
+# with the larger sizes run once each as a size check that the effect does not
+# drift. BM_REPS_AT_SCALE applies to every size except the first.
+REPS_AT_SCALE="${BM_REPS_AT_SCALE:-$REPS}"
 
 # Small -> medium -> large. Override with BM_SIZES to run a subset.
 DEFAULT_SIZES="test-larger.vcf.gz HG005_GRCh38.vcf.gz NG1N86S6FC.vcf.gz"
@@ -31,7 +37,9 @@ SIZES="${BM_SIZES:-$DEFAULT_SIZES}"
 bm_banner "§1 Storage mode (paired, $REPS reps, interleaved)"
 bm_step "sizes: $SIZES"
 
+first_size="${SIZES%% *}"
 for size in $SIZES; do
+  if [[ "$size" == "$first_size" ]]; then size_reps="$REPS"; else size_reps="$REPS_AT_SCALE"; fi
   if ! bm_have_vcf "$size"; then
     bm_skip "$EXPERIMENT" "${size%%.*}__missing" "input not available: $size"
     continue
@@ -39,7 +47,7 @@ for size in $SIZES; do
   vcf="$(bm_vcf "$size")"
   stem="${size%%.*}"
 
-  for rep in $(seq 1 "$REPS"); do
+  for rep in $(seq 1 "$size_reps"); do
     # Interleave within each repetition: the pair is adjacent in time.
     for mode in plain space-optimized; do
       bm_run "$EXPERIMENT" "${stem}__${mode}__r${rep}" -- \

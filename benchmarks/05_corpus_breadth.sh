@@ -32,7 +32,41 @@ consumer_wgs:60820188475559.vcf.gz
 consumer_wgs:60820188474283.vcf.gz
 "
 
+# §3.2 asks whether the tool handles real, heterogeneous VCFs. That is a
+# COVERAGE claim about feature diversity -- INFO/FORMAT/FILTER structures,
+# variant types -- not a timing claim about file length, and nine whole corpus
+# files at expanded is the single most expensive block in the plan (days).
+#
+# BM_CORPUS_MAX_RECORDS truncates each file to its first N data records,
+# keeping the header and therefore the declared fields intact. Files named in
+# BM_CORPUS_WHOLE are exempt, so at least one real file can still be converted
+# end to end. Truncated cells carry a __firstN suffix in their label: this
+# weakens the claim from "converted ten whole cohorts" to "handled the features
+# of ten cohorts, and one of them whole", and a results table must not hide
+# which one it is.
+MAX_RECORDS="${BM_CORPUS_MAX_RECORDS:-}"
+WHOLE_FILES="${BM_CORPUS_WHOLE:-}"
+
+corpus_input() {          # echo "<path> <label-suffix>"
+  local input="$1" vcf="$2" stem="$3"
+  if [[ -z "$MAX_RECORDS" ]]; then printf '%s 
+' "$vcf"; return 0; fi
+  case " $WHOLE_FILES " in *" $input "*) printf '%s 
+' "$vcf"; return 0 ;; esac
+  local target="$BM_DERIVED/${stem}_first${MAX_RECORDS}.vcf.gz"
+  if [[ ! -f "$target" ]]; then
+    mkdir -p "$BM_DERIVED"
+    bm_cat_vcf "$vcf" | awk -v n="$MAX_RECORDS" '
+      /^#/ { print; next }
+      kept < n { print; kept++; next }
+      { exit }' | gzip -c > "$target"
+  fi
+  printf '%s __first%s
+' "$target" "$MAX_RECORDS"
+}
+
 bm_banner "§3.2 corpus breadth (one config, one rep per file)"
+[[ -n "$MAX_RECORDS" ]] && bm_step "truncating to first $MAX_RECORDS records (whole: ${WHOLE_FILES:-none})"
 
 for entry in $CORPUS; do
   family="${entry%%:*}"; input="${entry##*:}"
@@ -46,7 +80,9 @@ for entry in $CORPUS; do
   # §3.2 runs everything at expanded, so a cohort-scale input cannot complete.
   bm_skip_if_cohort_scale "$EXPERIMENT" "${family}__${stem}__too_many_samples" \
     "$vcf" expanded && continue
-  bm_run "$EXPERIMENT" "${family}__${stem}" -- \
+
+  read -r vcf suffix <<< "$(corpus_input "$input" "$vcf" "$stem")"
+  bm_run "$EXPERIMENT" "${family}__${stem}${suffix:-}" -- \
     --mode full \
     --input "$vcf" \
     --sample-representation expanded \

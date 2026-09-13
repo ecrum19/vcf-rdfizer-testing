@@ -11,6 +11,7 @@
 #   ./run_all.sh              # everything
 #   ./run_all.sh cheap        # skip the large-input experiments (01, 04, 05, 10)
 #   ./run_all.sh smoke        # fast end-to-end pass: every cheap script, tiny inputs
+#   ./run_all.sh biomedsem    # the manuscript configuration: every claim, ~2-3 days
 #   ./run_all.sh 03 06 11     # only these
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
@@ -55,6 +56,57 @@ case "${1:-all}" in
     export BM_VALIDATION_ENGINES="${BM_VALIDATION_ENGINES:-comunica}"
     export BM_QUERY_ENGINES="${BM_QUERY_ENGINES:-comunica}"
     bm_warn "smoke profile: 1 replicate, fixtures instead of corpus files, one engine. Results are not measurements."
+    ;;
+  biomedsem)
+    # The configuration behind the BioMedSem manuscript. Every claim in
+    # benchmarking_suggestions.md is still supported; the cost is cut by
+    # choosing where the evidence has to be expensive and where it does not.
+    # Unlike `smoke`, these ARE measurements.
+    #
+    # Measured costs this is built from (see the plan's §5.4 run manifests):
+    #   01 at default sizes/reps        57.8 h for 11 of 30 cells
+    #   one HG005 cell                  12.3 h
+    #   03's three real-file anchors    17.7 h, vs 3.6 min on the fixture
+    #   06 on a 10k fixture, 1 engine   92 min  (validation is overhead-bound)
+    SELECTED="$ALL"
+
+    # C1 -- replicates bound the CI and variance is a machine property (sd was
+    # ~1% of the mean), so buy the corridor on the cheap size and run the large
+    # one once as a size check. Drops the 397 MB size entirely: §3's ladder
+    # covers the size trend far more cheaply than a third paired arm.
+    export BM_REPS="${BM_REPS:-3}"
+    export BM_REPS_AT_SCALE="${BM_REPS_AT_SCALE:-1}"
+    export BM_SIZES="${BM_SIZES:-HG005_GRCh38_r100000.vcf.gz test-larger.vcf.gz}"
+
+    # C2 -- the ladder is the evidence and it is cheap. The §2.4 anchors are
+    # explicitly "anchors, not the evidence", and the multisample fixture makes
+    # the same cohort-vs-single contrast at 2,504 samples.
+    export BM_ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-test-larger-multisample.vcf.gz:cohort test-10k.vcf:single}"
+
+    # C4 breadth -- features, not file length; one real file still whole.
+    export BM_CORPUS_MAX_RECORDS="${BM_CORPUS_MAX_RECORDS:-250000}"
+    export BM_CORPUS_WHOLE="${BM_CORPUS_WHOLE:-NG1N86S6FC.vcf.gz}"
+
+    # C4 feasibility -- the claim is that it COMPLETES under a memory cap. A
+    # 1M-record ladder input demonstrates that; the 397 MB file only makes it
+    # slower to demonstrate.
+    export BM_FEASIBILITY_INPUT="${BM_FEASIBILITY_INPUT:-HG005_GRCh38_r1000000.vcf.gz}"
+
+    # C4/C5 validation -- buy cross-engine agreement once, where it IS the
+    # claim (§4.1), and run one engine everywhere else. Validation cost is
+    # engine setup x artifacts x queries, so this is the dominant saving.
+    export BM_EQUIV_ENGINES="${BM_EQUIV_ENGINES:-all}"
+    export BM_EQUIV_INPUT="${BM_EQUIV_INPUT:-test-10k.vcf}"
+    export BM_VALIDATION_ENGINES="${BM_VALIDATION_ENGINES:-comunica}"
+    export BM_QUERY_SMALL="${BM_QUERY_SMALL:-test-10k.vcf}"
+    export BM_QUERY_LARGE="${BM_QUERY_LARGE:-HG005_GRCh38_r100000.vcf.gz}"
+
+    # C4 axes -- reuse the derived ladder rather than whole corpus files.
+    export BM_INFO_INPUTS="${BM_INFO_INPUTS:-HGSVC2.vcf.gz HG005_GRCh38_r100000.vcf.gz}"
+    export BM_HEADER_INPUT="${BM_HEADER_INPUT:-HG005_GRCh38_r100000.vcf.gz}"
+
+    bm_step "biomedsem profile: manuscript configuration; every claim covered"
+    bm_step "  reps=$BM_REPS (at scale: $BM_REPS_AT_SCALE)  corpus truncated to $BM_CORPUS_MAX_RECORDS records (whole: $BM_CORPUS_WHOLE)"
     ;;
   *)     SELECTED="$*" ;;
 esac

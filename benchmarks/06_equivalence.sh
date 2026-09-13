@@ -29,7 +29,9 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
 EXPERIMENT="06_equivalence"
 INPUT="${BM_EQUIV_INPUT:-test-larger-multisample.vcf.gz}"
-ENGINES="${BM_VALIDATION_ENGINES:-all}"
+# §4.1 IS the cross-engine agreement claim, so it wants every engine even when
+# the rest of the suite runs one. Falls back to the shared knob, then to all.
+ENGINES="${BM_EQUIV_ENGINES:-${BM_VALIDATION_ENGINES:-all}}"
 
 if ! bm_have_vcf "$INPUT"; then
   bm_die "equivalence input not available: $INPUT
