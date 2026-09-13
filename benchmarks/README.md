@@ -35,6 +35,47 @@ rebuilt every session, with a warning — commit before a publishable run.
 ./run_all.sh 03 06        # selected only
 ```
 
+**`biomedsem` is the manuscript configuration.** Every claim in the plan is
+still supported; what changes is *where* the evidence is allowed to be
+expensive. Unlike `smoke`, these are measurements and are meant to be reported.
+
+The full plan runs for multiple weeks, and the measured reason is that a
+handful of cells dominate while most of the evidence sits in cheap ones:
+
+| measured | |
+| --- | --- |
+| `01` at default sizes/reps | 57.8 h for 11 of its 30 cells |
+| one HG005 cell | 12.3 h |
+| `03`'s three real-file anchors | 17.7 h — vs 3.6 min for the same contrast on a fixture |
+| `06` on a 10k fixture, one engine | 92 min — validation is overhead-bound, not data-bound |
+
+Those are two different cost regimes and they need different cuts:
+
+- **C1** — replicates bound the CI, and run-to-run variance is a property of the
+  machine, not the input (sd was ~1 % of the mean). So the corridor is bought on
+  the cheapest size and larger sizes run once each as a size check
+  (`BM_REPS_AT_SCALE`). The 397 MB third size is dropped: §3's ladder covers the
+  size trend far more cheaply than a third paired arm. **The peak-disk half needs
+  no replicates at all** — it was identical across every replicate in each arm.
+- **C2** — the ladder is the evidence; §2.4 says so itself ("anchors, not the
+  evidence"). The anchors move to `test-larger-multisample.vcf.gz`, which makes
+  the same 2,504-vs-1 sample contrast.
+- **C3** — unchanged. The ladders were always the cheap part.
+- **C4 breadth** — becomes a *feature*-coverage claim. `BM_CORPUS_MAX_RECORDS`
+  truncates each corpus file to its first 250k records, keeping the header and so
+  the declared INFO/FORMAT/FILTER fields; `BM_CORPUS_WHOLE` exempts one file so a
+  real VCF is still converted end to end. Truncated cells carry a `__firstN`
+  label. This is the one change that genuinely weakens a claim — from "converted
+  ten whole cohorts" to "handled the features of ten cohorts, one of them whole"
+  — and the manuscript should say so rather than gloss it.
+- **C4 feasibility** — the claim is that it *completes* under a memory cap, which
+  a 1M-record ladder input demonstrates as well as a 397 MB file does.
+- **C4/C5 validation** — cross-engine agreement is bought once in §4.1, where it
+  *is* the claim (`BM_EQUIV_ENGINES`), and one engine runs everywhere else.
+
+Every value is a default, so an explicit env var still wins. `00` and `02` must
+run first: the profile draws on the derived ladders.
+
 **`smoke` is for "does this still work", never for numbers.** It selects the
 same scripts as `cheap` and shrinks everything they read: one replicate, a
 two-rung samples ladder, 2,000-record derived bases, fixtures in place of every
