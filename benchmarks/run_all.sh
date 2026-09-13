@@ -101,6 +101,12 @@ case "${1:-all}" in
     export BM_QUERY_SMALL="${BM_QUERY_SMALL:-test-10k.vcf}"
     export BM_QUERY_LARGE="${BM_QUERY_LARGE:-HG005_GRCh38_r100000.vcf.gz}"
 
+    # C4 robustness -- round-trip, determinism and idempotence are PROPERTIES,
+    # not timings. The default test-larger.vcf.gz means four conversions of
+    # 1.16M records (~20h) to prove things a 100k-record input proves just as
+    # well, while still being large enough to span multiple chunks.
+    export BM_ROBUSTNESS_INPUT="${BM_ROBUSTNESS_INPUT:-HG005_GRCh38_r100000.vcf.gz}"
+
     # C4 axes -- reuse the derived ladder rather than whole corpus files.
     export BM_INFO_INPUTS="${BM_INFO_INPUTS:-HGSVC2.vcf.gz HG005_GRCh38_r100000.vcf.gz}"
     export BM_HEADER_INPUT="${BM_HEADER_INPUT:-HG005_GRCh38_r100000.vcf.gz}"

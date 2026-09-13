@@ -15,6 +15,10 @@ EXPERIMENT="04_scaling_records"
 RECORD_RUNGS="${BM_RECORD_RUNGS:-10000 100000 1000000}"
 RECORD_SOURCE="${BM_RECORD_SOURCE:-HG005_GRCh38.vcf.gz}"
 REPS="${BM_REPS:-3}"
+# The full-source cell at the top of the ladder costs what a whole real file
+# costs (~12h for HG005), and it is one fit point: the rungs below it already
+# supply the variance estimate. Same knob as §1 uses for its larger sizes.
+REPS_AT_SCALE="${BM_REPS_AT_SCALE:-$REPS}"
 stem="${RECORD_SOURCE%%.*}"
 
 bm_banner "§3.1 records ladder ($REPS reps per rung)"
@@ -44,7 +48,7 @@ done
 # The full source file is the top of the ladder; include it when present.
 if bm_have_vcf "$RECORD_SOURCE"; then
   vcf="$(bm_vcf "$RECORD_SOURCE")"
-  for rep in $(seq 1 "$REPS"); do
+  for rep in $(seq 1 "$REPS_AT_SCALE"); do
     bm_run "$EXPERIMENT" "rfull__rep${rep}" -- \
       --mode full \
       --input "$vcf" \
