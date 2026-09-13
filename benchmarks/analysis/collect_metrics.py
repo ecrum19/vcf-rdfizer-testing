@@ -26,8 +26,22 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import pathlib
 import sys
+
+def default_results_root() -> pathlib.Path:
+    """Results root: $BM_RESULTS if set, else ../results.
+
+    The shell side honours BM_RESULTS everywhere; without this the analysis
+    looked only in benchmarks/results, so a run directed elsewhere ended with
+    run_all.sh's closing collect_metrics step failing and no tidy dataset.
+    """
+    env = os.environ.get("BM_RESULTS")
+    if env:
+        return pathlib.Path(env)
+    return pathlib.Path(__file__).resolve().parent.parent / "results"
+
 
 # Factors we lift out of the recorded command line. Anything absent is None,
 # which for a defaulted flag means "not pinned in this run" — worth seeing.
@@ -358,7 +372,7 @@ def main() -> int:
     args = parser.parse_args()
 
     results = pathlib.Path(args.results) if args.results \
-        else pathlib.Path(__file__).resolve().parent.parent / "results"
+        else default_results_root()
     if not results.is_dir():
         raise SystemExit(f"results root not found: {results}\nRun an experiment script first.")
 

@@ -29,10 +29,24 @@ import argparse
 import csv
 import itertools
 import json
+import os
 import pathlib
 import sys
 
-RESULTS_DEFAULT = pathlib.Path(__file__).resolve().parent.parent / "results"
+def default_results_root() -> pathlib.Path:
+    """Results root: $BM_RESULTS if set, else ../results.
+
+    The shell side honours BM_RESULTS everywhere; without this the analysis
+    looked only in benchmarks/results, so a run directed elsewhere ended with
+    run_all.sh's closing collect_metrics step failing and no tidy dataset.
+    """
+    env = os.environ.get("BM_RESULTS")
+    if env:
+        return pathlib.Path(env)
+    return pathlib.Path(__file__).resolve().parent.parent / "results"
+
+
+RESULTS_DEFAULT = default_results_root()
 
 
 def load_tidy(results: pathlib.Path, experiment: str) -> list[dict]:
