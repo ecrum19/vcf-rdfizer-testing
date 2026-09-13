@@ -329,16 +329,28 @@ pathlib.Path(sys.argv[1], "bench.json").write_text(json.dumps(
   BM_LAST_RC="$rc"
   BM_LAST_DIR="$cell_dir"
 
-  # All thirteen values the record unpacks, in order. The image trio is not
-  # optional: bench.json is what lets a number be attributed to an image
-  # later, and 00_environment.sh records the same three for the session.
+  # All fourteen values the record unpacks, in order. Two things here are not
+  # optional. The image trio is what lets a number be attributed to a build.
+  # The host is what lets it be attributed to a MACHINE: experiments are split
+  # across benchmark VMs to run in parallel, and a merged dataset whose rows
+  # cannot say which machine produced them cannot support a timing claim.
   python3 - "$cell_dir" "$experiment" "$label" "$rc" "$start" "$end" \
     "$(bm_sampler_peak "$samples")" "$(bm_dir_bytes "$out_dir")" \
     "$(bm_tool_commit)" "$BM_TOOL" \
-    "$BM_IMAGE_REF" "$BM_IMAGE_DIGEST" "$BM_IMAGE_MODE" <<'PYEOF'
+    "$BM_IMAGE_REF" "$BM_IMAGE_DIGEST" "$BM_IMAGE_MODE" \
+    "$(hostname)" <<'PYEOF'
 import json, pathlib, sys
+_args = sys.argv[1:]
+if len(_args) != 14:
+    # This went wrong once already: the record grew three fields and the shell
+    # call did not, so every cell in every experiment died on "not enough
+    # values to unpack (expected 13, got 10)". Say which side is short.
+    raise SystemExit(
+        "bm_run: record expects 14 values, shell passed %d. "
+        "The python heredoc and its argument list are out of sync." % len(_args)
+    )
 (cell, experiment, label, rc, start, end, peak, final, commit, tool,
- image_ref, image_digest, image_mode) = sys.argv[1:14]
+ image_ref, image_digest, image_mode, host) = _args
 cell = pathlib.Path(cell)
 record = {
     "experiment": experiment,
@@ -354,6 +366,7 @@ record = {
     "image_ref": image_ref,
     "image_digest": image_digest,
     "image_mode": image_mode,
+    "host": host,
     "command": json.loads((cell / "command.json").read_text()),
 }
 (cell / "bench.json").write_text(json.dumps(record, indent=2) + "\n")
