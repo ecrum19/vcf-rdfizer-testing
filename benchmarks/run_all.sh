@@ -19,9 +19,12 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 ALL="00 02 01 03 04 05 06 07 08 09 10 11 12 13"
 CHEAP="00 02 03 06 07 08 09 11 12 13"
 
+# A profile may be followed by an explicit experiment list, so one profile can
+# be split across hosts: `run_all.sh biomedsem 05 06 10`. Without the shift the
+# list was silently discarded and every host ran the whole suite.
 case "${1:-all}" in
   all)   SELECTED="$ALL" ;;
-  cheap) SELECTED="$CHEAP" ;;
+  cheap) shift; SELECTED="${*:-$CHEAP}" ;;
   smoke)
     # A fast end-to-end pass: does every script still run, and does the
     # analysis still consume what they write? It is NOT a measurement --
@@ -31,7 +34,7 @@ case "${1:-all}" in
     # `cheap` alone is not fast: several of its experiments default to
     # test-larger.vcf.gz (1.16M records) or HG005 (139 MB), which is hours.
     # Every value below is a default, so an explicit env var still wins.
-    SELECTED="$CHEAP"
+    shift; SELECTED="${*:-$CHEAP}"
     export BM_REPS="${BM_REPS:-1}"
     export BM_SAMPLE_RUNGS="${BM_SAMPLE_RUNGS:-1 16}"
     export BM_TIMING_RUNGS="${BM_TIMING_RUNGS:-1 16}"
@@ -68,7 +71,7 @@ case "${1:-all}" in
     #   one HG005 cell                  12.3 h
     #   03's three real-file anchors    17.7 h, vs 3.6 min on the fixture
     #   06 on a 10k fixture, 1 engine   92 min  (validation is overhead-bound)
-    SELECTED="$ALL"
+    shift; SELECTED="${*:-$ALL}"
 
     # C1 -- replicates bound the CI and variance is a machine property (sd was
     # ~1% of the mean), so buy the corridor on the cheap size and run the large
