@@ -22,12 +22,40 @@ need a caveat.
 Both hosts, identical:
 
 ```
-tool      fix/vcf45-structured-accessors @ 025fb7d
-image     vcf-rdfizer:local-025fb7d
+tool      025fb7d, then be658a2 from each host's handover (see below)
+image     vcf-rdfizer:local-025fb7d  -- tag only; digests differ per host
 profile   biomedsem
 BM_RESULTS  ~/vcf-rdfizer-testing/benchmarks_outputs
 BM_CORPUS_WHOLE=HG005_GRCh38.vcf.gz
 ```
+
+### The tool commit changes mid-run, on purpose
+
+bench-2's checkout moved from `025fb7d` to `be658a2` partway through `03`. Rather
+than revert it, bench-1 is aligned onto `be658a2` at its `04 -> 07` handover, so
+the two hosts converge instead of diverging.
+
+The commits differ in `vcf_rdfizer.py` by one docstring hunk and no executable
+line, and substantively only in `src/validation/validation_runner.py`
+(`ad4c6c6`, the comunica warm-up retry). The alignment is chosen so that **every
+experiment that runs validation — `06 09 11 12 13` — lands on `be658a2`**. `03`
+is the only experiment straddling the boundary and it runs no validation.
+
+### The image tag is not a digest
+
+Both hosts tagged `vcf-rdfizer:local-025fb7d`, but built it independently about
+five hours apart, so the image IDs differ (`b645120b…` on bench-1,
+`0082fe2c…` on bench-2). `bench.json`'s `image_ref` is therefore not provenance.
+Each host writes `00_environment/provenance.<host>.<commit>.json` with the real
+digest, layer list and platform record; cite that.
+
+### Nothing is deleted
+
+Both handover watchers move rather than delete. Experiments belonging to the
+other host go to `benchmarks_outputs__offsplit/`, interrupted cells to
+`benchmarks_outputs__partial/`, and the pre-handover calibration is copied to
+`benchmarks_outputs_calibration__*` before the restart can overwrite it. All of
+it ships with the dataset; none of it enters `merged/`.
 
 `BM_CORPUS_WHOLE` is deliberately **not** the 397 MB `NG1N86S6FC`: whole-file
 conversion of that one is ~35 h, more than everything else in the profile put
@@ -76,7 +104,8 @@ rsync -a bench-1:~/vcf-rdfizer-testing/benchmarks_outputs/ ./merged/
 BM_RESULTS=./merged python3 benchmarks/analysis/collect_metrics.py --all
 ```
 
-No experiment appears on both hosts, so no cell collides. Keep **both**
+No experiment appears on both hosts, so no cell collides — the watchers
+enforce it, and `AGGREGATION.md` Step 3 asserts it. Keep **both**
 `00_environment/manifest.json` files — they are per host, and the second copy
 will overwrite the first. Rename them before merging:
 

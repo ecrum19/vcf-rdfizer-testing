@@ -57,6 +57,25 @@ row and will silently enter your tables.
 
 ---
 
+## Step 0b — re-capture provenance on each host
+
+Each host records `00_environment/provenance.<host>.<commit>.json` when it starts
+a share. bench-1 changes commit at its `04 -> 07` handover, so run this once both
+hosts are idle to capture the final state. Files are named per host **and**
+commit, so nothing is overwritten and every state is kept:
+
+```bash
+for ip in 10.10.209.2 10.10.211.185; do
+  ssh -J proxy@bastion2.slices-be.eu ubuntu@$ip \
+    'python3 ~/vcf-rdfizer-testing/benchmarks/analysis/provenance.py'
+done
+```
+
+Expect two files per host if that host changed commit mid-run, one if it did not.
+All of them ship with the dataset.
+
+---
+
 ## Step 1 — pull both results trees into one directory
 
 ```bash
@@ -79,6 +98,27 @@ rsync -av -e "ssh -J proxy@bastion2.slices-be.eu" \
   ubuntu@10.10.209.2:vcf-rdfizer-testing/benchmarks_outputs__tool8b1b4a8/ \
   archive_tool8b1b4a8/
 ```
+
+Finally pull the set-aside trees. The handover watchers **never delete**: data
+that must stay out of the merge is moved to a timestamped sibling instead. These
+are not results, but they are the record of what actually ran, so they belong in
+the Zenodo tarball:
+
+```bash
+for ip in 10.10.209.2 10.10.211.185; do
+  for d in benchmarks_outputs__offsplit benchmarks_outputs__partial; do
+    rsync -av -e "ssh -J proxy@bastion2.slices-be.eu" \
+      "ubuntu@$ip:vcf-rdfizer-testing/$d/" "setaside/$d/" 2>/dev/null || true
+  done
+  rsync -av -e "ssh -J proxy@bastion2.slices-be.eu" \
+    --include='benchmarks_outputs_calibration__*' --include='*/' --exclude='*' \
+    "ubuntu@$ip:vcf-rdfizer-testing/" "setaside/calibration_snapshots/" 2>/dev/null || true
+done
+```
+
+`__offsplit/` holds experiments that were started on the wrong host before the
+split was rebalanced; `__partial/` holds cells with no `bench.json`, i.e. cells
+interrupted mid-flight. Neither may enter `merged/`.
 
 ---
 
@@ -115,37 +155,102 @@ rm -f merged/00_environment/manifest.json
 python3 - <<'PY'
 import json, glob, collections
 rows = [json.load(open(p)) for p in glob.glob("merged/*/*/bench.json")]
-byexp = collections.defaultdict(set)
+byexp, bycommit = collections.defaultdict(set), collections.defaultdict(set)
 for r in rows:
-    if not r.get("skipped"):
-        byexp[r["experiment"]].add(r.get("host", "UNKNOWN"))
-print("experiment                 hosts")
+    if r.get("skipped"): continue
+    byexp[r["experiment"]].add(r.get("host", "UNKNOWN"))
+    bycommit[r["experiment"]].add(str(r.get("tool_commit", "?"))[:8])
+print("%-26s %-14s %s" % ("experiment", "host", "tool commit(s)"))
 split = False
 for e in sorted(byexp):
-    hs = sorted(byexp[e]); print("  %-26s %s" % (e, ", ".join(hs)))
+    hs, cs = sorted(byexp[e]), sorted(bycommit[e])
+    print("  %-24s %-14s %s" % (e, ", ".join(hs), ", ".join(cs)))
     if len(hs) > 1: split = True
 print()
 print("cells:", len(rows))
 print("hosts seen:", sorted({r.get("host","UNKNOWN") for r in rows}))
-print("tool commits:", sorted({r.get("tool_commit","?")[:8] for r in rows if not r.get("skipped")}))
-print("images:", sorted({r.get("image_ref","?") for r in rows if not r.get("skipped")}))
+print("image TAGS (not unique -- see below):",
+      sorted({r.get("image_ref","?") for r in rows if not r.get("skipped")}))
 assert not split, "an experiment spans two hosts -- its internal comparisons are confounded"
 assert "UNKNOWN" not in {r.get("host","UNKNOWN") for r in rows}, "a cell has no host"
 print("\nOK: every experiment lives on exactly one host")
 PY
 ```
 
-Three things this catches, all of which silently corrupt results:
+**The one hard rule is the assert: no experiment may span two hosts.** Both VMs
+enforce it at handover by moving any foreign experiment out of
+`benchmarks_outputs/` before that host starts its share.
 
-- **an experiment on both hosts** — its within-experiment comparison is then
-  cross-hardware, which is the one thing the split must never do
+### Two tool commits are expected
+
+This is a documented property of the run, not a fault. The dataset contains both
+`025fb7d` and `be658a2`:
+
+| commit | cells |
+| --- | --- |
+| `025fb7d` | bench-1 `04`; bench-2 `01` and the `s1…s1024` rungs of `03` |
+| `be658a2` | bench-2 `03` top rung onward + `05 06 09 10 13`; bench-1 `07 08 11 12` |
+
+Why they combine safely:
+
+- The commits differ in `vcf_rdfizer.py` by **one docstring hunk and no
+  executable line**, so conversion timing cannot depend on which one ran.
+- They differ substantively in `src/validation/validation_runner.py`
+  (`ad4c6c6`, the comunica warm-up retry). **Every experiment that runs
+  validation — `06 09 11 12 13` — is on `be658a2`**, so no validation number is
+  ever compared across the boundary.
+- `03` is the only experiment whose cells straddle it, and `03` runs
+  `--mode full --representations hdt` with no validation at all.
+
+Verify that rather than trusting the table:
+
+```bash
+cd ~/PhD_Things/vcf-rdfizer
+git diff --numstat 025fb7d be658a2 -- vcf_rdfizer.py   # expect: 6  1  (docstring)
+git diff 025fb7d be658a2 -- vcf_rdfizer.py \
+  | grep -E '^[+-]' | grep -vE '^[+-][+-]|^[+-][[:space:]]*(\*|#|"""|$)'
+# expect: only prose lines. Any real code here invalidates the argument above.
+```
+
+### The image tag is not a unique identifier
+
+Both hosts tagged their image `vcf-rdfizer:local-025fb7d`, but each built it
+independently, about five hours apart:
+
+| host | image id | built |
+| --- | --- | --- |
+| bench-1 | `sha256:b645120b7270…` | 2026-09-13 19:17 +02:00 |
+| bench-2 | `sha256:0082fe2cf42f…` | 2026-09-13 14:21 +02:00 |
+
+So `image_ref` in `bench.json` says nothing about which bits ran, and must not be
+cited as provenance. The real record is
+`merged/00_environment/provenance.<host>.<commit>.json` — image digest, full
+layer list, both repo heads, kernel, CPU and RAM, one file per host per commit.
+**Cite the digest.** The manuscript should say the image was built per host from
+the stated commit and that the builds are not bit-reproducible.
+
+If you want stronger evidence that the two images contain the same code, compare
+the installed tree directly — do this only when no cell is timing:
+
+```bash
+for ip in 10.10.209.2 10.10.211.185; do
+  ssh -J proxy@bastion2.slices-be.eu ubuntu@$ip \
+    "docker run --rm --entrypoint sh vcf-rdfizer:local-025fb7d -c \
+     'find / -name \"*.py\" -path \"*vcf*\" -type f 2>/dev/null | sort | xargs sha256sum | sha256sum'"
+done
+```
+
+Equal digests mean the two images carry identical Python sources and the only
+difference is build metadata.
+
+Three things the check catches, all of which silently corrupt results:
+
+- **an experiment on both hosts** — its within-experiment comparison becomes
+  cross-hardware, the one thing the split must never produce
 - **cells with no `host`** — produced before host recording existed, so they
   cannot be attributed
-- **more than one `tool_commit` or `image_ref`** — a dataset spanning two
-  builds. Expect exactly one of each; if not, find out which cells differ
-  before reporting anything
-
----
+- **a commit split other than the one tabled above** — that means something moved
+  mid-run that nobody planned. Find the cells before reporting anything.
 
 ## Step 4 — the calibration check
 
@@ -164,6 +269,13 @@ for p in glob.glob(os.path.expanduser("~/vcf-rdfizer-testing/benchmarks_outputs_
 PY'
 done
 ```
+
+Each host may have **more than one** calibration tree. The live one is
+`benchmarks_outputs_calibration/`; snapshots taken before a handover are
+`benchmarks_outputs_calibration__pre_rebalance_<stamp>/` (bench-2) and
+`benchmarks_outputs_calibration__025fb7d_<stamp>/` (bench-1). The snapshots are
+the `025fb7d` calibration, the live tree the `be658a2` one — so you can compare
+hosts at matched commits instead of assuming the commit made no difference.
 
 Within a few percent: cross-experiment comparisons are fine. Further apart:
 they still stand *within* an experiment, but any figure putting a bench-1
@@ -240,10 +352,17 @@ present and small.
 
 ```bash
 tar czf biomedsem-results-$(date +%Y%m%d).tar.gz \
-    merged/ archive_tool8b1b4a8/ benchmarks/RUN_PLAN.md benchmarks/README.md
+    merged/ archive_tool8b1b4a8/ setaside/ \
+    benchmarks/RUN_PLAN.md benchmarks/AGGREGATION.md benchmarks/README.md
 du -sh biomedsem-results-*.tar.gz
 ```
 
-Include `RUN_PLAN.md` and `README.md`: they record which host ran what, which
-tool commit, and why the corpus was truncated. Without them the numbers are not
-reproducible.
+Include `RUN_PLAN.md`, `AGGREGATION.md` and `README.md`: they record which host
+ran what, which tool commit and image digest, and why the corpus was truncated.
+Without them the numbers are not reproducible.
+
+`setaside/` is included deliberately. It holds the cells that were moved out of
+the merge — work started on the wrong host before the split was rebalanced, and
+cells interrupted mid-flight. None of it is a result, and none of it enters a
+table, but shipping it is what makes the claim "no experiment spans two hosts"
+checkable by a reader instead of merely asserted.
