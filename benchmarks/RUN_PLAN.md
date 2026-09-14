@@ -40,13 +40,20 @@ why it is not a release tag.
 
 ## The split
 
+Invoke as `run_all.sh biomedsem <prefixes>` — the profile sets the
+configuration, the prefixes select this host's share. A profile name alone runs
+everything.
+
 | host | experiments | why there | est. |
 | --- | --- | --- | --- |
-| **bench-1** | `00 01 03 04 07 08 11 12` | has the full derived ladders already | ~33 h |
-| **bench-2** | `00 02 05 06 09 10 13` | `05`'s truncated corpus is already built there; `02` builds its ladders | ~28 h |
+| **bench-2** | `00 02 01 03`, then `05 06 09 10 13` | has the truncated corpus and its own ladders | ~28 h |
+| **bench-1** | `00 04 07 08 11 12` | has the full derived ladders | ~20 h |
 
-`02` runs on bench-2 only — bench-1's ladders already exist and rebuilding them
-would waste an hour and change nothing.
+`01` and `03` sit on bench-2 rather than bench-1 because an early launch ran
+the whole suite there: the profile branches set `SELECTED` without shifting, so
+the experiment list after the profile name was discarded (fixed in `ecc8eb2`).
+Those cells are valid `biomedsem` cells on the manuscript tool, so they were
+kept and the split rebalanced around them rather than repeated.
 
 Dependencies, checked:
 
@@ -57,6 +64,8 @@ Dependencies, checked:
 - `06 09 11 12` need only fixtures → either host.
 
 ## Merging
+
+Full step-by-step: [`AGGREGATION.md`](AGGREGATION.md).
 
 Each host writes to its own `benchmarks_outputs`. To combine:
 
