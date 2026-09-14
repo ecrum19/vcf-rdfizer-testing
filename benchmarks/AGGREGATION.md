@@ -15,6 +15,23 @@ Re-derive the IPs if the experiment is recreated:
 `slices bi ssh vcf-bench-1 --experiment realfed --proxy on --show command`
 (needs `source ~/slices-venv/bin/activate`, and `ssh-add ~/.ssh/id_ed25519-2`).
 
+> **If `ssh -J` fails with `administratively prohibited: open failed`**, the
+> bastion is not currently forwarding to the VMs. That is a SLICES-side toggle,
+> not a key problem. Every `ssh`/`rsync`/`scp` below then fails until you
+> re-enable it. Run this once per VM first, and keep the session going:
+>
+> ```bash
+> source ~/slices-venv/bin/activate
+> for vm in vcf-bench-1 vcf-bench-2; do
+>   slices bi ssh "$vm" --experiment realfed --proxy on -- -o BatchMode=yes 'hostname'
+> done
+> ```
+>
+> If plain `ssh -J` still refuses afterwards, run remote commands through the
+> CLI instead — arguments after `--` are passed straight to ssh:
+> `slices bi ssh vcf-bench-1 --experiment realfed --proxy on -- -o BatchMode=yes 'CMD'`.
+> For `rsync`, that grant has to be active; there is no CLI passthrough for it.
+
 ---
 
 ## Step 0 — confirm both runs are actually finished
