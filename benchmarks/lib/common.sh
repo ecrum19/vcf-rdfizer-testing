@@ -380,11 +380,50 @@ PYEOF
 
 # Abort unless the last bm_run succeeded. Use in experiments where a failure
 # invalidates everything downstream; omit where a non-zero exit is the result.
+# Cells that failed, reported once when the experiment ends.
+BM_FAILED_CELLS=()
+
+# Record a failed cell and CONTINUE. The experiment still exits non-zero, via
+# the EXIT trap below, so run_all.sh flags it exactly as before.
+#
+# This used to be an immediate bm_die, and that made one bad cell hide every
+# cell after it. 11_covering_set's row 2 failed, rows 3-6 never ran, and the
+# sweep recorded 2 of 6 rows -- so its whole point, a coverage property, could
+# not even be measured. The failure was worth knowing; losing the four rows
+# after it was not.
+#
+# Continuing is safe because every inter-cell dependency in this suite is
+# already guarded by an artifact-existence check that calls bm_skip with a
+# reason (see 08_robustness's roundtrip/index chains and 12_modes_smoke's
+# Phase B). Those guards, not this abort, are what stop a missing artifact from
+# cascading. If you add a cell that consumes an earlier cell's output, guard it
+# the same way rather than relying on this function to stop the script.
 bm_expect_ok() {
   [[ "${BM_LAST_DRY_RUN:-0}" == "1" ]] && return 0
-  [[ "${BM_LAST_RC:-1}" == "0" ]] || bm_die "expected success but exit was ${BM_LAST_RC:-?}
-See ${BM_LAST_DIR:-?}/stderr.log"
+  [[ "${BM_LAST_RC:-1}" == "0" ]] && return 0
+  local dir="${BM_LAST_DIR:-?}" cell exp
+  cell="$(basename -- "$dir" 2>/dev/null || printf '?')"
+  exp="$(basename -- "$(dirname -- "$dir")" 2>/dev/null || printf '?')"
+  BM_FAILED_CELLS+=("${exp}/${cell} exit=${BM_LAST_RC:-?}  ${dir}/stderr.log")
+  bm_warn "cell failed, continuing: ${exp}/${cell} exit=${BM_LAST_RC:-?}
+See ${dir}/stderr.log"
+  return 0
 }
+
+# Report every failed cell once, and make the experiment exit non-zero so
+# run_all.sh still lists it under "Experiments that exited non-zero".
+_bm_report_failed_cells() {
+  local rc=$?
+  trap - EXIT
+  if (( ${#BM_FAILED_CELLS[@]} )); then
+    printf '\nCells that failed in %s:\n' "${EXPERIMENT:-this experiment}" >&2
+    printf '  %s\n' "${BM_FAILED_CELLS[@]}" >&2
+    printf 'Every other cell still ran and is recorded.\n' >&2
+    [[ "$rc" == "0" ]] && rc=1
+  fi
+  exit "$rc"
+}
+trap _bm_report_failed_cells EXIT
 
 # Abort unless the last bm_run failed with the given message fragment.
 bm_expect_refusal() {
