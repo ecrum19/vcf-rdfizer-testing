@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 # Plan §5.1 — the functional covering set.
 #
-# Not a cross product. Six runs exercise every option VALUE and cover every
-# option PAIR at least once. This is the correctness sweep and it belongs on
-# SMALL inputs only.
+# Not a cross product. Ten runs exercise every option VALUE and cover every
+# legal option PAIR at least once. This is the correctness sweep and it belongs
+# on SMALL inputs only.
 #
-# Two placement constraints shape the table, both easy to get wrong (§1.2):
+# Rows 1-6 were the original table. It claimed full pair coverage but did not
+# have it: `datasets.py coverage` reported 16 uncovered pairs once all six rows
+# could actually run. Rows 7-10 close them, and the property is now checked
+# rather than asserted -- see the verification note at the bottom.
 #
-#   * Row 2 is the only legal home for --hdt-strategy single. It needs plain
-#     storage AND hdt without cottas. Both other placements exit 2: single
-#     beside space-optimized was always refused, and single beside cottas is
-#     refused as of 2026-09-10 (it used to be silently ignored, which meant a
+# Constraints that shape the table (§1.2):
+#
+#   * --hdt-strategy single needs plain storage AND hdt without cottas. Read
+#     hdt_strategy_rejection() in the wrapper: in full mode it refuses when
+#     --rdf-storage-mode is space-optimized, and when cottas is among the
+#     representations (that one used to be silently ignored, which meant a
 #     benchmark cell measured partitioned HDT under a `single` label).
+#     NOTHING ELSE constrains it. An earlier version of this comment claimed
+#     row 2 was "the only legal home" for single; that was wrong, and it cost
+#     three pairs of coverage. Row 7 pairs single with expanded, structured and
+#     gzip on both compression axes, and exits 0 -- verified on the VM before
+#     this row was added, not inferred from the code.
 #   * Row 3 is where auto's HDT decision is actually exercised, because it
 #     selects hdt. In rows without HDT (row 4) auto is a no-op, so a covering
 #     set that only ever pairs auto with cottas does not test the policy.
@@ -40,6 +50,10 @@ ROWS="
 4:condensed:structured:space-optimized:gzip:cottas:brotli:auto
 5:expanded:structured:space-optimized:brotli:hdt,cottas:brotli:partitioned
 6:condensed:raw:plain:gzip:cottas:gzip:partitioned
+7:expanded:structured:plain:gzip:hdt:gzip:single
+8:condensed:raw:plain:gzip:hdt,cottas:gzip:auto
+9:expanded:raw:space-optimized:gzip:hdt:gzip:partitioned
+10:expanded:raw:plain:brotli:cottas:gzip:partitioned
 "
 
 for row in $ROWS; do
