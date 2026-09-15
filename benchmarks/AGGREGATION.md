@@ -213,10 +213,15 @@ This is a documented property of the run, not a fault. The dataset contains both
 (`--info-representation raw`) could not pass validation: the oracle was never
 told how the graph was built and scored every run against a structured
 expectation. That failure also aborted rows 3-6, so the experiment recorded 2 of
-6 rows. It was re-run on `a3679e1`, which carries the fix, and now records 6 of
-6. The superseded 2-cell run is kept at
-`benchmarks_outputs__superseded/11_covering_set__buggy_oracle__*` and must not
-enter `merged/`.
+6 rows. It was re-run on `a3679e1` (merged to main as `d44b3de`), which carries the
+fix. That re-run then exposed a second problem — the six-row table never
+actually covered every option pair — so the table is now ten rows and `11`
+records 10 of 10, all exiting 0.
+
+Two superseded runs are kept and must **not** enter `merged/`:
+`benchmarks_outputs__superseded/11_covering_set__buggy_oracle__*` (2 cells, the
+broken oracle) and `.../11_covering_set__6row__*` (6 cells, valid but a narrower
+table).
 
 Nothing else needed re-running, and this was checked rather than assumed: the
 bug only bites when a cell both validates **and** uses raw INFO. Across every

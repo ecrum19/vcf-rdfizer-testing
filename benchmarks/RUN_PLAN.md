@@ -46,14 +46,15 @@ is the only experiment straddling the boundary and it runs no validation.
 On `be658a2`, row 2 of the covering set (`--info-representation raw`) could not
 pass validation and its failure aborted rows 3-6, so the sweep recorded 2 of 6
 rows and C4's pair-coverage claim had nothing behind it. The oracle fix is
-`a3679e1` (PR #14); `11` alone was re-run there and now records 6 of 6. The
-superseded run is archived under `benchmarks_outputs__superseded/`.
+`a3679e1` (PR #14, merged as `d44b3de`); `11` alone was re-run there. The
+superseded runs are archived under `benchmarks_outputs__superseded/`.
 
-Note that the re-run's coverage report still lists uncovered option pairs. Some
-are structurally impossible -- `--hdt-strategy single` is refused beside
-space-optimized storage and beside cottas -- but not all of them are. Check the
-report against plan §1.2 before repeating the script header's claim that the six
-rows cover every option pair.
+The re-run then showed the table itself was short: with all six rows finally
+able to run, `datasets.py coverage` reported 16 uncovered pairs. The table is
+now ten rows and the property holds — 10/10 cells exit 0, and the only gaps
+left are the three the wrapper structurally refuses (`single` beside
+space-optimized, beside cottas, beside hdt,cottas). C4's pair-coverage claim is
+now checked rather than asserted.
 
 ### The image tag is not a digest
 
