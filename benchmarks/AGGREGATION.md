@@ -206,7 +206,23 @@ This is a documented property of the run, not a fault. The dataset contains both
 | commit | cells |
 | --- | --- |
 | `025fb7d` | bench-1 `04`; bench-2 `01` and the `s1…s1024` rungs of `03` |
-| `be658a2` | bench-2 `03` top rung onward + `05 06 09 10 13`; bench-1 `07 08 11 12` |
+| `be658a2` | bench-2 `03` top rung onward + `05 06 09 10 13`; bench-1 `07 08 12` |
+| `a3679e1` | bench-1 `11` only — re-run on the fixed validation oracle |
+
+`11_covering_set` is deliberately a third commit. On `be658a2` its row 2
+(`--info-representation raw`) could not pass validation: the oracle was never
+told how the graph was built and scored every run against a structured
+expectation. That failure also aborted rows 3-6, so the experiment recorded 2 of
+6 rows. It was re-run on `a3679e1`, which carries the fix, and now records 6 of
+6. The superseded 2-cell run is kept at
+`benchmarks_outputs__superseded/11_covering_set__buggy_oracle__*` and must not
+enter `merged/`.
+
+Nothing else needed re-running, and this was checked rather than assumed: the
+bug only bites when a cell both validates **and** uses raw INFO. Across every
+recorded `command` on both hosts, exactly one cell met both conditions.
+`07_representation_axes` uses raw in 6 cells but never validates;
+`12_modes_smoke` validates but never uses raw.
 
 Why they combine safely:
 

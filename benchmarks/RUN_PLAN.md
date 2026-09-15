@@ -41,6 +41,20 @@ line, and substantively only in `src/validation/validation_runner.py`
 experiment that runs validation — `06 09 11 12 13` — lands on `be658a2`**. `03`
 is the only experiment straddling the boundary and it runs no validation.
 
+### 11_covering_set was re-run on a third commit
+
+On `be658a2`, row 2 of the covering set (`--info-representation raw`) could not
+pass validation and its failure aborted rows 3-6, so the sweep recorded 2 of 6
+rows and C4's pair-coverage claim had nothing behind it. The oracle fix is
+`a3679e1` (PR #14); `11` alone was re-run there and now records 6 of 6. The
+superseded run is archived under `benchmarks_outputs__superseded/`.
+
+Note that the re-run's coverage report still lists uncovered option pairs. Some
+are structurally impossible -- `--hdt-strategy single` is refused beside
+space-optimized storage and beside cottas -- but not all of them are. Check the
+report against plan §1.2 before repeating the script header's claim that the six
+rows cover every option pair.
+
 ### The image tag is not a digest
 
 Both hosts tagged `vcf-rdfizer:local-025fb7d`, but built it independently about
