@@ -207,7 +207,7 @@ This is a documented property of the run, not a fault. The dataset contains both
 | --- | --- |
 | `025fb7d` | bench-1 `04`; bench-2 `01` and the `s1…s1024` rungs of `03` |
 | `be658a2` | bench-2 `03` top rung onward + `05 06 09 10 13`; bench-1 `07 08 12` |
-| `a3679e1` | bench-1 `11` only — re-run on the fixed validation oracle |
+| `a3679e1` | bench-1 `11` (re-run on the fixed oracle), `09` and `13` |
 
 `11_covering_set` is deliberately a third commit. On `be658a2` its row 2
 (`--info-representation raw`) could not pass validation: the oracle was never

@@ -89,8 +89,24 @@ everything.
 
 | host | experiments | why there | est. |
 | --- | --- | --- | --- |
-| **bench-2** | `00 02 01 03`, then `05 06 09 10 13` | has the truncated corpus and its own ladders | ~28 h |
-| **bench-1** | `00 04 07 08 11 12` | has the full derived ladders | ~20 h |
+| **bench-2** | `00 02 01 03`, then `05`, then `06 10` | has the truncated corpus and its own ladders | ~28 h |
+| **bench-1** | `00 04 07 08 11 12`, then `09 13` | has the full derived ladders | ~20 h |
+
+**`09` and `13` were moved to bench-1 mid-run.** bench-1 finished its share
+while bench-2 still had four experiments queued, so the two were reassigned to
+use the idle host. `.bms_split2.sh` on bench-2 stops its run when `05` ends and
+restarts it with `06 10` only, so neither experiment is ever started on both
+hosts — the rule at the top of this file still holds, and `AGGREGATION.md`
+Step 3 asserts it.
+
+Both need only inputs bench-1 already has, which was verified rather than
+assumed: `09` uses fixtures, and the profile overrides `13`'s inputs to
+`test-10k.vcf` and `HG005_GRCh38_r100000.vcf.gz` (**not** the whole HG005 file
+its script defaults to — that default would have made `13` a ~36 h experiment).
+
+`09` and `13` therefore run on tool `a3679e1` while bench-2's `06` and `10` run
+on `be658a2`. The difference is the validation-oracle fix, which changes nothing
+for either: neither uses `--info-representation raw`.
 
 `01` and `03` sit on bench-2 rather than bench-1 because an early launch ran
 the whole suite there: the profile branches set `SELECTED` without shifting, so
