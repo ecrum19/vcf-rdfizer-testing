@@ -81,4 +81,14 @@ bm_info "Done. Verify coverage with:
 
 datasets.py coverage re-derives, from the recorded command lines, that every
 option value appears and every option pair is covered — so an edit to the table
-that breaks coverage is caught rather than assumed."
+that breaks coverage is caught rather than assumed.
+
+Expect 'Pair coverage: complete'. Exactly three pairs can never be covered, and
+they are excluded by construction rather than by exception: --hdt-strategy
+single cannot sit beside space-optimized storage, beside cottas, or beside
+hdt,cottas. Any OTHER gap is a defect in this table — do not dismiss one as
+'required' without reading hdt_strategy_rejection() in the wrapper, which is the
+only place a combination is actually refused.
+
+Coverage counts only cells that exited 0, so a row that fails shows up as lost
+coverage rather than as an error. Check the per-cell exit codes too."
