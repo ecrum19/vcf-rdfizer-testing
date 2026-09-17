@@ -33,6 +33,24 @@ INPUT="${BM_EQUIV_INPUT:-test-larger-multisample.vcf.gz}"
 # the rest of the suite runs one. Falls back to the shared knob, then to all.
 ENGINES="${BM_EQUIV_ENGINES:-${BM_VALIDATION_ENGINES:-all}}"
 
+# A pathological query must not be able to consume the run. Running every engine
+# is what makes this experiment worth doing and also what exposes it: cottas hung
+# on q05_sample_genotype_counts against the condensed encoding for 41 hours at
+# ~190% CPU, having answered q01-q04, while qlever answered all 13 queries on the
+# same cell. Nothing stopped it, because no timeout was ever passed.
+#
+# Both bounds are set. The per-query limit catches a single query that will not
+# finish; the per-engine budget is the backstop the wrapper documents for
+# "queries that are slow but never individually time out". A timeout is recorded
+# and the remaining queries still run -- the tool continues past one unless
+# --validation-stop-after-query-timeout is given -- so a bound costs one cell's
+# worth of evidence, not the cell.
+#
+# Reference for the numbers: the sibling expanded cell finished ALL engines in
+# 194 minutes, so 30 min/query and 4 h/engine are generous rather than tight.
+QUERY_TIMEOUT="${BM_VALIDATION_QUERY_TIMEOUT:-1800}"
+ENGINE_BUDGET="${BM_VALIDATION_TIME_BUDGET:-14400}"
+
 if ! bm_have_vcf "$INPUT"; then
   bm_die "equivalence input not available: $INPUT
 This experiment needs a small multi-sample fixture so Q5/Q6 are exercised.
@@ -61,6 +79,8 @@ for storage in plain space-optimized; do
       --validate \
       --validate-artifacts all \
       --validation-engine "$ENGINES" \
+      --validation-query-timeout "$QUERY_TIMEOUT" \
+      --validation-time-budget "$ENGINE_BUDGET" \
       --spark-partitions "${BM_SPARK_PARTITIONS:-8}"
   done
 done
@@ -91,6 +111,8 @@ for strategy in single partitioned; do
     --validate \
     --validate-artifacts all \
     --validation-engine "$ENGINES" \
+    --validation-query-timeout "$QUERY_TIMEOUT" \
+    --validation-time-budget "$ENGINE_BUDGET" \
     --spark-partitions "${BM_SPARK_PARTITIONS:-8}"
   bm_expect_ok
 done

@@ -56,6 +56,29 @@ left are the three the wrapper structurally refuses (`single` beside
 space-optimized, beside cottas, beside hdt,cottas). C4's pair-coverage claim is
 now checked rather than asserted.
 
+### 06 is bounded, and 10 moved to bench-1
+
+`06_equivalence` ran unbounded and hung: cottas spent 41 hours on
+`q05_sample_genotype_counts` against the **condensed** encoding, at ~190% CPU,
+having answered q01-q04 — while qlever answered all 13 queries on that same
+cell, and the sibling **expanded** cell finished every engine in 194 minutes.
+No query timeout was ever passed, so nothing stopped it.
+
+That is a result, not only an operational failure: native cottas querying of the
+condensed genotype encoding does not complete a genotype-level query at this
+size. It belongs in the limitations, and the killed run is archived whole under
+`benchmarks_outputs__stalled/` — both copies of the cell plus the container log
+and a process snapshot, since the evidence dies with the process.
+
+`06` now passes `--validation-query-timeout` (30 min) and
+`--validation-time-budget` (4 h/engine). A timeout is recorded and the remaining
+queries still run, so a bound costs one query's evidence rather than the cell.
+
+`10_feasibility` moved to bench-1, which was idle; its input
+(`HG005_GRCh38_r1000000.vcf.gz`, 30 MB) was confirmed present on both hosts
+before the move. bench-2 restarts with `06` alone, so neither host runs `10`
+twice.
+
 ### The image tag is not a digest
 
 Both hosts tagged `vcf-rdfizer:local-025fb7d`, but built it independently about
