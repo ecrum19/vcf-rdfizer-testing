@@ -1,0 +1,110 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.nt.gz",
+  "output_name": "awkward_half_and_haploid_calls",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 0.023255045292899013,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.hdt",
+        "output_size_bytes": 6911,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.nt.gz"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 67496,
+          "record_count": 446,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 446,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 67496,
+              "record_count": 446,
+              "payload_bytes": 67496
+            }
+          ],
+          "merge_rounds": 0,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.hdt.index.v1-1",
+          "index_size_bytes": 1242,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 446,
+            "decoded_triples": 446,
+            "expected_triples": 446,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 0.059857975924387574,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 0.007906176149845123,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 6911,
+        "workspace_free_bytes_after": 108040536064,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108040544256,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 0.01534886914305389,
+        "output_path": "/data/out/awkward_half_and_haploid_calls.hdt.index.v1-1",
+        "output_size_bytes": 1242,
+        "workspace_free_bytes_after": 108040597504,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108040605696,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 0.059857975924387574,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 147,
+        "workspace_free_bytes_after": 108040593408,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108040597504,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    ],
+    "index_warnings": []
+  }
+}

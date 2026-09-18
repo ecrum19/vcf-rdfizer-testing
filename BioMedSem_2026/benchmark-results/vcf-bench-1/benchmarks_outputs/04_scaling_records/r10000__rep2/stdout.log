@@ -1,0 +1,33 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/run_metrics/HG005_GRCh38_r10000__20260914T085026
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/run_metrics/HG005_GRCh38_r10000__20260914T085026/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/run_metrics/HG005_GRCh38_r10000__20260914T085026/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: HG005_GRCh38_r10000.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample calls streamed: 10,000; FORMAT values: 70,000
+    * Streaming structured header RDF
+    * Header lines typed: 233; contigs: 195
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 86,517 values
+    * QUAL values streamed: 10,000; INFO values: 86,517; declarations: 11
+    * Triples produced: 1,718,911
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/HG005_GRCh38_r10000
+      - RDF aggregate: HG005_GRCh38_r10000.nt.gz
+      - RDF (.gz): 7.23 MB (removed after successful compression)
+      - HDT (.hdt): 10.52 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/HG005_GRCh38_r10000/HG005_GRCh38_r10000.hdt)
+Total triples produced (full run): 1,718,911
+Conversion process finished.
+Run time (full mode): 41.24s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/run_metrics/HG005_GRCh38_r10000__20260914T085026/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out/run_metrics/HG005_GRCh38_r10000__20260914T085026/summary.json

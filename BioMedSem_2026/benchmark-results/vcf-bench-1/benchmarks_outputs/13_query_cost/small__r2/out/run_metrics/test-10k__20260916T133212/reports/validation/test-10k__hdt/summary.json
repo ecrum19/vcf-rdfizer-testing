@@ -1,0 +1,122 @@
+{
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 239.4308407921344,
+      "cottas": 2687.3850906111766,
+      "hdt": 254.23166780499741,
+      "qlever": 12.344415000872687
+    },
+    "engineSetupSeconds": {
+      "comunica": 11.936214013956487,
+      "cottas": 27.778730115154758,
+      "hdt": 6.065059202956036,
+      "qlever": 2.017037356039509
+    },
+    "oracleSeconds": 0.6347775240428746
+  },
+  "comparisonStatus": "PASS",
+  "datasetId": "test-10k__hdt",
+  "engine": "comunica",
+  "engineAgreement": true,
+  "engineStatuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "gtRecordCount": 9986,
+  "mappingPolicy": "strict",
+  "preflight": {
+    "preflight_blank_nodes": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_distinct_triple_count": {
+      "rows": 1,
+      "status": "PASS"
+    },
+    "preflight_duplicate_triples": {
+      "distinctTripleCount": 958919,
+      "duplicateTripleCount": 0,
+      "parsedTripleCount": 958919,
+      "status": "PASS"
+    },
+    "preflight_empty_values": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_missing_token_conformance": {
+      "anomalyCount": 0,
+      "limitedTo": 100,
+      "plainDotCountReturned": 0,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_position_datatype": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_record_cardinality": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_representation_profile": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "note": null,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_sample_gt_inventory": {
+      "actual": {
+        "gtValueNodeCount": 9986,
+        "sampleCallCount": 9986,
+        "sampleIdCount": 1
+      },
+      "expected": {
+        "gtValueNodeCount": 9986,
+        "sampleCallCount": 9986,
+        "sampleIdCount": 1
+      },
+      "status": "PASS"
+    }
+  },
+  "recordCount": 9986,
+  "representation": "expanded",
+  "results": {
+    "benchmark": "/data/validation/benchmark.csv",
+    "comparison": "/data/validation/comparison.json",
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json"
+  },
+  "sampleCount": 1,
+  "shacl": null,
+  "sourceFormat": "hdt",
+  "status": "PASS",
+  "strictConformance": false,
+  "temporaryRdf": {
+    "cleanupConfirmed": true,
+    "decompressedInsideContainer": true,
+    "persisted": false
+  }
+}

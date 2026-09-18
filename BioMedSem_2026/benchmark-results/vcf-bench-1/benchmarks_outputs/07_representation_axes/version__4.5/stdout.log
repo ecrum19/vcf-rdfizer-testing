@@ -1,0 +1,31 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/run_metrics/version_4.5__20260915T003558
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/run_metrics/version_4.5__20260915T003558/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/run_metrics/version_4.5__20260915T003558/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: version_4.5.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.5 (forced)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 2; FORMAT values: 8
+    * Streaming structured header RDF
+    * Header lines typed: 10; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 2; INFO values: 4; declarations: 2
+    * Triples produced: 505
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/version_4.5
+      - RDF aggregate: version_4.5.nt.gz
+      - RDF (.gz): 4.95 KB (removed after successful compression)
+      - HDT (.hdt): 7.29 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/version_4.5/version_4.5.hdt)
+Total triples produced (full run): 505
+Conversion process finished.
+Run time (full mode): 13.43s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/run_metrics/version_4.5__20260915T003558/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out/run_metrics/version_4.5__20260915T003558/summary.json

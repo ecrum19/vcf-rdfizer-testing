@@ -1,0 +1,140 @@
+{
+  "run_id": "20260914T042051",
+  "timestamp": "2026-09-14T04:20:51",
+  "command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/1000G_10000r_s64.rules.ttl -o /data/out/1000G_10000r_s64/.rmlstreamer-parts-1000G_10000r_s64-1 ",
+  "exit_code": 0,
+  "timing": {
+    "wall_seconds": 12.56,
+    "user_seconds": 29.11,
+    "sys_seconds": 1.2,
+    "max_rss_kb": 1016068
+  },
+  "artifacts": {
+    "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+    "input_path": "/data/rules/1000G_10000r_s64.rules.ttl",
+    "input_size_bytes": 13826,
+    "input_vcf_size_bytes": 4006639,
+    "input_vcf_size_method": "gzip-sample",
+    "output_path": "/data/out/1000G_10000r_s64/1000G_10000r_s64.nt.gz",
+    "output_size_bytes": 6583414,
+    "output_triples": {
+      "/data/out/1000G_10000r_s64/1000G_10000r_s64.nt.gz": 1439818,
+      "TOTAL": 1439818
+    }
+  },
+  "rdf_storage": {
+    "mode": "space-optimized",
+    "compressed": true,
+    "serialization": "ntriples"
+  },
+  "tsv_generation": {
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 1.001142,
+      "user_seconds": 0.53,
+      "sys_seconds": 0.01,
+      "max_rss_kb": 7552
+    },
+    "output_size_bytes": 4317652,
+    "output_path": "/data/tsv/1000G_10000r_s64.records.tsv|/data/tsv/1000G_10000r_s64.header_lines.tsv|/data/tsv/1000G_10000r_s64.file_metadata.tsv"
+  },
+  "java": {
+    "version_header": "openjdk version \"11.0.32\" 2026-07-21"
+  },
+  "sample_representation": {
+    "representation": "condensed",
+    "records": 10000,
+    "samples": 64,
+    "matrices": 10000,
+    "format_vectors": 10000,
+    "format_definitions": 1,
+    "triples": 80324,
+    "appended_bytes": 357059,
+    "header": {
+      "representation": "header",
+      "header_lines": 252,
+      "typed_lines": 252,
+      "attributes": 638,
+      "field_definitions": 28,
+      "filter_definitions": 1,
+      "alt_definitions": 133,
+      "contigs": 86,
+      "sample_declarations": 0,
+      "pedigree_relations": 0,
+      "file_dates": 1,
+      "triples": 4110,
+      "appended_bytes": 19466
+    },
+    "info": {
+      "representation": "record-detail",
+      "records": 10000,
+      "qual_values": 10000,
+      "info_values": 120258,
+      "info_definitions": 24,
+      "record_identifiers": 0,
+      "filter_codes": 0,
+      "alleles": 20074,
+      "breakends": 0,
+      "value_items": 70562,
+      "variant_events": 0,
+      "confidence_intervals": 20,
+      "reference_blocks": 0,
+      "tandem_repeats": 0,
+      "repeat_sequences": 0,
+      "contig_links": 10000,
+      "assembly_contigs": 0,
+      "assembly_contig_links": 0,
+      "triples": 1264115,
+      "appended_bytes": 5770951
+    }
+  },
+  "sample_streaming": {
+    "representation": "condensed",
+    "records": 10000,
+    "samples": 64,
+    "matrices": 10000,
+    "format_vectors": 10000,
+    "format_definitions": 1,
+    "triples": 80324,
+    "appended_bytes": 357059,
+    "header": {
+      "representation": "header",
+      "header_lines": 252,
+      "typed_lines": 252,
+      "attributes": 638,
+      "field_definitions": 28,
+      "filter_definitions": 1,
+      "alt_definitions": 133,
+      "contigs": 86,
+      "sample_declarations": 0,
+      "pedigree_relations": 0,
+      "file_dates": 1,
+      "triples": 4110,
+      "appended_bytes": 19466
+    },
+    "info": {
+      "representation": "record-detail",
+      "records": 10000,
+      "qual_values": 10000,
+      "info_values": 120258,
+      "info_definitions": 24,
+      "record_identifiers": 0,
+      "filter_codes": 0,
+      "alleles": 20074,
+      "breakends": 0,
+      "value_items": 70562,
+      "variant_events": 0,
+      "confidence_intervals": 20,
+      "reference_blocks": 0,
+      "tandem_repeats": 0,
+      "repeat_sequences": 0,
+      "contig_links": 10000,
+      "assembly_contigs": 0,
+      "assembly_contig_links": 0,
+      "triples": 1264115,
+      "appended_bytes": 5770951
+    }
+  },
+  "vcf_version": "VCFv4.1",
+  "vcf_version_source": "declared"
+}

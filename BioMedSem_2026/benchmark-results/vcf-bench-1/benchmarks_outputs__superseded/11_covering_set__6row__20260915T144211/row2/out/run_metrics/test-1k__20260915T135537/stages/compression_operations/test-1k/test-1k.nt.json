@@ -1,0 +1,74 @@
+{
+  "run_id": "20260915T135537",
+  "timestamp": "2026-09-15T13:55:37",
+  "output_name": "test-1k",
+  "rdf_name": "test-1k.nt",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/test-1k/test-1k.nt",
+  "compression_methods": "brotli,hdt,hdt_brotli",
+  "index_warnings": [],
+  "auxiliary_stages": {
+    "hdt-validation": {
+      "exit_code": 0,
+      "wall_seconds": 0.5008507447782904,
+      "user_seconds": 0.14,
+      "sys_seconds": 0.03,
+      "max_rss_kb": 17024,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/test-1k/.test-1k.hdt.validation.json",
+      "output_size_bytes": 153
+    }
+  },
+  "methods": {
+    "brotli": {
+      "exit_code": 0,
+      "wall_seconds": 0.500843825051561,
+      "user_seconds": 0.03,
+      "sys_seconds": 0.01,
+      "max_rss_kb": 17452,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/test-1k/test-1k.nt.br",
+      "output_size_bytes": 83957,
+      "source": null,
+      "details": {},
+      "validation": null
+    },
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 0.5008871681056917,
+      "user_seconds": 0.11,
+      "sys_seconds": 0.0,
+      "max_rss_kb": 9564,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/test-1k/test-1k.hdt",
+      "output_size_bytes": 290014,
+      "source": "generated",
+      "details": {},
+      "validation": {
+        "valid": true,
+        "source_triples": 39700,
+        "decoded_triples": 39700,
+        "expected_triples": 39700,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "execution": {
+          "exit_code": 0,
+          "wall_seconds": 0.5008507447782904,
+          "user_seconds": 0.14,
+          "sys_seconds": 0.03,
+          "max_rss_kb": 17024,
+          "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/test-1k/.test-1k.hdt.validation.json",
+          "output_size_bytes": 153
+        }
+      }
+    },
+    "hdt_brotli": {
+      "exit_code": 0,
+      "wall_seconds": 0.5008958850521594,
+      "user_seconds": 0.0,
+      "sys_seconds": 0.0,
+      "max_rss_kb": 11904,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/test-1k/test-1k.hdt.br",
+      "output_size_bytes": 30180,
+      "source": null,
+      "details": {},
+      "validation": null
+    }
+  }
+}

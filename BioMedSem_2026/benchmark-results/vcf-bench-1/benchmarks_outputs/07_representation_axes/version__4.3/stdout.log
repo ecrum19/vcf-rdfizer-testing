@@ -1,0 +1,31 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/run_metrics/version_4.3__20260915T003530
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/run_metrics/version_4.3__20260915T003530/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/run_metrics/version_4.3__20260915T003530/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: version_4.3.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.3 (forced)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 3; FORMAT values: 6
+    * Streaming structured header RDF
+    * Header lines typed: 8; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 3; INFO values: 6; declarations: 2
+    * Triples produced: 454
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/version_4.3
+      - RDF aggregate: version_4.3.nt.gz
+      - RDF (.gz): 5.09 KB (removed after successful compression)
+      - HDT (.hdt): 7.14 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/version_4.3/version_4.3.hdt)
+Total triples produced (full run): 454
+Conversion process finished.
+Run time (full mode): 13.41s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/run_metrics/version_4.3__20260915T003530/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/run_metrics/version_4.3__20260915T003530/summary.json

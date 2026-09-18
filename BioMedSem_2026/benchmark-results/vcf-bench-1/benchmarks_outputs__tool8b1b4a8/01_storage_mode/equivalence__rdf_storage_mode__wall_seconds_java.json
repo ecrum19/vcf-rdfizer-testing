@@ -1,0 +1,45 @@
+{
+  "experiment": "01_storage_mode",
+  "factor": "rdf_storage_mode",
+  "metric": "wall_seconds_java",
+  "margin": 0.1,
+  "confidence": 0.9,
+  "treatment": "space-optimized",
+  "baseline": "plain",
+  "verdicts": [
+    {
+      "n_pairs": 5,
+      "ratio": 0.9969611968209443,
+      "relative_difference": -0.0030388031790556935,
+      "ci_low": -0.020343580470162714,
+      "ci_high": 0.03256351039260985,
+      "confidence": 0.9,
+      "iterations": 20000,
+      "seed": 20260910,
+      "margin": 0.1,
+      "verdict": "EQUIVALENT",
+      "verdict_reason": "the whole 90% CI lies inside +/-10%",
+      "group": {
+        "input": "test-larger.vcf.gz"
+      },
+      "factor": "rdf_storage_mode",
+      "treatment": "space-optimized",
+      "baseline": "plain",
+      "metric": "wall_seconds_java",
+      "treatment_values": [
+        42.56,
+        42.65,
+        43.34,
+        42.2,
+        44.71
+      ],
+      "baseline_values": [
+        42.43,
+        42.78,
+        44.24,
+        42.17,
+        43.3
+      ]
+    }
+  ]
+}

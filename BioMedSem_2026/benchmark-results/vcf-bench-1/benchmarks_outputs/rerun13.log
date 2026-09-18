@@ -1,0 +1,56 @@
+Previous HEAD position was a3679e1 Pin pip in CI instead of installing whatever released most recently
+HEAD is now at 20d2cbb Count FORMAT value items in the oracle, not only INFO ones
+=== 2026-09-16T10:43:33+02:00 re-run 13 on the FORMAT value-item fix ===
+tool 20d2cbb Count FORMAT value items in the oracle, not only INFO ones
+built vcf-rdfizer:local-20d2cbb
+archived old 13 (6 cells)
+    - image vcf-rdfizer:local-20d2cbb already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 13_query_cost.sh ===
+    - image vcf-rdfizer:local-20d2cbb already built
+
+=== §4.5 small scale: test-10k.vcf  engines=all ===
+    - small__r1
+    - small__r2
+    - small__r3
+
+=== §4.5 large scale: HG005_GRCh38_r100000.vcf.gz  engines=qlever ===
+    - large__r1
+    - large__r2
+    - large__r3
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 13_query_cost
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py querycost 13_query_cost
+
+The dataset reports, per engine and scale: median engine query seconds, median
+oracle (cyvcf2) seconds for the same work, the ratio, setup seconds, and the
+break-even repetition count. Equality of the answers is established by the
+validation status in the same row — check it is PASS before quoting any speed.
+
+=== Collecting ===
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+09_awkward_inputs: 16 cells — 11 ok, 3 non-zero, 2 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/tidy.csv
+  exit 1: awkward_no_records
+  exit 1: awkward_sites_only
+  exit 1: awkward_truncated
+11_covering_set: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+13_query_cost: 6 cells — 6 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/tidy.csv
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/provenance.vcf-bench-1.20d2cbb.json
+  tool   20d2cbb Count FORMAT value items in the oracle, not only INFO ones
+  image  sha256:b645120b7270b1db0 created 2026-09-13T19:17:20
+=== 2026-09-16T20:59:53+02:00 finished ===

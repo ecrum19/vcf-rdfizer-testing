@@ -1,0 +1,20 @@
+(node:41) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Server running on http://localhost:7020/sparql
+(node:52) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Server worker (52) running on http://localhost:7020/sparql
+[301] Permanently moved. Redirected to /sparql.
+[200] GET to /sparql
+      Requested media type: application/sparql-results+json
+      Received query for service description.
+[400] Bad request, invalid media type
+Terminating worker 52 with 1 open connections due to uncaught exception.
+Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+    at ServerResponse.writeHead (node:_http_server:354:11)
+    at HttpServiceSparqlEndpoint.writeServiceDescription (/usr/local/lib/node_modules/@comunica/query-sparql-file/node_modules/@comunica/actor-init-query/lib/HttpServiceSparqlEndpoint.js:517:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async HttpServiceSparqlEndpoint.handleRequest (/usr/local/lib/node_modules/@comunica/query-sparql-file/node_modules/@comunica/actor-init-query/lib/HttpServiceSparqlEndpoint.js:344:17)Worker 52 died with 15. Starting new worker.
+(node:97) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Server worker (97) running on http://localhost:7020/sparql

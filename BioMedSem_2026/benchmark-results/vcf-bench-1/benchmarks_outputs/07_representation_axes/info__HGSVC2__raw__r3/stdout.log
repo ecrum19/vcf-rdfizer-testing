@@ -1,0 +1,51 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/run_metrics/HGSVC2__20260914T230537
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/run_metrics/HGSVC2__20260914T230537/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/run_metrics/HGSVC2__20260914T230537/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: raw
+  Header representation: structured
+  - Input 1/1: HGSVC2.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 320,000 calls
+    * Sample RDF streaming: 20,000 variants, 640,000 calls
+    * Sample RDF streaming: 30,000 variants, 960,000 calls
+    * Sample RDF streaming: 40,000 variants, 1,280,000 calls
+    * Sample RDF streaming: 50,000 variants, 1,600,000 calls
+    * Sample RDF streaming: 60,000 variants, 1,920,000 calls
+    * Sample RDF streaming: 70,000 variants, 2,240,000 calls
+    * Sample RDF streaming: 80,000 variants, 2,560,000 calls
+    * Sample RDF streaming: 90,000 variants, 2,880,000 calls
+    * Sample RDF streaming: 100,000 variants, 3,200,000 calls
+    * Sample calls streamed: 3,442,880; FORMAT values: 3,442,880
+    * Streaming structured header RDF
+    * Header lines typed: 206; contigs: 194
+    * Streaming QUAL and raw INFO RDF
+    * INFO RDF streaming: 10,000 variants, 0 values
+    * INFO RDF streaming: 20,000 variants, 0 values
+    * INFO RDF streaming: 30,000 variants, 0 values
+    * INFO RDF streaming: 40,000 variants, 0 values
+    * INFO RDF streaming: 50,000 variants, 0 values
+    * INFO RDF streaming: 60,000 variants, 0 values
+    * INFO RDF streaming: 70,000 variants, 0 values
+    * INFO RDF streaming: 80,000 variants, 0 values
+    * INFO RDF streaming: 90,000 variants, 0 values
+    * INFO RDF streaming: 100,000 variants, 0 values
+    * QUAL values streamed: 107,590; INFO values: 0; declarations: 0
+    * Triples produced: 87,824,395
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/HGSVC2
+      - RDF aggregate: HGSVC2.nt.gz
+      - RDF (.gz): 461.70 MB (removed after successful compression)
+      - HDT (.hdt): 640.40 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/HGSVC2/HGSVC2.hdt)
+Total triples produced (full run): 87,824,395
+Conversion process finished.
+Run time (full mode): 39m 23.6s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/run_metrics/HGSVC2__20260914T230537/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out/run_metrics/HGSVC2__20260914T230537/summary.json

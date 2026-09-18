@@ -1,0 +1,690 @@
+2026-09-17 20:41:30.009 - INFO: [1mQLever server bfd5741, compiled on Thu Sep  3 17:32:42 UTC 2026 using git hash bfd5741[22m
+2026-09-17 20:41:30.009 - INFO: Cleanup of previous index directories after each rebuild enabled (--rebuild-keep-previous-index-dirs original-and-most-recent)
+2026-09-17 20:41:30.009 - INFO: The git hash used to build this index was "bfd5741"
+2026-09-17 20:41:30.009 - INFO: Reading vocabulary from file /work/vcf-rdfizer-validation-bpokim_v/qlever-index/vcf-rdfizer.vocabulary.words ...
+2026-09-17 20:41:30.009 - WARN: io_uring is compiled in but unavailable at runtime (io_uring_queue_init failed in IoUringManager. In file "/qlever/src/util/IoUringManager.cpp" at line 69); falling back to synchronous pread for vocabulary lookups
+2026-09-17 20:41:30.009 - INFO: Done, number of words: 190,202
+2026-09-17 20:41:30.009 - INFO: Number of words in internal vocabulary (these are also part of the external vocabulary): 195
+2026-09-17 20:41:30.010 - INFO: Registered PSO permutation: #relations = 1, #blocks = 6, #triples = 179,792
+2026-09-17 20:41:30.010 - INFO: Registered PSO permutation: #relations = 77, #blocks = 33, #triples = 958,919
+2026-09-17 20:41:30.010 - INFO: Registered POS permutation: #relations = 1, #blocks = 6, #triples = 179,792
+2026-09-17 20:41:30.010 - INFO: Registered POS permutation: #relations = 77, #blocks = 33, #triples = 958,919
+2026-09-17 20:41:30.010 - INFO: Registered OPS permutation: #relations = 209,506, #blocks = 26, #triples = 958,919
+2026-09-17 20:41:30.010 - INFO: Registered OSP permutation: #relations = 209,506, #blocks = 26, #triples = 958,919
+2026-09-17 20:41:30.010 - INFO: Registered SPO permutation: #relations = 179,792, #blocks = 21, #triples = 958,919
+2026-09-17 20:41:30.010 - INFO: Registered SOP permutation: #relations = 179,792, #blocks = 21, #triples = 958,919
+2026-09-17 20:41:30.010 - INFO: Reading patterns from file /work/vcf-rdfizer-validation-bpokim_v/qlever-index/vcf-rdfizer.index.patterns ...
+2026-09-17 20:41:30.010 - INFO: Sorting random result tables to estimate the sorting performance of this machine ...
+2026-09-17 20:41:30.012 - INFO: Initializing server ...
+2026-09-17 20:41:30.012 - INFO: Access token for restricted API calls is ""
+2026-09-17 20:41:30.012 - INFO: The server is ready, listening for requests on port 7019 ...
+2026-09-17 20:41:30.503 - INFO: 
+2026-09-17 20:41:30.503 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:30.505 - INFO: Processing the following SPARQL query:
+SELECT * WHERE { ?s ?p ?o } LIMIT 1
+2026-09-17 20:41:30.505 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:30.505 - INFO: Query planning done in 2 ms
+2026-09-17 20:41:30.505 - INFO: Result has unknown size (not computed yet)
+2026-09-17 20:41:30.507 - INFO: Done processing query and sending result, total time was 4 ms
+2026-09-17 20:41:30.508 - INFO: 
+2026-09-17 20:41:30.508 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:30.511 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?record
+       (COUNT(DISTINCT ?chrom) AS ?chromCount)
+       (COUNT(DISTINCT ?pos) AS ?posCount)
+       (COUNT(DISTINCT ?ref) AS ?refCount)
+       (COUNT(DISTINCT ?alt) AS ?altCount)
+       (COUNT(DISTINCT ?call) AS ?callCount)
+WHERE {
+  ?record a vcfc:VCFRecord .
+  OPTIONAL { ?record vcfc:chrom ?chrom }
+  OPTIONAL { ?record vcfc:pos ?pos }
+  OPTIONAL { ?record vcfc:ref ?ref }
+  OPTIONAL { ?record vcfc:alt ?alt }
+  OPTIONAL { ?record vcfc:hasCall ?call }
+}
+GROUP BY ?record
+HAVING(COUNT(DISTINCT ?chrom) != 1 || COUNT(DISTINCT ?pos) != 1 || COUNT(DISTINCT ?ref) != 1 || COUNT(DISTINCT ?alt) != 1 || COUNT(DISTINCT ?call) != 1)
+LIMIT 100
+
+2026-09-17 20:41:30.512 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:30.523 - INFO: Query planning done in 14 ms
+2026-09-17 20:41:30.612 - INFO: Result has size 0 x 7
+2026-09-17 20:41:30.613 - INFO: Done processing query and sending result, total time was 104 ms
+2026-09-17 20:41:30.614 - INFO: 
+2026-09-17 20:41:30.614 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:30.616 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+# POS must carry an integer datatype, never a plain string or a fractional type.
+#
+# The accepted set is the XSD integer family rather than xsd:integer alone,
+# because a store may canonicalise an integer literal to a narrower derived
+# type at index time. QLever, for instance, reports "100"^^xsd:integer as
+# xsd:int, which would otherwise make this preflight fail every run on that
+# engine while passing on Comunica. Anything outside the family - xsd:string,
+# xsd:decimal, xsd:double, a plain literal - is still reported.
+SELECT ?record ?pos (DATATYPE(?pos) AS ?datatype)
+WHERE {
+  ?record a vcfc:VCFRecord ; vcfc:pos ?pos .
+  FILTER(DATATYPE(?pos) NOT IN (
+    xsd:integer, xsd:int, xsd:long, xsd:short, xsd:byte,
+    xsd:nonNegativeInteger, xsd:positiveInteger,
+    xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, xsd:unsignedByte
+  ))
+}
+LIMIT 100
+
+2026-09-17 20:41:30.616 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:30.620 - INFO: Query planning done in 6 ms
+2026-09-17 20:41:30.630 - INFO: Result has size 0 x 3
+2026-09-17 20:41:30.631 - INFO: Done processing query and sending result, total time was 16 ms
+2026-09-17 20:41:30.632 - INFO: 
+2026-09-17 20:41:30.632 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:30.633 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?s ?p ?o (DATATYPE(?o) AS ?datatype)
+WHERE {
+  ?s ?p ?o .
+  FILTER(ISLITERAL(?o) && STR(?o) = ".")
+  FILTER(DATATYPE(?o) != vcfc:Null)
+}
+LIMIT 100
+
+2026-09-17 20:41:30.633 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:30.633 - INFO: Query planning done in 1 ms
+2026-09-17 20:41:30.633 - INFO: Result has unknown size (not computed yet)
+2026-09-17 20:41:31.047 - INFO: Done processing query and sending result, total time was 414 ms
+2026-09-17 20:41:31.047 - INFO: 
+2026-09-17 20:41:31.047 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:31.048 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?file ?profile
+WHERE {
+  ?file a vcfc:VCFFile .
+  OPTIONAL { ?file vcfc:representationProfile ?profile }
+  FILTER(!BOUND(?profile) || ?profile != vcfc:ExpandedRepresentation)
+}
+LIMIT 100
+
+2026-09-17 20:41:31.048 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:31.050 - INFO: Query planning done in 2 ms
+2026-09-17 20:41:31.050 - INFO: Result has unknown size (not computed yet)
+2026-09-17 20:41:31.054 - INFO: Done processing query and sending result, total time was 6 ms
+2026-09-17 20:41:31.055 - INFO: 
+2026-09-17 20:41:31.055 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:31.056 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT
+  (COUNT(DISTINCT ?sampleCall) AS ?sampleCallCount)
+  (COUNT(DISTINCT ?sampleId) AS ?sampleIdCount)
+  (COUNT(DISTINCT ?gtValueNode) AS ?gtValueNodeCount)
+WHERE {
+  OPTIONAL {
+    ?sampleCall a vcfc:SampleCall ; vcfc:sampleId ?sampleId .
+    OPTIONAL {
+      ?sampleCall vcfc:hasFormatValue ?gtValueNode .
+      FILTER(STRENDS(STR(?gtValueNode), "/fmt/GT"))
+      ?gtValueNode vcfc:fieldValue ?gtLiteral .
+    }
+  }
+}
+
+2026-09-17 20:41:31.056 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:31.063 - INFO: Query planning done in 8 ms
+2026-09-17 20:41:31.104 - INFO: Result has size 1 x 3
+2026-09-17 20:41:31.105 - INFO: Done processing query and sending result, total time was 50 ms
+2026-09-17 20:41:31.106 - INFO: 
+2026-09-17 20:41:31.106 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:31.106 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Blank nodes anywhere in the graph.
+#
+# Every class in the VCF-RDFizer vocabulary declares an vcfc:iriTemplate, so a
+# blank node means a term map produced no IRI. That is always a defect here:
+# blank-node identity is scoped to the file, so the record and value digests
+# could not address such a node, and neither could anything downstream that
+# merges or re-serializes the graph.
+#
+# A predicate cannot be a blank node in RDF, so only subject and object are
+# examined.
+SELECT ?s ?p ?o
+WHERE {
+  ?s ?p ?o .
+  FILTER(ISBLANK(?s) || ISBLANK(?o))
+}
+LIMIT 100
+
+2026-09-17 20:41:31.106 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:31.107 - INFO: Query planning done in 0 ms
+2026-09-17 20:41:31.107 - INFO: Result has unknown size (not computed yet)
+2026-09-17 20:41:31.145 - INFO: Done processing query and sending result, total time was 38 ms
+2026-09-17 20:41:31.145 - INFO: 
+2026-09-17 20:41:31.145 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:31.147 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Empty or whitespace-only terms.
+#
+# The pipeline should never materialize one. RML emits no triple for an empty
+# reference, and every direct emitter either guards on a non-empty value or
+# substitutes the VCF missing token, which becomes "."^^vcfc:Null. An empty
+# literal therefore means a value was lost rather than marked missing, and an
+# empty IRI means a template substitution collapsed.
+#
+# Whitespace-only counts as empty: a literal of spaces or tabs carries no more
+# information than "" and is just as certainly a defect.
+SELECT ?s ?p ?o ?issue
+WHERE {
+  ?s ?p ?o .
+  BIND(
+    IF(ISLITERAL(?o) && REGEX(STR(?o), "^\\s*$"), "EMPTY_LITERAL",
+      IF(STR(?s) = "" || STR(?p) = "" || (ISIRI(?o) && STR(?o) = ""), "EMPTY_IRI", "")
+    ) AS ?issue
+  )
+  FILTER(?issue != "")
+}
+LIMIT 100
+
+2026-09-17 20:41:31.147 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:31.147 - INFO: Query planning done in 1 ms
+2026-09-17 20:41:31.147 - INFO: Result has unknown size (not computed yet)
+2026-09-17 20:41:36.417 - INFO: Done processing query and sending result, total time was 5,271 ms
+2026-09-17 20:41:36.417 - INFO: 
+2026-09-17 20:41:36.418 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.418 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# How many distinct triples the graph contains.
+#
+# A SPARQL store holds a set, so a duplicated line in the N-Triples file is
+# invisible to every other query here: the store collapses it on load. The only
+# way to see duplication is to compare this against the number of statements the
+# parser actually read, which the Raptor step records. The difference is exactly
+# the number of redundant lines.
+#
+# This matters because duplicate RDF parts are a known failure mode of the
+# conversion - run_conversion.sh already carries a defensive dedupe for it - and
+# a duplicated aggregate is twice the size for no added information.
+SELECT (COUNT(*) AS ?distinctTripleCount)
+WHERE {
+  ?s ?p ?o .
+}
+
+2026-09-17 20:41:36.418 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.418 - INFO: Query planning done in 0 ms
+2026-09-17 20:41:36.431 - INFO: Result has size 1 x 1
+2026-09-17 20:41:36.431 - INFO: Done processing query and sending result, total time was 13 ms
+2026-09-17 20:41:36.432 - INFO: 
+2026-09-17 20:41:36.432 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.433 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Exact number of records with anomalous property cardinality.
+# The companion query returns at most 100 example rows for diagnosis; this one
+# reports the true severity, which a LIMITed sample cannot.
+SELECT (COUNT(*) AS ?anomalyCount)
+WHERE {
+  SELECT ?record
+  WHERE {
+    ?record a vcfc:VCFRecord .
+    OPTIONAL { ?record vcfc:chrom ?chrom }
+    OPTIONAL { ?record vcfc:pos ?pos }
+    OPTIONAL { ?record vcfc:ref ?ref }
+    OPTIONAL { ?record vcfc:alt ?alt }
+    OPTIONAL { ?record vcfc:hasCall ?call }
+  }
+  GROUP BY ?record
+  HAVING(COUNT(DISTINCT ?chrom) != 1 || COUNT(DISTINCT ?pos) != 1 || COUNT(DISTINCT ?ref) != 1 || COUNT(DISTINCT ?alt) != 1 || COUNT(DISTINCT ?call) != 1)
+}
+
+2026-09-17 20:41:36.433 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.443 - INFO: Query planning done in 10 ms
+2026-09-17 20:41:36.484 - INFO: Result has size 1 x 1
+2026-09-17 20:41:36.485 - INFO: Done processing query and sending result, total time was 52 ms
+2026-09-17 20:41:36.486 - INFO: 
+2026-09-17 20:41:36.486 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.486 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+# Exact number of POS values outside the XSD integer family.
+SELECT (COUNT(*) AS ?anomalyCount)
+WHERE {
+  ?record a vcfc:VCFRecord ; vcfc:pos ?pos .
+  FILTER(DATATYPE(?pos) NOT IN (
+    xsd:integer, xsd:int, xsd:long, xsd:short, xsd:byte,
+    xsd:nonNegativeInteger, xsd:positiveInteger,
+    xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, xsd:unsignedByte
+  ))
+}
+
+2026-09-17 20:41:36.486 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.489 - INFO: Query planning done in 3 ms
+2026-09-17 20:41:36.496 - INFO: Result has size 1 x 1
+2026-09-17 20:41:36.496 - INFO: Done processing query and sending result, total time was 10 ms
+2026-09-17 20:41:36.497 - INFO: 
+2026-09-17 20:41:36.497 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.498 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Exact number of missing tokens serialized as a plain "." literal.
+SELECT (COUNT(*) AS ?anomalyCount)
+WHERE {
+  ?s ?p ?o .
+  FILTER(ISLITERAL(?o) && STR(?o) = ".")
+  FILTER(DATATYPE(?o) != vcfc:Null)
+}
+
+2026-09-17 20:41:36.498 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.498 - INFO: Query planning done in 0 ms
+2026-09-17 20:41:36.904 - INFO: Result has size 1 x 1
+2026-09-17 20:41:36.905 - INFO: Done processing query and sending result, total time was 407 ms
+2026-09-17 20:41:36.906 - INFO: 
+2026-09-17 20:41:36.906 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.906 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Exact number of VCFFile resources not declaring the expanded profile.
+SELECT (COUNT(*) AS ?anomalyCount)
+WHERE {
+  ?file a vcfc:VCFFile .
+  OPTIONAL { ?file vcfc:representationProfile ?profile }
+  FILTER(!BOUND(?profile) || ?profile != vcfc:ExpandedRepresentation)
+}
+
+2026-09-17 20:41:36.906 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.908 - INFO: Query planning done in 2 ms
+2026-09-17 20:41:36.908 - INFO: Result has size 1 x 1
+2026-09-17 20:41:36.909 - INFO: Done processing query and sending result, total time was 3 ms
+2026-09-17 20:41:36.910 - INFO: 
+2026-09-17 20:41:36.910 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.910 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Exact number of triples involving a blank node.
+SELECT (COUNT(*) AS ?anomalyCount)
+WHERE {
+  ?s ?p ?o .
+  FILTER(ISBLANK(?s) || ISBLANK(?o))
+}
+
+2026-09-17 20:41:36.910 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.910 - INFO: Query planning done in 0 ms
+2026-09-17 20:41:36.957 - INFO: Result has size 1 x 1
+2026-09-17 20:41:36.958 - INFO: Done processing query and sending result, total time was 48 ms
+2026-09-17 20:41:36.958 - INFO: 
+2026-09-17 20:41:36.958 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:36.959 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Exact number of triples carrying an empty or whitespace-only term.
+SELECT (COUNT(*) AS ?anomalyCount)
+WHERE {
+  ?s ?p ?o .
+  FILTER(
+    (ISLITERAL(?o) && REGEX(STR(?o), "^\\s*$"))
+    || STR(?s) = "" || STR(?p) = "" || (ISIRI(?o) && STR(?o) = "")
+  )
+}
+
+2026-09-17 20:41:36.959 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:36.960 - INFO: Query planning done in 1 ms
+2026-09-17 20:41:42.149 - INFO: Result has size 1 x 1
+2026-09-17 20:41:42.150 - INFO: Done processing query and sending result, total time was 5,191 ms
+2026-09-17 20:41:42.150 - INFO: 
+2026-09-17 20:41:42.150 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.151 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?chrom ?windowIndex (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a vcfc:VCFRecord ; vcfc:chrom ?chrom ; vcfc:pos ?pos .
+  BIND(FLOOR((xsd:integer(?pos) - 1) / 1000000) AS ?windowIndex)
+}
+GROUP BY ?chrom ?windowIndex
+ORDER BY ?chrom ?windowIndex
+
+2026-09-17 20:41:42.152 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.156 - INFO: Query planning done in 5 ms
+2026-09-17 20:41:42.163 - INFO: Result has size 2 x 3
+2026-09-17 20:41:42.164 - INFO: Done processing query and sending result, total time was 13 ms
+2026-09-17 20:41:42.165 - INFO: 
+2026-09-17 20:41:42.165 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.169 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?variantClass (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a vcfc:VCFRecord ; vcfc:ref ?refLiteral ; vcfc:alt ?altLiteral .
+  BIND(UCASE(STR(?refLiteral)) AS ?ref)
+  BIND(UCASE(STR(?altLiteral)) AS ?alt)
+  BIND(
+    IF(?alt = ".", "NO_ALT",
+      IF(CONTAINS(?alt, ","), "MULTIALLELIC",
+        IF(
+          ?alt = "*" || CONTAINS(?alt, "[") || CONTAINS(?alt, "]") ||
+          (STRSTARTS(?alt, "<") && STRENDS(?alt, ">")),
+          "SYMBOLIC_OR_BREAKEND",
+          IF(
+            !REGEX(?ref, "^[ACGTN]+$") || !REGEX(?alt, "^[ACGTN]+$"),
+            "OTHER",
+            IF(
+              STRLEN(?ref) = 1 && STRLEN(?alt) = 1,
+              "SNV",
+              IF(
+                STRLEN(?ref) = STRLEN(?alt),
+                "MNV_OR_EQUAL_LENGTH_SUBSTITUTION",
+                IF(STRLEN(?ref) < STRLEN(?alt), "INSERTION_SHAPE", "DELETION_SHAPE")
+              )
+            )
+          )
+        )
+      )
+    ) AS ?variantClass
+  )
+}
+GROUP BY ?variantClass
+ORDER BY ?variantClass
+
+2026-09-17 20:41:42.169 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.174 - INFO: Query planning done in 8 ms
+2026-09-17 20:41:42.245 - INFO: Result has size 1 x 2
+2026-09-17 20:41:42.245 - INFO: Done processing query and sending result, total time was 79 ms
+2026-09-17 20:41:42.246 - INFO: 
+2026-09-17 20:41:42.246 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.248 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT
+  (COUNT(DISTINCT ?record) AS ?biallelicSnvCount)
+  (SUM(IF((?ref = "A" && ?alt = "G") || (?ref = "G" && ?alt = "A") || (?ref = "C" && ?alt = "T") || (?ref = "T" && ?alt = "C"), 1, 0)) AS ?transitionCount)
+  (SUM(IF((?ref = "A" && ?alt = "G") || (?ref = "G" && ?alt = "A") || (?ref = "C" && ?alt = "T") || (?ref = "T" && ?alt = "C"), 0, 1)) AS ?transversionCount)
+WHERE {
+  ?record a vcfc:VCFRecord ; vcfc:ref ?refLiteral ; vcfc:alt ?altLiteral .
+  BIND(UCASE(STR(?refLiteral)) AS ?ref)
+  BIND(UCASE(STR(?altLiteral)) AS ?alt)
+  FILTER(REGEX(?ref, "^[ACGT]$") && REGEX(?alt, "^[ACGT]$") && ?ref != ?alt)
+}
+
+2026-09-17 20:41:42.248 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.253 - INFO: Query planning done in 6 ms
+2026-09-17 20:41:42.265 - INFO: Result has size 1 x 3
+2026-09-17 20:41:42.265 - INFO: Done processing query and sending result, total time was 18 ms
+2026-09-17 20:41:42.266 - INFO: 
+2026-09-17 20:41:42.266 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.267 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?filterStatus ?filterLexical (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a vcfc:VCFRecord ; vcfc:hasCall ?call .
+  ?call vcfc:filter ?filterLiteral .
+  BIND(STR(?filterLiteral) AS ?filterLexical)
+  BIND(IF(?filterLexical = "PASS", "PASS", IF(?filterLexical = ".", "NOT_APPLIED", "FAILED")) AS ?filterStatus)
+}
+GROUP BY ?filterStatus ?filterLexical
+ORDER BY ?filterStatus ?filterLexical
+
+2026-09-17 20:41:42.267 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.272 - INFO: Query planning done in 5 ms
+2026-09-17 20:41:42.309 - INFO: Result has size 1 x 3
+2026-09-17 20:41:42.309 - INFO: Done processing query and sending result, total time was 42 ms
+2026-09-17 20:41:42.310 - INFO: 
+2026-09-17 20:41:42.310 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.315 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?sampleId ?genotypeClass (COUNT(DISTINCT ?sampleCall) AS ?callCount)
+WHERE {
+  ?sampleCall a vcfc:SampleCall ; vcfc:sampleId ?sampleId .
+  OPTIONAL {
+    ?sampleCall vcfc:hasFormatValue ?gtValueNode .
+    FILTER(STRENDS(STR(?gtValueNode), "/fmt/GT"))
+    ?gtValueNode vcfc:fieldValue ?gtLiteral .
+  }
+  BIND(IF(BOUND(?gtLiteral), REPLACE(STR(?gtLiteral), "[|]", "/"), "") AS ?gt)
+  BIND(IF(!BOUND(?gtLiteral), "NO_GT_FIELD",
+    IF(CONTAINS(?gt, "."), "MISSING",
+      IF(REGEX(?gt, "^[0-9]+$"), IF(?gt = "0", "HAPLOID_REF", "HAPLOID_ALT"),
+        IF(REGEX(?gt, "^[0-9]+/[0-9]+$"),
+          IF(STRBEFORE(?gt, "/") = STRAFTER(?gt, "/"), IF(STRBEFORE(?gt, "/") = "0", "HOM_REF", "HOM_ALT"), "HET"),
+          "OTHER_PLOIDY")))) AS ?genotypeClass)
+}
+GROUP BY ?sampleId ?genotypeClass
+ORDER BY ?sampleId ?genotypeClass
+
+2026-09-17 20:41:42.315 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.322 - INFO: Query planning done in 11 ms
+2026-09-17 20:41:42.364 - INFO: Result has size 1 x 3
+2026-09-17 20:41:42.364 - INFO: Done processing query and sending result, total time was 54 ms
+2026-09-17 20:41:42.366 - INFO: 
+2026-09-17 20:41:42.366 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.367 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+SELECT ?an ?ac (COUNT(DISTINCT ?record) AS ?siteCount)
+WHERE {
+  {
+    SELECT ?record (SUM(?anContribution) AS ?an) (SUM(?acContribution) AS ?ac)
+    WHERE {
+      {
+        SELECT DISTINCT ?record ?sampleCall ?gt
+        WHERE {
+          ?record a vcfc:VCFRecord ; vcfc:alt ?altLiteral ; vcfc:hasCall ?call .
+          FILTER(STR(?altLiteral) != "." && !CONTAINS(STR(?altLiteral), ","))
+          ?call vcfc:hasSampleCall ?sampleCall .
+          ?sampleCall vcfc:hasFormatValue ?gtValueNode .
+          FILTER(STRENDS(STR(?gtValueNode), "/fmt/GT"))
+          ?gtValueNode vcfc:fieldValue ?gtLiteral .
+          BIND(REPLACE(STR(?gtLiteral), "[|]", "/") AS ?gt)
+        }
+      }
+      BIND(IF(REGEX(?gt, "^[01]$"), 1, IF(REGEX(?gt, "^[01]/[01]$"), 2, 0)) AS ?anContribution)
+      BIND(IF(?gt = "1", 1, IF(?gt = "0/1" || ?gt = "1/0", 1, IF(?gt = "1/1", 2, 0))) AS ?acContribution)
+    }
+    GROUP BY ?record
+  }
+  FILTER(?an > 0)
+}
+GROUP BY ?an ?ac
+ORDER BY ?an ?ac
+
+2026-09-17 20:41:42.367 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.390 - INFO: Query planning done in 24 ms
+2026-09-17 20:41:42.526 - INFO: Result has size 1 x 3
+2026-09-17 20:41:42.527 - INFO: Done processing query and sending result, total time was 161 ms
+2026-09-17 20:41:42.528 - INFO: 
+2026-09-17 20:41:42.528 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.529 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# The file-level declarations carried over from the VCF meta-information lines.
+#
+# COALESCE binds an explicit sentinel rather than leaving the variable unbound,
+# so a missing declaration is reported as a value mismatch against the parser
+# instead of failing result normalization with a less useful error.
+SELECT
+  (COALESCE(?ff, "(absent)") AS ?fileFormat)
+  (COALESCE(?rg, "(absent)") AS ?referenceGenome)
+  (COALESCE(?ss, "(absent)") AS ?sourceSoftware)
+WHERE {
+  ?file a vcfc:VCFFile .
+  OPTIONAL { ?file vcfc:fileFormat ?ffLiteral      BIND(STR(?ffLiteral) AS ?ff) }
+  OPTIONAL { ?file vcfc:referenceGenome ?rgLiteral BIND(STR(?rgLiteral) AS ?rg) }
+  OPTIONAL { ?file vcfc:sourceSoftware ?ssLiteral  BIND(STR(?ssLiteral) AS ?ss) }
+}
+
+2026-09-17 20:41:42.529 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.542 - INFO: Query planning done in 14 ms
+2026-09-17 20:41:42.544 - INFO: Result has unknown size (not computed yet)
+2026-09-17 20:41:42.552 - INFO: Done processing query and sending result, total time was 24 ms
+2026-09-17 20:41:42.553 - INFO: 
+2026-09-17 20:41:42.553 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.554 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# One row per '##' meta-information key, with how many lines carry it.
+# Counting per key rather than in total means a dropped INFO or FILTER
+# declaration is localized instead of only shifting a single number.
+SELECT ?headerKey (COUNT(DISTINCT ?line) AS ?lineCount)
+WHERE {
+  ?line a vcfc:HeaderLine ; vcfc:headerKey ?headerKeyLiteral .
+  BIND(STR(?headerKeyLiteral) AS ?headerKey)
+}
+GROUP BY ?headerKey
+ORDER BY ?headerKey
+
+2026-09-17 20:41:42.554 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.556 - INFO: Query planning done in 3 ms
+2026-09-17 20:41:42.560 - INFO: Result has size 9 x 2
+2026-09-17 20:41:42.560 - INFO: Done processing query and sending result, total time was 7 ms
+2026-09-17 20:41:42.561 - INFO: 
+2026-09-17 20:41:42.561 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.562 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Every predicate in the graph and how many triples use it.
+#
+# This is the completeness check. Comparing it against counts derived from the
+# VCF catches three things at once: a predicate that is missing entirely, one
+# with the wrong cardinality, and - because an unexpected predicate has no
+# expected count - one that should not be in the graph at all. Result size is
+# the number of distinct predicates, so it stays small on any input.
+SELECT ?predicate (COUNT(*) AS ?tripleCount)
+WHERE {
+  ?s ?predicate ?o .
+}
+GROUP BY ?predicate
+ORDER BY ?predicate
+
+2026-09-17 20:41:42.562 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.562 - INFO: Query planning done in 0 ms
+2026-09-17 20:41:42.577 - INFO: Result has size 77 x 2
+2026-09-17 20:41:42.578 - INFO: Done processing query and sending result, total time was 16 ms
+2026-09-17 20:41:42.579 - INFO: 
+2026-09-17 20:41:42.579 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.579 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Every asserted rdf:type and how many resources carry it. Complements the
+# predicate census: together they bound both the properties and the resources
+# a conversion is allowed to produce.
+SELECT ?class (COUNT(DISTINCT ?resource) AS ?resourceCount)
+WHERE {
+  ?resource a ?class .
+}
+GROUP BY ?class
+ORDER BY ?class
+
+2026-09-17 20:41:42.579 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.580 - INFO: Query planning done in 0 ms
+2026-09-17 20:41:42.597 - INFO: Result has size 31 x 2
+2026-09-17 20:41:42.597 - INFO: Done processing query and sending result, total time was 18 ms
+2026-09-17 20:41:42.599 - INFO: 
+2026-09-17 20:41:42.599 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:42.600 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Per-record identity, aggregated into a fixed-size histogram.
+#
+# Every other core query is a GROUP BY count, so values permuted between
+# records are invisible to all of them: swap POS between two records in the
+# same 1 Mb window and nothing changes. This closes that gap.
+#
+# The record IRI is hashed together with its values. That binding is the whole
+# point: digesting the values alone would give a permutation the same multiset
+# and change nothing. Bucketing on the first byte of the hash keeps the result
+# at most 256 rows for any graph size, and a mismatch is localized by
+# re-querying only the differing buckets.
+#
+# Fields are separated by U+001F (unit separator), written as a SPARQL UCHAR
+# escape. It cannot appear in a VCF field, so no combination of values can be
+# made to collide by shifting a field boundary.
+SELECT ?bucket (COUNT(*) AS ?recordCount)
+WHERE {
+  ?record a vcfc:VCFRecord ;
+          vcfc:chrom ?chrom ;
+          vcfc:pos ?pos ;
+          vcfc:recordId ?recordIdLiteral ;
+          vcfc:ref ?ref ;
+          vcfc:alt ?alt ;
+          vcfc:hasCall ?call .
+  ?call vcfc:qual ?qual ;
+        vcfc:filter ?filter ;
+        vcfc:infoRaw ?info .
+  BIND(SUBSTR(SHA256(CONCAT(
+    STR(?record),          "\u001F",
+    STR(?chrom),           "\u001F",
+    STR(?pos),             "\u001F",
+    STR(?recordIdLiteral), "\u001F",
+    STR(?ref),             "\u001F",
+    STR(?alt),             "\u001F",
+    STR(?qual),            "\u001F",
+    STR(?filter),          "\u001F",
+    STR(?info)
+  )), 1, 2) AS ?bucket)
+}
+GROUP BY ?bucket
+ORDER BY ?bucket
+
+2026-09-17 20:41:42.601 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:42.933 - INFO: Query planning done in 334 ms
+2026-09-17 20:41:43.083 - INFO: Result has size 256 x 2
+2026-09-17 20:41:43.084 - INFO: Done processing query and sending result, total time was 485 ms
+2026-09-17 20:41:43.085 - INFO: 
+2026-09-17 20:41:43.085 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:43.086 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Structured INFO values, bound to the node that identifies record and key.
+#
+# The census counts INFO value nodes and the record digest covers the raw INFO
+# string, but neither notices a structured value that disagrees with the key it
+# was parsed from. Hashing the value together with its own IRI closes that, and
+# because the result is a histogram it needs no ordering guarantee from the
+# engine - GROUP_CONCAT would not be portable here.
+SELECT ?bucket (COUNT(*) AS ?valueCount)
+WHERE {
+  ?value a vcfc:InfoFieldValue ; vcfc:fieldValue ?lexLiteral .
+  BIND(STR(?lexLiteral) AS ?lex)
+  BIND(SUBSTR(SHA256(CONCAT(STR(?value), "\u001F", STR(?lex))), 1, 2) AS ?bucket)
+}
+GROUP BY ?bucket
+ORDER BY ?bucket
+
+2026-09-17 20:41:43.086 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:43.086 - INFO: Query planning done in 1 ms
+2026-09-17 20:41:43.237 - INFO: Result has size 256 x 2
+2026-09-17 20:41:43.238 - INFO: Done processing query and sending result, total time was 152 ms
+2026-09-17 20:41:43.239 - INFO: 
+2026-09-17 20:41:43.239 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-09-17 20:41:43.239 - INFO: Processing the following SPARQL query:
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# Every FORMAT value, bound to the node that identifies record, sample and key.
+#
+# Only GT is compared by q05/q06, so a mangled DP, GQ or AD would otherwise
+# pass. The FormatFieldValue IRI already encodes record, sample and key, so
+# hashing it with the value makes each cell individually accountable.
+SELECT ?bucket (COUNT(*) AS ?valueCount)
+WHERE {
+  ?value a vcfc:FormatFieldValue ; vcfc:fieldValue ?lexLiteral .
+  BIND(STR(?lexLiteral) AS ?lex)
+  BIND(SUBSTR(SHA256(CONCAT(STR(?value), "\u001F", STR(?lex))), 1, 2) AS ?bucket)
+}
+GROUP BY ?bucket
+ORDER BY ?bucket
+
+2026-09-17 20:41:43.239 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-09-17 20:41:43.240 - INFO: Query planning done in 1 ms
+2026-09-17 20:41:43.339 - INFO: Result has size 256 x 2
+2026-09-17 20:41:43.340 - INFO: Done processing query and sending result, total time was 101 ms

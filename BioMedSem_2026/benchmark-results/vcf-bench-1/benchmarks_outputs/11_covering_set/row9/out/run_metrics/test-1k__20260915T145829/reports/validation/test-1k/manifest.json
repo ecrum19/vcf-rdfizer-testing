@@ -1,0 +1,176 @@
+{
+  "commandLine": [
+    "/opt/vcf-rdfizer/validation/validation_runner.py",
+    "--vcf",
+    "/data/vcf/test-1k.vcf",
+    "--rdf",
+    "/data/rdf/test-1k.nt.gz",
+    "--rdf-format",
+    "nt.gz",
+    "--engine",
+    "comunica",
+    "--representation",
+    "expanded",
+    "--info-representation",
+    "raw",
+    "--header-representation",
+    "structured",
+    "--results-dir",
+    "/data/validation",
+    "--dataset-id",
+    "test-1k",
+    "--filter-oracle",
+    "auto",
+    "--scratch-dir",
+    "/work",
+    "--progress-path",
+    "/data/metrics/.progress/validation-test-1k.jsonl"
+  ],
+  "datasetId": "test-1k",
+  "engine": {
+    "engines": [
+      "comunica"
+    ],
+    "options": {
+      "artifact_format": "nt.gz",
+      "artifact_path": "/data/rdf/test-1k.nt.gz",
+      "comunica_bind_timeout": 120,
+      "comunica_port": 7020,
+      "comunica_warmup_timeout": 3600,
+      "extra_index_args": [],
+      "extra_server_args": [],
+      "hdt_port": 7021,
+      "memory_gb": 4,
+      "port": 7019,
+      "query_timeout": 3600,
+      "startup_timeout": 900
+    }
+  },
+  "materialization": {
+    "decodedTripleCount": 56462,
+    "materialized": true,
+    "ntriplesPath": "/work/vcf-rdfizer-validation-afczs396/input.nt",
+    "sourceFormat": "nt.gz",
+    "steps": [
+      {
+        "output": "/work/vcf-rdfizer-validation-afczs396/input.nt",
+        "tool": "python-gzip"
+      }
+    ],
+    "wallSeconds": 0.01401360216550529
+  },
+  "queries": {
+    "preflight_blank_nodes": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/preflight_blank_nodes.rq",
+      "sha256": "b887c2641a8190ba953a3e1298edf4ee7ff9321209d253993eb486a8a204baf3"
+    },
+    "preflight_distinct_triple_count": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/preflight_distinct_triple_count.rq",
+      "sha256": "85e0d5f36027edb8d41df1e5da775f0e09652dad06bfa1fe8242af1b3fa352e2"
+    },
+    "preflight_empty_values": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/preflight_empty_values.rq",
+      "sha256": "7362d11ddbf2de3e63ea7f660bf2c26058f730e5767083a35e0c3b21e5571af7"
+    },
+    "preflight_missing_token_conformance": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/preflight_missing_token_conformance.rq",
+      "sha256": "a4cd71f3c283b167e2a23c6618d9e55ef8765c2e7f96ce9e8d3d8cfb51285376"
+    },
+    "preflight_position_datatype": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/preflight_position_datatype.rq",
+      "sha256": "b10f6b554ebc9324ee29282b3128bebdb9e123c272b746602c5aada0d4cb8b2f"
+    },
+    "preflight_record_cardinality": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/preflight_record_cardinality.rq",
+      "sha256": "215430216b6b7d420e24e99eebad0b0a8e4a83858a7aeeb896afa41164357ee2"
+    },
+    "preflight_representation_profile": {
+      "path": "/opt/vcf-rdfizer/validation/queries/expanded/preflight_representation_profile.rq",
+      "sha256": "1ed3e773bdb3a8067159b3511504d5b88123c929fbaf89e86f0c89a907c1ee1a"
+    },
+    "preflight_sample_gt_inventory": {
+      "path": "/opt/vcf-rdfizer/validation/queries/expanded/preflight_sample_gt_inventory.rq",
+      "sha256": "215298edde3fda482f9ec50e61b8e450aca92d355fc503eecb1296bff18410e8"
+    },
+    "q01_record_density_1mb": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q01_record_density_1mb.rq",
+      "sha256": "607552962c541485fbed637bc1bad4090dcd794c804659fb06840faefab8a7d4"
+    },
+    "q02_variant_shape_counts": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q02_variant_shape_counts.rq",
+      "sha256": "b9c4b6b6c5877bcb4c29f8a3a231c1a10192b50fa4584b6154c30257585a6876"
+    },
+    "q03_titv": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q03_titv.rq",
+      "sha256": "050d6711efeb58976ede62808758832eff27bade02566d673a7748e69b0f6845"
+    },
+    "q04_filter_distribution": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q04_filter_distribution.rq",
+      "sha256": "c75f096a6ffa82618437712a24af9c63d57dee684617b7303a847bf101e9bec4"
+    },
+    "q05_sample_genotype_counts": {
+      "path": "/opt/vcf-rdfizer/validation/queries/expanded/q05_sample_genotype_counts.rq",
+      "sha256": "bef9416d6453000ce5474c09f7ede6faf623154129a55fc8c1b1285f849ead10"
+    },
+    "q06_ac_an_distribution": {
+      "path": "/opt/vcf-rdfizer/validation/queries/expanded/q06_ac_an_distribution.rq",
+      "sha256": "2afb2bbfc3e03b40e4aedaf8d87675bf66cb2487f33f48247aaa1cfc38ea29fa"
+    },
+    "q07_file_metadata": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q07_file_metadata.rq",
+      "sha256": "c65dfe54790fdd85b489f3828c68d0090fb6c5f5ba920f8342c3b0fc1029c403"
+    },
+    "q08_header_line_census": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q08_header_line_census.rq",
+      "sha256": "d6a7bed6f8162f985f4ddd54074f2690f20267e9cb9a07cba0d63a2cb4a7b095"
+    },
+    "q09_predicate_census": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q09_predicate_census.rq",
+      "sha256": "e855f3ccf65990c89f442e3b36d978f064dd979853b85681c4d3e8c4de79300a"
+    },
+    "q10_class_census": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q10_class_census.rq",
+      "sha256": "bfe41434f51c04255d9f7df9941ab49686b9a5643dd1f72a39216daa83363913"
+    },
+    "q11_record_digest": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q11_record_digest.rq",
+      "sha256": "d4f0bac6f085abd1f118abc14a73e11d35506552b8794572a1f26ae93a067f8d"
+    },
+    "q12_info_value_digest": {
+      "path": "/opt/vcf-rdfizer/validation/queries/common/q12_info_value_digest.rq",
+      "sha256": "d2df17b9b58069d48d15ec614643b722240965313ed5b72aa500ed9b3b1aeb20"
+    },
+    "q13_format_value_digest": {
+      "path": "/opt/vcf-rdfizer/validation/queries/expanded/q13_format_value_digest.rq",
+      "sha256": "914c0092af0c60792a12382491d7bce4498d07201345191a20b4e7f10b067c9e"
+    }
+  },
+  "representation": "expanded",
+  "sourceRdf": {
+    "format": "nt.gz",
+    "path": "/data/rdf/test-1k.nt.gz",
+    "sha256": "cf4f22b7ef4ed16b6e0edbe9705aaff4ffd9104174006b25b85ff936d41f441b"
+  },
+  "sourceRdfGzip": {
+    "format": "nt.gz",
+    "path": "/data/rdf/test-1k.nt.gz",
+    "sha256": "cf4f22b7ef4ed16b6e0edbe9705aaff4ffd9104174006b25b85ff936d41f441b"
+  },
+  "sourceVcf": {
+    "path": "/data/vcf/test-1k.vcf",
+    "sha256": "b60dbb0a678e498de1d5f5f6f1c2c81379f553650908fa91e88d7109819b795b"
+  },
+  "temporaryRdf": {
+    "cleanupConfirmed": true,
+    "decompressedInsideContainer": true,
+    "persisted": false
+  },
+  "tools": {
+    "bcftools": "bcftools 1.22",
+    "comunicaQuerySparqlFile": "5.3.0",
+    "cyvcf2": "0.34.0",
+    "node": "v22.22.1",
+    "python": "3.14.4",
+    "rapper": "2.0.16"
+  }
+}

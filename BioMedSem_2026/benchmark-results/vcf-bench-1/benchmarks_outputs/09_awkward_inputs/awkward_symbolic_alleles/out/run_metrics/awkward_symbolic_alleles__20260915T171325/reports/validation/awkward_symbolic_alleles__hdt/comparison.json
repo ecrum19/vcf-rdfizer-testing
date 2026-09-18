@@ -1,0 +1,188 @@
+{
+  "invariants": {
+    "parser": [
+      {
+        "detail": "2 == 2",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q05_total_SAMPLE_A",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 <= 2",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q06_eligible_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_2",
+        "status": "PASS"
+      }
+    ],
+    "sparql": [
+      {
+        "detail": "2 == 2",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 == 2",
+        "name": "q05_total_SAMPLE_A",
+        "status": "PASS"
+      },
+      {
+        "detail": "2 <= 2",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_2",
+        "status": "PASS"
+      }
+    ]
+  },
+  "queries": {
+    "q01_record_density_1mb": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q02_variant_shape_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q03_titv": {
+      "actual": {
+        "biallelicSnvCount": 0,
+        "transitionCount": 0,
+        "transversionCount": 0
+      },
+      "expected": {
+        "biallelicSnvCount": 0,
+        "transitionCount": 0,
+        "transversionCount": 0
+      },
+      "status": "PASS"
+    },
+    "q04_filter_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q05_sample_genotype_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q06_ac_an_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q07_file_metadata": {
+      "actual": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "file:///ref/GRCh38.fa",
+        "sourceSoftware": "(absent)"
+      },
+      "expected": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "file:///ref/GRCh38.fa",
+        "sourceSoftware": "(absent)"
+      },
+      "status": "PASS"
+    },
+    "q08_header_line_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q09_predicate_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q10_class_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q11_record_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q12_info_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q13_format_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    }
+  },
+  "status": "PASS"
+}

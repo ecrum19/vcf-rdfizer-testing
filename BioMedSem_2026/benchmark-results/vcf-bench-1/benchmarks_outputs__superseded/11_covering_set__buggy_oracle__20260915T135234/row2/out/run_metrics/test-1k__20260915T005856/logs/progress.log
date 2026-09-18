@@ -1,0 +1,19 @@
+[2026-09-15T00:58:56] Run started (mode=full)
+[2026-09-15T00:58:56] Checking Docker availability
+[2026-09-15T00:58:56] Docker availability check passed
+[2026-09-15T00:58:56] Ensuring image available: vcf-rdfizer:local-025fb7d
+[2026-09-15T00:58:56] Image ready
+[2026-09-15T00:58:56] Writeability checks passed
+[2026-09-15T00:58:56] Full pipeline started
+[2026-09-15T00:58:56] Input 1/1 started: test-1k
+[2026-09-15T00:58:57] Input 1: TSV conversion completed for test-1k
+[2026-09-15T00:59:10] Input 1: RDF conversion completed for test-1k
+[2026-09-15T00:59:12] Input 1: compression completed for test-1k
+[2026-09-15T00:59:12] Validation started: test-1k
+[2026-09-15T00:59:50] Validation failed: test-1k (exit_code=1)
+[2026-09-15T00:59:50] Validation started: test-1k__hdt
+[2026-09-15T01:00:28] Validation failed: test-1k__hdt (exit_code=1)
+[2026-09-15T01:00:28] Input 1/1 failed at validation for test-1k: semantic VCF/RDF validation failed for 'test-1k' (aggregate, hdt). See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/run_metrics/test-1k__20260915T005856/reports/validation
+[2026-09-15T01:00:28] Input 1/1 finished with failures: test-1k
+[2026-09-15T01:00:28] Full pipeline completed with failures (1/1). Report: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out/run_metrics/test-1k__20260915T005856/reports/failed_inputs.csv
+[2026-09-15T01:00:28] Run finished (exit_code=1)

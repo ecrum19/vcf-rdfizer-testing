@@ -1,0 +1,523 @@
+
+[2026-09-15T17:10:18] $ docker version
+Client: Docker Engine - Community
+ Version:           29.7.2
+ API version:       1.55
+ Go version:        go1.26.5
+ Git commit:        a7dcaa6
+ Built:             Wed Aug  5 18:28:53 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.7.2
+  API version:      1.55 (minimum version 1.40)
+  Go version:       go1.26.5
+  Git commit:       6a43e3d
+  Built:            Wed Aug  5 18:28:53 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.3
+  GitCommit:        aad11006b869517fcd3009450b6f82da282e1a9b
+ runc:
+  Version:          1.4.3
+  GitCommit:        v1.4.3-0-gbb14dabe
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+[exit 0]
+
+[2026-09-15T17:10:18] $ docker image inspect vcf-rdfizer:local-a3679e1
+[
+    {
+        "Id": "sha256:f0fb17f6a04f896400add92f5a3cc545674d0eeef59401a49f9da2548ca13eef",
+        "RepoTags": [
+            "vcf-rdfizer:local-a3679e1"
+        ],
+        "RepoDigests": [
+            "vcf-rdfizer@sha256:f0fb17f6a04f896400add92f5a3cc545674d0eeef59401a49f9da2548ca13eef"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-15T11:13:46.041210924+02:00",
+        "Config": {
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-11.0.32+9",
+                "RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "HDTC_BIN=/usr/local/bin/hdtc",
+                "HDT_INDEX_MEMORY_LIMIT=512M",
+                "HDT_MERGE_MEMORY_LIMIT=512M",
+                "COTTAS_MERGE_BATCH_ROWS=2048",
+                "RDF2HDT_BIN=/usr/local/bin/rdf2hdt",
+                "HDT2RDF_BIN=/usr/local/bin/hdt2rdf",
+                "COTTAS_PYTHON_BIN=/opt/pycottas-venv/bin/python",
+                "QLEVER_INDEX_BUILDER_BIN=/opt/qlever/bin/qlever-index",
+                "QLEVER_SERVER_BIN=/opt/qlever/bin/qlever-server",
+                "LD_LIBRARY_PATH=/usr/local/lib"
+            ],
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.created": "2026-09-01T20:37:00.369571+00:00",
+                "org.opencontainers.image.description": "The Ubuntu container image maintained by Canonical\n\nUbuntu is a Debian-based Linux operating system that runs from the desktop to the cloud, to all your internet connected things.\nIt is the world's most popular operating system across public clouds and OpenStack clouds.\nIt is the number one platform for containers; from Docker to Kubernetes to LXD, Ubuntu can run your containers at scale.\nFast, secure and simple, Ubuntu powers millions of PCs worldwide.\n",
+                "org.opencontainers.image.title": "ubuntu",
+                "org.opencontainers.image.version": "26.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 718239819,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:4a6e4a6c5956212bf74c556250eb0028096f13d74501e43af51a1dbed8d69749",
+                "sha256:4f41b99e67b8aeaedacb31ca888054a4b877577371f0bbe01196e136d2793635",
+                "sha256:0e285b78ab95a51c4387d9539983134c8f77a8f3edf2bdccfe5bd38d77c45542",
+                "sha256:3209850cea34b64af802eaa30d1b486ad4e608a8ad737b1dacbb77d9c7f2f2c6",
+                "sha256:33467da9efead533d62612ce3ba4ad8d61f3f99aec1147ed81096762b4e8972b",
+                "sha256:a0b95b55c538a70e4298e93042b25ea183b691347ad319ada23de032c63d1265",
+                "sha256:e1dddc1d8ea8d9e7049c887c3d37805c9fbe45aba65ad103b33ce1b5bde9cb9b",
+                "sha256:b69aca5d602a94b76f5af09f62f28123737eadbd2be48550a67401983be9dc0d",
+                "sha256:331506bda88fca174453ca9f5c723a61a8cb19eb360cc1a46b4cca2c392d6867",
+                "sha256:efab45a3d7d46a0bd40dca8583074c36334a2b55a0d54cea59982b7c8974f78b",
+                "sha256:8feae9218f08e5eb5a8198ef71e5e5557d1d8903c6b6bfabbb58afc99f6b2e7c",
+                "sha256:9ab39df5d8ed93dcadc9399d97388b7fecc9937326022817ac6505fa7d2f9f69",
+                "sha256:c1ffc953a085c4a3d2ebc4d2df603876427e1d3affc13d54c849b7d190b68512",
+                "sha256:6f5c1899458681c81b4c084555815227b8946aa03e07d2d7b43ae03c79475005",
+                "sha256:c5dacad15f6f4cba4d0322437513efaa56be0ba6d9f09441583409c84aea54c9",
+                "sha256:9083830ba63a31d8ded8083cedd913503499b0474fb4d8bc98c3cb559013d77f",
+                "sha256:f754ef2f345070a297965a52faa44c28770d22feca4795a1b04fd6e38f476a07",
+                "sha256:8724ab9c5b45cac4648232d1a320536dc8683c0b7aea7796f9415c308e026654",
+                "sha256:bfd6476242284413a6126ab296cad34b1dfa27e5bda1002f307d593ae2ef3104",
+                "sha256:1d0bad36bb6524d147da38f51df27701d23bdd27f4764c7ed59ccab8b7d1828a",
+                "sha256:f28a74ae0c899eb78d4c2758d8be7e8fa3f8e720a7a762daa68e45cb3f3f72ca",
+                "sha256:53449b166ba92f561eb9d98e40697e8d00a65cd42cc185370756db79e66ab6e8",
+                "sha256:341850065e3fc88cd58c2db90f00fc1a129b04717e47f9e1d2e24da99598b169",
+                "sha256:cf279736c497fd93612c55689dd8f93efda8ada726424e9ea41ddfedb1a368d4",
+                "sha256:7b7d51f9a5bb58cbc687f299a2a3928bae15f251741ca7cdfabca15fbd632147",
+                "sha256:28632defe03f374d039251a258af6f7b6e11bcefb15be890d44f8cced5c593a7",
+                "sha256:42cb9437b83af7ba5f6782c8d3ecb26da9fcbdad646c179bb6528d1afc3fbb80",
+                "sha256:60faff3857b0b4dc77baedb3d9223ea3e477d892bbb82dd18505f2a2c8e541c9",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-15T11:52:36.65799554Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:f0fb17f6a04f896400add92f5a3cc545674d0eeef59401a49f9da2548ca13eef",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "b78vqupkuz8xawb7e0wvi85aj",
+                    "CreatedAt": "2026-09-15T13:52:36.678326812+02:00"
+                }
+            ]
+        }
+    }
+]
+[exit 0]
+
+[2026-09-15T17:10:19] $ docker run --rm --label vcf-rdfizer.run=20260915T171018-1011609 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/.intermediate/tsv:/data/tsv -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018:/data/metrics vcf-rdfizer:local-a3679e1 bash -lc 'set -euo pipefail; rm -f /data/metrics/timings/tsv/awkward_filter_variants.txt; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/metrics/timings/tsv/awkward_filter_variants.txt -- bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/awkward_filter_variants.vcf /data/tsv; else { time -p bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/awkward_filter_variants.vcf /data/tsv; } > /data/metrics/timings/tsv/awkward_filter_variants.txt 2>&1; fi'
+✅ Wrote: /data/tsv/awkward_filter_variants.records.tsv
+✅ Wrote: /data/tsv/awkward_filter_variants.header_lines.tsv
+✅ Wrote: /data/tsv/awkward_filter_variants.file_metadata.tsv
+[exit 0]
+
+[2026-09-15T17:10:19] $ docker run --rm --label vcf-rdfizer.run=20260915T171018-1011609 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/_generated_rules:/data/rules:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/.intermediate/tsv:/data/tsv:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out:/data/out -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018:/data/metrics -w /data/rules -e JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar -e IN=/data/rules/awkward_filter_variants.rules.ttl -e OUT_DIR=/data/out -e OUT_NAME=awkward_filter_variants -e RDF_STORAGE_MODE=space-optimized -e SPARK_PARTITIONS=8 -e RUN_ID=20260915T171018 -e TIMESTAMP=2026-09-15T17:10:18 -e TSV_EXIT_CODE=0 -e TSV_WALL_SECONDS=0.500777 -e TSV_USER_SECONDS=0.000000 -e TSV_SYS_SECONDS=0.010000 -e TSV_MAX_RSS_KB=7552 -e TSV_OUTPUT_SIZE_BYTES=1563 -e 'TSV_OUTPUT_PATH=/data/tsv/awkward_filter_variants.records.tsv|/data/tsv/awkward_filter_variants.header_lines.tsv|/data/tsv/awkward_filter_variants.file_metadata.tsv' -e IN_VCF=/data/in/awkward_filter_variants.vcf -e LOGDIR=/data/metrics -e PROGRESS_FILE=/data/metrics/.progress/rmlstreamer-awkward_filter_variants.jsonl vcf-rdfizer:local-a3679e1 bash /opt/vcf-rdfizer/run_conversion.sh
+15:10:20,146 INFO  io.rml.framework.Main$                                        - Mapping file: /data/rules/awkward_filter_variants.rules.ttl
+Job name: RMLStreamer
+Base IRI: /
+Parallelise over local task slots: true
+Maximum parallelism: None
+Post processor: None
+Checkpoint interval: /
+Auto Watermark interval: 50
+Output method: File
+Output file: /data/out/awkward_filter_variants/.rmlstreamer-parts-awkward_filter_variants-1
+Kafka broker list: /
+Kafka topic: /
+Kafka topic partition id: /
+Output TCP socket: /
+Function description locations: None
+Discard output: false
+15:10:20,663 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,670 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,672 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,675 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,676 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,678 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,679 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,680 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,681 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,682 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,684 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+15:10:20,685 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+Number of standard stream triple maps: 12
+Total extracted std triple maps: 12
+Number of standard stream triple maps: 0
+Total extracted std triple maps: 0
+15:10:20,755 INFO  io.rml.framework.Main$                                        - Dataset Job Found.
+15:10:20,801 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+15:10:20,810 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+15:10:20,811 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+15:10:20,812 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+15:10:20,813 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+15:10:24,304 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - Log file environment variable 'log.file' is not set.
+15:10:24,304 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - JobManager log files are unavailable in the web dashboard. Log file location not found in environment variable 'log.file' or configuration key 'web.log.path'.
+15:10:24,952 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,952 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,954 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,956 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,955 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,976 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,983 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,978 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,990 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,997 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:24,995 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,007 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,007 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,010 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,016 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,034 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,039 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,037 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,037 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,055 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,055 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,083 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,093 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,125 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,127 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,127 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,146 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,146 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,157 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,169 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,183 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,189 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,194 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,195 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,221 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,228 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,228 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,228 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,227 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+15:10:25,226 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+WARNING: metrics header mismatch; backed up to /data/metrics/metrics_csv_bak_20260915T171018.csv and creating new metrics file.
+Done.
+JSON: /data/metrics/stages/conversion/awkward_filter_variants.json
+CSV:  /data/metrics/metrics.csv
+[exit 0]
+
+[2026-09-15T17:10:32] $ docker volume create vcf-rdfizer-awkward_filter_variants-1011609-1789485032563528532
+vcf-rdfizer-awkward_filter_variants-1011609-1789485032563528532
+[exit 0]
+
+[2026-09-15T17:10:32] $ docker run --rm --label vcf-rdfizer.run=20260915T171018-1011609 --mount type=volume,source=vcf-rdfizer-awkward_filter_variants-1011609-1789485032563528532,target=/work vcf-rdfizer:local-a3679e1 bash -lc 'chmod 1777 /work'
+[exit 0]
+
+[2026-09-15T17:10:32] $ docker run --rm --label vcf-rdfizer.run=20260915T171018-1011609 --user 1000:1000 --mount type=volume,source=vcf-rdfizer-awkward_filter_variants-1011609-1789485032563528532,target=/work -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/awkward_filter_variants:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/awkward_filter_variants:/data/out -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018:/data/metrics vcf-rdfizer:local-a3679e1 python3 /opt/vcf-rdfizer/partitioned_compression.py --source /data/in/awkward_filter_variants.nt.gz --output-dir /data/out --output-name awkward_filter_variants --methods hdt --target-chunk-bytes 536870912 --min-chunk-bytes 134217728 --max-chunk-bytes 1073741824 --expected-triples 486 --result-path /data/out/.awkward_filter_variants.partitioned-results.json --progress-path /data/metrics/.progress/partitioned-awkward_filter_variants.jsonl --allow-index-failures
+HDT index ready: /data/out/awkward_filter_variants.hdt.index.v1-1
+[exit 0]
+
+[2026-09-15T17:10:33] $ docker volume rm -f vcf-rdfizer-awkward_filter_variants-1011609-1789485032563528532
+vcf-rdfizer-awkward_filter_variants-1011609-1789485032563528532
+[exit 0]
+
+[2026-09-15T17:10:33] $ docker run --rm --label vcf-rdfizer.run=20260915T171018-1011609 --user 1000:1000 --init -v /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures:/data/vcf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/awkward_filter_variants:/data/rdf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/reports/validation/awkward_filter_variants:/data/validation -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018:/data/metrics vcf-rdfizer:local-a3679e1 /usr/bin/time -v -o /data/metrics/timings/validation/awkward_filter_variants.txt -- /opt/pycottas-venv/bin/python /opt/vcf-rdfizer/validation/validation_runner.py --vcf /data/vcf/awkward_filter_variants.vcf --rdf /data/rdf/awkward_filter_variants.nt.gz --rdf-format nt.gz --engine comunica --representation expanded --info-representation structured --header-representation structured --results-dir /data/validation --dataset-id awkward_filter_variants --filter-oracle auto --scratch-dir /work --progress-path /data/metrics/.progress/validation-awkward_filter_variants.jsonl
+[W::vcf_parse_filter] FILTER 'q10' is not defined in the header
+[awkward_filter_variants] preparing comunica engine
+[awkward_filter_variants] running expanded/preflight_record_cardinality (comunica)
+[awkward_filter_variants] running expanded/preflight_position_datatype (comunica)
+[awkward_filter_variants] running expanded/preflight_missing_token_conformance (comunica)
+[awkward_filter_variants] running expanded/preflight_representation_profile (comunica)
+[awkward_filter_variants] running expanded/preflight_sample_gt_inventory (comunica)
+[awkward_filter_variants] running expanded/preflight_blank_nodes (comunica)
+[awkward_filter_variants] running expanded/preflight_empty_values (comunica)
+[awkward_filter_variants] running expanded/preflight_distinct_triple_count (comunica)
+[awkward_filter_variants] running expanded/preflight_record_cardinality_count (comunica)
+[awkward_filter_variants] running expanded/preflight_position_datatype_count (comunica)
+[awkward_filter_variants] running expanded/preflight_missing_token_conformance_count (comunica)
+[awkward_filter_variants] running expanded/preflight_representation_profile_count (comunica)
+[awkward_filter_variants] running expanded/preflight_blank_nodes_count (comunica)
+[awkward_filter_variants] running expanded/preflight_empty_values_count (comunica)
+[awkward_filter_variants] running expanded/q01_record_density_1mb (comunica)
+[awkward_filter_variants] running expanded/q02_variant_shape_counts (comunica)
+[awkward_filter_variants] running expanded/q03_titv (comunica)
+[awkward_filter_variants] running expanded/q04_filter_distribution (comunica)
+[awkward_filter_variants] running expanded/q05_sample_genotype_counts (comunica)
+[awkward_filter_variants] running expanded/q06_ac_an_distribution (comunica)
+[awkward_filter_variants] running expanded/q07_file_metadata (comunica)
+[awkward_filter_variants] running expanded/q08_header_line_census (comunica)
+[awkward_filter_variants] running expanded/q09_predicate_census (comunica)
+[awkward_filter_variants] running expanded/q10_class_census (comunica)
+[awkward_filter_variants] running expanded/q11_record_digest (comunica)
+[awkward_filter_variants] running expanded/q12_info_value_digest (comunica)
+[awkward_filter_variants] running expanded/q13_format_value_digest (comunica)
+{
+  "datasetId": "awkward_filter_variants",
+  "representation": "expanded",
+  "status": "PASS",
+  "engine": "comunica",
+  "engines": [
+    "comunica"
+  ],
+  "engineStatuses": {
+    "comunica": "PASS"
+  },
+  "engineAgreement": true,
+  "sourceFormat": "nt.gz",
+  "strictConformance": false,
+  "shacl": null,
+  "mappingPolicy": "strict",
+  "recordCount": 4,
+  "sampleCount": 1,
+  "gtRecordCount": 4,
+  "preflight": {
+    "preflight_duplicate_triples": {
+      "status": "PASS",
+      "parsedTripleCount": 486,
+      "distinctTripleCount": 486,
+      "duplicateTripleCount": 0
+    },
+    "preflight_record_cardinality": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_position_datatype": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_missing_token_conformance": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "plainDotCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_representation_profile": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "note": null
+    },
+    "preflight_sample_gt_inventory": {
+      "status": "PASS",
+      "expected": {
+        "sampleCallCount": 4,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 4
+      },
+      "actual": {
+        "sampleCallCount": 4,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 4
+      }
+    },
+    "preflight_blank_nodes": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_empty_values": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_distinct_triple_count": {
+      "status": "PASS",
+      "rows": 1
+    }
+  },
+  "comparisonStatus": "PASS",
+  "benchmark": {
+    "oracleSeconds": 0.004032071912661195,
+    "engineQuerySeconds": {
+      "comunica": 0.6428106946405023
+    },
+    "engineSetupSeconds": {
+      "comunica": 6.626821382902563
+    }
+  },
+  "results": {
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json",
+    "comparison": "/data/validation/comparison.json",
+    "benchmark": "/data/validation/benchmark.csv"
+  },
+  "temporaryRdf": {
+    "decompressedInsideContainer": true,
+    "persisted": false,
+    "cleanupConfirmed": true
+  }
+}
+[exit 0]
+
+[2026-09-15T17:10:43] $ docker run --rm --label vcf-rdfizer.run=20260915T171018-1011609 --user 1000:1000 --init -v /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures:/data/vcf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/awkward_filter_variants:/data/rdf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/reports/validation/awkward_filter_variants__hdt:/data/validation -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018:/data/metrics vcf-rdfizer:local-a3679e1 /usr/bin/time -v -o /data/metrics/timings/validation/awkward_filter_variants__hdt.txt -- /opt/pycottas-venv/bin/python /opt/vcf-rdfizer/validation/validation_runner.py --vcf /data/vcf/awkward_filter_variants.vcf --rdf /data/rdf/awkward_filter_variants.hdt --rdf-format hdt --engine comunica --representation expanded --info-representation structured --header-representation structured --results-dir /data/validation --dataset-id awkward_filter_variants__hdt --filter-oracle auto --scratch-dir /work --progress-path /data/metrics/.progress/validation-awkward_filter_variants__hdt.jsonl
+[W::vcf_parse_filter] FILTER 'q10' is not defined in the header
+[awkward_filter_variants__hdt] preparing comunica engine
+[awkward_filter_variants__hdt] running expanded/preflight_record_cardinality (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_position_datatype (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_missing_token_conformance (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_representation_profile (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_sample_gt_inventory (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_blank_nodes (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_empty_values (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_distinct_triple_count (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_record_cardinality_count (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_position_datatype_count (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_missing_token_conformance_count (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_representation_profile_count (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_blank_nodes_count (comunica)
+[awkward_filter_variants__hdt] running expanded/preflight_empty_values_count (comunica)
+[awkward_filter_variants__hdt] running expanded/q01_record_density_1mb (comunica)
+[awkward_filter_variants__hdt] running expanded/q02_variant_shape_counts (comunica)
+[awkward_filter_variants__hdt] running expanded/q03_titv (comunica)
+[awkward_filter_variants__hdt] running expanded/q04_filter_distribution (comunica)
+[awkward_filter_variants__hdt] running expanded/q05_sample_genotype_counts (comunica)
+[awkward_filter_variants__hdt] running expanded/q06_ac_an_distribution (comunica)
+[awkward_filter_variants__hdt] running expanded/q07_file_metadata (comunica)
+[awkward_filter_variants__hdt] running expanded/q08_header_line_census (comunica)
+[awkward_filter_variants__hdt] running expanded/q09_predicate_census (comunica)
+[awkward_filter_variants__hdt] running expanded/q10_class_census (comunica)
+[awkward_filter_variants__hdt] running expanded/q11_record_digest (comunica)
+[awkward_filter_variants__hdt] running expanded/q12_info_value_digest (comunica)
+[awkward_filter_variants__hdt] running expanded/q13_format_value_digest (comunica)
+{
+  "datasetId": "awkward_filter_variants__hdt",
+  "representation": "expanded",
+  "status": "PASS",
+  "engine": "comunica",
+  "engines": [
+    "comunica"
+  ],
+  "engineStatuses": {
+    "comunica": "PASS"
+  },
+  "engineAgreement": true,
+  "sourceFormat": "hdt",
+  "strictConformance": false,
+  "shacl": null,
+  "mappingPolicy": "strict",
+  "recordCount": 4,
+  "sampleCount": 1,
+  "gtRecordCount": 4,
+  "preflight": {
+    "preflight_duplicate_triples": {
+      "status": "PASS",
+      "parsedTripleCount": 486,
+      "distinctTripleCount": 486,
+      "duplicateTripleCount": 0
+    },
+    "preflight_record_cardinality": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_position_datatype": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_missing_token_conformance": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "plainDotCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_representation_profile": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "note": null
+    },
+    "preflight_sample_gt_inventory": {
+      "status": "PASS",
+      "expected": {
+        "sampleCallCount": 4,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 4
+      },
+      "actual": {
+        "sampleCallCount": 4,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 4
+      }
+    },
+    "preflight_blank_nodes": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_empty_values": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_distinct_triple_count": {
+      "status": "PASS",
+      "rows": 1
+    }
+  },
+  "comparisonStatus": "PASS",
+  "benchmark": {
+    "oracleSeconds": 0.003892676904797554,
+    "engineQuerySeconds": {
+      "comunica": 0.6224073516204953
+    },
+    "engineSetupSeconds": {
+      "comunica": 6.108487814897671
+    }
+  },
+  "results": {
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json",
+    "comparison": "/data/validation/comparison.json",
+    "benchmark": "/data/validation/benchmark.csv"
+  },
+  "temporaryRdf": {
+    "decompressedInsideContainer": true,
+    "persisted": false,
+    "cleanupConfirmed": true
+  }
+}
+[exit 0]

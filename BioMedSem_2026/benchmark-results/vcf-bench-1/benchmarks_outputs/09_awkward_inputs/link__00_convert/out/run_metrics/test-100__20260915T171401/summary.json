@@ -1,0 +1,69 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260915T171401",
+  "timestamp": "2026-09-15T17:14:01",
+  "completed_at": "2026-09-15T17:14:14",
+  "mode": "full",
+  "status": "success",
+  "exit_code": 0,
+  "execution": {
+    "wall_seconds": 13.613025,
+    "wall_human": "13.61s",
+    "total_triples": 8519
+  },
+  "summary_tables": {
+    "conversion_and_compression": [
+      {
+        "run_id": "20260915T171401",
+        "timestamp": "2026-09-15T17:14:01",
+        "output_name": "test-100",
+        "output_dir": "/data/out/test-100",
+        "vcf_version": "",
+        "vcf_version_source": "",
+        "exit_code_java": "0",
+        "wall_seconds_java": "11.710",
+        "user_seconds_java": "23.18",
+        "sys_seconds_java": "0.93",
+        "max_rss_kb_java": "735600",
+        "input_mapping_size_bytes": "13730",
+        "input_vcf_size_bytes": "5983",
+        "output_dir_size_bytes": "1068353",
+        "output_triples": "8519",
+        "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+        "mapping_file": "/data/rules/test-100.rules.ttl",
+        "output_path": "/data/out/test-100/test-100.nt",
+        "exit_code_tsv": "0",
+        "wall_seconds_tsv": "0.500911",
+        "user_seconds_tsv": "0.000000",
+        "sys_seconds_tsv": "0.000000",
+        "max_rss_kb_tsv": "7552",
+        "tsv_output_size_bytes": "8549",
+        "tsv_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__00_convert/out/.intermediate/tsv/test-100.records.tsv|/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__00_convert/out/.intermediate/tsv/test-100.header_lines.tsv|/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__00_convert/out/.intermediate/tsv/test-100.file_metadata.tsv"
+      }
+    ],
+    "tsv": [],
+    "wrapper": [
+      {
+        "run_id": "20260915T171401",
+        "timestamp": "2026-09-15T17:14:01",
+        "mode": "full",
+        "exit_code": "0",
+        "status": "success",
+        "elapsed_seconds": "13.613025",
+        "elapsed_human": "13.61s",
+        "total_triples": "8519"
+      }
+    ]
+  },
+  "stage_reports": [
+    "stages/compression/test-100.json",
+    "stages/conversion/test-100.json",
+    "stages/tsv/test-100.json"
+  ],
+  "reports": [],
+  "validation": [],
+  "logs": [
+    "logs/progress.log",
+    "logs/wrapper.log"
+  ]
+}

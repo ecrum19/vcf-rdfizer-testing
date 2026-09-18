@@ -1,0 +1,75 @@
+{
+  "caption": "Functional covering set as executed (\u00a75.1)",
+  "columns": [
+    "cell",
+    "sample_representation",
+    "info_representation",
+    "rdf_storage_mode",
+    "rdf_compression",
+    "representations",
+    "artifact_compression",
+    "hdt_strategy"
+  ],
+  "rows": [
+    {
+      "cell": "row1",
+      "sample_representation": "expanded",
+      "info_representation": "structured",
+      "rdf_storage_mode": "space-optimized",
+      "rdf_compression": "gzip",
+      "representations": "hdt,cottas",
+      "artifact_compression": "gzip",
+      "hdt_strategy": "partitioned"
+    },
+    {
+      "cell": "row2",
+      "sample_representation": "condensed",
+      "info_representation": "raw",
+      "rdf_storage_mode": "plain",
+      "rdf_compression": "brotli",
+      "representations": "hdt",
+      "artifact_compression": "brotli",
+      "hdt_strategy": "single"
+    },
+    {
+      "cell": "row3",
+      "sample_representation": "expanded",
+      "info_representation": "raw",
+      "rdf_storage_mode": "plain",
+      "rdf_compression": "brotli",
+      "representations": "hdt",
+      "artifact_compression": "gzip",
+      "hdt_strategy": "auto"
+    },
+    {
+      "cell": "row4",
+      "sample_representation": "condensed",
+      "info_representation": "structured",
+      "rdf_storage_mode": "space-optimized",
+      "rdf_compression": "gzip",
+      "representations": "cottas",
+      "artifact_compression": "brotli",
+      "hdt_strategy": "auto"
+    },
+    {
+      "cell": "row5",
+      "sample_representation": "expanded",
+      "info_representation": "structured",
+      "rdf_storage_mode": "space-optimized",
+      "rdf_compression": "brotli",
+      "representations": "hdt,cottas",
+      "artifact_compression": "brotli",
+      "hdt_strategy": "partitioned"
+    },
+    {
+      "cell": "row6",
+      "sample_representation": "condensed",
+      "info_representation": "raw",
+      "rdf_storage_mode": "plain",
+      "rdf_compression": "gzip",
+      "representations": "cottas",
+      "artifact_compression": "gzip",
+      "hdt_strategy": "partitioned"
+    }
+  ]
+}

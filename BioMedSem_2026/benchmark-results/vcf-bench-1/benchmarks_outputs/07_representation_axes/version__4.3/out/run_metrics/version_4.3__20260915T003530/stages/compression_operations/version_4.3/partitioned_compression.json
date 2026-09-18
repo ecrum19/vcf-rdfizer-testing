@@ -1,0 +1,81 @@
+{
+  "run_id": "20260915T003530",
+  "timestamp": "2026-09-15T00:35:30",
+  "output_name": "version_4.3",
+  "rdf_name": "__partitioned_compression__",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/version_4.3",
+  "compression_methods": "hdt",
+  "index_warnings": [],
+  "auxiliary_stages": {},
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 0.019093987066298723,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/version_4.3/version_4.3.hdt",
+      "output_size_bytes": 7316,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/version_4.3/version_4.3.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 58407,
+        "record_count": 454,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 454,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 58407,
+            "record_count": 454,
+            "payload_bytes": 58407
+          }
+        ],
+        "merge_rounds": 0,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out/version_4.3/version_4.3.hdt.index.v1-1",
+        "index_size_bytes": 1270,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 454,
+          "decoded_triples": 454,
+          "expected_triples": 454,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 0.05542716081254184,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 454,
+        "decoded_triples": 454,
+        "expected_triples": 454,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "timing": {
+          "wall_seconds": 0.05542716081254184,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": null
+        }
+      }
+    }
+  }
+}

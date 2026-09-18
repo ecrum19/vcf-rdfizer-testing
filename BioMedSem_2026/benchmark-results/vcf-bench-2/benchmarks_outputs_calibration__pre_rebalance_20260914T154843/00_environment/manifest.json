@@ -1,0 +1,52 @@
+{
+  "captured_utc": "2026-09-13T12:59:49Z",
+  "tool": {
+    "path": "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+    "kind": "checkout",
+    "commit": "025fb7d8719c6d9b46dd5870b00234042f1e675e"
+  },
+  "image": {
+    "reference": "vcf-rdfizer:local-025fb7d",
+    "digest": "vcf-rdfizer@sha256:0082fe2cf42fd3c96542751046fd4c2335212bdd798bd14ef0adc54f8344c734",
+    "mode": "local-build",
+    "reproducible": true
+  },
+  "testing_repo_commit": "87411fcb096e9308761efea8eec5d82bcbd32246-dirty",
+  "host": {
+    "platform": "Linux-6.8.0-85-generic-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "cpu_count": 8,
+    "total_memory_bytes": 33633742848,
+    "swap": {
+      "configured": false,
+      "entries": 0
+    },
+    "hostname": "vcf-bench-2"
+  },
+  "software": {
+    "python": "3.12.3",
+    "docker": "Docker version 29.7.2, build a7dcaa6",
+    "bcftools": null,
+    "awk": "GNU Awk 5.2.1, API 3.2, PMA Avon 8-g1, (GNU MPFR 4.2.1, GNU MP 6.3.0)\nCopyright (C) 1989, 1991-2022 Free Software Foundation.\n\nThis program is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program. If not, see http://www.gnu.org/licenses/.",
+    "git": "git version 2.43.0",
+    "bash": null
+  },
+  "storage": {
+    "results_root": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration",
+    "disk": {
+      "total": 202022608896,
+      "free": 150874316800
+    }
+  },
+  "pinned_settings": {
+    "rdf_storage_mode": "space-optimized (tool default since 2026-09-10; pinned explicitly by every script here)",
+    "hdt_strategy": "partitioned (pinned explicitly; never 'auto' in a recorded run)",
+    "spark_partitions": "8"
+  },
+  "notes": [
+    "One experiment at a time. Two concurrent runs invalidate memory and timing.",
+    "Local-build mode tags the image with the commit that built it. A dirty tree yields a '-dirty' tag that does not identify one source state; commit before a publishable run. Set BM_IMAGE_VERSION to reproduce against a published release instead.",
+    "10_feasibility.sh is the only script that deliberately imposes a memory ceiling."
+  ]
+}

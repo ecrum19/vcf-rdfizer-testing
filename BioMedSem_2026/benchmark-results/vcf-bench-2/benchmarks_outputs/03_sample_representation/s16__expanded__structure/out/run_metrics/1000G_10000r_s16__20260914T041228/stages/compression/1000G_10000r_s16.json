@@ -1,0 +1,181 @@
+{
+  "run_id": "20260914T041228",
+  "timestamp": "2026-09-14T04:12:28",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out/1000G_10000r_s16",
+  "output_name": "1000G_10000r_s16",
+  "compression_methods": "hdt",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out/1000G_10000r_s16/1000G_10000r_s16.nt.gz",
+  "combined_rdf_size_bytes": 22181294,
+  "index_warnings": [],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 61.96252145105973,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out/1000G_10000r_s16/1000G_10000r_s16.hdt",
+      "output_size_bytes": 32803265,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out/1000G_10000r_s16/1000G_10000r_s16.nt.gz"
+        ],
+        "chunk_count": 2,
+        "chunk_input_bytes": 818930841,
+        "record_count": 5359578,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3462572,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536870960,
+            "record_count": 3462572,
+            "payload_bytes": 536870960
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3462572,
+            "end_record": 5359578,
+            "start_uncompressed_byte": 536870960,
+            "end_uncompressed_byte": 818930841,
+            "record_count": 1897006,
+            "payload_bytes": 282059881
+          }
+        ],
+        "merge_rounds": 1,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out/1000G_10000r_s16/1000G_10000r_s16.hdt.index.v1-1",
+        "index_size_bytes": 30862375,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 5359578,
+          "decoded_triples": 5359578,
+          "expected_triples": 5359578,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 7.730944922892377,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    }
+  },
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "",
+    "output_cottas_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": null
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out/1000G_10000r_s16/1000G_10000r_s16.hdt",
+    "output_hdt_size_bytes": 32803265,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 61.96252145105973,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 5359578,
+      "decoded_triples": 5359578,
+      "expected_triples": 5359578,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 7.730944922892377,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  }
+}

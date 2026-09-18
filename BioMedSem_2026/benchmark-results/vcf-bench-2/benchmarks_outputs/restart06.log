@@ -1,0 +1,27 @@
+From github.com:ecrum19/vcf-rdfizer-testing
+ * branch            main       -> FETCH_HEAD
+   d472e83..89ba0e0  main       -> origin/main
+Updating d472e83..89ba0e0
+Fast-forward
+ benchmarks/06_equivalence.sh | 22 ++++++++++++++++++++++
+ benchmarks/AGGREGATION.md    |  2 +-
+ benchmarks/RUN_PLAN.md       | 43 +++++++++++++++++++++++++++++++++++++++++--
+ 3 files changed, 64 insertions(+), 3 deletions(-)
+=== 2026-09-17T20:30:23+02:00 vcf-bench-2: 06 alone, bounded ===
+tool    be658a2 Merge pull request #12 from ecrum19/fix/vcf45-structured-accessors
+harness 89ba0e0 Bound 06's validation so one query cannot consume the run
+timeouts in 06: 4
+    - image vcf-rdfizer:local-025fb7d already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 06_equivalence.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== §4.1 representation equivalence on test-10k.vcf ===
+    - engines: all  (targets: all produced artifacts)
+    - encoding__plain__expanded
+    - encoding__plain__condensed
+Terminated
+RUN_ALL_EXIT=143
+=== 2026-09-18T09:40:06+02:00 finished ===

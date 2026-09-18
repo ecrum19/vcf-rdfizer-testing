@@ -1,0 +1,45 @@
+{
+  "run_id": "20260915T145612",
+  "timestamp": "2026-09-15T14:56:12",
+  "stage": "validation",
+  "validation_id": "test-1k",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-1k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row8/out/test-1k/test-1k.nt",
+  "rdf_format": "nt",
+  "engine": "comunica",
+  "engines": [
+    "comunica"
+  ],
+  "strict_conformance": false,
+  "representation": "condensed",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row8/out/run_metrics/test-1k__20260915T145612/reports/validation/test-1k",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row8/out/run_metrics/test-1k__20260915T145612/reports/validation/test-1k/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 29.630477883154526
+    },
+    "engineSetupSeconds": {
+      "comunica": 6.362254973966628
+    },
+    "oracleSeconds": 0.06281095882877707
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row8/out/run_metrics/test-1k__20260915T145612/reports/validation/test-1k/benchmark.csv",
+  "input_rdf_size_bytes": 4725020,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 38.78834204701707,
+    "user_seconds": 10.95,
+    "sys_seconds": 1.07,
+    "max_rss_kb": 321232
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": false,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}

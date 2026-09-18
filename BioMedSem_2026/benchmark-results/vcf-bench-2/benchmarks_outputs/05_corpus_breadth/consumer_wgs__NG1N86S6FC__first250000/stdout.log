@@ -1,0 +1,82 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/run_metrics/NG1N86S6FC_first250000__20260915T171358
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/run_metrics/NG1N86S6FC_first250000__20260915T171358/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/run_metrics/NG1N86S6FC_first250000__20260915T171358/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: NG1N86S6FC_first250000.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample RDF streaming: 20,000 variants, 20,000 calls
+    * Sample RDF streaming: 30,000 variants, 30,000 calls
+    * Sample RDF streaming: 40,000 variants, 40,000 calls
+    * Sample RDF streaming: 50,000 variants, 50,000 calls
+    * Sample RDF streaming: 60,000 variants, 60,000 calls
+    * Sample RDF streaming: 70,000 variants, 70,000 calls
+    * Sample RDF streaming: 80,000 variants, 80,000 calls
+    * Sample RDF streaming: 90,000 variants, 90,000 calls
+    * Sample RDF streaming: 100,000 variants, 100,000 calls
+    * Sample RDF streaming: 110,000 variants, 110,000 calls
+    * Sample RDF streaming: 120,000 variants, 120,000 calls
+    * Sample RDF streaming: 130,000 variants, 130,000 calls
+    * Sample RDF streaming: 140,000 variants, 140,000 calls
+    * Sample RDF streaming: 150,000 variants, 150,000 calls
+    * Sample RDF streaming: 160,000 variants, 160,000 calls
+    * Sample RDF streaming: 170,000 variants, 170,000 calls
+    * Sample RDF streaming: 180,000 variants, 180,000 calls
+    * Sample RDF streaming: 190,000 variants, 190,000 calls
+    * Sample RDF streaming: 200,000 variants, 200,000 calls
+    * Sample RDF streaming: 210,000 variants, 210,000 calls
+    * Sample RDF streaming: 220,000 variants, 220,000 calls
+    * Sample RDF streaming: 230,000 variants, 230,000 calls
+    * Sample RDF streaming: 240,000 variants, 240,000 calls
+    * Sample RDF streaming: 250,000 variants, 250,000 calls
+    * Sample calls streamed: 250,000; FORMAT values: 775,966
+    * Streaming structured header RDF
+    * Header lines typed: 2,633; contigs: 2,581
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 65,331 values
+    * INFO RDF streaming: 20,000 variants, 131,351 values
+    * INFO RDF streaming: 30,000 variants, 201,746 values
+    * INFO RDF streaming: 40,000 variants, 270,608 values
+    * INFO RDF streaming: 50,000 variants, 338,694 values
+    * INFO RDF streaming: 60,000 variants, 408,272 values
+    * INFO RDF streaming: 70,000 variants, 477,338 values
+    * INFO RDF streaming: 80,000 variants, 545,870 values
+    * INFO RDF streaming: 90,000 variants, 615,345 values
+    * INFO RDF streaming: 100,000 variants, 684,841 values
+    * INFO RDF streaming: 110,000 variants, 754,477 values
+    * INFO RDF streaming: 120,000 variants, 821,385 values
+    * INFO RDF streaming: 130,000 variants, 890,812 values
+    * INFO RDF streaming: 140,000 variants, 958,305 values
+    * INFO RDF streaming: 150,000 variants, 1,023,740 values
+    * INFO RDF streaming: 160,000 variants, 1,089,736 values
+    * INFO RDF streaming: 170,000 variants, 1,159,891 values
+    * INFO RDF streaming: 180,000 variants, 1,223,888 values
+    * INFO RDF streaming: 190,000 variants, 1,292,431 values
+    * INFO RDF streaming: 200,000 variants, 1,357,356 values
+    * INFO RDF streaming: 210,000 variants, 1,426,884 values
+    * INFO RDF streaming: 220,000 variants, 1,496,695 values
+    * INFO RDF streaming: 230,000 variants, 1,564,749 values
+    * INFO RDF streaming: 240,000 variants, 1,631,939 values
+    * INFO RDF streaming: 250,000 variants, 1,698,423 values
+    * QUAL values streamed: 250,000; INFO values: 1,698,423; declarations: 19
+    * Triples produced: 30,523,340
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000
+      - RDF aggregate: NG1N86S6FC_first250000.nt.gz
+      - RDF (.gz): 140.06 MB (removed after successful compression)
+      - HDT (.hdt): 212.35 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.hdt)
+      - COTTAS (.cottas): 72.14 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.cottas)
+Total triples produced (full run): 30,523,340
+Conversion process finished.
+Run time (full mode): 39m 52.9s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/run_metrics/NG1N86S6FC_first250000__20260915T171358/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/run_metrics/NG1N86S6FC_first250000__20260915T171358/summary.json

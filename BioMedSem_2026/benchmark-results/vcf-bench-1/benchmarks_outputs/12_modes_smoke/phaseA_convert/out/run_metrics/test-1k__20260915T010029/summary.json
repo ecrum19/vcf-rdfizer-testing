@@ -1,0 +1,99 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260915T010029",
+  "timestamp": "2026-09-15T01:00:29",
+  "completed_at": "2026-09-15T01:00:55",
+  "mode": "full",
+  "status": "success",
+  "exit_code": 0,
+  "execution": {
+    "wall_seconds": 25.513868,
+    "wall_human": "25.51s",
+    "total_triples": 94919
+  },
+  "summary_tables": {
+    "conversion_and_compression": [
+      {
+        "run_id": "20260915T010029",
+        "timestamp": "2026-09-15T01:00:29",
+        "output_name": "test-1k",
+        "output_dir": "/data/out/test-1k",
+        "vcf_version": "",
+        "vcf_version_source": "",
+        "exit_code_java": "0",
+        "wall_seconds_java": "11.690",
+        "user_seconds_java": "22.90",
+        "sys_seconds_java": "0.97",
+        "max_rss_kb_java": "826636",
+        "input_mapping_size_bytes": "13718",
+        "input_vcf_size_bytes": "61657",
+        "output_dir_size_bytes": "405578",
+        "output_triples": "94919",
+        "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+        "mapping_file": "/data/rules/test-1k.rules.ttl",
+        "output_path": "/data/out/test-1k/test-1k.nt.gz",
+        "exit_code_tsv": "0",
+        "wall_seconds_tsv": "0.500861",
+        "user_seconds_tsv": "0.010000",
+        "sys_seconds_tsv": "0.000000",
+        "max_rss_kb_tsv": "7424",
+        "tsv_output_size_bytes": "78511",
+        "tsv_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/.intermediate/tsv/test-1k.records.tsv|/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/.intermediate/tsv/test-1k.header_lines.tsv|/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/.intermediate/tsv/test-1k.file_metadata.tsv",
+        "combined_rdf_size_bytes": "405578",
+        "compression_methods": "gzip|hdt|cottas",
+        "gzip_size_bytes": "405578",
+        "exit_code_gzip": "0",
+        "wall_seconds_gzip": "0.000000",
+        "user_seconds_gzip": "0.000000",
+        "sys_seconds_gzip": "0.000000",
+        "max_rss_kb_gzip": "0",
+        "cottas_size_bytes": "172244",
+        "exit_code_cottas": "0",
+        "wall_seconds_cottas": "9.166544",
+        "user_seconds_cottas": "null",
+        "sys_seconds_cottas": "null",
+        "max_rss_kb_cottas": "null",
+        "source_triples_cottas": "94919",
+        "decoded_triples_cottas": "94919",
+        "validation_cottas": "true",
+        "hdt_size_bytes": "568190",
+        "exit_code_hdt": "0",
+        "wall_seconds_hdt": "0.350993",
+        "user_seconds_hdt": "null",
+        "sys_seconds_hdt": "null",
+        "max_rss_kb_hdt": "null",
+        "source_triples_hdt": "94919",
+        "decoded_triples_hdt": "94919",
+        "validation_hdt": "true",
+        "hdt_source": "partitioned_generated"
+      }
+    ],
+    "tsv": [],
+    "wrapper": [
+      {
+        "run_id": "20260915T010029",
+        "timestamp": "2026-09-15T01:00:29",
+        "mode": "full",
+        "exit_code": "0",
+        "status": "success",
+        "elapsed_seconds": "25.513868",
+        "elapsed_human": "25.51s",
+        "total_triples": "94919"
+      }
+    ]
+  },
+  "stage_reports": [
+    "stages/compression/test-1k.json",
+    "stages/compression_operations/test-1k/partitioned_compression.json",
+    "stages/compression_operations/test-1k/test-1k.nt.gz.json",
+    "stages/conversion/test-1k.json",
+    "stages/partitioned/test-1k.json",
+    "stages/tsv/test-1k.json"
+  ],
+  "reports": [],
+  "validation": [],
+  "logs": [
+    "logs/progress.log",
+    "logs/wrapper.log"
+  ]
+}

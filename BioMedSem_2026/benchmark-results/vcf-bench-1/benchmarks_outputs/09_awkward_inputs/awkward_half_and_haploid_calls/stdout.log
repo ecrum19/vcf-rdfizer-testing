@@ -1,0 +1,38 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: awkward_half_and_haploid_calls.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 4; FORMAT values: 8
+    * Streaming structured header RDF
+    * Header lines typed: 8; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 4; INFO values: 4; declarations: 1
+    * Triples produced: 446
+    * Compression ✅
+    * Semantic validation (aggregate, comunica): awkward_half_and_haploid_calls.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/reports/validation/awkward_half_and_haploid_calls
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/stages/validation/awkward_half_and_haploid_calls.json
+    * Semantic validation (hdt, comunica): awkward_half_and_haploid_calls.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/reports/validation/awkward_half_and_haploid_calls__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/stages/validation/awkward_half_and_haploid_calls__hdt.json
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls
+      - RDF aggregate: awkward_half_and_haploid_calls.nt.gz
+      - RDF (.gz): 5.38 KB (removed after successful compression)
+      - HDT (.hdt): 6.75 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.hdt)
+Total triples produced (full run): 446
+Conversion process finished.
+Run time (full mode): 33.48s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260915T171053/summary.json

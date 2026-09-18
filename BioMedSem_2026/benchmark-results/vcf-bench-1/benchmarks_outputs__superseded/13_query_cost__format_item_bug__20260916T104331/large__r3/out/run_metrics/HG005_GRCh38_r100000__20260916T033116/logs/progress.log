@@ -1,0 +1,21 @@
+[2026-09-16T03:31:16] Run started (mode=full)
+[2026-09-16T03:31:16] Checking Docker availability
+[2026-09-16T03:31:16] Docker availability check passed
+[2026-09-16T03:31:16] Ensuring image available: vcf-rdfizer:local-a3679e1
+[2026-09-16T03:31:16] Image ready
+[2026-09-16T03:31:16] Writeability checks passed
+[2026-09-16T03:31:16] Full pipeline started
+[2026-09-16T03:31:16] Input 1/1 started: HG005_GRCh38_r100000
+[2026-09-16T03:31:18] Input 1: TSV conversion completed for HG005_GRCh38_r100000
+[2026-09-16T03:31:37] Input 1: RDF conversion completed for HG005_GRCh38_r100000
+[2026-09-16T03:52:08] Input 1: compression completed for HG005_GRCh38_r100000
+[2026-09-16T03:52:08] Validation started: HG005_GRCh38_r100000
+[2026-09-16T03:58:30] Validation failed: HG005_GRCh38_r100000 (exit_code=1)
+[2026-09-16T03:58:30] Validation started: HG005_GRCh38_r100000__hdt
+[2026-09-16T04:05:12] Validation failed: HG005_GRCh38_r100000__hdt (exit_code=1)
+[2026-09-16T04:05:12] Validation started: HG005_GRCh38_r100000__cottas
+[2026-09-16T04:11:46] Validation failed: HG005_GRCh38_r100000__cottas (exit_code=1)
+[2026-09-16T04:11:46] Input 1/1 failed at validation for HG005_GRCh38_r100000: semantic VCF/RDF validation failed for 'HG005_GRCh38_r100000' (aggregate, hdt, cottas). See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r3/out/run_metrics/HG005_GRCh38_r100000__20260916T033116/reports/validation
+[2026-09-16T04:11:46] Input 1/1 finished with failures: HG005_GRCh38_r100000
+[2026-09-16T04:11:46] Full pipeline completed with failures (1/1). Report: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r3/out/run_metrics/HG005_GRCh38_r100000__20260916T033116/reports/failed_inputs.csv
+[2026-09-16T04:11:46] Run finished (exit_code=1)

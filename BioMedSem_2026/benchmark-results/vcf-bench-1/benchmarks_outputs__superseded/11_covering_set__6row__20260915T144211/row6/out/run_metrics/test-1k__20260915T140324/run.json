@@ -1,0 +1,59 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260915T140324",
+  "timestamp": "2026-09-15T14:03:24",
+  "mode": "full",
+  "source_label": "test-1k",
+  "output_root": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out",
+  "metrics_directory": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out/run_metrics/test-1k__20260915T140324",
+  "inputs": [
+    {
+      "path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-1k.vcf",
+      "file_name": "test-1k.vcf",
+      "size_bytes": 61657
+    }
+  ],
+  "options": {
+    "link": [],
+    "linking_options": null,
+    "requested_image": "vcf-rdfizer:local-a3679e1",
+    "requested_image_version": null,
+    "sample_representation": "condensed",
+    "info_representation": "raw",
+    "header_representation": "structured",
+    "vcf_version": "auto",
+    "rdf_storage_mode": "plain",
+    "compression_methods": [
+      "gzip",
+      "cottas",
+      "cottas_gzip"
+    ],
+    "hdt_strategy": "partitioned",
+    "chunk_target_bytes": 536870912,
+    "chunk_min_bytes": 134217728,
+    "chunk_max_bytes": 1073741824,
+    "spark_partitions": 8,
+    "run_validation": true,
+    "validation_artifacts": [
+      "aggregate",
+      "hdt",
+      "cottas"
+    ],
+    "validation_engine": [
+      "comunica"
+    ],
+    "validation_strict_conformance": false,
+    "validation_shacl_shapes": null,
+    "validation_shacl_ontology": null,
+    "validation_engine_options": null,
+    "filter_oracle": "auto",
+    "quiet": false,
+    "no_progress": false,
+    "index_format": null,
+    "decompression_format": null,
+    "validation_representation": null,
+    "validation_rdf_gzip": null
+  },
+  "resolved_image": "vcf-rdfizer:local-a3679e1",
+  "image_version_requested": false
+}

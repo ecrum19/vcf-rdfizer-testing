@@ -1,0 +1,63 @@
+From github.com:ecrum19/vcf-rdfizer-testing
+ * branch            main       -> FETCH_HEAD
+   eeedcbe..0cd2439  main       -> origin/main
+Updating eeedcbe..0cd2439
+Fast-forward
+ benchmarks/11_covering_set.sh | 42 +++++++++++++++++++++++++++++++++---------
+ benchmarks/AGGREGATION.md     | 18 +++++++++++++++++-
+ benchmarks/RUN_PLAN.md        | 14 ++++++++++++++
+ 3 files changed, 64 insertions(+), 10 deletions(-)
+archived 6-row run (6 cells)
+=== 2026-09-15T14:42:13+02:00 10-row covering set ===
+harness 0cd2439 Add the verification note the header already points at
+rows in table: 10
+    - image vcf-rdfizer:local-a3679e1 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: NG1N86S6FC.vcf.gz)
+
+=== 11_covering_set.sh ===
+    - image vcf-rdfizer:local-a3679e1 already built
+
+=== §5.1 covering set on test-1k.vcf ===
+    - row1
+    - row2
+    - row3
+    - row4
+    - row5
+    - row6
+    - row7
+    - row8
+    - row9
+    - row10
+[1m==>[0m Done. Verify coverage with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py coverage 11_covering_set
+
+datasets.py coverage re-derives, from the recorded command lines, that every
+option value appears and every option pair is covered — so an edit to the table
+that breaks coverage is caught rather than assumed.
+
+Expect 'Pair coverage: complete'. Exactly three pairs can never be covered, and
+they are excluded by construction rather than by exception: --hdt-strategy
+single cannot sit beside space-optimized storage, beside cottas, or beside
+hdt,cottas. Any OTHER gap is a defect in this table — do not dismiss one as
+'required' without reading hdt_strategy_rejection() in the wrapper, which is the
+only place a combination is actually refused.
+
+Coverage counts only cells that exited 0, so a row that fails shows up as lost
+coverage rather than as an error. Check the per-cell exit codes too.
+
+=== Collecting ===
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+11_covering_set: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+=== 2026-09-15T15:01:48+02:00 finished ===

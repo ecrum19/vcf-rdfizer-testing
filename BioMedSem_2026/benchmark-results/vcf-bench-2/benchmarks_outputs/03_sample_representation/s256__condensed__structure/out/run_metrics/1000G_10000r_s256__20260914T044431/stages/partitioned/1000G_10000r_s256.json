@@ -1,0 +1,110 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s256__condensed__structure/out/1000G_10000r_s256/1000G_10000r_s256.nt.gz",
+  "output_name": "1000G_10000r_s256",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 11.718695942079648,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s256__condensed__structure/out/1000G_10000r_s256/1000G_10000r_s256.hdt",
+        "output_size_bytes": 11375388,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s256__condensed__structure/out/1000G_10000r_s256/1000G_10000r_s256.nt.gz"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 221734497,
+          "record_count": 1440778,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 1440778,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 221734497,
+              "record_count": 1440778,
+              "payload_bytes": 221734497
+            }
+          ],
+          "merge_rounds": 0,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s256__condensed__structure/out/1000G_10000r_s256/1000G_10000r_s256.hdt.index.v1-1",
+          "index_size_bytes": 7588275,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 1440778,
+            "decoded_triples": 1440778,
+            "expected_triples": 1440778,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 2.2149772059638053,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 11.11996880103834,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 11375388,
+        "workspace_free_bytes_after": 139093753856,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 139105132544,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 0.5987271410413086,
+        "output_path": "/data/out/1000G_10000r_s256.hdt.index.v1-1",
+        "output_size_bytes": 7588275,
+        "workspace_free_bytes_after": 139307896832,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 139315490816,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 2.2149772059638053,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 159,
+        "workspace_free_bytes_after": 139307892736,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 139307896832,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    ],
+    "index_warnings": []
+  }
+}

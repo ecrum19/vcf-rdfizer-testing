@@ -1,0 +1,56 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260915T171415682365",
+  "timestamp": "2026-09-15T17:14:15",
+  "mode": "link",
+  "source_label": "test-100.nt",
+  "output_root": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__gene-demo/out",
+  "metrics_directory": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__gene-demo/out/run_metrics/test-100__20260915T171415682365",
+  "inputs": [
+    {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__00_convert/out/test-100/test-100.nt",
+      "file_name": "test-100.nt",
+      "size_bytes": 1068353
+    }
+  ],
+  "options": {
+    "link": [
+      "gene-demo"
+    ],
+    "cache_dir": "/home/ubuntu/.cache/vcf-rdfizer/linkers",
+    "offline": true,
+    "assembly": null
+  },
+  "linking": {
+    "test-100.links": {
+      "status": "success",
+      "records": 86,
+      "triples": 8,
+      "appended_bytes": 1140,
+      "output": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__gene-demo/out/test-100.links.nt",
+      "dry_run": false,
+      "linkers": [
+        {
+          "id": "gene-demo",
+          "version": "1.0.0",
+          "tier": 2,
+          "manifest_sha256": "3a340e8e292daa1b67315d078a4abea5b766bcab42285582297d335a7c3a64bf",
+          "reference_digest": "c343c83fbb27ca6a22079fccab7e385fc3e9c89967b521fd77bd9b0930b87aa3",
+          "assembly": "GRCh38",
+          "unique_keys": 86,
+          "skipped_records": 0,
+          "links": 0,
+          "requests": 0,
+          "cache_hits": 0,
+          "bytes_transferred": 0,
+          "final_service_status": null,
+          "status": "success",
+          "wall_seconds": 0.001868
+        }
+      ],
+      "preview": [],
+      "link_triples": 0,
+      "wall_seconds": 0.147186
+    }
+  }
+}

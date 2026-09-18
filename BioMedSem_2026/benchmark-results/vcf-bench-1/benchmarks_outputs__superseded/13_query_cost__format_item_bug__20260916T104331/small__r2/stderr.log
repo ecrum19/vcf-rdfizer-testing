@@ -1,0 +1,385 @@
+TSV conversion: test-10k: started
+TSV conversion: test-10k: finished
+RMLStreamer: test-10k: started
+  RMLStreamer: test-10k: rmlstreamer started — 0 B · 0 parts
+  RMLStreamer: test-10k: rmlstreamer heartbeat — 0 B · 0 parts
+  RMLStreamer: test-10k: rmlstreamer heartbeat — 8.70 KB · 8 parts
+  RMLStreamer: test-10k: rmlstreamer heartbeat — 9.28 MB · 8 parts
+  RMLStreamer: test-10k: rmlstreamer complete — 9.28 MB · 8 parts
+  RMLStreamer: test-10k: rdf-aggregate started — 0 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 1 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 2 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 3 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 4 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 5 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 6 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 7 parts
+  RMLStreamer: test-10k: rdf-aggregate part — 8 parts
+  RMLStreamer: test-10k: rdf-aggregate complete — 8 parts
+RMLStreamer: test-10k: finished
+Partitioned compression: test-10k: started
+  Partitioned compression: test-10k: rdf-scan started — 0 triples
+  Partitioned compression: test-10k: rdf-scan heartbeat — 518,024 triples · 67,108,891 bytes read
+  Partitioned compression: test-10k: rdf-scan chunk — 958,919 triples · 1 chunks · 122,644,300 bytes read
+  Partitioned compression: test-10k: hdt-chunks started — 0 chunks · hdt-build-00000
+  Partitioned compression: test-10k: hdt-chunks complete — 1 chunks · hdt-build-00000
+  Partitioned compression: test-10k: cottas-chunks started — 0 chunks · cottas-build-00000
+  Partitioned compression: test-10k: cottas-chunks complete — 1 chunks · cottas-build-00000
+  Partitioned compression: test-10k: rdf-scan complete — 958,919 triples · 1 chunks
+  Partitioned compression: test-10k: hdt-chunks complete — 1 chunks
+  Partitioned compression: test-10k: cottas-chunks complete — 1 chunks
+  Partitioned compression: test-10k: hdt started — hdt-index
+  Partitioned compression: test-10k: hdt complete — hdt-index
+  Partitioned compression: test-10k: hdt started — hdt-validate
+  Partitioned compression: test-10k: hdt complete — hdt-validate
+  Partitioned compression: test-10k: cottas started — cottas-validate
+  Partitioned compression: test-10k: cottas complete — cottas-validate
+Partitioned compression: test-10k: finished
+Validation: test-10k: started
+  Validation: test-10k: validation started — 0 queries · expanded validation started
+  Validation: test-10k: validation progress — 0 queries · materializing nt.gz artifact inside container
+  Validation: test-10k: validation progress — 1 queries · comunica: completed preflight_record_cardinality
+  Validation: test-10k: validation progress — 2 queries · comunica: completed preflight_position_datatype
+  Validation: test-10k: validation progress — 3 queries · comunica: completed preflight_missing_token_conformance
+  Validation: test-10k: validation progress — 4 queries · comunica: completed preflight_representation_profile
+  Validation: test-10k: validation progress — 5 queries · comunica: completed preflight_sample_gt_inventory
+  Validation: test-10k: validation progress — 6 queries · comunica: completed preflight_blank_nodes
+  Validation: test-10k: validation progress — 7 queries · comunica: completed preflight_empty_values
+  Validation: test-10k: validation progress — 8 queries · comunica: completed preflight_distinct_triple_count
+  Validation: test-10k: validation progress — 9 queries · comunica: completed preflight_record_cardinality_count
+  Validation: test-10k: validation progress — 10 queries · comunica: completed preflight_position_datatype_count
+  Validation: test-10k: validation progress — 11 queries · comunica: completed preflight_missing_token_conformance_count
+  Validation: test-10k: validation progress — 12 queries · comunica: completed preflight_representation_profile_count
+  Validation: test-10k: validation progress — 13 queries · comunica: completed preflight_blank_nodes_count
+  Validation: test-10k: validation progress — 14 queries · comunica: completed preflight_empty_values_count
+  Validation: test-10k: validation progress — 15 queries · comunica: completed q01_record_density_1mb
+  Validation: test-10k: validation progress — 16 queries · comunica: completed q02_variant_shape_counts
+  Validation: test-10k: validation progress — 17 queries · comunica: completed q03_titv
+  Validation: test-10k: validation progress — 18 queries · comunica: completed q04_filter_distribution
+  Validation: test-10k: validation progress — 19 queries · comunica: completed q05_sample_genotype_counts
+  Validation: test-10k: validation progress — 20 queries · comunica: completed q06_ac_an_distribution
+  Validation: test-10k: validation progress — 21 queries · comunica: completed q07_file_metadata
+  Validation: test-10k: validation progress — 22 queries · comunica: completed q08_header_line_census
+  Validation: test-10k: validation progress — 23 queries · comunica: completed q09_predicate_census
+  Validation: test-10k: validation progress — 24 queries · comunica: completed q10_class_census
+  Validation: test-10k: validation progress — 25 queries · comunica: completed q11_record_digest
+  Validation: test-10k: validation progress — 26 queries · comunica: completed q12_info_value_digest
+  Validation: test-10k: validation progress — 27 queries · comunica: completed q13_format_value_digest
+  Validation: test-10k: validation progress — 0 queries · preparing qlever engine
+  Validation: test-10k: validation progress — 1 queries · qlever: completed preflight_record_cardinality
+  Validation: test-10k: validation progress — 2 queries · qlever: completed preflight_position_datatype
+  Validation: test-10k: validation progress — 3 queries · qlever: completed preflight_missing_token_conformance
+  Validation: test-10k: validation progress — 4 queries · qlever: completed preflight_representation_profile
+  Validation: test-10k: validation progress — 5 queries · qlever: completed preflight_sample_gt_inventory
+  Validation: test-10k: validation progress — 6 queries · qlever: completed preflight_blank_nodes
+  Validation: test-10k: validation progress — 7 queries · qlever: completed preflight_empty_values
+  Validation: test-10k: validation progress — 8 queries · qlever: completed preflight_distinct_triple_count
+  Validation: test-10k: validation progress — 9 queries · qlever: completed preflight_record_cardinality_count
+  Validation: test-10k: validation progress — 10 queries · qlever: completed preflight_position_datatype_count
+  Validation: test-10k: validation progress — 11 queries · qlever: completed preflight_missing_token_conformance_count
+  Validation: test-10k: validation progress — 12 queries · qlever: completed preflight_representation_profile_count
+  Validation: test-10k: validation progress — 13 queries · qlever: completed preflight_blank_nodes_count
+  Validation: test-10k: validation progress — 14 queries · qlever: completed preflight_empty_values_count
+  Validation: test-10k: validation progress — 15 queries · qlever: completed q01_record_density_1mb
+  Validation: test-10k: validation progress — 16 queries · qlever: completed q02_variant_shape_counts
+  Validation: test-10k: validation progress — 17 queries · qlever: completed q03_titv
+  Validation: test-10k: validation progress — 18 queries · qlever: completed q04_filter_distribution
+  Validation: test-10k: validation progress — 19 queries · qlever: completed q05_sample_genotype_counts
+  Validation: test-10k: validation progress — 20 queries · qlever: completed q06_ac_an_distribution
+  Validation: test-10k: validation progress — 21 queries · qlever: completed q07_file_metadata
+  Validation: test-10k: validation progress — 22 queries · qlever: completed q08_header_line_census
+  Validation: test-10k: validation progress — 23 queries · qlever: completed q09_predicate_census
+  Validation: test-10k: validation progress — 24 queries · qlever: completed q10_class_census
+  Validation: test-10k: validation progress — 25 queries · qlever: completed q11_record_digest
+  Validation: test-10k: validation progress — 26 queries · qlever: completed q12_info_value_digest
+  Validation: test-10k: validation progress — 27 queries · qlever: completed q13_format_value_digest
+  Validation: test-10k: validation progress — 0 queries · preparing hdt engine
+  Validation: test-10k: validation progress — 1 queries · hdt: completed preflight_record_cardinality
+  Validation: test-10k: validation progress — 2 queries · hdt: completed preflight_position_datatype
+  Validation: test-10k: validation progress — 3 queries · hdt: completed preflight_missing_token_conformance
+  Validation: test-10k: validation progress — 4 queries · hdt: completed preflight_representation_profile
+  Validation: test-10k: validation progress — 5 queries · hdt: completed preflight_sample_gt_inventory
+  Validation: test-10k: validation progress — 6 queries · hdt: completed preflight_blank_nodes
+  Validation: test-10k: validation progress — 7 queries · hdt: completed preflight_empty_values
+  Validation: test-10k: validation progress — 8 queries · hdt: completed preflight_distinct_triple_count
+  Validation: test-10k: validation progress — 9 queries · hdt: completed preflight_record_cardinality_count
+  Validation: test-10k: validation progress — 10 queries · hdt: completed preflight_position_datatype_count
+  Validation: test-10k: validation progress — 11 queries · hdt: completed preflight_missing_token_conformance_count
+  Validation: test-10k: validation progress — 12 queries · hdt: completed preflight_representation_profile_count
+  Validation: test-10k: validation progress — 13 queries · hdt: completed preflight_blank_nodes_count
+  Validation: test-10k: validation progress — 14 queries · hdt: completed preflight_empty_values_count
+  Validation: test-10k: validation progress — 15 queries · hdt: completed q01_record_density_1mb
+  Validation: test-10k: validation progress — 16 queries · hdt: completed q02_variant_shape_counts
+  Validation: test-10k: validation progress — 17 queries · hdt: completed q03_titv
+  Validation: test-10k: validation progress — 18 queries · hdt: completed q04_filter_distribution
+  Validation: test-10k: validation progress — 19 queries · hdt: completed q05_sample_genotype_counts
+  Validation: test-10k: validation progress — 20 queries · hdt: completed q06_ac_an_distribution
+  Validation: test-10k: validation progress — 21 queries · hdt: completed q07_file_metadata
+  Validation: test-10k: validation progress — 22 queries · hdt: completed q08_header_line_census
+  Validation: test-10k: validation progress — 23 queries · hdt: completed q09_predicate_census
+  Validation: test-10k: validation progress — 24 queries · hdt: completed q10_class_census
+  Validation: test-10k: validation progress — 25 queries · hdt: completed q11_record_digest
+  Validation: test-10k: validation progress — 26 queries · hdt: completed q12_info_value_digest
+  Validation: test-10k: validation progress — 27 queries · hdt: completed q13_format_value_digest
+  Validation: test-10k: validation progress — 0 queries · preparing cottas engine
+  Validation: test-10k: validation progress — 1 queries · cottas: completed preflight_record_cardinality
+  Validation: test-10k: validation progress — 2 queries · cottas: completed preflight_position_datatype
+  Validation: test-10k: validation progress — 3 queries · cottas: completed preflight_missing_token_conformance
+  Validation: test-10k: validation progress — 4 queries · cottas: completed preflight_representation_profile
+  Validation: test-10k: validation progress — 5 queries · cottas: completed preflight_sample_gt_inventory
+  Validation: test-10k: validation progress — 6 queries · cottas: completed preflight_blank_nodes
+  Validation: test-10k: validation progress — 7 queries · cottas: completed preflight_empty_values
+  Validation: test-10k: validation progress — 8 queries · cottas: completed preflight_distinct_triple_count
+  Validation: test-10k: validation progress — 9 queries · cottas: completed preflight_record_cardinality_count
+  Validation: test-10k: validation progress — 10 queries · cottas: completed preflight_position_datatype_count
+  Validation: test-10k: validation progress — 11 queries · cottas: completed preflight_missing_token_conformance_count
+  Validation: test-10k: validation progress — 12 queries · cottas: completed preflight_representation_profile_count
+  Validation: test-10k: validation progress — 13 queries · cottas: completed preflight_blank_nodes_count
+  Validation: test-10k: validation progress — 14 queries · cottas: completed preflight_empty_values_count
+  Validation: test-10k: validation progress — 15 queries · cottas: completed q01_record_density_1mb
+  Validation: test-10k: validation progress — 16 queries · cottas: completed q02_variant_shape_counts
+  Validation: test-10k: validation progress — 17 queries · cottas: completed q03_titv
+  Validation: test-10k: validation progress — 18 queries · cottas: completed q04_filter_distribution
+  Validation: test-10k: validation progress — 19 queries · cottas: completed q05_sample_genotype_counts
+  Validation: test-10k: validation progress — 20 queries · cottas: completed q06_ac_an_distribution
+  Validation: test-10k: validation progress — 21 queries · cottas: completed q07_file_metadata
+  Validation: test-10k: validation progress — 22 queries · cottas: completed q08_header_line_census
+  Validation: test-10k: validation progress — 23 queries · cottas: completed q09_predicate_census
+  Validation: test-10k: validation progress — 24 queries · cottas: completed q10_class_census
+  Validation: test-10k: validation progress — 25 queries · cottas: completed q11_record_digest
+  Validation: test-10k: validation progress — 26 queries · cottas: completed q12_info_value_digest
+  Validation: test-10k: validation progress — 27 queries · cottas: completed q13_format_value_digest
+  Validation: test-10k: validation complete — 27 queries · validation pass
+Validation: test-10k: finished
+Validation: test-10k__hdt: started
+  Validation: test-10k__hdt: validation started — 0 queries · expanded validation started
+  Validation: test-10k__hdt: validation progress — 0 queries · materializing hdt artifact inside container
+  Validation: test-10k__hdt: validation progress — 1 queries · comunica: completed preflight_record_cardinality
+  Validation: test-10k__hdt: validation progress — 2 queries · comunica: completed preflight_position_datatype
+  Validation: test-10k__hdt: validation progress — 3 queries · comunica: completed preflight_missing_token_conformance
+  Validation: test-10k__hdt: validation progress — 4 queries · comunica: completed preflight_representation_profile
+  Validation: test-10k__hdt: validation progress — 5 queries · comunica: completed preflight_sample_gt_inventory
+  Validation: test-10k__hdt: validation progress — 6 queries · comunica: completed preflight_blank_nodes
+  Validation: test-10k__hdt: validation progress — 7 queries · comunica: completed preflight_empty_values
+  Validation: test-10k__hdt: validation progress — 8 queries · comunica: completed preflight_distinct_triple_count
+  Validation: test-10k__hdt: validation progress — 9 queries · comunica: completed preflight_record_cardinality_count
+  Validation: test-10k__hdt: validation progress — 10 queries · comunica: completed preflight_position_datatype_count
+  Validation: test-10k__hdt: validation progress — 11 queries · comunica: completed preflight_missing_token_conformance_count
+  Validation: test-10k__hdt: validation progress — 12 queries · comunica: completed preflight_representation_profile_count
+  Validation: test-10k__hdt: validation progress — 13 queries · comunica: completed preflight_blank_nodes_count
+  Validation: test-10k__hdt: validation progress — 14 queries · comunica: completed preflight_empty_values_count
+  Validation: test-10k__hdt: validation progress — 15 queries · comunica: completed q01_record_density_1mb
+  Validation: test-10k__hdt: validation progress — 16 queries · comunica: completed q02_variant_shape_counts
+  Validation: test-10k__hdt: validation progress — 17 queries · comunica: completed q03_titv
+  Validation: test-10k__hdt: validation progress — 18 queries · comunica: completed q04_filter_distribution
+  Validation: test-10k__hdt: validation progress — 19 queries · comunica: completed q05_sample_genotype_counts
+  Validation: test-10k__hdt: validation progress — 20 queries · comunica: completed q06_ac_an_distribution
+  Validation: test-10k__hdt: validation progress — 21 queries · comunica: completed q07_file_metadata
+  Validation: test-10k__hdt: validation progress — 22 queries · comunica: completed q08_header_line_census
+  Validation: test-10k__hdt: validation progress — 23 queries · comunica: completed q09_predicate_census
+  Validation: test-10k__hdt: validation progress — 24 queries · comunica: completed q10_class_census
+  Validation: test-10k__hdt: validation progress — 25 queries · comunica: completed q11_record_digest
+  Validation: test-10k__hdt: validation progress — 26 queries · comunica: completed q12_info_value_digest
+  Validation: test-10k__hdt: validation progress — 27 queries · comunica: completed q13_format_value_digest
+  Validation: test-10k__hdt: validation progress — 0 queries · preparing qlever engine
+  Validation: test-10k__hdt: validation progress — 1 queries · qlever: completed preflight_record_cardinality
+  Validation: test-10k__hdt: validation progress — 2 queries · qlever: completed preflight_position_datatype
+  Validation: test-10k__hdt: validation progress — 3 queries · qlever: completed preflight_missing_token_conformance
+  Validation: test-10k__hdt: validation progress — 4 queries · qlever: completed preflight_representation_profile
+  Validation: test-10k__hdt: validation progress — 5 queries · qlever: completed preflight_sample_gt_inventory
+  Validation: test-10k__hdt: validation progress — 6 queries · qlever: completed preflight_blank_nodes
+  Validation: test-10k__hdt: validation progress — 7 queries · qlever: completed preflight_empty_values
+  Validation: test-10k__hdt: validation progress — 8 queries · qlever: completed preflight_distinct_triple_count
+  Validation: test-10k__hdt: validation progress — 9 queries · qlever: completed preflight_record_cardinality_count
+  Validation: test-10k__hdt: validation progress — 10 queries · qlever: completed preflight_position_datatype_count
+  Validation: test-10k__hdt: validation progress — 11 queries · qlever: completed preflight_missing_token_conformance_count
+  Validation: test-10k__hdt: validation progress — 12 queries · qlever: completed preflight_representation_profile_count
+  Validation: test-10k__hdt: validation progress — 13 queries · qlever: completed preflight_blank_nodes_count
+  Validation: test-10k__hdt: validation progress — 14 queries · qlever: completed preflight_empty_values_count
+  Validation: test-10k__hdt: validation progress — 15 queries · qlever: completed q01_record_density_1mb
+  Validation: test-10k__hdt: validation progress — 16 queries · qlever: completed q02_variant_shape_counts
+  Validation: test-10k__hdt: validation progress — 17 queries · qlever: completed q03_titv
+  Validation: test-10k__hdt: validation progress — 18 queries · qlever: completed q04_filter_distribution
+  Validation: test-10k__hdt: validation progress — 19 queries · qlever: completed q05_sample_genotype_counts
+  Validation: test-10k__hdt: validation progress — 20 queries · qlever: completed q06_ac_an_distribution
+  Validation: test-10k__hdt: validation progress — 21 queries · qlever: completed q07_file_metadata
+  Validation: test-10k__hdt: validation progress — 22 queries · qlever: completed q08_header_line_census
+  Validation: test-10k__hdt: validation progress — 23 queries · qlever: completed q09_predicate_census
+  Validation: test-10k__hdt: validation progress — 24 queries · qlever: completed q10_class_census
+  Validation: test-10k__hdt: validation progress — 25 queries · qlever: completed q11_record_digest
+  Validation: test-10k__hdt: validation progress — 26 queries · qlever: completed q12_info_value_digest
+  Validation: test-10k__hdt: validation progress — 27 queries · qlever: completed q13_format_value_digest
+  Validation: test-10k__hdt: validation progress — 0 queries · preparing hdt engine
+  Validation: test-10k__hdt: validation progress — 1 queries · hdt: completed preflight_record_cardinality
+  Validation: test-10k__hdt: validation progress — 2 queries · hdt: completed preflight_position_datatype
+  Validation: test-10k__hdt: validation progress — 3 queries · hdt: completed preflight_missing_token_conformance
+  Validation: test-10k__hdt: validation progress — 4 queries · hdt: completed preflight_representation_profile
+  Validation: test-10k__hdt: validation progress — 5 queries · hdt: completed preflight_sample_gt_inventory
+  Validation: test-10k__hdt: validation progress — 6 queries · hdt: completed preflight_blank_nodes
+  Validation: test-10k__hdt: validation progress — 7 queries · hdt: completed preflight_empty_values
+  Validation: test-10k__hdt: validation progress — 8 queries · hdt: completed preflight_distinct_triple_count
+  Validation: test-10k__hdt: validation progress — 9 queries · hdt: completed preflight_record_cardinality_count
+  Validation: test-10k__hdt: validation progress — 10 queries · hdt: completed preflight_position_datatype_count
+  Validation: test-10k__hdt: validation progress — 11 queries · hdt: completed preflight_missing_token_conformance_count
+  Validation: test-10k__hdt: validation progress — 12 queries · hdt: completed preflight_representation_profile_count
+  Validation: test-10k__hdt: validation progress — 13 queries · hdt: completed preflight_blank_nodes_count
+  Validation: test-10k__hdt: validation progress — 14 queries · hdt: completed preflight_empty_values_count
+  Validation: test-10k__hdt: validation progress — 15 queries · hdt: completed q01_record_density_1mb
+  Validation: test-10k__hdt: validation progress — 16 queries · hdt: completed q02_variant_shape_counts
+  Validation: test-10k__hdt: validation progress — 17 queries · hdt: completed q03_titv
+  Validation: test-10k__hdt: validation progress — 18 queries · hdt: completed q04_filter_distribution
+  Validation: test-10k__hdt: validation progress — 19 queries · hdt: completed q05_sample_genotype_counts
+  Validation: test-10k__hdt: validation progress — 20 queries · hdt: completed q06_ac_an_distribution
+  Validation: test-10k__hdt: validation progress — 21 queries · hdt: completed q07_file_metadata
+  Validation: test-10k__hdt: validation progress — 22 queries · hdt: completed q08_header_line_census
+  Validation: test-10k__hdt: validation progress — 23 queries · hdt: completed q09_predicate_census
+  Validation: test-10k__hdt: validation progress — 24 queries · hdt: completed q10_class_census
+  Validation: test-10k__hdt: validation progress — 25 queries · hdt: completed q11_record_digest
+  Validation: test-10k__hdt: validation progress — 26 queries · hdt: completed q12_info_value_digest
+  Validation: test-10k__hdt: validation progress — 27 queries · hdt: completed q13_format_value_digest
+  Validation: test-10k__hdt: validation progress — 0 queries · preparing cottas engine
+  Validation: test-10k__hdt: validation progress — 1 queries · cottas: completed preflight_record_cardinality
+  Validation: test-10k__hdt: validation progress — 2 queries · cottas: completed preflight_position_datatype
+  Validation: test-10k__hdt: validation progress — 3 queries · cottas: completed preflight_missing_token_conformance
+  Validation: test-10k__hdt: validation progress — 4 queries · cottas: completed preflight_representation_profile
+  Validation: test-10k__hdt: validation progress — 5 queries · cottas: completed preflight_sample_gt_inventory
+  Validation: test-10k__hdt: validation progress — 6 queries · cottas: completed preflight_blank_nodes
+  Validation: test-10k__hdt: validation progress — 7 queries · cottas: completed preflight_empty_values
+  Validation: test-10k__hdt: validation progress — 8 queries · cottas: completed preflight_distinct_triple_count
+  Validation: test-10k__hdt: validation progress — 9 queries · cottas: completed preflight_record_cardinality_count
+  Validation: test-10k__hdt: validation progress — 10 queries · cottas: completed preflight_position_datatype_count
+  Validation: test-10k__hdt: validation progress — 11 queries · cottas: completed preflight_missing_token_conformance_count
+  Validation: test-10k__hdt: validation progress — 12 queries · cottas: completed preflight_representation_profile_count
+  Validation: test-10k__hdt: validation progress — 13 queries · cottas: completed preflight_blank_nodes_count
+  Validation: test-10k__hdt: validation progress — 14 queries · cottas: completed preflight_empty_values_count
+  Validation: test-10k__hdt: validation progress — 15 queries · cottas: completed q01_record_density_1mb
+  Validation: test-10k__hdt: validation progress — 16 queries · cottas: completed q02_variant_shape_counts
+  Validation: test-10k__hdt: validation progress — 17 queries · cottas: completed q03_titv
+  Validation: test-10k__hdt: validation progress — 18 queries · cottas: completed q04_filter_distribution
+  Validation: test-10k__hdt: validation progress — 19 queries · cottas: completed q05_sample_genotype_counts
+  Validation: test-10k__hdt: validation progress — 20 queries · cottas: completed q06_ac_an_distribution
+  Validation: test-10k__hdt: validation progress — 21 queries · cottas: completed q07_file_metadata
+  Validation: test-10k__hdt: validation progress — 22 queries · cottas: completed q08_header_line_census
+  Validation: test-10k__hdt: validation progress — 23 queries · cottas: completed q09_predicate_census
+  Validation: test-10k__hdt: validation progress — 24 queries · cottas: completed q10_class_census
+  Validation: test-10k__hdt: validation progress — 25 queries · cottas: completed q11_record_digest
+  Validation: test-10k__hdt: validation progress — 26 queries · cottas: completed q12_info_value_digest
+  Validation: test-10k__hdt: validation progress — 27 queries · cottas: completed q13_format_value_digest
+  Validation: test-10k__hdt: validation complete — 27 queries · validation pass
+Validation: test-10k__hdt: finished
+Validation: test-10k__cottas: started
+  Validation: test-10k__cottas: validation started — 0 queries · expanded validation started
+  Validation: test-10k__cottas: validation progress — 0 queries · materializing cottas artifact inside container
+  Validation: test-10k__cottas: validation progress — 1 queries · comunica: completed preflight_record_cardinality
+  Validation: test-10k__cottas: validation progress — 2 queries · comunica: completed preflight_position_datatype
+  Validation: test-10k__cottas: validation progress — 3 queries · comunica: completed preflight_missing_token_conformance
+  Validation: test-10k__cottas: validation progress — 4 queries · comunica: completed preflight_representation_profile
+  Validation: test-10k__cottas: validation progress — 5 queries · comunica: completed preflight_sample_gt_inventory
+  Validation: test-10k__cottas: validation progress — 6 queries · comunica: completed preflight_blank_nodes
+  Validation: test-10k__cottas: validation progress — 7 queries · comunica: completed preflight_empty_values
+  Validation: test-10k__cottas: validation progress — 8 queries · comunica: completed preflight_distinct_triple_count
+  Validation: test-10k__cottas: validation progress — 9 queries · comunica: completed preflight_record_cardinality_count
+  Validation: test-10k__cottas: validation progress — 10 queries · comunica: completed preflight_position_datatype_count
+  Validation: test-10k__cottas: validation progress — 11 queries · comunica: completed preflight_missing_token_conformance_count
+  Validation: test-10k__cottas: validation progress — 12 queries · comunica: completed preflight_representation_profile_count
+  Validation: test-10k__cottas: validation progress — 13 queries · comunica: completed preflight_blank_nodes_count
+  Validation: test-10k__cottas: validation progress — 14 queries · comunica: completed preflight_empty_values_count
+  Validation: test-10k__cottas: validation progress — 15 queries · comunica: completed q01_record_density_1mb
+  Validation: test-10k__cottas: validation progress — 16 queries · comunica: completed q02_variant_shape_counts
+  Validation: test-10k__cottas: validation progress — 17 queries · comunica: completed q03_titv
+  Validation: test-10k__cottas: validation progress — 18 queries · comunica: completed q04_filter_distribution
+  Validation: test-10k__cottas: validation progress — 19 queries · comunica: completed q05_sample_genotype_counts
+  Validation: test-10k__cottas: validation progress — 20 queries · comunica: completed q06_ac_an_distribution
+  Validation: test-10k__cottas: validation progress — 21 queries · comunica: completed q07_file_metadata
+  Validation: test-10k__cottas: validation progress — 22 queries · comunica: completed q08_header_line_census
+  Validation: test-10k__cottas: validation progress — 23 queries · comunica: completed q09_predicate_census
+  Validation: test-10k__cottas: validation progress — 24 queries · comunica: completed q10_class_census
+  Validation: test-10k__cottas: validation progress — 25 queries · comunica: completed q11_record_digest
+  Validation: test-10k__cottas: validation progress — 26 queries · comunica: completed q12_info_value_digest
+  Validation: test-10k__cottas: validation progress — 27 queries · comunica: completed q13_format_value_digest
+  Validation: test-10k__cottas: validation progress — 0 queries · preparing qlever engine
+  Validation: test-10k__cottas: validation progress — 1 queries · qlever: completed preflight_record_cardinality
+  Validation: test-10k__cottas: validation progress — 2 queries · qlever: completed preflight_position_datatype
+  Validation: test-10k__cottas: validation progress — 3 queries · qlever: completed preflight_missing_token_conformance
+  Validation: test-10k__cottas: validation progress — 4 queries · qlever: completed preflight_representation_profile
+  Validation: test-10k__cottas: validation progress — 5 queries · qlever: completed preflight_sample_gt_inventory
+  Validation: test-10k__cottas: validation progress — 6 queries · qlever: completed preflight_blank_nodes
+  Validation: test-10k__cottas: validation progress — 7 queries · qlever: completed preflight_empty_values
+  Validation: test-10k__cottas: validation progress — 8 queries · qlever: completed preflight_distinct_triple_count
+  Validation: test-10k__cottas: validation progress — 9 queries · qlever: completed preflight_record_cardinality_count
+  Validation: test-10k__cottas: validation progress — 10 queries · qlever: completed preflight_position_datatype_count
+  Validation: test-10k__cottas: validation progress — 11 queries · qlever: completed preflight_missing_token_conformance_count
+  Validation: test-10k__cottas: validation progress — 12 queries · qlever: completed preflight_representation_profile_count
+  Validation: test-10k__cottas: validation progress — 13 queries · qlever: completed preflight_blank_nodes_count
+  Validation: test-10k__cottas: validation progress — 14 queries · qlever: completed preflight_empty_values_count
+  Validation: test-10k__cottas: validation progress — 15 queries · qlever: completed q01_record_density_1mb
+  Validation: test-10k__cottas: validation progress — 16 queries · qlever: completed q02_variant_shape_counts
+  Validation: test-10k__cottas: validation progress — 17 queries · qlever: completed q03_titv
+  Validation: test-10k__cottas: validation progress — 18 queries · qlever: completed q04_filter_distribution
+  Validation: test-10k__cottas: validation progress — 19 queries · qlever: completed q05_sample_genotype_counts
+  Validation: test-10k__cottas: validation progress — 20 queries · qlever: completed q06_ac_an_distribution
+  Validation: test-10k__cottas: validation progress — 21 queries · qlever: completed q07_file_metadata
+  Validation: test-10k__cottas: validation progress — 22 queries · qlever: completed q08_header_line_census
+  Validation: test-10k__cottas: validation progress — 23 queries · qlever: completed q09_predicate_census
+  Validation: test-10k__cottas: validation progress — 24 queries · qlever: completed q10_class_census
+  Validation: test-10k__cottas: validation progress — 25 queries · qlever: completed q11_record_digest
+  Validation: test-10k__cottas: validation progress — 26 queries · qlever: completed q12_info_value_digest
+  Validation: test-10k__cottas: validation progress — 27 queries · qlever: completed q13_format_value_digest
+  Validation: test-10k__cottas: validation progress — 0 queries · preparing hdt engine
+  Validation: test-10k__cottas: validation progress — 1 queries · hdt: completed preflight_record_cardinality
+  Validation: test-10k__cottas: validation progress — 2 queries · hdt: completed preflight_position_datatype
+  Validation: test-10k__cottas: validation progress — 3 queries · hdt: completed preflight_missing_token_conformance
+  Validation: test-10k__cottas: validation progress — 4 queries · hdt: completed preflight_representation_profile
+  Validation: test-10k__cottas: validation progress — 5 queries · hdt: completed preflight_sample_gt_inventory
+  Validation: test-10k__cottas: validation progress — 6 queries · hdt: completed preflight_blank_nodes
+  Validation: test-10k__cottas: validation progress — 7 queries · hdt: completed preflight_empty_values
+  Validation: test-10k__cottas: validation progress — 8 queries · hdt: completed preflight_distinct_triple_count
+  Validation: test-10k__cottas: validation progress — 9 queries · hdt: completed preflight_record_cardinality_count
+  Validation: test-10k__cottas: validation progress — 10 queries · hdt: completed preflight_position_datatype_count
+  Validation: test-10k__cottas: validation progress — 11 queries · hdt: completed preflight_missing_token_conformance_count
+  Validation: test-10k__cottas: validation progress — 12 queries · hdt: completed preflight_representation_profile_count
+  Validation: test-10k__cottas: validation progress — 13 queries · hdt: completed preflight_blank_nodes_count
+  Validation: test-10k__cottas: validation progress — 14 queries · hdt: completed preflight_empty_values_count
+  Validation: test-10k__cottas: validation progress — 15 queries · hdt: completed q01_record_density_1mb
+  Validation: test-10k__cottas: validation progress — 16 queries · hdt: completed q02_variant_shape_counts
+  Validation: test-10k__cottas: validation progress — 17 queries · hdt: completed q03_titv
+  Validation: test-10k__cottas: validation progress — 18 queries · hdt: completed q04_filter_distribution
+  Validation: test-10k__cottas: validation progress — 19 queries · hdt: completed q05_sample_genotype_counts
+  Validation: test-10k__cottas: validation progress — 20 queries · hdt: completed q06_ac_an_distribution
+  Validation: test-10k__cottas: validation progress — 21 queries · hdt: completed q07_file_metadata
+  Validation: test-10k__cottas: validation progress — 22 queries · hdt: completed q08_header_line_census
+  Validation: test-10k__cottas: validation progress — 23 queries · hdt: completed q09_predicate_census
+  Validation: test-10k__cottas: validation progress — 24 queries · hdt: completed q10_class_census
+  Validation: test-10k__cottas: validation progress — 25 queries · hdt: completed q11_record_digest
+  Validation: test-10k__cottas: validation progress — 26 queries · hdt: completed q12_info_value_digest
+  Validation: test-10k__cottas: validation progress — 27 queries · hdt: completed q13_format_value_digest
+  Validation: test-10k__cottas: validation progress — 0 queries · preparing cottas engine
+  Validation: test-10k__cottas: validation progress — 1 queries · cottas: completed preflight_record_cardinality
+  Validation: test-10k__cottas: validation progress — 2 queries · cottas: completed preflight_position_datatype
+  Validation: test-10k__cottas: validation progress — 3 queries · cottas: completed preflight_missing_token_conformance
+  Validation: test-10k__cottas: validation progress — 4 queries · cottas: completed preflight_representation_profile
+  Validation: test-10k__cottas: validation progress — 5 queries · cottas: completed preflight_sample_gt_inventory
+  Validation: test-10k__cottas: validation progress — 6 queries · cottas: completed preflight_blank_nodes
+  Validation: test-10k__cottas: validation progress — 7 queries · cottas: completed preflight_empty_values
+  Validation: test-10k__cottas: validation progress — 8 queries · cottas: completed preflight_distinct_triple_count
+  Validation: test-10k__cottas: validation progress — 9 queries · cottas: completed preflight_record_cardinality_count
+  Validation: test-10k__cottas: validation progress — 10 queries · cottas: completed preflight_position_datatype_count
+  Validation: test-10k__cottas: validation progress — 11 queries · cottas: completed preflight_missing_token_conformance_count
+  Validation: test-10k__cottas: validation progress — 12 queries · cottas: completed preflight_representation_profile_count
+  Validation: test-10k__cottas: validation progress — 13 queries · cottas: completed preflight_blank_nodes_count
+  Validation: test-10k__cottas: validation progress — 14 queries · cottas: completed preflight_empty_values_count
+  Validation: test-10k__cottas: validation progress — 15 queries · cottas: completed q01_record_density_1mb
+  Validation: test-10k__cottas: validation progress — 16 queries · cottas: completed q02_variant_shape_counts
+  Validation: test-10k__cottas: validation progress — 17 queries · cottas: completed q03_titv
+  Validation: test-10k__cottas: validation progress — 18 queries · cottas: completed q04_filter_distribution
+  Validation: test-10k__cottas: validation progress — 19 queries · cottas: completed q05_sample_genotype_counts
+  Validation: test-10k__cottas: validation progress — 20 queries · cottas: completed q06_ac_an_distribution
+  Validation: test-10k__cottas: validation progress — 21 queries · cottas: completed q07_file_metadata
+  Validation: test-10k__cottas: validation progress — 22 queries · cottas: completed q08_header_line_census
+  Validation: test-10k__cottas: validation progress — 23 queries · cottas: completed q09_predicate_census
+  Validation: test-10k__cottas: validation progress — 24 queries · cottas: completed q10_class_census
+  Validation: test-10k__cottas: validation progress — 25 queries · cottas: completed q11_record_digest
+  Validation: test-10k__cottas: validation progress — 26 queries · cottas: completed q12_info_value_digest
+  Validation: test-10k__cottas: validation progress — 27 queries · cottas: completed q13_format_value_digest
+  Validation: test-10k__cottas: validation complete — 27 queries · validation pass
+Validation: test-10k__cottas: finished

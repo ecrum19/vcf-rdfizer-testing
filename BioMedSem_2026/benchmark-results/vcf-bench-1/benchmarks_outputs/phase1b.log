@@ -1,0 +1,104 @@
+From github.com:ecrum19/vcf-rdfizer-testing
+ * branch            main       -> FETCH_HEAD
+   0cd2439..d472e83  main       -> origin/main
+Updating 0cd2439..d472e83
+Fast-forward
+ benchmarks/AGGREGATION.md | 13 +++++++++----
+ benchmarks/RUN_PLAN.md    | 17 +++++++++--------
+ benchmarks/lib/common.sh  | 43 +++++++++++++++++++++++++++++++++++++++++--
+ 3 files changed, 59 insertions(+), 14 deletions(-)
+=== 2026-09-15T17:08:36+02:00 vcf-bench-1: 09 13 (moved from bench-2) ===
+tool    a3679e1 Pin pip in CI instead of installing whatever released most recently
+harness d472e83 Record a failed cell and continue instead of abandoning the experiment
+image   vcf-rdfizer:local-a3679e1
+bm_expect_ok records and continues: 1
+    - image vcf-rdfizer:local-a3679e1 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 09_awkward_inputs.sh ===
+    - image vcf-rdfizer:local-a3679e1 already built
+
+=== §4.4 awkward inputs ===
+    - awkward_breakend
+    - awkward_crlf
+    - awkward_declared_format_absent
+    - awkward_filter_variants
+    - awkward_half_and_haploid_calls
+    - awkward_high_ploidy
+    - awkward_missing_values
+    - awkward_no_records
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/stderr.log)
+    - awkward_sites_only
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/stderr.log)
+    - awkward_symbolic_alleles
+    - awkward_truncated
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/stderr.log)
+
+=== §4.4 extensibility smoke runs ===
+    - rules__custom — SKIPPED: set BM_CUSTOM_RULES=/path/to/rules.ttl to exercise a custom mapping.
+Note: validation reports Q9-Q13 as MISMATCH for a correct custom mapping,
+because the wrapper does not forward --mapping-policy (a known tool gap).
+Read those five as report-only here.
+    - link__00_convert
+    - link__rsid-dbsnp
+    - link__gene-demo
+    - link__rsid-ensembl — SKIPPED: tier-3 linker needs network; set BM_ALLOW_NETWORK=1 and BM_CONTACT_EMAIL to run it
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py awkward 09_awkward_inputs
+
+The table pairs each fixture's recorded expectation against what happened.
+Report refusals as refusals — a clear diagnostic is a pass.
+
+=== 13_query_cost.sh ===
+    - image vcf-rdfizer:local-a3679e1 already built
+
+=== §4.5 small scale: test-10k.vcf  engines=all ===
+    - small__r1
+    - small__r2
+    - small__r3
+
+=== §4.5 large scale: HG005_GRCh38_r100000.vcf.gz  engines=qlever ===
+    - large__r1
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r1/stderr.log)
+    - large__r2
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r2/stderr.log)
+    - large__r3
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r3/stderr.log)
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 13_query_cost
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py querycost 13_query_cost
+
+The dataset reports, per engine and scale: median engine query seconds, median
+oracle (cyvcf2) seconds for the same work, the ratio, setup seconds, and the
+break-even repetition count. Equality of the answers is established by the
+validation status in the same row — check it is PASS before quoting any speed.
+
+=== Collecting ===
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+09_awkward_inputs: 16 cells — 11 ok, 3 non-zero, 2 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/tidy.csv
+  exit 1: awkward_no_records
+  exit 1: awkward_sites_only
+  exit 1: awkward_truncated
+11_covering_set: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+13_query_cost: 6 cells — 3 ok, 3 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/tidy.csv
+  exit 1: large__r1
+  exit 1: large__r2
+  exit 1: large__r3
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/provenance.vcf-bench-1.a3679e1.json
+  tool   a3679e1 Pin pip in CI instead of installing whatever released most recently
+  image  sha256:b645120b7270b1db0 created 2026-09-13T19:17:20
+=== 2026-09-16T04:11:47+02:00 finished ===

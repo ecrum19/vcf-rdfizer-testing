@@ -1,0 +1,45 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: test-1k.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 986; FORMAT values: 1,972
+    * Streaming structured header RDF
+    * Header lines typed: 13; contigs: 2
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 986; INFO values: 2,958; declarations: 3
+    * Triples produced: 94,919
+    * Compression ✅
+    * Semantic validation (aggregate, comunica): test-1k.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/reports/validation/test-1k
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/stages/validation/test-1k.json
+    * Semantic validation (hdt, comunica): test-1k.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/reports/validation/test-1k__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/stages/validation/test-1k__hdt.json
+    * Semantic validation (cottas, comunica): test-1k.cottas
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/reports/validation/test-1k__cottas
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/stages/validation/test-1k__cottas.json
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/test-1k
+      - RDF aggregate: test-1k.nt.gz
+      - RDF (.gz): 395.83 KB (retained because it is also the selected gzip artifact)
+      - gzip (.nt.gz): 395.83 KB
+      - HDT (.hdt): 554.87 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/test-1k/test-1k.hdt)
+      - gzip-on-HDT (.hdt.gz): 94.17 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/test-1k/test-1k.hdt.gz)
+      - COTTAS (.cottas): 168.21 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/test-1k/test-1k.cottas)
+      - gzip-on-COTTAS (.cottas.gz): 159.15 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/test-1k/test-1k.cottas.gz)
+Total triples produced (full run): 94,919
+Conversion process finished.
+Run time (full mode): 2m 41.2s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out/run_metrics/test-1k__20260915T005615/summary.json

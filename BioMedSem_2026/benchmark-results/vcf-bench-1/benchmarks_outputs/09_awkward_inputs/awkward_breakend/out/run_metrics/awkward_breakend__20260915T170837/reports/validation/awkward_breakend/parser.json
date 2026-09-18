@@ -1,0 +1,666 @@
+{
+  "_condensedFormatValueDigest": [
+    {
+      "bucket": "02",
+      "valueCount": 1
+    },
+    {
+      "bucket": "0f",
+      "valueCount": 1
+    },
+    {
+      "bucket": "3a",
+      "valueCount": 1
+    },
+    {
+      "bucket": "6e",
+      "valueCount": 1
+    }
+  ],
+  "_expandedFormatValueDigest": [
+    {
+      "bucket": "27",
+      "valueCount": 1
+    },
+    {
+      "bucket": "40",
+      "valueCount": 1
+    },
+    {
+      "bucket": "75",
+      "valueCount": 1
+    },
+    {
+      "bucket": "b5",
+      "valueCount": 1
+    }
+  ],
+  "alleleCount": 4,
+  "contigCount": 1,
+  "declaredFilterCodeCount": 0,
+  "distinctFormatKeyCount": 2,
+  "emittedGenotypeClasses": {
+    "Genotype": 2,
+    "GenotypeAlleleCall": 4
+  },
+  "emittedGenotypePredicates": {
+    "callIndex": 4,
+    "calledAllele": 4,
+    "genotypeString": 2,
+    "hasAlleleCall": 4,
+    "hasGenotype": 2,
+    "isNoCall": 4,
+    "phasingStatus": 2,
+    "ploidy": 2
+  },
+  "emittedHeaderClasses": {
+    "ContigHeaderLine": 1,
+    "FILTERHeaderLine": 1,
+    "FORMATHeaderLine": 2,
+    "FileFormatHeaderLine": 1,
+    "HeaderAttribute": 28,
+    "INFOHeaderLine": 4,
+    "ReferenceHeaderLine": 1
+  },
+  "emittedHeaderPredicates": {
+    "attributeIndex": 28,
+    "attributeKey": 28,
+    "attributeValue": 28,
+    "contigCount": 1,
+    "contigId": 1,
+    "contigLength": 1,
+    "fieldArity": 1,
+    "fieldDescription": 7,
+    "fieldId": 6,
+    "fieldNumber": 6,
+    "fieldNumberInteger": 5,
+    "fieldType": 6,
+    "filterId": 1,
+    "hasAttribute": 28
+  },
+  "emittedRecordClasses": {
+    "AltAllele": 2,
+    "Breakend": 2,
+    "ReferenceAllele": 2
+  },
+  "emittedRecordPredicates": {
+    "alleleIndex": 4,
+    "alleleKind": 4,
+    "alleleValue": 4,
+    "breakendOrientation": 2,
+    "breakendReplacementString": 2,
+    "chromosome": 2,
+    "hasAltAllele": 2,
+    "hasReferenceAllele": 2
+  },
+  "fileDate": "(absent)",
+  "fileFormat": "VCFv4.2",
+  "filterCodeCount": 0,
+  "filterOracle": "bcftools",
+  "formatKeyOccurrences": 4,
+  "formatTypedDecimalCount": 0,
+  "formatTypedIntegerCount": 2,
+  "formatValueSlots": 4,
+  "genotypeAlleleCallCount": 4,
+  "genotypeCount": 2,
+  "gtRecordCount": 2,
+  "headerLineCount": 10,
+  "headerValueCount": 10,
+  "infoDefinitionCount": 2,
+  "infoFlagCount": 0,
+  "infoTypedDecimalCount": 0,
+  "infoTypedIntegerCount": 0,
+  "infoValueCount": 4,
+  "nonEmptyFormatValues": 4,
+  "oracleSeconds": {
+    "census": 0.00010061985813081264,
+    "parse": 0.005031340988352895,
+    "phases": {
+      "assemblySeconds": 0.00028773490339517593,
+      "censusSeconds": 0.00010061985813081264,
+      "readerOpenSeconds": 0.0017474640626460314,
+      "sampleBlockSeconds": 3.5064760595560074e-05,
+      "scanSeconds": 0.0002968630287796259
+    },
+    "total": 0.0051331548020243645
+  },
+  "q01_record_density_1mb": [
+    {
+      "chrom": "20",
+      "recordCount": 2,
+      "windowIndex": 0
+    }
+  ],
+  "q02_variant_shape_counts": [
+    {
+      "recordCount": 2,
+      "variantClass": "SYMBOLIC_OR_BREAKEND"
+    }
+  ],
+  "q03_titv": {
+    "biallelicSnvCount": 0,
+    "tiTvRatio": null,
+    "transitionCount": 0,
+    "transversionCount": 0
+  },
+  "q04_filter_distribution": [
+    {
+      "filterLexical": "PASS",
+      "filterStatus": "PASS",
+      "recordCount": 2
+    }
+  ],
+  "q05_sample_genotype_counts": [
+    {
+      "callCount": 2,
+      "genotypeClass": "HET",
+      "sampleId": "SAMPLE_A"
+    }
+  ],
+  "q06EligibleSiteCount": 2,
+  "q06_ac_an_distribution": [
+    {
+      "ac": 1,
+      "af": 0.5,
+      "an": 2,
+      "siteCount": 2
+    }
+  ],
+  "q07_file_metadata": {
+    "fileFormat": "VCFv4.2",
+    "referenceGenome": "file:///ref/GRCh38.fa",
+    "sourceSoftware": "(absent)"
+  },
+  "q08_header_line_census": [
+    {
+      "headerKey": "FILTER",
+      "lineCount": 1
+    },
+    {
+      "headerKey": "FORMAT",
+      "lineCount": 2
+    },
+    {
+      "headerKey": "INFO",
+      "lineCount": 4
+    },
+    {
+      "headerKey": "contig",
+      "lineCount": 1
+    },
+    {
+      "headerKey": "fileformat",
+      "lineCount": 1
+    },
+    {
+      "headerKey": "reference",
+      "lineCount": 1
+    }
+  ],
+  "q09_predicate_census": [
+    {
+      "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      "tripleCount": 90
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#alleleIndex",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#alleleKind",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#alleleValue",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#alt",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#attributeIndex",
+      "tripleCount": 28
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#attributeKey",
+      "tripleCount": 28
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#attributeValue",
+      "tripleCount": 28
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#breakendOrientation",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#breakendReplacementString",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#callIndex",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#calledAllele",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#chrom",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#chromosome",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#componentIndex",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#contigCount",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#contigId",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#contigLength",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#declaredBy",
+      "tripleCount": 12
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldArity",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldDescription",
+      "tripleCount": 7
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldId",
+      "tripleCount": 6
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldIndex",
+      "tripleCount": 8
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldNumber",
+      "tripleCount": 6
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldNumberInteger",
+      "tripleCount": 5
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldType",
+      "tripleCount": 6
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldValue",
+      "tripleCount": 8
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fieldValueInteger",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#fileFormat",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#filter",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#filterId",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#filterStatus",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#forSample",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#formatRaw",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#genotypeString",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasAlleleCall",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasAltAllele",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasAttribute",
+      "tripleCount": 28
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasCall",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasColumnHeader",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasFormatKey",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasFormatValue",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasGenotype",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasGenotypeColumns",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasHeader",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasHeaderLine",
+      "tripleCount": 10
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasIdentifier",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasInfoValue",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasRecord",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasReferenceAllele",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasSample",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasSampleCall",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#hasSampleSet",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#headerKey",
+      "tripleCount": 10
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#headerValue",
+      "tripleCount": 10
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#identifierValue",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#infoRaw",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#isNoCall",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#lineIndex",
+      "tripleCount": 10
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#phaseIndicator",
+      "tripleCount": 4
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#phasingStatus",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#ploidy",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#pos",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#qual",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#recordId",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#recordIndex",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#ref",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#referenceGenome",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#representationProfile",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#sampleId",
+      "tripleCount": 2
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#sampleIndex",
+      "tripleCount": 1
+    },
+    {
+      "predicate": "https://w3id.org/vcf-core/vocab#sampleName",
+      "tripleCount": 1
+    }
+  ],
+  "q10_class_census": [
+    {
+      "class": "https://w3id.org/vcf-core/vocab#AltAllele",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#Breakend",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#ColumnHeaderLine",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#ContigHeaderLine",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#FILTERHeaderLine",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#FORMATHeaderLine",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#FileFormatHeaderLine",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#FormatFieldDefinition",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#FormatFieldValue",
+      "resourceCount": 4
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#FormatKey",
+      "resourceCount": 4
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#Genotype",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#GenotypeAlleleCall",
+      "resourceCount": 4
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#HeaderAttribute",
+      "resourceCount": 28
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#HeaderLine",
+      "resourceCount": 10
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#INFOHeaderLine",
+      "resourceCount": 4
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#InfoFieldDefinition",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#InfoFieldValue",
+      "resourceCount": 4
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#RecordIdentifier",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#ReferenceAllele",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#ReferenceHeaderLine",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#SampleCall",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#SampleSet",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#VCF42File",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#VCFFile",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#VCFHeader",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#VCFRecord",
+      "resourceCount": 2
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#VCFSample",
+      "resourceCount": 1
+    },
+    {
+      "class": "https://w3id.org/vcf-core/vocab#VariantCall",
+      "resourceCount": 2
+    }
+  ],
+  "q11_record_digest": [
+    {
+      "bucket": "5a",
+      "recordCount": 1
+    },
+    {
+      "bucket": "71",
+      "recordCount": 1
+    }
+  ],
+  "q12_info_value_digest": [
+    {
+      "bucket": "10",
+      "valueCount": 1
+    },
+    {
+      "bucket": "6f",
+      "valueCount": 1
+    },
+    {
+      "bucket": "df",
+      "valueCount": 1
+    },
+    {
+      "bucket": "f9",
+      "valueCount": 1
+    }
+  ],
+  "q13_format_value_digest": [
+    {
+      "bucket": "27",
+      "valueCount": 1
+    },
+    {
+      "bucket": "40",
+      "valueCount": 1
+    },
+    {
+      "bucket": "75",
+      "valueCount": 1
+    },
+    {
+      "bucket": "b5",
+      "valueCount": 1
+    }
+  ],
+  "recordIdentifierCount": 2,
+  "recordsWithFormatColumn": 2,
+  "recordsWithFormatKeys": 2,
+  "referenceGenome": "file:///ref/GRCh38.fa",
+  "sampleCount": 1,
+  "samples": [
+    "SAMPLE_A"
+  ],
+  "singleAltRecordCount": 2,
+  "source": "/data/vcf/awkward_breakend.vcf",
+  "sourceSha256": "6dc26e2de80c910c3dc745481ccb467c71f89bdbd0e682becfb964e0b80b7adf",
+  "sourceSoftware": "(absent)",
+  "synthesizedFormatNumbers": [],
+  "synthesizedInfoNumbers": [],
+  "totalRecords": 2,
+  "valueItemCount": 0
+}

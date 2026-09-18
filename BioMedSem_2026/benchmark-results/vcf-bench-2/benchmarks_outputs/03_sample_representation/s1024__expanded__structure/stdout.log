@@ -1,0 +1,33 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/run_metrics/1000G_10000r_s1024__20260914T044514
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/run_metrics/1000G_10000r_s1024__20260914T044514/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/run_metrics/1000G_10000r_s1024__20260914T044514/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: 1000G_10000r_s1024.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.1 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,240,000 calls
+    * Sample calls streamed: 10,240,000; FORMAT values: 10,240,000
+    * Streaming structured header RDF
+    * Header lines typed: 252; contigs: 86
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 120,258 values
+    * QUAL values streamed: 10,000; INFO values: 120,258; declarations: 24
+    * Triples produced: 257,364,618
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/1000G_10000r_s1024
+      - RDF aggregate: 1000G_10000r_s1024.nt.gz
+      - RDF (.gz): 1022.39 MB (removed after successful compression)
+      - HDT (.hdt): 1.54 GB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/1000G_10000r_s1024/1000G_10000r_s1024.hdt)
+Total triples produced (full run): 257,364,618
+Conversion process finished.
+Run time (full mode): 1h 37m 3.8s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/run_metrics/1000G_10000r_s1024__20260914T044514/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out/run_metrics/1000G_10000r_s1024__20260914T044514/summary.json
