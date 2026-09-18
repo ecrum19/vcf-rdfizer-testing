@@ -17,8 +17,16 @@ def sh(*cmd):
 HOME = os.path.expanduser("~")
 TOOL = os.path.join(HOME, "VCF-RDFizer")
 REPO = os.path.join(HOME, "vcf-rdfizer-testing")
-IMAGE = "vcf-rdfizer:local-025fb7d"
 host = socket.gethostname()
+
+def _short_head(repo):
+    return sh("git", "-C", repo, "rev-parse", "--short", "HEAD")
+
+# Derive the tag from the checkout rather than hardcoding one. The first version
+# of this script pinned vcf-rdfizer:local-025fb7d, so once bench-1 moved to
+# a3679e1 and then 20d2cbb it kept recording the OLD image's digest against the
+# new commits -- provenance that points at the wrong bits is worse than none.
+IMAGE = "vcf-rdfizer:local-%s" % (_short_head(TOOL) or "unknown")
 
 def git(repo, *args):
     return sh("git", "-C", repo, *args)
@@ -40,6 +48,13 @@ rec = {
         "subject": git(REPO, "log", "--oneline", "-1"),
         "dirty": git(REPO, "status", "--porcelain", "--untracked-files=no"),
     },
+    "images_present": [
+        line.split(" ", 1)
+        for line in sh(
+            "docker", "images", "--format", "{{.Repository}}:{{.Tag}} {{.ID}}"
+        ).splitlines()
+        if line.startswith("vcf-rdfizer:")
+    ],
     "image": {
         "tag": IMAGE,
         "id": sh("docker", "image", "inspect", IMAGE, "--format", "{{.Id}}"),

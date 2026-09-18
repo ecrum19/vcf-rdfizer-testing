@@ -274,7 +274,18 @@ def _iter_metric_files(run_dir: Path, section: str) -> Iterable[Path]:
 
     paths: List[Path] = []
     seen: set[Path] = set()
-    for base in (run_dir / section, run_dir / "raw_metrics" / section):
+    # `stages/` is where the benchmark suite writes these: a run directory is
+    # <cell>/out/run_metrics/<dataset>__<timestamp>/stages/<section>/*.json.
+    # The two older locations are kept so a pre-suite run still combines --
+    # this reads every layout rather than assuming the newest.
+    # The suite drops the "_metrics" suffix under stages/: this function is
+    # asked for "conversion_metrics" and the file lives at stages/conversion/.
+    stage_section = section[: -len("_metrics")] if section.endswith("_metrics") else section
+    for base in (
+        run_dir / "stages" / stage_section,
+        run_dir / section,
+        run_dir / "raw_metrics" / section,
+    ):
         if not base.exists():
             continue
         for path in sorted(base.rglob("*.json")):
