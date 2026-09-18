@@ -148,6 +148,21 @@ def collect_cells(root: Path) -> list[dict[str, Any]]:
     return cells
 
 
+def attach_image_digests(cells: list[dict[str, Any]], table: dict[str, dict[str, str]]) -> None:
+    for cell in cells:
+        tag = cell.get("image_ref")
+        if not tag:
+            # Legitimate for a host-side cell such as 08_robustness/mutation_score,
+            # which runs no container at all. Recorded rather than left blank so
+            # it cannot be mistaken for a missing record.
+            cell["image_digest"] = None
+            cell["image_note"] = "no container image (host-side cell)"
+            continue
+        cell["image_digest"] = (table.get(cell["host"]) or {}).get(tag)
+        if cell["image_digest"] is None:
+            cell["image_note"] = "tag not found in this host's image inventory"
+
+
 def roll_up(cells: list[dict[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     by_exp = collections.defaultdict(list)
@@ -188,11 +203,37 @@ def integrity(cells: list[dict[str, Any]]) -> dict[str, Any]:
         "cells_without_tool_commit": [c["path"] for c in live if not c.get("tool_commit")],
         "tool_commits": sorted({(c.get("tool_commit") or "?")[:8] for c in live}),
         "image_refs": sorted({c.get("image_ref") or "?" for c in live}),
+        "cells_with_unresolved_image": [
+            c["path"] for c in live
+            if c.get("image_ref") and not c.get("image_digest")
+        ],
         "failed_live_cells": [
             {"path": c["path"], "exit_code": c["exit_code"]}
             for c in live if c["status"] == "FAILED"
         ],
     }
+
+
+def image_digests(root: Path) -> dict[str, dict[str, str]]:
+    """host -> {image tag: image id}, from every provenance file on that host.
+
+    A cell records the image *tag* it ran, and a tag is not unique: each host
+    built vcf-rdfizer:local-025fb7d independently, so the same tag names
+    different bits on the two machines. Resolving tag -> id per host is what
+    turns "image_ref" into provenance a reader can check.
+    """
+    out: dict[str, dict[str, str]] = {}
+    for path in sorted(root.glob("*/*/00_environment/provenance.*.json")):
+        payload = read_json(path) or {}
+        host = payload.get("host") or path.relative_to(root).parts[0]
+        table = out.setdefault(host, {})
+        for entry in payload.get("images_present") or []:
+            if isinstance(entry, (list, tuple)) and len(entry) == 2:
+                table.setdefault(entry[0].strip(), entry[1].strip())
+        image = payload.get("image") or {}
+        if image.get("tag") and image.get("id"):
+            table.setdefault(image["tag"], image["id"])
+    return out
 
 
 def provenance(root: Path) -> dict[str, Any]:
@@ -223,6 +264,8 @@ def main() -> int:
 
     root = args.root.resolve()
     cells = collect_cells(root)
+    digests = image_digests(root)
+    attach_image_digests(cells, digests)
     live_runs = [
         r for c in cells if c["branch"] == "live" for r in c["runs"]
     ]
@@ -233,6 +276,7 @@ def main() -> int:
         "root": str(root.name),
         "hosts": sorted({c["host"] for c in cells}),
         "provenance": provenance(root),
+        "image_digests_by_host": digests,
         "counts": {
             "cells_total": len(cells),
             "cells_by_branch": dict(
