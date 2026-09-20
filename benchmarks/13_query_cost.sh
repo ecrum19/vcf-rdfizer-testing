@@ -78,6 +78,15 @@ run_scale() {
     # Conversion and validation in one run: the oracle has to parse the same
     # file the graph was built from, and the suite guarantees that by
     # construction when it validates the artifact it just produced.
+    #
+    # --no-shacl is deliberate and belongs to THIS experiment only. The shape
+    # layer is on by default since the tool bundled it, and it costs tens of
+    # seconds per validation -- 34 s on a 95k-triple graph under the default
+    # profile. This experiment measures a SPARQL engine against a VCF parser
+    # on identical work, so a fixed per-run cost that belongs to neither side
+    # would only blur the comparison, and would make these numbers
+    # incomparable with the archived ones. Section 4.3's shape measurements
+    # live in 08_robustness, where they are the claim.
     bm_run "$EXPERIMENT" "${label}__r${rep}" -- \
       --mode full \
       --input "$vcf" \
@@ -90,6 +99,7 @@ run_scale() {
       --validate \
       --validate-artifacts all \
       --validation-engine "$engines" \
+      --no-shacl \
       --spark-partitions "${BM_SPARK_PARTITIONS:-8}"
   done
 }

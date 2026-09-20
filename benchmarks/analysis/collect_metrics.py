@@ -244,12 +244,49 @@ def read_query_cost(metrics_dir: pathlib.Path) -> dict:
 
 
 def read_partitioned_workspace(metrics_dir: pathlib.Path) -> dict:
-    """Peak Docker-VOLUME workspace, from the partitioned stage's own samples.
+    """Peak Docker-VOLUME workspace, and the build breakdown beside it.
 
     This is not the host peak in bench.json. The partitioned stage runs in an
     ephemeral Docker volume that `du` on the output tree cannot see, so the two
-    numbers measure different things and are reported in separate columns.
+    numbers measure different things and are reported in separate columns. They
+    must never be added.
+
+    Read from `build_profile` in the compression-operations record, which sizes
+    the /work TREE. The older free-space path below computed `total - free` on
+    the volume's backing device, which is the whole host disk: on a build whose
+    scratch was one 11.9 MB chunk it read 126,956,531,712 bytes. That figure
+    never reached a dataset only because the sample arrays it wanted were never
+    written. It is kept solely as a fallback for archives that do carry them,
+    and flagged when used, because it is not a measurement of this build.
     """
+    operations_dir = metrics_dir / "stages" / "compression_operations"
+    if operations_dir.is_dir():
+        for path in sorted(operations_dir.rglob("partitioned_compression.json")):
+            try:
+                data = json.loads(path.read_text())
+            except json.JSONDecodeError:
+                continue
+            profile = data.get("build_profile") or {}
+            if not profile:
+                continue
+            out = {
+                "peak_volume_workspace_bytes": profile.get("peak_volume_workspace_bytes"),
+                "peak_volume_workspace_source": "build_profile_tree",
+                # The shared pass: one decompress-and-chunk feeds every
+                # representation, so this is charged to neither method's total.
+                "chunk_stream_seconds": profile.get("chunk_stream_seconds"),
+                "chunk_count": profile.get("chunk_count"),
+                "chunk_input_bytes": profile.get("chunk_input_bytes"),
+                "build_max_rss_kb": profile.get("max_rss_kb"),
+            }
+            for kind, bucket in (profile.get("by_stage_kind") or {}).items():
+                key = kind.replace("-", "_")
+                out[f"build_seconds__{key}"] = bucket.get("wall_seconds")
+                out[f"build_stages__{key}"] = bucket.get("stage_count")
+            for prefix, rounds in (profile.get("merge_rounds") or {}).items():
+                out[f"merge_rounds__{prefix}"] = rounds
+            return {key: value for key, value in out.items() if value is not None}
+
     stage_dir = metrics_dir / "stages" / "partitioned"
     if not stage_dir.is_dir():
         return {}
@@ -270,7 +307,13 @@ def read_partitioned_workspace(metrics_dir: pathlib.Path) -> dict:
                     used = total - free
             if used is not None:
                 peak_used = used if peak_used is None else max(peak_used, used)
-    return {"peak_volume_workspace_bytes": peak_used} if peak_used is not None else {}
+    if peak_used is None:
+        return {}
+    return {
+        "peak_volume_workspace_bytes": peak_used,
+        # Device-level, not this build's footprint. Do not report it as one.
+        "peak_volume_workspace_source": "device_free_space_legacy",
+    }
 
 
 def collect_cell(cell_dir: pathlib.Path) -> dict | None:

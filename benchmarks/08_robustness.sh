@@ -83,6 +83,44 @@ else:
 print(f"  score report -> {report}")
 PYEOF
 
+  # Second pass, attributing the shape layer. The query-only score above is
+  # the one every archived run reports and must stay comparable, so this is a
+  # separate cell rather than a changed default. It needs pyshacl on the HOST,
+  # not only in the image: the harness runs in-process.
+  local shacl_dest="$BM_RESULTS/$EXPERIMENT/mutation_score__shacl_full"
+  if ! python3 -c "import pyshacl" >/dev/null 2>&1; then
+    bm_skip "$EXPERIMENT" "mutation_score__shacl_full" \
+      "pyshacl is not installed on the host, so the shape layer cannot be scored.
+Install it first: python3 -m pip install pyshacl"
+  else
+    mkdir -p "$shacl_dest"
+    bm_step "re-scoring with the full shape profile (slower: its constraints self-join the graph)"
+    set +e
+    ( cd -- "$TOOL_DIR" && \
+      VCF_RDFIZER_MUTATION_SHACL=full \
+      VCF_RDFIZER_MUTATION_REPORT="$shacl_dest/mutation-score.json" \
+      python3 -m unittest test.test_validation_mutation_unit ) \
+      > "$shacl_dest/stdout.log" 2> "$shacl_dest/stderr.log"
+    local shacl_rc=$?
+    set -e
+    python3 - "$shacl_dest" "$shacl_rc" "$(bm_tool_commit)" <<'PYEOF'
+import json, pathlib, sys
+dest, rc, commit = pathlib.Path(sys.argv[1]), int(sys.argv[2]), sys.argv[3]
+report = dest / "mutation-score.json"
+record = {"experiment": "08_robustness", "cell": "mutation_score__shacl_full",
+          "exit_code": rc, "tool_commit": commit, "shacl_profile": "full"}
+if report.exists():
+    try:
+        record["mutation_report"] = json.loads(report.read_text())
+    except json.JSONDecodeError:
+        record["mutation_report_error"] = "report is not valid JSON"
+else:
+    record["mutation_report_error"] = "harness wrote no report"
+(dest / "bench.json").write_text(json.dumps(record, indent=2) + "\n")
+print(f"  shape-attributed score report -> {report}")
+PYEOF
+  fi
+
   bm_step "cite the score AND the remaining-gaps list; the gaps are the honest limitation"
 }
 
