@@ -1,0 +1,25 @@
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "make manuscript",
+      "command": "make",
+      "args": [
+        "%DOCFILE%.pdf"
+      ],
+      "cwd": "%DIR%",
+      "env": {
+        "PATH": "/Library/TeX/texbin:/Library/Developer/CommandLineTools/usr/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      }
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "make current manuscript",
+      "tools": [
+        "make manuscript"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.outDir": "%DIR%"
+}
