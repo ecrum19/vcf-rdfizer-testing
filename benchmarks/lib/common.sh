@@ -494,11 +494,16 @@ bm_expect_refusal() {
 # the suite depends on this function not exiting.
 bm_find_vcf() {
   local name="$1" candidate
-  # -s, not -f: an empty file is not an input. A corpus file that has been
-  # truncated to zero -- by a cleanup, an interrupted download, a full disk --
-  # passes -f and then produces a cell full of nothing rather than a skip.
-  # That happened: HG005_GRCh38.vcf.gz was left at 0 bytes on one host, and
-  # 04's top rung would have converted it and recorded the result.
+  # -s, not -f: an empty file is not an input. A corpus file truncated to zero
+  # -- by an interrupted download, a full disk, a botched copy -- passes -f and
+  # then produces a cell built from no records rather than a skip, which is far
+  # harder to notice than a missing input.
+  #
+  # -s follows symlinks, which matters here: the corpus files are symlinks to
+  # their upstream names (HG005_GRCh38.vcf.gz -> HG005_GRCh38_1_22_v4.2.1_...),
+  # so the test must ask about the target rather than the 41-byte link. `du -h`
+  # on those links reports 0, which reads alarmingly like a truncated file and
+  # is not one.
   if [[ "$name" == /* ]]; then
     [[ -s "$name" ]] || return 1
     printf '%s\n' "$name"
