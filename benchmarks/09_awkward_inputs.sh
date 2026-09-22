@@ -46,6 +46,9 @@ for fixture in "$FIXTURE_DIR"/awkward_*.vcf "$FIXTURE_DIR"/awkward_*.vcf.gz; do
     --validation-engine "${BM_VALIDATION_ENGINES:-comunica}" \
     --spark-partitions "${BM_SPARK_PARTITIONS:-8}"
   # Deliberately no bm_expect_ok: a refusal is a valid, recorded outcome.
+  # Say so in bench.json too -- a comment here did not stop the campaign
+  # summary from counting these three as failures.
+  bm_record_outcome "awkward input: a refusal is a valid outcome, not a defect"
 done
 
 # --------------------------------------------------------------------------

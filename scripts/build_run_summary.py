@@ -63,6 +63,46 @@ def tree_kind(tree_name: str) -> str:
     return "unknown"
 
 
+#: Cells recorded before bm_record_assertion existed carry no marker, so their
+#: assertion is recovered from what the experiment script demonstrably does.
+#: Both rules are transcriptions of the scripts, not guesses:
+#:   06_equivalence asserts its refusal__* cells with bm_expect_refusal, and
+#:   09_awkward_inputs states "a refusal is a valid, recorded outcome" and
+#:   asserts nothing for its awkward_* fixtures.
+#: Anything else keeps the strict reading -- silence means a non-zero exit is a
+#: failure, which is what caught 13_query_cost's three real cottas mismatches.
+def _legacy_assertion(record: dict[str, Any]) -> str | None:
+    cell = record.get("cell") or ""
+    if cell.startswith("refusal__"):
+        return "refusal"
+    if record.get("experiment") == "09_awkward_inputs" and cell.startswith("awkward_"):
+        return "recorded"
+    return None
+
+
+def classify(record: dict[str, Any]) -> str:
+    """OK / FAILED / REFUSED / RECORDED / SKIPPED for one cell.
+
+    REFUSED  the experiment demanded this run fail, and it did
+    RECORDED the experiment asserted nothing: the exit code is an observation
+    """
+    if record.get("skipped"):
+        return "SKIPPED"
+    assertion = record.get("assertion")
+    nonzero = bool(record.get("exit_code"))
+    if assertion == "refusal":
+        # A refusal cell that SUCCEEDED is a failure of the assertion itself.
+        return "REFUSED" if nonzero else "FAILED"
+    if not nonzero:
+        # A zero exit is success whatever was asserted. The assertion only
+        # disambiguates a non-zero one, so reporting an unasserted success as
+        # anything other than OK would lose information rather than add it --
+        # 09 has eight awkward inputs that convert cleanly and three that are
+        # refused, and those are different results.
+        return "OK"
+    return "RECORDED" if assertion == "recorded" else "FAILED"
+
+
 def read_json(path: Path) -> dict[str, Any] | None:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -111,10 +151,10 @@ def collect_cells(root: Path) -> list[dict[str, Any]]:
         }
         if record["skipped"]:
             record["skip_reason"] = bench.get("skip_reason") or bench.get("reason")
-        record["status"] = (
-            "SKIPPED" if record["skipped"]
-            else "OK" if not record["exit_code"] else "FAILED"
-        )
+        record["assertion"] = bench.get("assertion") or _legacy_assertion(record)
+        if bench.get("assertion_note"):
+            record["assertion_note"] = bench["assertion_note"]
+        record["status"] = classify(record)
 
         runs = []
         for run_dir in sorted((cell_dir / "out" / "run_metrics").glob("*__*")):
@@ -174,6 +214,8 @@ def roll_up(cells: list[dict[str, Any]]) -> dict[str, Any]:
             "ok": sum(1 for r in rows if r["status"] == "OK"),
             "failed": sum(1 for r in rows if r["status"] == "FAILED"),
             "skipped": sum(1 for r in rows if r["status"] == "SKIPPED"),
+            "refused": sum(1 for r in rows if r["status"] == "REFUSED"),
+            "recorded": sum(1 for r in rows if r["status"] == "RECORDED"),
             "wall_hours": round(
                 sum(float(r.get("wrapper_wall_seconds") or 0) for r in rows) / 3600, 3
             ),
@@ -206,6 +248,12 @@ def integrity(cells: list[dict[str, Any]]) -> dict[str, Any]:
         "cells_with_unresolved_image": [
             c["path"] for c in live
             if c.get("image_ref") and not c.get("image_digest")
+        ],
+        "refused_as_designed": [
+            c["path"] for c in live if c["status"] == "REFUSED"
+        ],
+        "recorded_not_asserted": [
+            c["path"] for c in live if c["status"] == "RECORDED"
         ],
         "failed_live_cells": [
             {"path": c["path"], "exit_code": c["exit_code"]}

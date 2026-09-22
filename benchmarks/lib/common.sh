@@ -380,6 +380,46 @@ PYEOF
 
 # Abort unless the last bm_run succeeded. Use in experiments where a failure
 # invalidates everything downstream; omit where a non-zero exit is the result.
+# Record what the experiment asserted about a cell, so a reader of bench.json
+# does not have to infer it from the exit code.
+#
+# Exit codes alone are ambiguous here. 06's refusal cells exit 2 *because the
+# refusal is the thing being tested*, and 09 runs awkward fixtures where a
+# refusal is a valid recorded outcome -- yet both looked identical to a genuine
+# failure, so the campaign summary reported five failures that were not.
+#
+# "ok"        the run was asserted to succeed
+# "refusal"   the run was asserted to fail, with a specific message
+# "recorded"  no assertion: the exit code is data, not a verdict
+#
+# Absence of a marker means the same as "ok": a non-zero exit is a failure.
+# That is deliberate -- 13_query_cost asserts nothing and its three cottas
+# mismatches were real, so silence must not be read as permission to fail.
+bm_record_assertion() {
+  local kind="$1" note="${2:-}"
+  [[ "${BM_LAST_DRY_RUN:-0}" == "1" ]] && return 0
+  [[ -f "${BM_LAST_DIR:-}/bench.json" ]] || return 0
+  python3 - "$BM_LAST_DIR" "$kind" "$note" <<'PY' || true
+import json, pathlib, sys
+path = pathlib.Path(sys.argv[1], "bench.json")
+try:
+    record = json.loads(path.read_text(encoding="utf-8"))
+except (OSError, ValueError):
+    sys.exit(0)
+record["assertion"] = sys.argv[2]
+if sys.argv[3]:
+    record["assertion_note"] = sys.argv[3]
+path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
+# No assertion: the exit code is an observation. Use this where a refusal is a
+# legitimate result rather than a defect, so it is recorded as such instead of
+# being inferred from a comment in the script.
+bm_record_outcome() {
+  bm_record_assertion "recorded" "${1:-}"
+}
+
 # Cells that failed, reported once when the experiment ends.
 BM_FAILED_CELLS=()
 
@@ -400,6 +440,7 @@ BM_FAILED_CELLS=()
 # the same way rather than relying on this function to stop the script.
 bm_expect_ok() {
   [[ "${BM_LAST_DRY_RUN:-0}" == "1" ]] && return 0
+  bm_record_assertion "ok"
   [[ "${BM_LAST_RC:-1}" == "0" ]] && return 0
   local dir="${BM_LAST_DIR:-?}" cell exp
   cell="$(basename -- "$dir" 2>/dev/null || printf '?')"
@@ -432,6 +473,9 @@ bm_expect_refusal() {
   [[ "${BM_LAST_RC:-0}" != "0" ]] || bm_die "expected a refusal but the run succeeded: ${BM_LAST_DIR:-?}"
   grep -qF -- "$fragment" "${BM_LAST_DIR}/stderr.log" \
     || bm_die "refusal did not mention '$fragment': ${BM_LAST_DIR}/stderr.log"
+  # Only once both checks pass: a cell marked "refusal" is one where the
+  # refusal was demanded and delivered, not merely one that exited non-zero.
+  bm_record_assertion "refusal" "$fragment"
 }
 
 # --------------------------------------------------------------------------

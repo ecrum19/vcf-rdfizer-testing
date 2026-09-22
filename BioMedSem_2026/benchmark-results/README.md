@@ -59,7 +59,21 @@ different bits on the two machines — `b645120b…` on bench-1, `0082fe2c…` o
 bench-2. `summary.json` resolves every cell's tag to the digest for *its* host.
 Cite the digest.
 
-**`06_equivalence` is absent.** It was killed twice without completing: COTTAS
-does not terminate on `q05_sample_genotype_counts` against the condensed
-encoding (41 h, then 10 h). The evidence is under `__stalled/`, including the
-container logs. It is a limitation to report, not a gap to hide.
+**`06_equivalence` is present, and was hard-won.** It was killed twice without
+completing: COTTAS, queried through pycottas' rdflib Store, did not terminate on
+`q05_sample_genotype_counts` against the condensed encoding (41 h, then 10 h).
+Querying it through `@elias.crum/query-sparql-cottas` instead — DuckDB over the
+Parquet, behind the same endpoint the other engines use — finishes that cell in
+99.8 minutes, and the whole experiment in 8.98 h with all four engines agreeing
+on every artifact. The two killed runs are kept under `__stalled/` with their
+container logs, because the contrast is the result.
+
+**A non-zero exit is not always a failure.** `06` asserts that two
+configurations are *refused* (`--hdt-strategy single` beside cottas, and beside
+a gzip aggregate), and `09` runs awkward fixtures where a refusal is a valid
+outcome. Both were previously counted as failures. `bench.json` now carries an
+`assertion` field — `ok`, `refusal` or `recorded` — and `summary.json`
+classifies on it: `REFUSED` where the refusal was demanded and delivered,
+`RECORDED` where nothing was asserted and the exit code is an observation.
+Cells recorded before that field existed are recovered from the scripts'
+documented behaviour; the rule is in `build_run_summary.py`.

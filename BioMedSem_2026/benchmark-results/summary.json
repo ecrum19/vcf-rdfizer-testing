@@ -1,7 +1,7 @@
 {
   "schema_version": "biomedsem-1.0",
-  "generated_at_utc": "2026-09-18T10:16:41.906366+00:00",
-  "harness_commit": "6d5f026 Integrate every run record into one summary, and stop provenance guessing",
+  "generated_at_utc": "2026-09-22T13:57:19.495151+00:00",
+  "harness_commit": "d25f303 Report the Tier 1 re-run: 113/113, and the defect the shapes found",
   "root": "benchmark-results",
   "hosts": [
     "vcf-bench-1",
@@ -71,6 +71,21 @@
       }
     },
     "vcf-bench-2": {
+      "3b2b0a1": {
+        "image": "sha256:068ae101bce3df5933b9d6fee8895e4dee42e88eafe31f9a9b3eded64f45bbb3",
+        "image_created": "2026-09-21T16:24:46.132555415+02:00",
+        "tool": "3b2b0a1 Verify the cottas engine with a real query at image-build time",
+        "harness": "7170758 Resolve every cell's image tag to a digest, and document the layout",
+        "platform": {
+          "cpu_count": 8,
+          "cpu_model": "Intel(R) Xeon(R) Silver 4309Y CPU @ 2.80GHz",
+          "docker": "Docker version 29.7.2, build a7dcaa6",
+          "kernel": "6.8.0-85-generic",
+          "mem_total_kb": "32845452",
+          "python": "Python 3.12.3"
+        },
+        "source": "vcf-bench-2/benchmarks_outputs/00_environment/provenance.vcf-bench-2.3b2b0a1.json"
+      },
       "be658a2": {
         "image": "",
         "image_created": "",
@@ -101,6 +116,7 @@
       "vcf-rdfizer:local-8b1b4a8": "635f200597ff"
     },
     "vcf-bench-2": {
+      "vcf-rdfizer:local-3b2b0a1": "068ae101bce3",
       "vcf-rdfizer:local-025fb7d": "0082fe2cf42f",
       "vcf-rdfizer:oracle": "c6a5c0325cb4",
       "vcf-rdfizer:r29": "78d37ced127a",
@@ -109,15 +125,15 @@
     }
   },
   "counts": {
-    "cells_total": 192,
+    "cells_total": 200,
     "cells_by_branch": {
-      "live": 134,
+      "live": 142,
       "superseded": 14,
       "archive": 12,
       "calibration": 28,
       "stalled": 4
     },
-    "runs_live": 129
+    "runs_live": 135
   },
   "trees_seen": {
     "vcf-bench-1": {
@@ -155,8 +171,8 @@
     "vcf-bench-2": {
       "benchmarks_outputs": {
         "branch": "live",
-        "complete_cells": 48,
-        "files": 1038
+        "complete_cells": 56,
+        "files": 5449
       },
       "benchmarks_outputs__offsplit": {
         "branch": "offsplit",
@@ -192,6 +208,8 @@
         "ok": 12,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 70.481,
         "hosts": [
           "vcf-bench-1"
@@ -210,6 +228,8 @@
         "ok": 28,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 0.408,
         "hosts": [
           "vcf-bench-1",
@@ -229,6 +249,8 @@
         "ok": 8,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 13.064,
         "hosts": [
           "vcf-bench-2"
@@ -245,6 +267,8 @@
         "ok": 29,
         "failed": 0,
         "skipped": 1,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 18.752,
         "hosts": [
           "vcf-bench-2"
@@ -262,6 +286,8 @@
         "ok": 10,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 10.867,
         "hosts": [
           "vcf-bench-1"
@@ -278,6 +304,8 @@
         "ok": 9,
         "failed": 0,
         "skipped": 1,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 24.899,
         "hosts": [
           "vcf-bench-2"
@@ -289,11 +317,31 @@
           "vcf-rdfizer:local-025fb7d"
         ]
       },
+      "06_equivalence": {
+        "cells": 8,
+        "ok": 6,
+        "failed": 0,
+        "skipped": 0,
+        "refused": 2,
+        "recorded": 0,
+        "wall_hours": 8.982,
+        "hosts": [
+          "vcf-bench-2"
+        ],
+        "tool_commits": [
+          "3b2b0a1b"
+        ],
+        "images": [
+          "vcf-rdfizer:local-3b2b0a1"
+        ]
+      },
       "07_representation_axes": {
         "cells": 20,
         "ok": 20,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 4.894,
         "hosts": [
           "vcf-bench-1"
@@ -310,6 +358,8 @@
         "ok": 8,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 0.251,
         "hosts": [
           "vcf-bench-1"
@@ -325,8 +375,10 @@
       "09_awkward_inputs": {
         "cells": 16,
         "ok": 11,
-        "failed": 3,
+        "failed": 0,
         "skipped": 2,
+        "refused": 0,
+        "recorded": 3,
         "wall_hours": 0.094,
         "hosts": [
           "vcf-bench-1"
@@ -343,6 +395,8 @@
         "ok": 9,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 9.029,
         "hosts": [
           "vcf-bench-1"
@@ -359,6 +413,8 @@
         "ok": 10,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 0.326,
         "hosts": [
           "vcf-bench-1"
@@ -375,6 +431,8 @@
         "ok": 7,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 0.022,
         "hosts": [
           "vcf-bench-1"
@@ -391,6 +449,8 @@
         "ok": 6,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 10.212,
         "hosts": [
           "vcf-bench-1"
@@ -409,6 +469,8 @@
         "ok": 4,
         "failed": 0,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 12.653,
         "hosts": [
           "vcf-bench-2"
@@ -427,6 +489,8 @@
         "ok": 7,
         "failed": 1,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 0.273,
         "hosts": [
           "vcf-bench-1"
@@ -445,6 +509,8 @@
         "ok": 3,
         "failed": 3,
         "skipped": 0,
+        "refused": 0,
+        "recorded": 0,
         "wall_hours": 10.958,
         "hosts": [
           "vcf-bench-1"
@@ -459,7 +525,7 @@
     }
   },
   "integrity": {
-    "live_cells": 130,
+    "live_cells": 138,
     "experiments_spanning_two_hosts": {},
     "experiments_spanning_two_hosts_ok": true,
     "cells_without_host": [],
@@ -467,6 +533,7 @@
     "tool_commits": [
       "025fb7d8",
       "20d2cbb6",
+      "3b2b0a1b",
       "a3679e10",
       "be658a28"
     ],
@@ -474,23 +541,20 @@
       "?",
       "vcf-rdfizer:local-025fb7d",
       "vcf-rdfizer:local-20d2cbb",
+      "vcf-rdfizer:local-3b2b0a1",
       "vcf-rdfizer:local-a3679e1"
     ],
     "cells_with_unresolved_image": [],
-    "failed_live_cells": [
-      {
-        "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_no_records",
-        "exit_code": 1
-      },
-      {
-        "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only",
-        "exit_code": 1
-      },
-      {
-        "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_truncated",
-        "exit_code": 1
-      }
-    ]
+    "refused_as_designed": [
+      "vcf-bench-2/benchmarks_outputs/06_equivalence/refusal__single_with_cottas",
+      "vcf-bench-2/benchmarks_outputs/06_equivalence/refusal__single_with_space_optimized"
+    ],
+    "recorded_not_asserted": [
+      "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_no_records",
+      "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only",
+      "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_truncated"
+    ],
+    "failed_live_cells": []
   },
   "cells": [
     {
@@ -532,6 +596,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r1000000__rep1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r1000000__rep1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -703,6 +768,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r1000000__rep2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r1000000__rep2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -874,6 +940,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r1000000__rep3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r1000000__rep3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -1045,6 +1112,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r100000__rep1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -1216,6 +1284,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r100000__rep2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -1387,6 +1456,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r100000__rep3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -1558,6 +1628,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r10000__rep1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -1729,6 +1800,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r10000__rep2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -1900,6 +1972,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r10000__rep3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/r10000__rep3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -2071,6 +2144,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/rfull__rep1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/04_scaling_records/rfull__rep1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -2242,6 +2316,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/header__basic/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/header__basic",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -2413,6 +2488,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/header__structured/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/header__structured",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -2584,6 +2660,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -2755,6 +2832,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -2926,6 +3004,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -3097,6 +3176,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__structured__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__structured__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -3268,6 +3348,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__structured__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__structured__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -3439,6 +3520,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__structured__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__structured__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -3610,6 +3692,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -3781,6 +3864,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -3952,6 +4036,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HGSVC2__raw__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -4123,6 +4208,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__structured__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HGSVC2__structured__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -4294,6 +4380,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__structured__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HGSVC2__structured__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -4465,6 +4552,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HGSVC2__structured__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/info__HGSVC2__structured__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -4636,6 +4724,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/version__4.1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -4807,6 +4896,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/version__4.2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -4978,6 +5068,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/version__4.3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -5149,6 +5240,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.4/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/version__4.4",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -5320,6 +5412,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__4.5/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/version__4.5",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -5491,6 +5584,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/version__fallback_undeclared/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/07_representation_axes/version__fallback_undeclared",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -5657,6 +5751,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/determinism__a/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/determinism__a",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -5768,6 +5863,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/determinism__b/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/determinism__b",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -5880,6 +5976,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/index__01_build/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/index__01_build",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -6037,6 +6134,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/index__02_reindex/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/index__02_reindex",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -6065,6 +6163,7 @@
       "image_ref": null,
       "command": null,
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/mutation_score",
+      "assertion": null,
       "status": "OK",
       "runs": [],
       "image_digest": null,
@@ -6104,6 +6203,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/roundtrip__01_convert/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/roundtrip__01_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -6214,6 +6314,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/roundtrip__02_compress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/roundtrip__02_compress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -6393,6 +6494,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/roundtrip__03_decompress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/08_robustness/roundtrip__03_decompress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -6448,6 +6550,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_breakend",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -6620,6 +6723,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_crlf/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_crlf",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -6792,6 +6896,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_declared_format_absent/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_declared_format_absent",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -6964,6 +7069,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -7136,6 +7242,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -7308,6 +7415,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -7480,6 +7588,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_missing_values/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_missing_values",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -7652,7 +7761,8 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_no_records",
-      "status": "FAILED",
+      "assertion": "recorded",
+      "status": "RECORDED",
       "runs": [
         {
           "run_id": "20260915T171234",
@@ -7824,7 +7934,8 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only",
-      "status": "FAILED",
+      "assertion": "recorded",
+      "status": "RECORDED",
       "runs": [
         {
           "run_id": "20260915T171308",
@@ -7996,6 +8107,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_symbolic_alleles/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_symbolic_alleles",
+      "assertion": "recorded",
       "status": "OK",
       "runs": [
         {
@@ -8168,7 +8280,8 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_truncated",
-      "status": "FAILED",
+      "assertion": "recorded",
+      "status": "RECORDED",
       "runs": [
         {
           "run_id": "20260915T171400",
@@ -8255,6 +8368,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__00_convert/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/link__00_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -8360,6 +8474,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__gene-demo/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/link__gene-demo",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -8403,6 +8518,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__rsid-dbsnp/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/link__rsid-dbsnp",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -8432,6 +8548,7 @@
       "command": null,
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/link__rsid-ensembl",
       "skip_reason": "tier-3 linker needs network; set BM_ALLOW_NETWORK=1 and BM_CONTACT_EMAIL to run it",
+      "assertion": null,
       "status": "SKIPPED",
       "runs": [],
       "image_digest": null,
@@ -8451,6 +8568,7 @@
       "command": null,
       "path": "vcf-bench-1/benchmarks_outputs/09_awkward_inputs/rules__custom",
       "skip_reason": "set BM_CUSTOM_RULES=/path/to/rules.ttl to exercise a custom mapping.\nNote: validation reports Q9-Q13 as MISMATCH for a correct custom mapping,\nbecause the wrapper does not forward --mapping-policy (a known tool gap).\nRead those five as report-only here.",
+      "assertion": null,
       "status": "SKIPPED",
       "runs": [],
       "image_digest": null,
@@ -8487,6 +8605,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/defaults__16g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/defaults__16g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -8650,6 +8769,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/defaults__31g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/defaults__31g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -8813,6 +8933,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/defaults__8g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/defaults__8g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -8986,6 +9107,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__16g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/lowpeak_chunks__16g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -9159,6 +9281,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__31g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/lowpeak_chunks__31g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -9332,6 +9455,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__8g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/lowpeak_chunks__8g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -9507,6 +9631,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__16g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/lowpeak_condensed__16g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -9682,6 +9807,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -9857,6 +9983,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__8g/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/10_feasibility/lowpeak_condensed__8g",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -10035,6 +10162,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -10425,6 +10553,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row10/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row10",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -10709,6 +10838,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -10993,6 +11123,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -11277,6 +11408,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row4/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row4",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -11561,6 +11693,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row5/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row5",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -11951,6 +12084,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row6",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -12235,6 +12369,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row7/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row7",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -12519,6 +12654,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row8/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row8",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -12909,6 +13045,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/11_covering_set/row9",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13180,6 +13317,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/mode_compress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/mode_compress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13359,6 +13497,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/mode_decompress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/mode_decompress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13399,6 +13538,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/mode_index_cottas/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/mode_index_cottas",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13439,6 +13579,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/mode_index_hdt/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/mode_index_hdt",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13479,6 +13620,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/mode_tsv/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/mode_tsv",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13569,6 +13711,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/phaseA_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13838,6 +13981,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseB_validate_aggregate/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/12_modes_smoke/phaseB_validate_aggregate",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -13897,6 +14041,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/13_query_cost/large__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -14179,6 +14324,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/13_query_cost/large__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -14461,6 +14607,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/13_query_cost/large__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -14743,6 +14890,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/13_query_cost/small__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -15025,6 +15173,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/13_query_cost/small__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -15307,6 +15456,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs/13_query_cost/small__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -15591,6 +15741,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__6row__20260915T144211/row1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -15981,6 +16132,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__6row__20260915T144211/row2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -16265,6 +16417,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__6row__20260915T144211/row3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -16549,6 +16702,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row4/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__6row__20260915T144211/row4",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -16833,6 +16987,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row5/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__6row__20260915T144211/row5",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -17223,6 +17378,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__6row__20260915T144211/row6",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -17507,6 +17663,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__buggy_oracle__20260915T135234/row1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -17897,6 +18054,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/11_covering_set__buggy_oracle__20260915T135234/row2",
+      "assertion": null,
       "status": "FAILED",
       "runs": [
         {
@@ -18179,6 +18337,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/large__r1",
+      "assertion": null,
       "status": "FAILED",
       "runs": [
         {
@@ -18461,6 +18620,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/large__r2",
+      "assertion": null,
       "status": "FAILED",
       "runs": [
         {
@@ -18743,6 +18903,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/large__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/large__r3",
+      "assertion": null,
       "status": "FAILED",
       "runs": [
         {
@@ -19025,6 +19186,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/small__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -19307,6 +19469,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/small__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -19589,6 +19752,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/small__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -19866,6 +20030,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38__plain__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/HG005_GRCh38__plain__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -20090,6 +20255,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38__space-optimized__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/HG005_GRCh38__space-optimized__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -20314,6 +20480,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__plain__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__plain__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -20538,6 +20705,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__plain__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__plain__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -20762,6 +20930,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__plain__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__plain__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -20986,6 +21155,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__plain__r4/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__plain__r4",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -21210,6 +21380,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__plain__r5/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__plain__r5",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -21434,6 +21605,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r1/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__space-optimized__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -21658,6 +21830,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__space-optimized__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -21882,6 +22055,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r3/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__space-optimized__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22106,6 +22280,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r4/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__space-optimized__r4",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22330,6 +22505,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r5/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs__tool8b1b4a8/01_storage_mode/test-larger__space-optimized__r5",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22548,6 +22724,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_compress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/mode_compress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22727,6 +22904,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22767,6 +22945,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_cottas/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/mode_index_cottas",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22807,6 +22986,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22847,6 +23027,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_tsv/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/mode_tsv",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -22937,6 +23118,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23206,6 +23388,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseB_validate_aggregate/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration/12_modes_smoke/phaseB_validate_aggregate",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23254,6 +23437,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_compress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/mode_compress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23433,6 +23617,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/mode_decompress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23473,6 +23658,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_cottas/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/mode_index_cottas",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23513,6 +23699,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/mode_index_hdt",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23553,6 +23740,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_tsv/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/mode_tsv",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23643,6 +23831,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/phaseA_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23912,6 +24101,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseB_validate_aggregate/out"
       ],
       "path": "vcf-bench-1/benchmarks_outputs_calibration__025fb7d_20260914T155155/12_modes_smoke/phaseB_validate_aggregate",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -23966,6 +24156,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__plain__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__plain__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -24190,6 +24381,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__plain__r2/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__plain__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -24414,6 +24606,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__plain__r3/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__plain__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -24638,6 +24831,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -24862,6 +25056,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r2/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -25086,6 +25281,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r3/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -25310,6 +25506,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__plain__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/test-larger__plain__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -25534,6 +25731,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -25758,6 +25956,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_cohort__condensed/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/anchor_cohort__condensed",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -25904,6 +26103,7 @@
       "command": null,
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/anchor_cohort__expanded",
       "skip_reason": "2504 sample columns exceeds BM_CORPUS_MAX_SAMPLES=1000; the expanded representation emits records x samples calls, which does not fit this volume. The condensed cell for the same input still runs. Raise BM_CORPUS_MAX_SAMPLES to force it.",
+      "assertion": null,
       "status": "SKIPPED",
       "runs": [],
       "image_digest": null,
@@ -25948,6 +26148,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__condensed/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/anchor_single__condensed",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -26119,6 +26320,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/anchor_single__expanded",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -26290,6 +26492,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1024__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -26461,6 +26664,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1024__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1024__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -26632,6 +26836,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s16__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -26803,6 +27008,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s16__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -26974,6 +27180,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__condensed__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -27145,6 +27352,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r2/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__condensed__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -27316,6 +27524,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r3/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__condensed__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -27487,6 +27696,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -27658,6 +27868,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__expanded__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -27829,6 +28040,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__r2/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__expanded__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -28000,6 +28212,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__r3/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__expanded__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -28171,6 +28384,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s1__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -28342,6 +28556,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__condensed__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -28513,6 +28728,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__condensed__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -28684,6 +28900,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r3/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__condensed__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -28855,6 +29072,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -29026,6 +29244,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__expanded__r1/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__expanded__r1",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -29197,6 +29416,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__expanded__r2/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__expanded__r2",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -29368,6 +29588,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__expanded__r3/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__expanded__r3",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -29539,6 +29760,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s2504__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -29710,6 +29932,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s256__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s256__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -29881,6 +30104,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s256__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s256__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -30052,6 +30276,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s4__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s4__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -30223,6 +30448,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s4__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s4__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -30394,6 +30620,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__condensed__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s64__condensed__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -30565,6 +30792,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/03_sample_representation/s64__expanded__structure",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -30711,6 +30939,7 @@
       "command": null,
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/cohort__1000G_phase3_chr20__too_many_samples",
       "skip_reason": "2504 sample columns exceeds BM_CORPUS_MAX_SAMPLES=1000; the expanded representation emits records x samples calls, which does not fit this volume. The condensed cell for the same input still runs. Raise BM_CORPUS_MAX_SAMPLES to force it.",
+      "assertion": null,
       "status": "SKIPPED",
       "runs": [],
       "image_digest": null,
@@ -30755,6 +30984,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__60820188474283__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/consumer_wgs__60820188474283__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -30979,6 +31209,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__60820188475559__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/consumer_wgs__60820188475559__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -31203,6 +31434,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NB72462M__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NB72462M__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -31427,6 +31659,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -31651,6 +31884,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -31875,6 +32109,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/giab_single__0GOOR_HG002__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/giab_single__0GOOR_HG002__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -32099,6 +32334,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/giab_single__HG004_GRCh38__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/giab_single__HG004_GRCh38__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -32323,6 +32559,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/giab_single__HG005_GRCh38/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/giab_single__HG005_GRCh38",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -32547,6 +32784,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/sv_batch__HGSVC2__first250000/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs/05_corpus_breadth/sv_batch__HGSVC2__first250000",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -32734,6 +32972,1592 @@
     },
     {
       "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "encoding__plain__condensed",
+      "skipped": false,
+      "exit_code": 0,
+      "wrapper_wall_seconds": 5989,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--sample-representation",
+        "condensed",
+        "--rdf-storage-mode",
+        "plain",
+        "--hdt-strategy",
+        "partitioned",
+        "--representations",
+        "hdt,cottas",
+        "--rdf-compression",
+        "gzip",
+        "--artifact-compression",
+        "none",
+        "--validate",
+        "--validate-artifacts",
+        "all",
+        "--validation-engine",
+        "all",
+        "--validation-query-timeout",
+        "1800",
+        "--validation-time-budget",
+        "14400",
+        "--spark-partitions",
+        "8",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed",
+      "assertion": null,
+      "status": "OK",
+      "runs": [
+        {
+          "run_id": "20260921T182400",
+          "timestamp": "2026-09-21T18:24:00",
+          "mode": "full",
+          "status": "success",
+          "exit_code": 0,
+          "run_directory": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400",
+          "datasets": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400",
+              "run_name": "test-10k__20260921T182400",
+              "completion_state": "completed",
+              "completion_mode": "full",
+              "completion_status": "success",
+              "completion_evidence_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/wrapper_execution_times.csv",
+              "run_id": "20260921T182400",
+              "timestamp": "2026-09-21T18:24:00",
+              "conversion_present": true,
+              "tsv_present": true,
+              "compression_present": true,
+              "conversion_exit_code": 0,
+              "conversion_wall_seconds": 14.49,
+              "conversion_user_seconds": 34.58,
+              "conversion_sys_seconds": 1.55,
+              "conversion_max_rss_kb": 953136,
+              "mapping_file": "/data/rules/test-10k.rules.ttl",
+              "mapping_size_bytes": 13730,
+              "input_vcf_size_bytes": 626528,
+              "rdf_size_bytes": 98559961,
+              "total_triples": 789157,
+              "rdf_expansion_ratio_vs_vcf": 157.31134282905154,
+              "rdf_bytes_per_triple": 124.89271589810393,
+              "rdf_storage_mode": "plain",
+              "rdf_storage_compressed": false,
+              "rdf_storage_serialization": "ntriples",
+              "conversion_command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-10k.rules.ttl -o /data/out/test-10k/.rmlstreamer-parts-test-10k-1 ",
+              "conversion_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/stages/conversion/test-10k.json",
+              "tsv_exit_code": 0,
+              "tsv_wall_seconds": 0.7511418987996876,
+              "tsv_user_seconds": 0.07,
+              "tsv_sys_seconds": 0.01,
+              "tsv_max_rss_kb": 7552,
+              "tsv_input_path": "/data/in/test-10k.vcf",
+              "tsv_output_paths": [
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/.intermediate/tsv/test-10k.records.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/.intermediate/tsv/test-10k.header_lines.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/.intermediate/tsv/test-10k.file_metadata.tsv"
+              ],
+              "tsv_output_file_count": 3,
+              "tsv_size_bytes": 806370,
+              "tsv_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/stages/tsv/test-10k.json",
+              "compression_methods": "gzip,hdt,cottas",
+              "compression_output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k",
+              "combined_rdf_size_bytes": 98559961,
+              "hdt_source": "partitioned_generated",
+              "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt",
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/stages/compression/test-10k.json",
+              "compression_selected_methods": [
+                "gzip",
+                "hdt",
+                "cottas"
+              ],
+              "rdf_size_bytes_for_ratios": 98559961,
+              "tsv_size_ratio_vs_vcf": 1.2870454313294857,
+              "tsv_size_ratio_vs_rdf": 0.008181517036111651,
+              "compression_unrecorded_selected_methods": [],
+              "gzip_size_bytes": 3851172,
+              "gzip_exit_code": 0,
+              "gzip_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt.gz",
+              "gzip_wall_seconds": 1.2518753102049232,
+              "gzip_user_seconds": 0.49,
+              "gzip_sys_seconds": 0.08,
+              "gzip_max_rss_kb": 3968,
+              "gzip_validation_present": false,
+              "gzip_validation_valid": null,
+              "gzip_validation_count_match": null,
+              "gzip_validation_source_triples": null,
+              "gzip_validation_decoded_triples": null,
+              "gzip_validation_expected_triples": null,
+              "gzip_validation_validator": null,
+              "gzip_validation_wall_seconds": null,
+              "gzip_validation_user_seconds": null,
+              "gzip_validation_sys_seconds": null,
+              "gzip_validation_max_rss_kb": null,
+              "gzip_size_ratio_vs_rdf": 0.03907440669543284,
+              "gzip_size_ratio_vs_vcf": 6.146847387507023,
+              "gzip_size_reduction_pct_vs_rdf": 96.09255933045672,
+              "hdt_size_bytes": 5127665,
+              "hdt_exit_code": 0,
+              "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.hdt",
+              "hdt_wall_seconds": 5.072309929411858,
+              "hdt_user_seconds": null,
+              "hdt_sys_seconds": null,
+              "hdt_max_rss_kb": null,
+              "hdt_validation_present": true,
+              "hdt_validation_valid": true,
+              "hdt_validation_count_match": true,
+              "hdt_validation_source_triples": 789157,
+              "hdt_validation_decoded_triples": 789157,
+              "hdt_validation_expected_triples": 789157,
+              "hdt_validation_validator": "hdt2rdf",
+              "hdt_validation_wall_seconds": 1.3007630039937794,
+              "hdt_validation_user_seconds": null,
+              "hdt_validation_sys_seconds": null,
+              "hdt_validation_max_rss_kb": null,
+              "hdt_size_ratio_vs_rdf": 0.052025842420940084,
+              "hdt_size_ratio_vs_vcf": 8.184255133050717,
+              "hdt_size_reduction_pct_vs_rdf": 94.797415757906,
+              "cottas_size_bytes": 1030325,
+              "cottas_exit_code": 0,
+              "cottas_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.cottas",
+              "cottas_wall_seconds": 33.794126401189715,
+              "cottas_user_seconds": null,
+              "cottas_sys_seconds": null,
+              "cottas_max_rss_kb": null,
+              "cottas_validation_present": true,
+              "cottas_validation_valid": true,
+              "cottas_validation_count_match": true,
+              "cottas_validation_source_triples": 789157,
+              "cottas_validation_decoded_triples": 789157,
+              "cottas_validation_expected_triples": 789157,
+              "cottas_validation_validator": "pycottas.cottas2rdf",
+              "cottas_validation_wall_seconds": 2.291135999839753,
+              "cottas_validation_user_seconds": null,
+              "cottas_validation_sys_seconds": null,
+              "cottas_validation_max_rss_kb": null,
+              "cottas_size_ratio_vs_rdf": 0.010453788633297044,
+              "cottas_size_ratio_vs_vcf": 1.6444995275550334,
+              "cottas_size_reduction_pct_vs_rdf": 98.9546211366703,
+              "best_method_by_size": "cottas",
+              "best_size_bytes": 1030325,
+              "best_size_ratio_vs_rdf": 0.010453788633297044,
+              "best_method_by_wall_time": "gzip",
+              "best_wall_seconds": 1.2518753102049232
+            }
+          ],
+          "compression_by_method": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400",
+              "run_name": "test-10k__20260921T182400",
+              "run_id": "20260921T182400",
+              "timestamp": "2026-09-21T18:24:00",
+              "method": "gzip",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt.gz",
+              "compression_wall_seconds": 1.2518753102049232,
+              "compression_user_seconds": 0.49,
+              "compression_sys_seconds": 0.08,
+              "compression_max_rss_kb": 3968,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 3851172,
+              "compressed_size_ratio_vs_rdf": 0.03907440669543284,
+              "compressed_size_ratio_vs_vcf": 6.146847387507023,
+              "compressed_size_reduction_pct_vs_rdf": 96.09255933045672,
+              "rdf_size_bytes": 98559961,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 789157,
+              "validation_present": false,
+              "validation_valid": null,
+              "validation_count_match": null,
+              "validation_source_triples": null,
+              "validation_decoded_triples": null,
+              "validation_expected_triples": null,
+              "validation_validator": null,
+              "validation_wall_seconds": null
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400",
+              "run_name": "test-10k__20260921T182400",
+              "run_id": "20260921T182400",
+              "timestamp": "2026-09-21T18:24:00",
+              "method": "hdt",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.hdt",
+              "compression_wall_seconds": 5.072309929411858,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 5127665,
+              "compressed_size_ratio_vs_rdf": 0.052025842420940084,
+              "compressed_size_ratio_vs_vcf": 8.184255133050717,
+              "compressed_size_reduction_pct_vs_rdf": 94.797415757906,
+              "rdf_size_bytes": 98559961,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 789157,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 789157,
+              "validation_decoded_triples": 789157,
+              "validation_expected_triples": 789157,
+              "validation_validator": "hdt2rdf",
+              "validation_wall_seconds": 1.3007630039937794
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400",
+              "run_name": "test-10k__20260921T182400",
+              "run_id": "20260921T182400",
+              "timestamp": "2026-09-21T18:24:00",
+              "method": "cottas",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.cottas",
+              "compression_wall_seconds": 33.794126401189715,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260921T182400/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 1030325,
+              "compressed_size_ratio_vs_rdf": 0.010453788633297044,
+              "compressed_size_ratio_vs_vcf": 1.6444995275550334,
+              "compressed_size_reduction_pct_vs_rdf": 98.9546211366703,
+              "rdf_size_bytes": 98559961,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 789157,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 789157,
+              "validation_decoded_triples": 789157,
+              "validation_expected_triples": 789157,
+              "validation_validator": "pycottas.cottas2rdf",
+              "validation_wall_seconds": 2.291135999839753
+            }
+          ]
+        }
+      ],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "encoding__plain__expanded",
+      "skipped": false,
+      "exit_code": 0,
+      "wrapper_wall_seconds": 6774,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--sample-representation",
+        "expanded",
+        "--rdf-storage-mode",
+        "plain",
+        "--hdt-strategy",
+        "partitioned",
+        "--representations",
+        "hdt,cottas",
+        "--rdf-compression",
+        "gzip",
+        "--artifact-compression",
+        "none",
+        "--validate",
+        "--validate-artifacts",
+        "all",
+        "--validation-engine",
+        "all",
+        "--validation-query-timeout",
+        "1800",
+        "--validation-time-budget",
+        "14400",
+        "--spark-partitions",
+        "8",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded",
+      "assertion": null,
+      "status": "OK",
+      "runs": [
+        {
+          "run_id": "20260921T163105",
+          "timestamp": "2026-09-21T16:31:05",
+          "mode": "full",
+          "status": "success",
+          "exit_code": 0,
+          "run_directory": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105",
+          "datasets": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105",
+              "run_name": "test-10k__20260921T163105",
+              "completion_state": "completed",
+              "completion_mode": "full",
+              "completion_status": "success",
+              "completion_evidence_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/wrapper_execution_times.csv",
+              "run_id": "20260921T163105",
+              "timestamp": "2026-09-21T16:31:05",
+              "conversion_present": true,
+              "tsv_present": true,
+              "compression_present": true,
+              "conversion_exit_code": 0,
+              "conversion_wall_seconds": 15.13,
+              "conversion_user_seconds": 38.05,
+              "conversion_sys_seconds": 1.51,
+              "conversion_max_rss_kb": 880304,
+              "mapping_file": "/data/rules/test-10k.rules.ttl",
+              "mapping_size_bytes": 13730,
+              "input_vcf_size_bytes": 626528,
+              "rdf_size_bytes": 122644300,
+              "total_triples": 958919,
+              "rdf_expansion_ratio_vs_vcf": 195.75230476530976,
+              "rdf_bytes_per_triple": 127.8984982047493,
+              "rdf_storage_mode": "plain",
+              "rdf_storage_compressed": false,
+              "rdf_storage_serialization": "ntriples",
+              "conversion_command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-10k.rules.ttl -o /data/out/test-10k/.rmlstreamer-parts-test-10k-1 ",
+              "conversion_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/stages/conversion/test-10k.json",
+              "tsv_exit_code": 0,
+              "tsv_wall_seconds": 0.7513129790313542,
+              "tsv_user_seconds": 0.08,
+              "tsv_sys_seconds": 0.01,
+              "tsv_max_rss_kb": 7552,
+              "tsv_input_path": "/data/in/test-10k.vcf",
+              "tsv_output_paths": [
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/.intermediate/tsv/test-10k.records.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/.intermediate/tsv/test-10k.header_lines.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/.intermediate/tsv/test-10k.file_metadata.tsv"
+              ],
+              "tsv_output_file_count": 3,
+              "tsv_size_bytes": 806370,
+              "tsv_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/stages/tsv/test-10k.json",
+              "compression_methods": "gzip,hdt,cottas",
+              "compression_output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k",
+              "combined_rdf_size_bytes": 122644300,
+              "hdt_source": "partitioned_generated",
+              "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.nt",
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/stages/compression/test-10k.json",
+              "compression_selected_methods": [
+                "gzip",
+                "hdt",
+                "cottas"
+              ],
+              "rdf_size_bytes_for_ratios": 122644300,
+              "tsv_size_ratio_vs_vcf": 1.2870454313294857,
+              "tsv_size_ratio_vs_rdf": 0.0065748673195574515,
+              "compression_unrecorded_selected_methods": [],
+              "gzip_size_bytes": 4851378,
+              "gzip_exit_code": 0,
+              "gzip_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.nt.gz",
+              "gzip_wall_seconds": 1.5016149780713022,
+              "gzip_user_seconds": 0.61,
+              "gzip_sys_seconds": 0.03,
+              "gzip_max_rss_kb": 3968,
+              "gzip_validation_present": false,
+              "gzip_validation_valid": null,
+              "gzip_validation_count_match": null,
+              "gzip_validation_source_triples": null,
+              "gzip_validation_decoded_triples": null,
+              "gzip_validation_expected_triples": null,
+              "gzip_validation_validator": null,
+              "gzip_validation_wall_seconds": null,
+              "gzip_validation_user_seconds": null,
+              "gzip_validation_sys_seconds": null,
+              "gzip_validation_max_rss_kb": null,
+              "gzip_size_ratio_vs_rdf": 0.03955648978387092,
+              "gzip_size_ratio_vs_vcf": 7.743274043618162,
+              "gzip_size_reduction_pct_vs_rdf": 96.04435102161291,
+              "hdt_size_bytes": 6029849,
+              "hdt_exit_code": 0,
+              "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.hdt",
+              "hdt_wall_seconds": 5.772508106660098,
+              "hdt_user_seconds": null,
+              "hdt_sys_seconds": null,
+              "hdt_max_rss_kb": null,
+              "hdt_validation_present": true,
+              "hdt_validation_valid": true,
+              "hdt_validation_count_match": true,
+              "hdt_validation_source_triples": 958919,
+              "hdt_validation_decoded_triples": 958919,
+              "hdt_validation_expected_triples": 958919,
+              "hdt_validation_validator": "hdt2rdf",
+              "hdt_validation_wall_seconds": 1.6453293110243976,
+              "hdt_validation_user_seconds": null,
+              "hdt_validation_sys_seconds": null,
+              "hdt_validation_max_rss_kb": null,
+              "hdt_size_ratio_vs_rdf": 0.049165342376286544,
+              "hdt_size_ratio_vs_vcf": 9.624229084733644,
+              "hdt_size_reduction_pct_vs_rdf": 95.08346576237135,
+              "cottas_size_bytes": 1474151,
+              "cottas_exit_code": 0,
+              "cottas_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.cottas",
+              "cottas_wall_seconds": 51.16152700781822,
+              "cottas_user_seconds": null,
+              "cottas_sys_seconds": null,
+              "cottas_max_rss_kb": null,
+              "cottas_validation_present": true,
+              "cottas_validation_valid": true,
+              "cottas_validation_count_match": true,
+              "cottas_validation_source_triples": 958919,
+              "cottas_validation_decoded_triples": 958919,
+              "cottas_validation_expected_triples": 958919,
+              "cottas_validation_validator": "pycottas.cottas2rdf",
+              "cottas_validation_wall_seconds": 2.5756302550435066,
+              "cottas_validation_user_seconds": null,
+              "cottas_validation_sys_seconds": null,
+              "cottas_validation_max_rss_kb": null,
+              "cottas_size_ratio_vs_rdf": 0.012019726966520254,
+              "cottas_size_ratio_vs_vcf": 2.352889256346085,
+              "cottas_size_reduction_pct_vs_rdf": 98.79802730334798,
+              "best_method_by_size": "cottas",
+              "best_size_bytes": 1474151,
+              "best_size_ratio_vs_rdf": 0.012019726966520254,
+              "best_method_by_wall_time": "gzip",
+              "best_wall_seconds": 1.5016149780713022
+            }
+          ],
+          "compression_by_method": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105",
+              "run_name": "test-10k__20260921T163105",
+              "run_id": "20260921T163105",
+              "timestamp": "2026-09-21T16:31:05",
+              "method": "gzip",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.nt.gz",
+              "compression_wall_seconds": 1.5016149780713022,
+              "compression_user_seconds": 0.61,
+              "compression_sys_seconds": 0.03,
+              "compression_max_rss_kb": 3968,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 4851378,
+              "compressed_size_ratio_vs_rdf": 0.03955648978387092,
+              "compressed_size_ratio_vs_vcf": 7.743274043618162,
+              "compressed_size_reduction_pct_vs_rdf": 96.04435102161291,
+              "rdf_size_bytes": 122644300,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": false,
+              "validation_valid": null,
+              "validation_count_match": null,
+              "validation_source_triples": null,
+              "validation_decoded_triples": null,
+              "validation_expected_triples": null,
+              "validation_validator": null,
+              "validation_wall_seconds": null
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105",
+              "run_name": "test-10k__20260921T163105",
+              "run_id": "20260921T163105",
+              "timestamp": "2026-09-21T16:31:05",
+              "method": "hdt",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.hdt",
+              "compression_wall_seconds": 5.772508106660098,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 6029849,
+              "compressed_size_ratio_vs_rdf": 0.049165342376286544,
+              "compressed_size_ratio_vs_vcf": 9.624229084733644,
+              "compressed_size_reduction_pct_vs_rdf": 95.08346576237135,
+              "rdf_size_bytes": 122644300,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 958919,
+              "validation_decoded_triples": 958919,
+              "validation_expected_triples": 958919,
+              "validation_validator": "hdt2rdf",
+              "validation_wall_seconds": 1.6453293110243976
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105",
+              "run_name": "test-10k__20260921T163105",
+              "run_id": "20260921T163105",
+              "timestamp": "2026-09-21T16:31:05",
+              "method": "cottas",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.cottas",
+              "compression_wall_seconds": 51.16152700781822,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260921T163105/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 1474151,
+              "compressed_size_ratio_vs_rdf": 0.012019726966520254,
+              "compressed_size_ratio_vs_vcf": 2.352889256346085,
+              "compressed_size_reduction_pct_vs_rdf": 98.79802730334798,
+              "rdf_size_bytes": 122644300,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 958919,
+              "validation_decoded_triples": 958919,
+              "validation_expected_triples": 958919,
+              "validation_validator": "pycottas.cottas2rdf",
+              "validation_wall_seconds": 2.5756302550435066
+            }
+          ]
+        }
+      ],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "encoding__space-optimized__condensed",
+      "skipped": false,
+      "exit_code": 0,
+      "wrapper_wall_seconds": 5536,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--sample-representation",
+        "condensed",
+        "--rdf-storage-mode",
+        "space-optimized",
+        "--hdt-strategy",
+        "partitioned",
+        "--representations",
+        "hdt,cottas",
+        "--rdf-compression",
+        "gzip",
+        "--artifact-compression",
+        "none",
+        "--validate",
+        "--validate-artifacts",
+        "all",
+        "--validation-engine",
+        "all",
+        "--validation-query-timeout",
+        "1800",
+        "--validation-time-budget",
+        "14400",
+        "--spark-partitions",
+        "8",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed",
+      "assertion": null,
+      "status": "OK",
+      "runs": [
+        {
+          "run_id": "20260921T214834",
+          "timestamp": "2026-09-21T21:48:34",
+          "mode": "full",
+          "status": "success",
+          "exit_code": 0,
+          "run_directory": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834",
+          "datasets": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834",
+              "run_name": "test-10k__20260921T214834",
+              "completion_state": "completed",
+              "completion_mode": "full",
+              "completion_status": "success",
+              "completion_evidence_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/wrapper_execution_times.csv",
+              "run_id": "20260921T214834",
+              "timestamp": "2026-09-21T21:48:34",
+              "conversion_present": true,
+              "tsv_present": true,
+              "compression_present": true,
+              "conversion_exit_code": 0,
+              "conversion_wall_seconds": 14.17,
+              "conversion_user_seconds": 34.39,
+              "conversion_sys_seconds": 1.35,
+              "conversion_max_rss_kb": 861304,
+              "mapping_file": "/data/rules/test-10k.rules.ttl",
+              "mapping_size_bytes": 13730,
+              "input_vcf_size_bytes": 626528,
+              "rdf_size_bytes": 3340989,
+              "total_triples": 789157,
+              "rdf_expansion_ratio_vs_vcf": 5.332545393023137,
+              "rdf_bytes_per_triple": 4.233617645158061,
+              "rdf_storage_mode": "space-optimized",
+              "rdf_storage_compressed": true,
+              "rdf_storage_serialization": "ntriples",
+              "conversion_command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-10k.rules.ttl -o /data/out/test-10k/.rmlstreamer-parts-test-10k-1 ",
+              "conversion_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/stages/conversion/test-10k.json",
+              "tsv_exit_code": 0,
+              "tsv_wall_seconds": 0.5009747887961566,
+              "tsv_user_seconds": 0.07,
+              "tsv_sys_seconds": 0.01,
+              "tsv_max_rss_kb": 7808,
+              "tsv_input_path": "/data/in/test-10k.vcf",
+              "tsv_output_paths": [
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/.intermediate/tsv/test-10k.records.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/.intermediate/tsv/test-10k.header_lines.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/.intermediate/tsv/test-10k.file_metadata.tsv"
+              ],
+              "tsv_output_file_count": 3,
+              "tsv_size_bytes": 806370,
+              "tsv_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/stages/tsv/test-10k.json",
+              "compression_methods": "gzip,hdt,cottas",
+              "compression_output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k",
+              "combined_rdf_size_bytes": 3340989,
+              "hdt_source": "partitioned_generated",
+              "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.nt.gz",
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/stages/compression/test-10k.json",
+              "compression_selected_methods": [
+                "gzip",
+                "hdt",
+                "cottas"
+              ],
+              "rdf_size_bytes_for_ratios": 3340989,
+              "tsv_size_ratio_vs_vcf": 1.2870454313294857,
+              "tsv_size_ratio_vs_rdf": 0.24135667612195072,
+              "compression_unrecorded_selected_methods": [],
+              "gzip_size_bytes": 3340989,
+              "gzip_exit_code": 0,
+              "gzip_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.nt.gz",
+              "gzip_wall_seconds": 0.0,
+              "gzip_user_seconds": 0.0,
+              "gzip_sys_seconds": 0.0,
+              "gzip_max_rss_kb": 0,
+              "gzip_validation_present": false,
+              "gzip_validation_valid": null,
+              "gzip_validation_count_match": null,
+              "gzip_validation_source_triples": null,
+              "gzip_validation_decoded_triples": null,
+              "gzip_validation_expected_triples": null,
+              "gzip_validation_validator": null,
+              "gzip_validation_wall_seconds": null,
+              "gzip_validation_user_seconds": null,
+              "gzip_validation_sys_seconds": null,
+              "gzip_validation_max_rss_kb": null,
+              "gzip_size_ratio_vs_rdf": 1.0,
+              "gzip_size_ratio_vs_vcf": 5.332545393023137,
+              "gzip_size_reduction_pct_vs_rdf": 0.0,
+              "hdt_size_bytes": 5127665,
+              "hdt_exit_code": 0,
+              "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.hdt",
+              "hdt_wall_seconds": 4.4788820669054985,
+              "hdt_user_seconds": null,
+              "hdt_sys_seconds": null,
+              "hdt_max_rss_kb": null,
+              "hdt_validation_present": true,
+              "hdt_validation_valid": true,
+              "hdt_validation_count_match": true,
+              "hdt_validation_source_triples": 789157,
+              "hdt_validation_decoded_triples": 789157,
+              "hdt_validation_expected_triples": 789157,
+              "hdt_validation_validator": "hdt2rdf",
+              "hdt_validation_wall_seconds": 1.4413873930461705,
+              "hdt_validation_user_seconds": null,
+              "hdt_validation_sys_seconds": null,
+              "hdt_validation_max_rss_kb": null,
+              "hdt_size_ratio_vs_rdf": 1.5347745832147308,
+              "hdt_size_ratio_vs_vcf": 8.184255133050717,
+              "hdt_size_reduction_pct_vs_rdf": -53.47745832147308,
+              "cottas_size_bytes": 1030325,
+              "cottas_exit_code": 0,
+              "cottas_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.cottas",
+              "cottas_wall_seconds": 31.197946147993207,
+              "cottas_user_seconds": null,
+              "cottas_sys_seconds": null,
+              "cottas_max_rss_kb": null,
+              "cottas_validation_present": true,
+              "cottas_validation_valid": true,
+              "cottas_validation_count_match": true,
+              "cottas_validation_source_triples": 789157,
+              "cottas_validation_decoded_triples": 789157,
+              "cottas_validation_expected_triples": 789157,
+              "cottas_validation_validator": "pycottas.cottas2rdf",
+              "cottas_validation_wall_seconds": 2.052030456252396,
+              "cottas_validation_user_seconds": null,
+              "cottas_validation_sys_seconds": null,
+              "cottas_validation_max_rss_kb": null,
+              "cottas_size_ratio_vs_rdf": 0.30838922247274686,
+              "cottas_size_ratio_vs_vcf": 1.6444995275550334,
+              "cottas_size_reduction_pct_vs_rdf": 69.1610777527253,
+              "best_method_by_size": "cottas",
+              "best_size_bytes": 1030325,
+              "best_size_ratio_vs_rdf": 0.30838922247274686,
+              "best_method_by_wall_time": "gzip",
+              "best_wall_seconds": 0.0
+            }
+          ],
+          "compression_by_method": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834",
+              "run_name": "test-10k__20260921T214834",
+              "run_id": "20260921T214834",
+              "timestamp": "2026-09-21T21:48:34",
+              "method": "gzip",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.nt.gz",
+              "compression_wall_seconds": 0.0,
+              "compression_user_seconds": 0.0,
+              "compression_sys_seconds": 0.0,
+              "compression_max_rss_kb": 0,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 3340989,
+              "compressed_size_ratio_vs_rdf": 1.0,
+              "compressed_size_ratio_vs_vcf": 5.332545393023137,
+              "compressed_size_reduction_pct_vs_rdf": 0.0,
+              "rdf_size_bytes": 3340989,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 789157,
+              "validation_present": false,
+              "validation_valid": null,
+              "validation_count_match": null,
+              "validation_source_triples": null,
+              "validation_decoded_triples": null,
+              "validation_expected_triples": null,
+              "validation_validator": null,
+              "validation_wall_seconds": null
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834",
+              "run_name": "test-10k__20260921T214834",
+              "run_id": "20260921T214834",
+              "timestamp": "2026-09-21T21:48:34",
+              "method": "hdt",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.hdt",
+              "compression_wall_seconds": 4.4788820669054985,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 5127665,
+              "compressed_size_ratio_vs_rdf": 1.5347745832147308,
+              "compressed_size_ratio_vs_vcf": 8.184255133050717,
+              "compressed_size_reduction_pct_vs_rdf": -53.47745832147308,
+              "rdf_size_bytes": 3340989,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 789157,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 789157,
+              "validation_decoded_triples": 789157,
+              "validation_expected_triples": 789157,
+              "validation_validator": "hdt2rdf",
+              "validation_wall_seconds": 1.4413873930461705
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834",
+              "run_name": "test-10k__20260921T214834",
+              "run_id": "20260921T214834",
+              "timestamp": "2026-09-21T21:48:34",
+              "method": "cottas",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/test-10k/test-10k.cottas",
+              "compression_wall_seconds": 31.197946147993207,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__condensed/out/run_metrics/test-10k__20260921T214834/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 1030325,
+              "compressed_size_ratio_vs_rdf": 0.30838922247274686,
+              "compressed_size_ratio_vs_vcf": 1.6444995275550334,
+              "compressed_size_reduction_pct_vs_rdf": 69.1610777527253,
+              "rdf_size_bytes": 3340989,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 789157,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 789157,
+              "validation_decoded_triples": 789157,
+              "validation_expected_triples": 789157,
+              "validation_validator": "pycottas.cottas2rdf",
+              "validation_wall_seconds": 2.052030456252396
+            }
+          ]
+        }
+      ],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "encoding__space-optimized__expanded",
+      "skipped": false,
+      "exit_code": 0,
+      "wrapper_wall_seconds": 6286,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--sample-representation",
+        "expanded",
+        "--rdf-storage-mode",
+        "space-optimized",
+        "--hdt-strategy",
+        "partitioned",
+        "--representations",
+        "hdt,cottas",
+        "--rdf-compression",
+        "gzip",
+        "--artifact-compression",
+        "none",
+        "--validate",
+        "--validate-artifacts",
+        "all",
+        "--validation-engine",
+        "all",
+        "--validation-query-timeout",
+        "1800",
+        "--validation-time-budget",
+        "14400",
+        "--spark-partitions",
+        "8",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded",
+      "assertion": null,
+      "status": "OK",
+      "runs": [
+        {
+          "run_id": "20260921T200348",
+          "timestamp": "2026-09-21T20:03:48",
+          "mode": "full",
+          "status": "success",
+          "exit_code": 0,
+          "run_directory": "vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348",
+          "datasets": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348",
+              "run_name": "test-10k__20260921T200348",
+              "completion_state": "completed",
+              "completion_mode": "full",
+              "completion_status": "success",
+              "completion_evidence_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/wrapper_execution_times.csv",
+              "run_id": "20260921T200348",
+              "timestamp": "2026-09-21T20:03:48",
+              "conversion_present": true,
+              "tsv_present": true,
+              "compression_present": true,
+              "conversion_exit_code": 0,
+              "conversion_wall_seconds": 15.56,
+              "conversion_user_seconds": 39.35,
+              "conversion_sys_seconds": 1.74,
+              "conversion_max_rss_kb": 948836,
+              "mapping_file": "/data/rules/test-10k.rules.ttl",
+              "mapping_size_bytes": 13730,
+              "input_vcf_size_bytes": 626528,
+              "rdf_size_bytes": 4058877,
+              "total_triples": 958919,
+              "rdf_expansion_ratio_vs_vcf": 6.478364893508351,
+              "rdf_bytes_per_triple": 4.23276314266377,
+              "rdf_storage_mode": "space-optimized",
+              "rdf_storage_compressed": true,
+              "rdf_storage_serialization": "ntriples",
+              "conversion_command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-10k.rules.ttl -o /data/out/test-10k/.rmlstreamer-parts-test-10k-1 ",
+              "conversion_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/stages/conversion/test-10k.json",
+              "tsv_exit_code": 0,
+              "tsv_wall_seconds": 0.7514389711432159,
+              "tsv_user_seconds": 0.07,
+              "tsv_sys_seconds": 0.01,
+              "tsv_max_rss_kb": 7808,
+              "tsv_input_path": "/data/in/test-10k.vcf",
+              "tsv_output_paths": [
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/.intermediate/tsv/test-10k.records.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/.intermediate/tsv/test-10k.header_lines.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/.intermediate/tsv/test-10k.file_metadata.tsv"
+              ],
+              "tsv_output_file_count": 3,
+              "tsv_size_bytes": 806370,
+              "tsv_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/stages/tsv/test-10k.json",
+              "compression_methods": "gzip,hdt,cottas",
+              "compression_output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k",
+              "combined_rdf_size_bytes": 4058877,
+              "hdt_source": "partitioned_generated",
+              "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.nt.gz",
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/stages/compression/test-10k.json",
+              "compression_selected_methods": [
+                "gzip",
+                "hdt",
+                "cottas"
+              ],
+              "rdf_size_bytes_for_ratios": 4058877,
+              "tsv_size_ratio_vs_vcf": 1.2870454313294857,
+              "tsv_size_ratio_vs_rdf": 0.19866825232693675,
+              "compression_unrecorded_selected_methods": [],
+              "gzip_size_bytes": 4058877,
+              "gzip_exit_code": 0,
+              "gzip_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.nt.gz",
+              "gzip_wall_seconds": 0.0,
+              "gzip_user_seconds": 0.0,
+              "gzip_sys_seconds": 0.0,
+              "gzip_max_rss_kb": 0,
+              "gzip_validation_present": false,
+              "gzip_validation_valid": null,
+              "gzip_validation_count_match": null,
+              "gzip_validation_source_triples": null,
+              "gzip_validation_decoded_triples": null,
+              "gzip_validation_expected_triples": null,
+              "gzip_validation_validator": null,
+              "gzip_validation_wall_seconds": null,
+              "gzip_validation_user_seconds": null,
+              "gzip_validation_sys_seconds": null,
+              "gzip_validation_max_rss_kb": null,
+              "gzip_size_ratio_vs_rdf": 1.0,
+              "gzip_size_ratio_vs_vcf": 6.478364893508351,
+              "gzip_size_reduction_pct_vs_rdf": 0.0,
+              "hdt_size_bytes": 6029849,
+              "hdt_exit_code": 0,
+              "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.hdt",
+              "hdt_wall_seconds": 6.495713271200657,
+              "hdt_user_seconds": null,
+              "hdt_sys_seconds": null,
+              "hdt_max_rss_kb": null,
+              "hdt_validation_present": true,
+              "hdt_validation_valid": true,
+              "hdt_validation_count_match": true,
+              "hdt_validation_source_triples": 958919,
+              "hdt_validation_decoded_triples": 958919,
+              "hdt_validation_expected_triples": 958919,
+              "hdt_validation_validator": "hdt2rdf",
+              "hdt_validation_wall_seconds": 1.8627742300741374,
+              "hdt_validation_user_seconds": null,
+              "hdt_validation_sys_seconds": null,
+              "hdt_validation_max_rss_kb": null,
+              "hdt_size_ratio_vs_rdf": 1.4855953999098765,
+              "hdt_size_ratio_vs_vcf": 9.624229084733644,
+              "hdt_size_reduction_pct_vs_rdf": -48.55953999098765,
+              "cottas_size_bytes": 1474151,
+              "cottas_exit_code": 0,
+              "cottas_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.cottas",
+              "cottas_wall_seconds": 52.47023767512292,
+              "cottas_user_seconds": null,
+              "cottas_sys_seconds": null,
+              "cottas_max_rss_kb": null,
+              "cottas_validation_present": true,
+              "cottas_validation_valid": true,
+              "cottas_validation_count_match": true,
+              "cottas_validation_source_triples": 958919,
+              "cottas_validation_decoded_triples": 958919,
+              "cottas_validation_expected_triples": 958919,
+              "cottas_validation_validator": "pycottas.cottas2rdf",
+              "cottas_validation_wall_seconds": 3.045509103219956,
+              "cottas_validation_user_seconds": null,
+              "cottas_validation_sys_seconds": null,
+              "cottas_validation_max_rss_kb": null,
+              "cottas_size_ratio_vs_rdf": 0.3631918385307069,
+              "cottas_size_ratio_vs_vcf": 2.352889256346085,
+              "cottas_size_reduction_pct_vs_rdf": 63.68081614692931,
+              "best_method_by_size": "cottas",
+              "best_size_bytes": 1474151,
+              "best_size_ratio_vs_rdf": 0.3631918385307069,
+              "best_method_by_wall_time": "gzip",
+              "best_wall_seconds": 0.0
+            }
+          ],
+          "compression_by_method": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348",
+              "run_name": "test-10k__20260921T200348",
+              "run_id": "20260921T200348",
+              "timestamp": "2026-09-21T20:03:48",
+              "method": "gzip",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.nt.gz",
+              "compression_wall_seconds": 0.0,
+              "compression_user_seconds": 0.0,
+              "compression_sys_seconds": 0.0,
+              "compression_max_rss_kb": 0,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 4058877,
+              "compressed_size_ratio_vs_rdf": 1.0,
+              "compressed_size_ratio_vs_vcf": 6.478364893508351,
+              "compressed_size_reduction_pct_vs_rdf": 0.0,
+              "rdf_size_bytes": 4058877,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": false,
+              "validation_valid": null,
+              "validation_count_match": null,
+              "validation_source_triples": null,
+              "validation_decoded_triples": null,
+              "validation_expected_triples": null,
+              "validation_validator": null,
+              "validation_wall_seconds": null
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348",
+              "run_name": "test-10k__20260921T200348",
+              "run_id": "20260921T200348",
+              "timestamp": "2026-09-21T20:03:48",
+              "method": "hdt",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.hdt",
+              "compression_wall_seconds": 6.495713271200657,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 6029849,
+              "compressed_size_ratio_vs_rdf": 1.4855953999098765,
+              "compressed_size_ratio_vs_vcf": 9.624229084733644,
+              "compressed_size_reduction_pct_vs_rdf": -48.55953999098765,
+              "rdf_size_bytes": 4058877,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 958919,
+              "validation_decoded_triples": 958919,
+              "validation_expected_triples": 958919,
+              "validation_validator": "hdt2rdf",
+              "validation_wall_seconds": 1.8627742300741374
+            },
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348",
+              "run_name": "test-10k__20260921T200348",
+              "run_id": "20260921T200348",
+              "timestamp": "2026-09-21T20:03:48",
+              "method": "cottas",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.cottas",
+              "compression_wall_seconds": 52.47023767512292,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260921T200348/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 1474151,
+              "compressed_size_ratio_vs_rdf": 0.3631918385307069,
+              "compressed_size_ratio_vs_vcf": 2.352889256346085,
+              "compressed_size_reduction_pct_vs_rdf": 63.68081614692931,
+              "rdf_size_bytes": 4058877,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 958919,
+              "validation_decoded_triples": 958919,
+              "validation_expected_triples": 958919,
+              "validation_validator": "pycottas.cottas2rdf",
+              "validation_wall_seconds": 3.045509103219956
+            }
+          ]
+        }
+      ],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "mechanism__hdt_partitioned",
+      "skipped": false,
+      "exit_code": 0,
+      "wrapper_wall_seconds": 3808,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--sample-representation",
+        "expanded",
+        "--rdf-storage-mode",
+        "plain",
+        "--hdt-strategy",
+        "partitioned",
+        "--representations",
+        "hdt",
+        "--rdf-compression",
+        "none",
+        "--artifact-compression",
+        "none",
+        "--validate",
+        "--validate-artifacts",
+        "all",
+        "--validation-engine",
+        "all",
+        "--validation-query-timeout",
+        "1800",
+        "--validation-time-budget",
+        "14400",
+        "--spark-partitions",
+        "8",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned",
+      "assertion": null,
+      "status": "OK",
+      "runs": [
+        {
+          "run_id": "20260922T002632",
+          "timestamp": "2026-09-22T00:26:32",
+          "mode": "full",
+          "status": "success",
+          "exit_code": 0,
+          "run_directory": "vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632",
+          "datasets": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632",
+              "run_name": "test-10k__20260922T002632",
+              "completion_state": "completed",
+              "completion_mode": "full",
+              "completion_status": "success",
+              "completion_evidence_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632/wrapper_execution_times.csv",
+              "run_id": "20260922T002632",
+              "timestamp": "2026-09-22T00:26:32",
+              "conversion_present": true,
+              "tsv_present": true,
+              "compression_present": true,
+              "conversion_exit_code": 0,
+              "conversion_wall_seconds": 13.38,
+              "conversion_user_seconds": 31.34,
+              "conversion_sys_seconds": 1.36,
+              "conversion_max_rss_kb": 981076,
+              "mapping_file": "/data/rules/test-10k.rules.ttl",
+              "mapping_size_bytes": 13730,
+              "input_vcf_size_bytes": 626528,
+              "rdf_size_bytes": 122644300,
+              "total_triples": 958919,
+              "rdf_expansion_ratio_vs_vcf": 195.75230476530976,
+              "rdf_bytes_per_triple": 127.8984982047493,
+              "rdf_storage_mode": "plain",
+              "rdf_storage_compressed": false,
+              "rdf_storage_serialization": "ntriples",
+              "conversion_command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-10k.rules.ttl -o /data/out/test-10k/.rmlstreamer-parts-test-10k-1 ",
+              "conversion_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632/stages/conversion/test-10k.json",
+              "tsv_exit_code": 0,
+              "tsv_wall_seconds": 0.5008225375786424,
+              "tsv_user_seconds": 0.06,
+              "tsv_sys_seconds": 0.01,
+              "tsv_max_rss_kb": 7552,
+              "tsv_input_path": "/data/in/test-10k.vcf",
+              "tsv_output_paths": [
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/.intermediate/tsv/test-10k.records.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/.intermediate/tsv/test-10k.header_lines.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/.intermediate/tsv/test-10k.file_metadata.tsv"
+              ],
+              "tsv_output_file_count": 3,
+              "tsv_size_bytes": 806370,
+              "tsv_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632/stages/tsv/test-10k.json",
+              "compression_methods": "hdt",
+              "compression_output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/test-10k",
+              "combined_rdf_size_bytes": 122644300,
+              "hdt_source": "partitioned_generated",
+              "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/test-10k/test-10k.nt",
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632/stages/compression/test-10k.json",
+              "compression_selected_methods": [
+                "hdt"
+              ],
+              "rdf_size_bytes_for_ratios": 122644300,
+              "tsv_size_ratio_vs_vcf": 1.2870454313294857,
+              "tsv_size_ratio_vs_rdf": 0.0065748673195574515,
+              "compression_unrecorded_selected_methods": [],
+              "hdt_size_bytes": 6029849,
+              "hdt_exit_code": 0,
+              "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/test-10k/test-10k.hdt",
+              "hdt_wall_seconds": 5.233226219192147,
+              "hdt_user_seconds": null,
+              "hdt_sys_seconds": null,
+              "hdt_max_rss_kb": null,
+              "hdt_validation_present": true,
+              "hdt_validation_valid": true,
+              "hdt_validation_count_match": true,
+              "hdt_validation_source_triples": 958919,
+              "hdt_validation_decoded_triples": 958919,
+              "hdt_validation_expected_triples": 958919,
+              "hdt_validation_validator": "hdt2rdf",
+              "hdt_validation_wall_seconds": 1.5007152170874178,
+              "hdt_validation_user_seconds": null,
+              "hdt_validation_sys_seconds": null,
+              "hdt_validation_max_rss_kb": null,
+              "hdt_size_ratio_vs_rdf": 0.049165342376286544,
+              "hdt_size_ratio_vs_vcf": 9.624229084733644,
+              "hdt_size_reduction_pct_vs_rdf": 95.08346576237135,
+              "best_method_by_size": "hdt",
+              "best_size_bytes": 6029849,
+              "best_size_ratio_vs_rdf": 0.049165342376286544,
+              "best_method_by_wall_time": "hdt",
+              "best_wall_seconds": 5.233226219192147
+            }
+          ],
+          "compression_by_method": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632",
+              "run_name": "test-10k__20260922T002632",
+              "run_id": "20260922T002632",
+              "timestamp": "2026-09-22T00:26:32",
+              "method": "hdt",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/test-10k/test-10k.hdt",
+              "compression_wall_seconds": 5.233226219192147,
+              "compression_user_seconds": null,
+              "compression_sys_seconds": null,
+              "compression_max_rss_kb": null,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_partitioned/out/run_metrics/test-10k__20260922T002632/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 6029849,
+              "compressed_size_ratio_vs_rdf": 0.049165342376286544,
+              "compressed_size_ratio_vs_vcf": 9.624229084733644,
+              "compressed_size_reduction_pct_vs_rdf": 95.08346576237135,
+              "rdf_size_bytes": 122644300,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 958919,
+              "validation_decoded_triples": 958919,
+              "validation_expected_triples": 958919,
+              "validation_validator": "hdt2rdf",
+              "validation_wall_seconds": 1.5007152170874178
+            }
+          ]
+        }
+      ],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "mechanism__hdt_single",
+      "skipped": false,
+      "exit_code": 0,
+      "wrapper_wall_seconds": 3942,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--sample-representation",
+        "expanded",
+        "--rdf-storage-mode",
+        "plain",
+        "--hdt-strategy",
+        "single",
+        "--representations",
+        "hdt",
+        "--rdf-compression",
+        "none",
+        "--artifact-compression",
+        "none",
+        "--validate",
+        "--validate-artifacts",
+        "all",
+        "--validation-engine",
+        "all",
+        "--validation-query-timeout",
+        "1800",
+        "--validation-time-budget",
+        "14400",
+        "--spark-partitions",
+        "8",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single",
+      "assertion": null,
+      "status": "OK",
+      "runs": [
+        {
+          "run_id": "20260921T232050",
+          "timestamp": "2026-09-21T23:20:50",
+          "mode": "full",
+          "status": "success",
+          "exit_code": 0,
+          "run_directory": "vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050",
+          "datasets": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050",
+              "run_name": "test-10k__20260921T232050",
+              "completion_state": "completed",
+              "completion_mode": "full",
+              "completion_status": "success",
+              "completion_evidence_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/wrapper_execution_times.csv",
+              "run_id": "20260921T232050",
+              "timestamp": "2026-09-21T23:20:50",
+              "conversion_present": true,
+              "tsv_present": true,
+              "compression_present": true,
+              "conversion_exit_code": 0,
+              "conversion_wall_seconds": 14.03,
+              "conversion_user_seconds": 35.09,
+              "conversion_sys_seconds": 1.49,
+              "conversion_max_rss_kb": 993856,
+              "mapping_file": "/data/rules/test-10k.rules.ttl",
+              "mapping_size_bytes": 13730,
+              "input_vcf_size_bytes": 626528,
+              "rdf_size_bytes": 122644300,
+              "total_triples": 958919,
+              "rdf_expansion_ratio_vs_vcf": 195.75230476530976,
+              "rdf_bytes_per_triple": 127.8984982047493,
+              "rdf_storage_mode": "plain",
+              "rdf_storage_compressed": false,
+              "rdf_storage_serialization": "ntriples",
+              "conversion_command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-10k.rules.ttl -o /data/out/test-10k/.rmlstreamer-parts-test-10k-1 ",
+              "conversion_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/stages/conversion/test-10k.json",
+              "tsv_exit_code": 0,
+              "tsv_wall_seconds": 0.5008948431350291,
+              "tsv_user_seconds": 0.07,
+              "tsv_sys_seconds": 0.01,
+              "tsv_max_rss_kb": 7680,
+              "tsv_input_path": "/data/in/test-10k.vcf",
+              "tsv_output_paths": [
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/.intermediate/tsv/test-10k.records.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/.intermediate/tsv/test-10k.header_lines.tsv",
+                "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/.intermediate/tsv/test-10k.file_metadata.tsv"
+              ],
+              "tsv_output_file_count": 3,
+              "tsv_size_bytes": 806370,
+              "tsv_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/stages/tsv/test-10k.json",
+              "compression_methods": "hdt",
+              "compression_output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k",
+              "combined_rdf_size_bytes": 122644300,
+              "hdt_source": "generated",
+              "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/test-10k.nt",
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/stages/compression/test-10k.json",
+              "compression_selected_methods": [
+                "hdt"
+              ],
+              "rdf_size_bytes_for_ratios": 122644300,
+              "tsv_size_ratio_vs_vcf": 1.2870454313294857,
+              "tsv_size_ratio_vs_rdf": 0.0065748673195574515,
+              "compression_unrecorded_selected_methods": [],
+              "hdt_size_bytes": 6029750,
+              "hdt_exit_code": 0,
+              "hdt_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/test-10k.hdt",
+              "hdt_wall_seconds": 5.754391611088067,
+              "hdt_user_seconds": 4.97,
+              "hdt_sys_seconds": 0.15,
+              "hdt_max_rss_kb": 68768,
+              "hdt_validation_present": true,
+              "hdt_validation_valid": true,
+              "hdt_validation_count_match": true,
+              "hdt_validation_source_triples": 958919,
+              "hdt_validation_decoded_triples": 958919,
+              "hdt_validation_expected_triples": 958919,
+              "hdt_validation_validator": "hdt2rdf",
+              "hdt_validation_wall_seconds": null,
+              "hdt_validation_user_seconds": null,
+              "hdt_validation_sys_seconds": null,
+              "hdt_validation_max_rss_kb": null,
+              "hdt_size_ratio_vs_rdf": 0.0491645351638845,
+              "hdt_size_ratio_vs_vcf": 9.624071071045508,
+              "hdt_size_reduction_pct_vs_rdf": 95.08354648361154,
+              "best_method_by_size": "hdt",
+              "best_size_bytes": 6029750,
+              "best_size_ratio_vs_rdf": 0.0491645351638845,
+              "best_method_by_wall_time": "hdt",
+              "best_wall_seconds": 5.754391611088067
+            }
+          ],
+          "compression_by_method": [
+            {
+              "dataset": "test-10k",
+              "run_directory": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050",
+              "run_name": "test-10k__20260921T232050",
+              "run_id": "20260921T232050",
+              "timestamp": "2026-09-21T23:20:50",
+              "method": "hdt",
+              "compression_exit_code": 0,
+              "compression_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/test-10k.hdt",
+              "compression_wall_seconds": 5.754391611088067,
+              "compression_user_seconds": 4.97,
+              "compression_sys_seconds": 0.15,
+              "compression_max_rss_kb": 68768,
+              "compression_metrics_file": "/Users/eliascrum/PhD_Things/vcf-rdfizer-testing/BioMedSem_2026/benchmark-results/vcf-bench-2/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/stages/compression/test-10k.json",
+              "compression_timing_file": null,
+              "compressed_size_bytes": 6029750,
+              "compressed_size_ratio_vs_rdf": 0.0491645351638845,
+              "compressed_size_ratio_vs_vcf": 9.624071071045508,
+              "compressed_size_reduction_pct_vs_rdf": 95.08354648361154,
+              "rdf_size_bytes": 122644300,
+              "input_vcf_size_bytes": 626528,
+              "total_triples": 958919,
+              "validation_present": true,
+              "validation_valid": true,
+              "validation_count_match": true,
+              "validation_source_triples": 958919,
+              "validation_decoded_triples": 958919,
+              "validation_expected_triples": 958919,
+              "validation_validator": "hdt2rdf",
+              "validation_wall_seconds": null
+            }
+          ]
+        }
+      ],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "refusal__single_with_cottas",
+      "skipped": false,
+      "exit_code": 2,
+      "wrapper_wall_seconds": 0,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--rdf-storage-mode",
+        "plain",
+        "--representations",
+        "hdt,cottas",
+        "--rdf-compression",
+        "none",
+        "--hdt-strategy",
+        "single",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/refusal__single_with_cottas/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/refusal__single_with_cottas",
+      "assertion": "refusal",
+      "status": "REFUSED",
+      "runs": [],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
+      "tree": "benchmarks_outputs",
+      "branch": "live",
+      "experiment": "06_equivalence",
+      "cell": "refusal__single_with_space_optimized",
+      "skipped": false,
+      "exit_code": 2,
+      "wrapper_wall_seconds": 0,
+      "tool_commit": "3b2b0a1b78bf25516c967e5c4fae6aad9e7e190b",
+      "image_ref": "vcf-rdfizer:local-3b2b0a1",
+      "command": [
+        "python3",
+        "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+        "--mode",
+        "full",
+        "--input",
+        "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+        "--rdf-storage-mode",
+        "space-optimized",
+        "--representations",
+        "hdt",
+        "--rdf-compression",
+        "none",
+        "--hdt-strategy",
+        "single",
+        "--image",
+        "vcf-rdfizer:local-3b2b0a1",
+        "--no-build",
+        "--out",
+        "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/refusal__single_with_space_optimized/out"
+      ],
+      "path": "vcf-bench-2/benchmarks_outputs/06_equivalence/refusal__single_with_space_optimized",
+      "assertion": "refusal",
+      "status": "REFUSED",
+      "runs": [],
+      "image_digest": "068ae101bce3"
+    },
+    {
+      "host": "vcf-bench-2",
       "tree": "benchmarks_outputs__stalled",
       "branch": "stalled",
       "experiment": "06_equivalence",
@@ -32776,6 +34600,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs__stalled/06_equivalence__cottas_condensed_hang__20260917T202754/06_equivalence/encoding__plain__expanded",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -33058,6 +34883,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs__stalled/06_equivalence__cottas_condensed_hang__20260917T202754/06_equivalence__live_at_kill/encoding__plain__expanded",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -33344,6 +35170,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs__stalled/06_equivalence__cottas_hang_2__timeout_ineffective__20260918T094006/06_equivalence/encoding__plain__expanded",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -33630,6 +35457,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs__stalled/06_equivalence__cottas_hang_2__timeout_ineffective__20260918T094006/06_equivalence__live_at_kill/encoding__plain__expanded",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -33901,6 +35729,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_compress/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/mode_compress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34080,6 +35909,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34120,6 +35950,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_cottas/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/mode_index_cottas",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34160,6 +35991,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34200,6 +36032,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_tsv/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/mode_tsv",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34290,6 +36123,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34559,6 +36393,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseB_validate_aggregate/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration/12_modes_smoke/phaseB_validate_aggregate",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34607,6 +36442,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_compress/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/mode_compress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34786,6 +36622,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/mode_decompress",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34826,6 +36663,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_cottas/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/mode_index_cottas",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34866,6 +36704,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/mode_index_hdt",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34906,6 +36745,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_tsv/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/mode_tsv",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -34996,6 +36836,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/phaseA_convert",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
@@ -35265,6 +37106,7 @@
         "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseB_validate_aggregate/out"
       ],
       "path": "vcf-bench-2/benchmarks_outputs_calibration__pre_rebalance_20260914T154843/12_modes_smoke/phaseB_validate_aggregate",
+      "assertion": null,
       "status": "OK",
       "runs": [
         {
