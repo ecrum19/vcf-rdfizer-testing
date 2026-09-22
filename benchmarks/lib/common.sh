@@ -494,14 +494,19 @@ bm_expect_refusal() {
 # the suite depends on this function not exiting.
 bm_find_vcf() {
   local name="$1" candidate
+  # -s, not -f: an empty file is not an input. A corpus file that has been
+  # truncated to zero -- by a cleanup, an interrupted download, a full disk --
+  # passes -f and then produces a cell full of nothing rather than a skip.
+  # That happened: HG005_GRCh38.vcf.gz was left at 0 bytes on one host, and
+  # 04's top rung would have converted it and recorded the result.
   if [[ "$name" == /* ]]; then
-    [[ -f "$name" ]] || return 1
+    [[ -s "$name" ]] || return 1
     printf '%s\n' "$name"
     return 0
   fi
   for candidate in "$BM_VCF_DATA/$name" "$BM_DERIVED/$name" \
                    "$(dirname -- "$BM_TOOL")/test/test_vcf_files/$name"; do
-    if [[ -f "$candidate" ]]; then printf '%s\n' "$candidate"; return 0; fi
+    if [[ -s "$candidate" ]]; then printf '%s\n' "$candidate"; return 0; fi
   done
   return 1
 }
