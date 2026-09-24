@@ -16,8 +16,8 @@
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
-ALL="00 02 01 03 04 05 06 07 08 09 10 11 12 13"
-CHEAP="00 02 03 06 07 08 09 11 12 13"
+ALL="00 02 01 03 04 05 06 07 08 09 10 11 12 13 14"
+CHEAP="00 02 03 06 07 08 09 11 12 13 14"
 
 # A profile may be followed by an explicit experiment list, so one profile can
 # be split across hosts: `run_all.sh biomedsem 05 06 10`. Without the shift the

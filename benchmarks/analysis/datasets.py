@@ -11,6 +11,7 @@ deliverable, the stdout view is only there so you can see it worked.
   feasibility  §4.4  memory ceiling x configuration -> completed / OOM
   coverage     §5.1  re-derive that the covering set actually covers
   querycost    §4.5  SPARQL retrieval vs the cyvcf2 parser, on identical work
+  regional     §4.6  indexed regional access: per-question cost by access path
 
 Nothing here formats for print. Figures and typeset tables come later, off the
 CSV/JSON these produce.
@@ -31,6 +32,7 @@ import itertools
 import json
 import os
 import pathlib
+import statistics
 import sys
 
 def default_results_root() -> pathlib.Path:
@@ -590,11 +592,159 @@ def _emit_per_query(rows_in, results, args, scale_of) -> None:
                "oracle.sampleLevelQueries names them, so the attribution is auditable."))
 
 
+# ---------------------------------------------------------------------------
+#: Arms that reach the data through a coordinate index. The comparison the
+#: experiment exists to make is "indexed VCF against SPARQL", so these are the
+#: reference the engines are measured against -- not the scan, which is the
+#: status quo kept only as a baseline.
+INDEXED_VCF_ARMS = ("cyvcf2-indexed", "bcftools-indexed")
+
+
+def cmd_regional(args, results: pathlib.Path) -> int:
+    """Per-question cost by access path and window size.
+
+    Three things are kept apart here on purpose:
+
+    * per-question time, which is what a user waits for;
+    * one-time setup -- bgzip+tabix on one side, the engine's index or load on
+      the other -- which amortizes and therefore belongs in its own column;
+    * agreement, which is the precondition for reporting either.
+    """
+    rows_in = [r for r in load_tidy(results, args.experiment) if not r.get("skipped")]
+    if not rows_in:
+        raise SystemExit("no cells")
+
+    executions: list[dict] = []
+    for row in rows_in:
+        csv_path = row.get("regional_csv")
+        if not csv_path or not pathlib.Path(csv_path).is_file():
+            continue
+        with pathlib.Path(csv_path).open(newline="", encoding="utf-8") as handle:
+            for entry in csv.DictReader(handle):
+                entry["scale"] = row.get("cell")
+                executions.append(entry)
+
+    if not executions:
+        raise SystemExit(
+            "no regional.csv found under this experiment's cells.\n"
+            "Run benchmarks/14_regional_access.sh first."
+        )
+
+    def number(value):
+        try:
+            return float(value) if value not in (None, "") else None
+        except ValueError:
+            return None
+
+    # Agreement first. A speed number from arms that disagree is a bug report.
+    disagreements = [e for e in executions if e.get("agrees_with_reference") == "False"]
+    failures = [e for e in executions if e.get("status") not in ("OK", None, "")]
+
+    grouped: dict[tuple, list[float]] = {}
+    agreement: dict[tuple, set] = {}
+    for entry in executions:
+        if entry.get("status") != "OK":
+            continue
+        seconds = number(entry.get("wall_seconds"))
+        if seconds is None:
+            continue
+        key = (entry["scale"], entry["arm"], entry["query_id"], int(entry["window_size"]))
+        grouped.setdefault(key, []).append(seconds)
+        agreement.setdefault(key, set()).add(entry.get("agrees_with_reference"))
+
+    # Median per (scale, question, window size) for the indexed VCF arms, so
+    # every engine row can carry the ratio that is actually being argued about.
+    indexed_reference: dict[tuple, float] = {}
+    for (scale, arm, query_id, size), seconds in grouped.items():
+        if arm not in INDEXED_VCF_ARMS:
+            continue
+        key = (scale, query_id, size)
+        median = statistics.median(seconds)
+        if key not in indexed_reference or median < indexed_reference[key]:
+            # The fastest indexed VCF path is the fair comparator: a reviewer
+            # asking "why not just use tabix?" means the best of them.
+            indexed_reference[key] = median
+
+    records = []
+    for (scale, arm, query_id, size), seconds in sorted(grouped.items()):
+        median = statistics.median(seconds)
+        best_indexed = indexed_reference.get((scale, query_id, size))
+        records.append({
+            "scale": scale,
+            "arm": arm,
+            "query_id": query_id,
+            "window_size": size,
+            "executions": len(seconds),
+            "median_seconds": median,
+            "min_seconds": min(seconds),
+            "max_seconds": max(seconds),
+            "vs_best_indexed_vcf": (median / best_indexed) if best_indexed else None,
+            "all_agree": (agreement[(scale, arm, query_id, size)] == {"True"}),
+        })
+
+    emit(records, "Indexed regional access: per-question cost by access path",
+         results / args.experiment / "data_regional" if not args.no_files else None,
+         note=("median_seconds is the cost of answering ONE question about ONE window.\n"
+               "vs_best_indexed_vcf divides it by the fastest indexed VCF arm for the\n"
+               "same question and window size: below 1 the graph is faster, above 1 the\n"
+               "index is.\n"
+               "\n"
+               "The cyvcf2-scan arm is timed on fewer windows than the others because its\n"
+               "cost does not vary with the window; its row is a flat baseline, not a\n"
+               "curve. Correctness is still checked on every window.\n"
+               "\n"
+               "One-time setup is NOT in these numbers -- see data_regional_setup. Nor is\n"
+               "conversion: the graph has to exist first, and that cost belongs to the\n"
+               "conversion experiments."))
+
+    # Setup, and the break-even it implies.
+    setup_records = []
+    for row in rows_in:
+        scale = row.get("cell")
+        vcf_setup = None
+        if row.get("vcf_bgzip_seconds") is not None:
+            vcf_setup = (row.get("vcf_bgzip_seconds") or 0) + (row.get("vcf_index_seconds") or 0)
+            setup_records.append({
+                "scale": scale, "side": "vcf", "component": "bgzip+index",
+                "setup_seconds": vcf_setup,
+                "detail": row.get("vcf_index_kind"),
+                "artifact_bytes": row.get("vcf_index_bytes"),
+            })
+        for key, value in row.items():
+            if key.startswith("engine_setup_seconds__") and value is not None:
+                setup_records.append({
+                    "scale": scale, "side": "sparql",
+                    "component": key.split("__", 1)[1],
+                    "setup_seconds": value, "detail": None, "artifact_bytes": None,
+                })
+
+    if setup_records:
+        emit(setup_records, "One-time setup, by side",
+             results / args.experiment / "data_regional_setup" if not args.no_files else None,
+             note=("Each side pays an index cost once. Reporting them side by side is the\n"
+                   "point: a per-question speed-up that needed a 40-minute index build is a\n"
+                   "different claim from one that needed a 3-second tabix run."))
+
+    print(f"\n{len(executions)} timed executions across {len(rows_in)} cell(s)")
+    if failures:
+        print(f"  {len(failures)} execution(s) did not complete")
+    if disagreements:
+        print(f"\n  {len(disagreements)} execution(s) DISAGREED with the reference answer.")
+        print("  No speed number from those arms is reportable until that is resolved.")
+        shown = {(e["arm"], e["query_id"]) for e in disagreements}
+        for arm, query_id in sorted(shown)[:10]:
+            print(f"    {arm} / {query_id}")
+    else:
+        print("  every arm agreed with the reference answer")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("table", choices=["corpus", "equivalence", "awkward",
-                                          "feasibility", "coverage", "querycost"])
+                                          "feasibility", "coverage", "querycost",
+                                          "regional"])
     parser.add_argument("experiment")
     parser.add_argument("--results", default=None)
     parser.add_argument("--no-files", action="store_true",
@@ -605,7 +755,7 @@ def main() -> int:
     handler = {
         "corpus": cmd_corpus, "equivalence": cmd_equivalence, "awkward": cmd_awkward,
         "feasibility": cmd_feasibility, "coverage": cmd_coverage,
-        "querycost": cmd_querycost,
+        "querycost": cmd_querycost, "regional": cmd_regional,
     }[args.table]
     return handler(args, results)
 

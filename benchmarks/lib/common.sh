@@ -285,10 +285,20 @@ artifacts). Move or remove it, or set BM_RESULTS to a new root."
   # Portable read loop rather than mapfile, so nothing here needs bash 4.
   local -a argv=()
   local token
-  while IFS= read -r token; do argv+=("$token"); done < <(bm_tool_argv)
-  argv+=("$@")
-  while IFS= read -r token; do argv+=("$token"); done < <(bm_image_argv)
-  argv+=(--out "$out_dir")
+  if [[ "${BM_RUN_RAW:-0}" == "1" ]]; then
+    # The caller supplies the whole command line, including its own image
+    # reference and mounts. Used by experiments that drive something other
+    # than the wrapper CLI -- 14_regional_access runs a runner inside the
+    # image directly, because the wrapper has no mode for it. Everything else
+    # about the cell is recorded identically, so the two kinds of cell land in
+    # the same dataset.
+    argv+=("$@")
+  else
+    while IFS= read -r token; do argv+=("$token"); done < <(bm_tool_argv)
+    argv+=("$@")
+    while IFS= read -r token; do argv+=("$token"); done < <(bm_image_argv)
+    argv+=(--out "$out_dir")
+  fi
 
   bm_step "$label"
   if [[ "$BM_DRY_RUN" == "1" ]]; then
@@ -376,6 +386,19 @@ PYEOF
     bm_step "  exit $rc (recorded; see $cell_dir/stderr.log)"
   fi
   return 0
+}
+
+# Run a command line verbatim, recorded exactly as bm_run records a wrapper
+# invocation. The cell's output directory is $BM_RESULTS/<exp>/<label>/out and
+# is created before the command runs, so the caller can mount it.
+bm_run_raw() {
+  local experiment="$1" label="$2"; shift 2
+  [[ "${1:-}" == "--" ]] || bm_die "bm_run_raw: expected -- before the command"
+  shift
+  # Do not create the cell here: bm_run refuses a cell that already exists, and
+  # it creates out/ itself before the command runs, which is early enough for a
+  # bind mount.
+  BM_RUN_RAW=1 bm_run "$experiment" "$label" -- "$@"
 }
 
 # Abort unless the last bm_run succeeded. Use in experiments where a failure
