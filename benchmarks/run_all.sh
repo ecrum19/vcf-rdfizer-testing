@@ -115,13 +115,14 @@ case "${1:-all}" in
     export BM_HEADER_INPUT="${BM_HEADER_INPUT:-HG005_GRCh38_r100000.vcf.gz}"
 
     # C5 regional access (14) -- the retrieval claim against an INDEXED VCF,
-    # not only a scan. Slice scale only: it reuses 13_query_cost's graph, so 14
-    # must run after 13, and the whole-file scale needs a decoded 657M-triple
-    # graph that does not fit beside the rest of the campaign on one volume.
+    # not only a scan. The small and slice scales mirror 13_query_cost's small
+    # and large cells and reuse their graphs, so 14 must run after 13 on the
+    # same host. The whole-file scale needs a decoded 657M-triple graph that
+    # does not fit beside the rest of the campaign on one volume.
     # It needs an image with the regional runner and tabix, which v3.1.0 does
     # not have: until a release includes them, set BM_REGIONAL_IMAGE (14 skips
     # with that reason otherwise, rather than failing mid-run).
-    export BM_REGIONAL_SCALES="${BM_REGIONAL_SCALES:-slice}"
+    export BM_REGIONAL_SCALES="${BM_REGIONAL_SCALES:-small slice}"
 
     bm_step "biomedsem profile: manuscript configuration; every claim covered"
     bm_step "  reps=$BM_REPS (at scale: $BM_REPS_AT_SCALE)  corpus truncated to $BM_CORPUS_MAX_RECORDS records (whole: $BM_CORPUS_WHOLE)"

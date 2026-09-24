@@ -35,14 +35,26 @@
 # Not measured here at all: conversion. The graph has to exist first. Quote
 # that from the conversion experiments rather than hiding it or omitting it.
 #
-# The scan arm is timed on fewer windows than the indexed arms, deliberately:
-# its cost does not depend on the window, so timing it on all 80 would measure
-# one number 80 times at ~11 s a go. Correctness is still checked on every
-# window, because the equality reference is a single whole-file pass that fills
-# every window at once.
+# The scan arm is timed on fewer windows than the others, deliberately: its
+# cost does not depend on the window, so timing it on all 80 would measure one
+# number 80 times. It gets BM_SCAN_WINDOWS_PER_SIZE windows of each size, as
+# does any arm in BM_REGIONAL_THIN_ARMS. The equality reference still covers
+# every window: it is a single whole-file pass that fills them all at once.
+#
+# Every engine is timed on every window. A region-restricted question costs
+# Comunica, HDT and COTTAS about one second on the 10k-record fixture (measured
+# on vcf-bench-1), not the 23-45 s they take on 13's whole-file questions, so
+# the small scale is roughly an hour and needs no thinning.
+#
+# The scales follow 13_query_cost exactly, and read its variables, so the two
+# experiments always describe the same inputs:
+#
+#   small   13's small input (BM_QUERY_SMALL)   every arm
+#   slice   the 100,000-record HG005 slice      VCF arms + qlever, as 13's large
+#   whole   the full HG005 file (opt-in)        VCF arms + qlever
 #
 # Usage:
-#   ./14_regional_access.sh                      # slice scale, all arms
+#   ./14_regional_access.sh                      # small and slice
 #   BM_REGIONAL_SCALES=slice ./14_regional_access.sh
 #   BM_REGIONAL_ARMS="cyvcf2-indexed,bcftools-indexed,qlever" ./14_regional_access.sh
 
@@ -56,17 +68,26 @@ SCAN_WINDOWS_PER_SIZE="${BM_SCAN_WINDOWS_PER_SIZE:-3}"
 SEED="${BM_WINDOW_SEED:-20260923}"
 QUERIES="${BM_REGIONAL_QUERIES:-r01_region_record_count,r02_region_variant_shape_counts,r03_region_titv,r04_region_filter_distribution,r05_region_sample_genotype_counts}"
 
-# Which scales to run. `slice` reuses the 100,000-record HG005 slice that
-# 13_query_cost already converted; `whole` is the full HG005 file, where the
-# comparison actually bites -- an index seek is independent of file size and a
-# scan is not.
-SCALES="${BM_REGIONAL_SCALES:-slice}"
+# Which scales to run. `small` and `slice` reuse the graphs 13_query_cost
+# already converted; `whole` is the full HG005 file, where the comparison
+# actually bites -- an index seek is independent of file size and a scan is not
+# -- but it needs a whole-file graph that 13 does not build.
+SCALES="${BM_REGIONAL_SCALES:-small slice}"
+INPUT_SMALL="${BM_REGIONAL_SMALL:-${BM_QUERY_SMALL:-test-10k.vcf}}"
+INPUT_SLICE="${BM_REGIONAL_SLICE:-HG005_GRCh38_r100000.vcf.gz}"
+INPUT_WHOLE="${BM_REGIONAL_WHOLE:-HG005_GRCh38.vcf.gz}"
 
-# Every arm at slice scale. At whole-file scale Comunica and HDT spawn one
-# process per query, so they would measure process startup over a 657M-triple
-# graph; qlever is the only engine worth the hours there.
-ARMS_SLICE="${BM_REGIONAL_ARMS:-cyvcf2-scan,cyvcf2-indexed,bcftools-indexed,comunica,hdt,cottas,qlever}"
-ARMS_WHOLE="${BM_REGIONAL_ARMS_WHOLE:-cyvcf2-scan,cyvcf2-indexed,bcftools-indexed,qlever}"
+# Every engine at small scale, which is the only scale 13 runs them at. Above
+# it, only qlever: on the 17M-triple slice HDT spent over ten minutes
+# rebuilding its index and Comunica's endpoint crashed during start-up (see
+# vcf-rdfizer's validation_runner _await_bind), and 13 has no numbers for them
+# there to compare against. BM_REGIONAL_ARMS overrides every scale.
+ALL_ARMS="cyvcf2-scan,cyvcf2-indexed,bcftools-indexed,comunica,hdt,cottas,qlever"
+VCF_AND_QLEVER="cyvcf2-scan,cyvcf2-indexed,bcftools-indexed,qlever"
+ARMS_SMALL="${BM_REGIONAL_ARMS_SMALL:-${BM_REGIONAL_ARMS:-$ALL_ARMS}}"
+ARMS_SLICE="${BM_REGIONAL_ARMS_SLICE:-${BM_REGIONAL_ARMS:-$VCF_AND_QLEVER}}"
+ARMS_WHOLE="${BM_REGIONAL_ARMS_WHOLE:-${BM_REGIONAL_ARMS:-$VCF_AND_QLEVER}}"
+THIN_ARMS="${BM_REGIONAL_THIN_ARMS:-cyvcf2-scan}"
 
 # --------------------------------------------------------------------------
 # The image.
@@ -92,7 +113,12 @@ fi
 regional_image_problem() {
   local out
   if ! out="$(docker run --rm --entrypoint sh "$BM_IMAGE_REF" -c '
-      test -f /opt/vcf-rdfizer/validation/regional_runner.py || echo "no regional_runner.py"
+      runner=/opt/vcf-rdfizer/validation/regional_runner.py
+      if test -f "$runner"; then
+        grep -q -- "--thin-arms" "$runner" || echo "regional_runner.py predates --thin-arms"
+      else
+        echo "no regional_runner.py"
+      fi
       command -v tabix >/dev/null 2>&1 || echo "no tabix"
       command -v bcftools >/dev/null 2>&1 || echo "no bcftools"' 2>&1)"; then
     printf 'image could not be started: %s\n' "$(printf '%s' "$out" | tail -1)"
@@ -111,6 +137,7 @@ regional_image_problem() {
 find_rdf_for_scale() {
   local scale="$1" input="$2" override=""
   case "$scale" in
+    small) override="${BM_REGIONAL_RDF_SMALL:-}" ;;
     slice) override="${BM_REGIONAL_RDF_SLICE:-}" ;;
     whole) override="${BM_REGIONAL_RDF_WHOLE:-}" ;;
   esac
@@ -160,7 +187,7 @@ run_scale() {
       bm_skip "$EXPERIMENT" "${scale}__no_rdf" \
         "no RDF artifact found for the SPARQL arms.
 Run 13_query_cost first so its aggregate can be reused, or point at one with
-  BM_REGIONAL_RDF_SLICE=/path/to/graph.nt.gz (or ..._WHOLE)"
+  BM_REGIONAL_RDF_$(printf %s "$scale" | tr a-z A-Z)=/path/to/graph.nt.gz"
       return 0
     fi
     bm_step "reusing RDF artifact: $rdf"
@@ -172,6 +199,7 @@ Run 13_query_cost first so its aggregate can be reused, or point at one with
   bm_banner "regional access — $scale scale: $(basename "$vcf")"
   bm_step "arms: $arms"
   bm_step "windows: $WINDOWS_PER_SIZE per size of [$WINDOW_SIZES], seed $SEED"
+  bm_step "thin arms ($SCAN_WINDOWS_PER_SIZE per size): $THIN_ARMS"
 
   # Mounts. The RDF directory is only mounted when a SPARQL arm needs it, so a
   # VCF-only run does not depend on a converted graph existing.
@@ -204,6 +232,7 @@ Run 13_query_cost first so its aggregate can be reused, or point at one with
         --window-sizes "$WINDOW_SIZES" \
         --windows-per-size "$WINDOWS_PER_SIZE" \
         --scan-windows-per-size "$SCAN_WINDOWS_PER_SIZE" \
+        --thin-arms "$THIN_ARMS" \
         --replicates "$REPLICATES" \
         --seed "$SEED" \
         --index-kind auto \
@@ -236,9 +265,10 @@ fi
 
 for scale in $SCALES; do
   case "$scale" in
-    slice) run_scale slice "${BM_REGIONAL_SLICE:-HG005_GRCh38_r100000.vcf.gz}" "$ARMS_SLICE" ;;
-    whole) run_scale whole "${BM_REGIONAL_WHOLE:-HG005_GRCh38.vcf.gz}" "$ARMS_WHOLE" ;;
-    *)     bm_die "unknown scale: $scale (expected 'slice' and/or 'whole')" ;;
+    small) run_scale small "$INPUT_SMALL" "$ARMS_SMALL" ;;
+    slice) run_scale slice "$INPUT_SLICE" "$ARMS_SLICE" ;;
+    whole) run_scale whole "$INPUT_WHOLE" "$ARMS_WHOLE" ;;
+    *)     bm_die "unknown scale: $scale (expected small, slice and/or whole)" ;;
   esac
 done
 
