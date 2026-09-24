@@ -69,6 +69,39 @@ ARMS_SLICE="${BM_REGIONAL_ARMS:-cyvcf2-scan,cyvcf2-indexed,bcftools-indexed,comu
 ARMS_WHOLE="${BM_REGIONAL_ARMS_WHOLE:-cyvcf2-scan,cyvcf2-indexed,bcftools-indexed,qlever}"
 
 # --------------------------------------------------------------------------
+# The image.
+#
+# The regional runner and the tabix package ship in the image, not in this
+# harness, and VCF-RDFizer v3.1.0 has neither. A campaign pinned to v3.1.0
+# therefore cannot run this experiment as it stands. BM_REGIONAL_IMAGE lets
+# this experiment alone use an image that has them, while every other
+# experiment stays on the session's image; bench.json then records THIS
+# image's reference and digest for these cells, so the two provenances stay
+# distinguishable rather than being blurred into one.
+# --------------------------------------------------------------------------
+if [[ -n "${BM_REGIONAL_IMAGE:-}" ]]; then
+  BM_IMAGE_REF="$BM_REGIONAL_IMAGE"
+  BM_IMAGE_MODE="experiment-override"
+  BM_IMAGE_DIGEST="$(bm_image_digest)"
+  bm_step "image for this experiment only: $BM_IMAGE_REF ($BM_IMAGE_DIGEST)"
+fi
+
+# Prints why the image cannot run this experiment, or nothing when it can.
+# Checked before any cell, so an image that predates the runner is a stated
+# skip rather than a failure after the setup has been paid for.
+regional_image_problem() {
+  local out
+  if ! out="$(docker run --rm --entrypoint sh "$BM_IMAGE_REF" -c '
+      test -f /opt/vcf-rdfizer/validation/regional_runner.py || echo "no regional_runner.py"
+      command -v tabix >/dev/null 2>&1 || echo "no tabix"
+      command -v bcftools >/dev/null 2>&1 || echo "no bcftools"' 2>&1)"; then
+    printf 'image could not be started: %s\n' "$(printf '%s' "$out" | tail -1)"
+    return 0
+  fi
+  printf '%s' "$out" | paste -sd ';' -
+}
+
+# --------------------------------------------------------------------------
 # Locate the RDF artifact for a scale.
 #
 # The SPARQL side reuses what 13_query_cost already built rather than
@@ -76,7 +109,7 @@ ARMS_WHOLE="${BM_REGIONAL_ARMS_WHOLE:-cyvcf2-scan,cyvcf2-indexed,bcftools-indexe
 # a second provenance to reconcile. BM_REGIONAL_RDF_<SCALE> overrides.
 # --------------------------------------------------------------------------
 find_rdf_for_scale() {
-  local scale="$1" override=""
+  local scale="$1" input="$2" override=""
   case "$scale" in
     slice) override="${BM_REGIONAL_RDF_SLICE:-}" ;;
     whole) override="${BM_REGIONAL_RDF_WHOLE:-}" ;;
@@ -87,29 +120,28 @@ find_rdf_for_scale() {
     return 0
   fi
 
-  # Search every 13_query_cost cell rather than guessing its naming. Picking
-  # the wrong graph here would benchmark a different dataset under this
-  # experiment's label, so ambiguity is reported rather than resolved by
-  # guessing: if more than one candidate turns up, the caller names one.
-  local base="$BM_RESULTS/13_query_cost"
-  [[ -d "$base" ]] || return 0
+  # Only a graph converted from THIS scale's input will do: 13_query_cost also
+  # holds the 10k-record graph, and using it would benchmark a different
+  # dataset under this experiment's label. So candidates are matched on the
+  # input's own name. Several matches are then replicates of one conversion --
+  # 13 runs three, and the determinism cell shows repeated conversions are
+  # byte-identical -- so the first is used and the choice is logged.
+  local stem; stem="$(basename -- "$input")"; stem="${stem%.gz}"; stem="${stem%.vcf}"
+  local base path
   local -a found=()
-  local path
-  while IFS= read -r path; do
-    [[ -n "$path" ]] && found+=("$path")
-  done < <(find "$base" -maxdepth 4 \( -name '*.nt.gz' -o -name '*.nt' \) 2>/dev/null | sort)
+  for base in "$BM_RESULTS/13_query_cost" "$BM_RESULTS/04_scaling_records"; do
+    [[ -d "$base" ]] || continue
+    while IFS= read -r path; do
+      [[ -n "$path" ]] && found+=("$path")
+    done < <(find -H "$base" -maxdepth 4 \( -name "$stem.nt.gz" -o -name "$stem.nt" \) 2>/dev/null | sort)
+    (( ${#found[@]} > 0 )) && break
+  done
 
-  if (( ${#found[@]} == 0 )); then
-    return 0
+  (( ${#found[@]} == 0 )) && return 0
+  if (( ${#found[@]} > 1 )); then
+    bm_step "${#found[@]} replicate conversions of $stem found; using the first:" >&2
   fi
-  if (( ${#found[@]} == 1 )); then
-    printf '%s\n' "${found[0]}"
-    return 0
-  fi
-  bm_warn "more than one RDF artifact under $base; name the one this scale means:
-$(printf '  %s\n' "${found[@]}")
-  BM_REGIONAL_RDF_SLICE=<path>   or   BM_REGIONAL_RDF_WHOLE=<path>"
-  return 0
+  printf '%s\n' "${found[0]}"
 }
 
 run_scale() {
@@ -123,7 +155,7 @@ run_scale() {
 
   local rdf=""
   if printf '%s' "$arms" | grep -qE 'comunica|hdt|cottas|qlever'; then
-    rdf="$(find_rdf_for_scale "$scale")"
+    rdf="$(find_rdf_for_scale "$scale" "$input")"
     if [[ -z "$rdf" ]]; then
       bm_skip "$EXPERIMENT" "${scale}__no_rdf" \
         "no RDF artifact found for the SPARQL arms.
@@ -187,6 +219,20 @@ from this scale is reportable until that is resolved:
   $out_dir/mismatches.json"
   fi
 }
+
+if [[ "$BM_DRY_RUN" != "1" ]]; then
+  problem="$(regional_image_problem)"
+  if [[ -n "$problem" ]]; then
+    for scale in $SCALES; do
+      bm_skip "$EXPERIMENT" "${scale}__image" \
+        "image $BM_IMAGE_REF cannot run this experiment ($problem). The regional
+runner and tabix first ship in the release that includes VCF-RDFizer PR #23;
+until then point this experiment at an image built from it:
+  BM_REGIONAL_IMAGE=<image> ./14_regional_access.sh"
+    done
+    exit 0
+  fi
+fi
 
 for scale in $SCALES; do
   case "$scale" in

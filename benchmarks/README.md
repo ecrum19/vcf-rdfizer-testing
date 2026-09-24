@@ -218,6 +218,6 @@ Move or delete the cell, or set `BM_RESULTS` to a new root.
 `BM_SPARK_PARTITIONS` (default 8) · `BM_CEILINGS` §10 ceilings ·
 `BM_IMAGE_VERSION` pin a published release · `BM_REBUILD=1` force a rebuild ·
 `BM_REGIONAL_SCALES` slice/whole · `BM_REGIONAL_ARMS` · `BM_WINDOW_SEED` ·
-`BM_REGIONAL_RDF_SLICE` / `_WHOLE` reuse a specific graph ·
+`BM_REGIONAL_RDF_SLICE` / `_WHOLE` reuse a specific graph · `BM_REGIONAL_IMAGE` run 14 on its own image (v3.1.0 lacks the regional runner) ·
 `BM_DRY_RUN=1` print commands without running · `BM_ALLOW_NETWORK=1` +
 `BM_CONTACT_EMAIL` tier-3 linker · `BM_CUSTOM_RULES` custom mapping
