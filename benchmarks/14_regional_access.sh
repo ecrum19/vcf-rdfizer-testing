@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Indexed regional access — SPARQL against a coordinate-indexed VCF.
 #
+# A standalone investigation, not part of the suite: run_all.sh does not run
+# it, and no profile includes it. Run it by hand, after 13_query_cost, on the
+# host that holds 13's results. If 13 ran outside the biomedsem profile, set
+# BM_QUERY_SMALL to the small input it used, so the graph can be found.
+#
 # 13_query_cost pits SPARQL against cyvcf2 SCANNING the file, because none of
 # Q1-Q13 is coordinate-restricted. That is internally consistent, and it is the
 # one VCF access mode nobody uses for a selective question. Real VCF work

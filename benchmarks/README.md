@@ -142,7 +142,14 @@ a time** — two concurrent runs invalidate every timing and memory number.
 | `11_covering_set.sh` | §5.1 | Six runs covering every option value and pair. |
 | `12_modes_smoke.sh` | §5.2–5.3 | Phase A/B separation; every mode exercised once. |
 | `13_query_cost.sh` | §4.5 | SPARQL retrieval vs the cyvcf2 parser, on identical work. |
-| `14_regional_access.sh` | §4.6 | Indexed regional access: SPARQL vs bgzip+tabix seeks. |
+
+### Investigations outside the suite
+
+Not in `run_all.sh`, and not part of any profile. Run directly when wanted.
+
+| Script | What it investigates |
+|---|---|
+| `14_regional_access.sh` | Indexed regional access: SPARQL against bgzip+tabix seeks, on five region-restricted questions. It reuses `13_query_cost`'s graphs, so run it after 13 on the same host. It needs an image with VCF-RDFizer's regional runner and tabix (`BM_REGIONAL_IMAGE`); v3.1.0 has neither and records a skip. |
 
 ## Get the data out
 

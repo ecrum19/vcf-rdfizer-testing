@@ -1,7 +1,13 @@
 # Indexed regional access: an added arm for the retrieval comparison
 
-Status: **implemented, not yet run.** The harness, the runner, the queries and
-the analysis are in place and tested; no measurement has been taken. The
+Status: **implemented and smoke-tested on vcf-bench-1; the full sweep has not
+been run.** The harness, the runner, the queries and the analysis are in place,
+and a reduced run of both scales passed with every arm agreeing (see "What is
+verified"). No reportable measurement has been taken yet.
+
+**Scope: a standalone investigation.** `14_regional_access.sh` is not in
+`run_all.sh` or any profile, and the runner's tests are outside VCF-RDFizer's
+CI suite. It is run by hand when wanted. The
 manuscript still keeps its placeholder in §4.2 (the `\authorquery` after
 "Queryable Genomic RDF as a Complementary Access Layer") until it has.
 
@@ -60,7 +66,7 @@ anyway.
 | --- | --- |
 | Runner | `vcf-rdfizer/src/validation/regional_runner.py` |
 | Queries | `vcf-rdfizer/src/validation/queries/regional/{common,expanded}/r0*.rq` |
-| Tests | `vcf-rdfizer/test/test_regional_runner_unit.py` (23 tests) |
+| Tests | `vcf-rdfizer/test/test_regional_runner.py` and `test_regional_runner_driver.py` (75 tests; not in CI) |
 | Image | `tabix` added to the Dockerfile — it ships `bgzip` and `tabix`, which `bcftools` alone does not |
 | Harness | `vcf-rdfizer-testing/benchmarks/14_regional_access.sh` |
 | Analysis | `collect_metrics.py`, and `datasets.py regional` |
@@ -124,23 +130,21 @@ pin it.
 
 ### The scan arm is timed on fewer windows than the others
 
-The original cost estimate — 7,200 executions, "most of them sub-second",
-2–4 h — does not survive contact with the scan arm. It costs ~11.5 s per
-execution on the slice regardless of the window, because it reads the file
-whichever region is asked for. At 5 questions × 4 sizes × 20 windows × 3
-replicates that arm alone is 1,200 executions ≈ **3.8 h**, and on the whole file
-it is not runnable at all.
-
-It is also 1,200 measurements of the same number. So the scan arm is timed on 3
-windows per size (`--scan-windows-per-size`, configurable) and reported as a
-flat baseline rather than a curve. Correctness is unaffected: the equality
+The scan arm's cost does not depend on the window, because it reads the file
+whichever region is asked for. Measured on vcf-bench-1 it is 0.64 s a question
+on the slice, far below the ~11.5 s first assumed from `13_query_cost`'s
+whole-file questions. So timing it on every window would not be expensive, only
+1,200 measurements of the same number. It is timed on 3 windows per size
+(`--scan-windows-per-size`, configurable) and reported as a flat baseline
+rather than a curve. `--thin-arms` can give any other arm the same treatment. Correctness is unaffected: the equality
 reference is a single whole-file pass that fills every window at once, and that
 pass is deliberately **not** timed, because answering eighty windows in one pass
 is not what a one-question user pays for.
 
-Revised cost: roughly **1,900 timed executions per scale**, of which 60 are the
-slow ones. Estimated well under an hour for the slice; the whole-file cells are
-dominated by the engines' setup, not by the queries.
+Measured cost: a region-restricted question takes Comunica, HDT and COTTAS
+about 1 s on the small input (against 23–45 s for the whole-file questions), so
+the **small scale is roughly an hour** with every engine on every window. The
+slice, with the VCF arms and QLever only, is a few minutes.
 
 ### Windows are anchored on real records
 
@@ -178,17 +182,29 @@ separately. Specifics:
 
 ## Inputs
 
-The 100,000-record `HG005_GRCh38` slice already used by `13_query_cost`, whose
-RDF artifact is **reused rather than rebuilt** — the harness locates it under
-`results/13_query_cost/` and refuses to guess when more than one candidate
-exists. The whole `HG005_GRCh38` file is the second scale, and matters most: an
-index seek is independent of file size, a scan is not.
+The scales mirror `13_query_cost` and read its variables:
+
+| Scale | Input | Arms |
+| --- | --- | --- |
+| `small` | 13's small input (`test-10k.vcf` in the biomedsem profile) | all seven |
+| `slice` | the 100,000-record `HG005_GRCh38` slice | VCF arms + QLever |
+| `whole` (opt-in) | the whole `HG005_GRCh38` file | VCF arms + QLever |
+
+Both default scales **reuse 13's RDF artifact rather than rebuilding it**. The
+harness finds it under `results/13_query_cost/` by the input's stem, and uses
+the first of 13's replicate conversions. The heavy engines stay off the slice,
+as they do in 13. There HDT spent over ten minutes rebuilding its index,
+Comunica's endpoint crashed at start-up (a `validation_runner` bind-probe bug),
+and 13 has no numbers for them to compare against. The whole file matters most,
+because an index seek is independent of file size and a scan is not. But it
+needs a whole-file graph that 13 does not build.
 
 ## How to run it
 
 ```bash
-# slice scale, every arm
-bash benchmarks/14_regional_access.sh
+# small and slice scales (after 13_query_cost, on the same host)
+BM_REGIONAL_IMAGE=<image built from VCF-RDFizer PR #23> \
+  bash benchmarks/14_regional_access.sh
 
 # whole-file scale, qlever only among the engines
 BM_REGIONAL_SCALES=whole bash benchmarks/14_regional_access.sh
@@ -201,9 +217,11 @@ python3 benchmarks/analysis/datasets.py regional 14_regional_access
 cannot find the `13_query_cost` artifact, name it with
 `BM_REGIONAL_RDF_SLICE` / `BM_REGIONAL_RDF_WHOLE`.
 
-**The image must be rebuilt before this runs.** `tabix` is a new package, and
-without it the indexed arms fall back to `bcftools index`, which produces an
-equivalent index but means the run is not testing the documented path.
+**The v3.1.0 image cannot run this.** It has neither the runner nor `tabix`.
+The harness checks the image first and records a stated skip rather than
+failing. Until a release includes PR #23, point `BM_REGIONAL_IMAGE` at an image
+built from it. Those cells are then marked `experiment-override` and carry that
+image's digest.
 
 ## Outputs
 
@@ -218,24 +236,29 @@ equivalent index but means the run is not testing the documented path.
 
 ## What is verified, and what is not
 
-Verified locally: the runner end to end on the scan arm (40 executions, zero
-disagreements); window drawing, anchoring and seed reproducibility; the bcftools
-folder against the cyvcf2 arm on every question and window; the SPARQL
-normalizer; template rendering and its injection guard; the POS convention;
-`datasets.py regional` including its disagreement path. 23 unit tests, and the
-tool suite passes at 889 tests.
+Verified on vcf-bench-1, with an image built from PR #23 (htslib/tabix 1.22.1,
+bcftools 1.22, cyvcf2 0.34.0), through the harness, against the live
+`13_query_cost` results, at 2 windows per size and 1 replicate:
 
-Not verified, because the binaries are not on this machine and no run has been
-made: the `bcftools query -r` and `tabix` paths against a real index, and the
-SPARQL arms against a real graph. The first run should be the slice at
-`--windows-per-size 2 --replicates 1` as a smoke test before the full sweep.
+| Scale | Arms | Executions | Failed | Disagreed |
+| --- | --- | --- | --- | --- |
+| small (`test-10k`) | all seven | 200 | 0 | 0 |
+| slice (`HG005_GRCh38_r100000`) | VCF arms + QLever | 140 | 0 | 0 |
 
-One caveat to check on that first run: `_classify_bcftools_gt` maps `%GT` text
-onto the same classes the allele-index oracle produces, but a record with no GT
-field prints `.`, which is indistinguishable from a missing call. A file whose
-records lack GT entirely would make the bcftools arm disagree with the cyvcf2
-arms — the comparator will catch it, and the fix would be to read FORMAT
-explicitly rather than infer from `%GT`.
+`collect_metrics.py` and `datasets.py regional` both build from that output.
+The runner's 75 unit tests pass, and inside the image none are skipped.
+
+Getting there found four runner defects, all fixed in PR #23:
+
+- an unsorted VCF could not be indexed;
+- a plain-gzip slice was compressed twice;
+- three of four engines rejected the reused `.nt.gz`;
+- engine options were silently ignored.
+
+The `%GT` caveat did not arise: every file tested carries GT.
+
+Not yet done: the full sweep (20 windows per size, 3 replicates), and the
+whole-file scale.
 
 ## What would change in the paper
 
