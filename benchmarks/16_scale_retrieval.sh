@@ -118,6 +118,15 @@ BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES="${BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES:-500000
 #
 # Discovering this after a 16-hour build has already been paid would be the
 # expensive way to learn it.
+# Raise the V8 old-space ceiling for the Comunica-backed engines (comunica,
+# hdt, cottas). Node does not size its heap from the machine: at 170,935,101
+# triples the HDT endpoint aborted with "Reached heap limit Allocation failed -
+# JavaScript heap out of memory" on the sample-level query while ~25 GB of the
+# host's 31 GB was still free, and the kernel OOM killer was never involved.
+# Unset leaves Node's default, which is what every published measurement used.
+# Needs a tool build carrying --node-heap-mb.
+BM_SCALE_NODE_HEAP_MB="${BM_SCALE_NODE_HEAP_MB:-}"
+
 BM_SCALE_BYTES_PER_TRIPLE="${BM_SCALE_BYTES_PER_TRIPLE:-201}"
 BM_SCALE_SKIP_DISK_CHECK="${BM_SCALE_SKIP_DISK_CHECK:-0}"
 
@@ -221,6 +230,7 @@ Raise it to run anyway."
           --validation-engine "$engine" \
           --validation-queries "$QUERIES" \
           --no-shacl \
+          ${BM_SCALE_NODE_HEAP_MB:+--node-heap-mb "$BM_SCALE_NODE_HEAP_MB"} \
           --validation-id "${scale}_${engine}_${rep}" \
           --image "$BM_IMAGE_REF" \
           --no-build \
