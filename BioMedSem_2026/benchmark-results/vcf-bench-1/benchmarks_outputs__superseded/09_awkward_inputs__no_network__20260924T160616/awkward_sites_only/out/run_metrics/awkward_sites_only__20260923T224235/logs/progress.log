@@ -1,0 +1,19 @@
+[2026-09-23T22:42:35] Run started (mode=full)
+[2026-09-23T22:42:35] Checking Docker availability
+[2026-09-23T22:42:35] Docker availability check passed
+[2026-09-23T22:42:35] Ensuring image available: ecrum19/vcf-rdfizer:3.1.0
+[2026-09-23T22:42:35] Image ready
+[2026-09-23T22:42:35] Writeability checks passed
+[2026-09-23T22:42:35] Full pipeline started
+[2026-09-23T22:42:35] Input 1/1 started: awkward_sites_only
+[2026-09-23T22:42:35] Input 1: TSV conversion completed for awkward_sites_only
+[2026-09-23T22:42:48] Input 1: RDF conversion completed for awkward_sites_only
+[2026-09-23T22:42:49] Input 1: compression completed for awkward_sites_only
+[2026-09-23T22:42:49] Validation started: awkward_sites_only
+[2026-09-23T22:42:50] Validation failed: awkward_sites_only (exit_code=1)
+[2026-09-23T22:42:50] Validation started: awkward_sites_only__hdt
+[2026-09-23T22:42:50] Validation failed: awkward_sites_only__hdt (exit_code=1)
+[2026-09-23T22:42:50] Input 1/1 failed at validation for awkward_sites_only: semantic VCF/RDF validation failed for 'awkward_sites_only' (aggregate, hdt). See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260923T224235/reports/validation
+[2026-09-23T22:42:50] Input 1/1 finished with failures: awkward_sites_only
+[2026-09-23T22:42:50] Full pipeline completed with failures (1/1). Report: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260923T224235/reports/failed_inputs.csv
+[2026-09-23T22:42:50] Run finished (exit_code=1)

@@ -1,7 +1,7 @@
 Step 1/5: Validating inputs ✅
-  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234
-  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234/logs/wrapper.log
-  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234/logs/progress.log
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/logs/progress.log
 Step 2/5: Ensuring Docker image is available ✅
 Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
   Spark partition hint: 8
@@ -19,16 +19,20 @@ Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation
     * Header lines typed: 8; contigs: 1
     * Streaming QUAL and structured INFO RDF
     * QUAL values streamed: 0; INFO values: 0; declarations: 0
-    * Triples produced: 181
+    * Triples produced: 189
     * Compression ✅
     * Semantic validation (aggregate, comunica): awkward_no_records.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/reports/validation/awkward_no_records
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/stages/validation/awkward_no_records.json
     * Semantic validation (hdt, comunica): awkward_no_records.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/reports/validation/awkward_no_records__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/stages/validation/awkward_no_records__hdt.json
     * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/awkward_no_records
       - RDF aggregate: awkward_no_records.nt.gz
-      - RDF (.gz): 2.32 KB (retained after validation failure)
-      - HDT (.hdt): 4.18 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/awkward_no_records/awkward_no_records.hdt)
-Total triples produced (full run): 181
-Conversion process completed with failures.
-Run time (full mode): 34.23s
-Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234/wrapper_execution_times.csv
-Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234/summary.json
+      - RDF (.gz): 2.42 KB (removed after successful compression)
+      - HDT (.hdt): 4.33 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/awkward_no_records/awkward_no_records.hdt)
+Total triples produced (full run): 189
+Conversion process finished.
+Run time (full mode): 34.95s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260924T161027/summary.json

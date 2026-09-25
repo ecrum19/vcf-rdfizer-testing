@@ -1,0 +1,66 @@
+=== 2026-09-24T16:06:16+02:00 re-run 09 with the tier-3 Ensembl linker enabled
+network footprint: 86 distinct rsIDs, batchSize=100 -> ONE POST
+declared policy: maxRequestsPerSecond=2, maxRequestsPerRun=100
+archived the offline 09 (16 cells)
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 09_awkward_inputs.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §4.4 awkward inputs ===
+    - awkward_breakend
+    - awkward_crlf
+    - awkward_declared_format_absent
+    - awkward_filter_variants
+    - awkward_half_and_haploid_calls
+    - awkward_high_ploidy
+    - awkward_missing_values
+    - awkward_no_records
+    - awkward_sites_only
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/stderr.log)
+    - awkward_symbolic_alleles
+    - awkward_truncated
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/stderr.log)
+
+=== §4.4 extensibility smoke runs ===
+    - rules__custom — SKIPPED: set BM_CUSTOM_RULES=/path/to/rules.ttl to exercise a custom mapping.
+Note: validation reports Q9-Q13 as MISMATCH for a correct custom mapping,
+because the wrapper does not forward --mapping-policy (a known tool gap).
+Read those five as report-only here.
+    - link__00_convert
+    - link__rsid-dbsnp
+    - link__gene-demo
+    - link__rsid-ensembl
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py awkward 09_awkward_inputs
+
+The table pairs each fixture's recorded expectation against what happened.
+Report refusals as refusals — a clear diagnostic is a pass.
+
+=== Collecting ===
+01_storage_mode: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/tidy.csv
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 9 cells — 9 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+09_awkward_inputs: 16 cells — 13 ok, 2 non-zero, 1 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/tidy.csv
+  exit 1: awkward_sites_only
+  exit 1: awkward_truncated
+10_feasibility: 9 cells — 9 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/tidy.csv
+11_covering_set: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+13_query_cost: 6 cells — 6 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/tidy.csv
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+=== 2026-09-24T16:12:33+02:00 finished

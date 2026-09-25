@@ -1,0 +1,231 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/run_metrics/HG005_GRCh38_r1000000__20260918T045512
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/run_metrics/HG005_GRCh38_r1000000__20260918T045512/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/run_metrics/HG005_GRCh38_r1000000__20260918T045512/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: condensed
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: HG005_GRCh38_r1000000.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming condensed multi-sample RDF (no expanded helper TSVs)
+    * Condensed sample RDF streaming: 10,000 variants, 70,000 vectors
+    * Condensed sample RDF streaming: 20,000 variants, 140,000 vectors
+    * Condensed sample RDF streaming: 30,000 variants, 210,000 vectors
+    * Condensed sample RDF streaming: 40,000 variants, 280,000 vectors
+    * Condensed sample RDF streaming: 50,000 variants, 350,000 vectors
+    * Condensed sample RDF streaming: 60,000 variants, 420,000 vectors
+    * Condensed sample RDF streaming: 70,000 variants, 490,000 vectors
+    * Condensed sample RDF streaming: 80,000 variants, 560,000 vectors
+    * Condensed sample RDF streaming: 90,000 variants, 630,000 vectors
+    * Condensed sample RDF streaming: 100,000 variants, 700,000 vectors
+    * Condensed sample RDF streaming: 110,000 variants, 770,000 vectors
+    * Condensed sample RDF streaming: 120,000 variants, 840,000 vectors
+    * Condensed sample RDF streaming: 130,000 variants, 910,000 vectors
+    * Condensed sample RDF streaming: 140,000 variants, 980,000 vectors
+    * Condensed sample RDF streaming: 150,000 variants, 1,050,000 vectors
+    * Condensed sample RDF streaming: 160,000 variants, 1,120,000 vectors
+    * Condensed sample RDF streaming: 170,000 variants, 1,190,000 vectors
+    * Condensed sample RDF streaming: 180,000 variants, 1,260,000 vectors
+    * Condensed sample RDF streaming: 190,000 variants, 1,330,000 vectors
+    * Condensed sample RDF streaming: 200,000 variants, 1,400,000 vectors
+    * Condensed sample RDF streaming: 210,000 variants, 1,470,000 vectors
+    * Condensed sample RDF streaming: 220,000 variants, 1,540,000 vectors
+    * Condensed sample RDF streaming: 230,000 variants, 1,610,000 vectors
+    * Condensed sample RDF streaming: 240,000 variants, 1,680,000 vectors
+    * Condensed sample RDF streaming: 250,000 variants, 1,750,000 vectors
+    * Condensed sample RDF streaming: 260,000 variants, 1,820,000 vectors
+    * Condensed sample RDF streaming: 270,000 variants, 1,890,000 vectors
+    * Condensed sample RDF streaming: 280,000 variants, 1,960,000 vectors
+    * Condensed sample RDF streaming: 290,000 variants, 2,030,000 vectors
+    * Condensed sample RDF streaming: 300,000 variants, 2,100,000 vectors
+    * Condensed sample RDF streaming: 310,000 variants, 2,170,000 vectors
+    * Condensed sample RDF streaming: 320,000 variants, 2,240,000 vectors
+    * Condensed sample RDF streaming: 330,000 variants, 2,310,000 vectors
+    * Condensed sample RDF streaming: 340,000 variants, 2,380,000 vectors
+    * Condensed sample RDF streaming: 350,000 variants, 2,450,000 vectors
+    * Condensed sample RDF streaming: 360,000 variants, 2,520,000 vectors
+    * Condensed sample RDF streaming: 370,000 variants, 2,590,000 vectors
+    * Condensed sample RDF streaming: 380,000 variants, 2,660,000 vectors
+    * Condensed sample RDF streaming: 390,000 variants, 2,730,000 vectors
+    * Condensed sample RDF streaming: 400,000 variants, 2,800,000 vectors
+    * Condensed sample RDF streaming: 410,000 variants, 2,870,000 vectors
+    * Condensed sample RDF streaming: 420,000 variants, 2,940,000 vectors
+    * Condensed sample RDF streaming: 430,000 variants, 3,010,000 vectors
+    * Condensed sample RDF streaming: 440,000 variants, 3,080,000 vectors
+    * Condensed sample RDF streaming: 450,000 variants, 3,150,000 vectors
+    * Condensed sample RDF streaming: 460,000 variants, 3,220,000 vectors
+    * Condensed sample RDF streaming: 470,000 variants, 3,290,000 vectors
+    * Condensed sample RDF streaming: 480,000 variants, 3,360,000 vectors
+    * Condensed sample RDF streaming: 490,000 variants, 3,430,000 vectors
+    * Condensed sample RDF streaming: 500,000 variants, 3,500,000 vectors
+    * Condensed sample RDF streaming: 510,000 variants, 3,570,000 vectors
+    * Condensed sample RDF streaming: 520,000 variants, 3,640,000 vectors
+    * Condensed sample RDF streaming: 530,000 variants, 3,710,000 vectors
+    * Condensed sample RDF streaming: 540,000 variants, 3,780,000 vectors
+    * Condensed sample RDF streaming: 550,000 variants, 3,850,000 vectors
+    * Condensed sample RDF streaming: 560,000 variants, 3,920,000 vectors
+    * Condensed sample RDF streaming: 570,000 variants, 3,990,000 vectors
+    * Condensed sample RDF streaming: 580,000 variants, 4,060,000 vectors
+    * Condensed sample RDF streaming: 590,000 variants, 4,130,000 vectors
+    * Condensed sample RDF streaming: 600,000 variants, 4,200,000 vectors
+    * Condensed sample RDF streaming: 610,000 variants, 4,270,000 vectors
+    * Condensed sample RDF streaming: 620,000 variants, 4,340,000 vectors
+    * Condensed sample RDF streaming: 630,000 variants, 4,410,000 vectors
+    * Condensed sample RDF streaming: 640,000 variants, 4,480,000 vectors
+    * Condensed sample RDF streaming: 650,000 variants, 4,550,000 vectors
+    * Condensed sample RDF streaming: 660,000 variants, 4,620,000 vectors
+    * Condensed sample RDF streaming: 670,000 variants, 4,690,000 vectors
+    * Condensed sample RDF streaming: 680,000 variants, 4,760,000 vectors
+    * Condensed sample RDF streaming: 690,000 variants, 4,830,000 vectors
+    * Condensed sample RDF streaming: 700,000 variants, 4,900,000 vectors
+    * Condensed sample RDF streaming: 710,000 variants, 4,970,000 vectors
+    * Condensed sample RDF streaming: 720,000 variants, 5,040,000 vectors
+    * Condensed sample RDF streaming: 730,000 variants, 5,110,000 vectors
+    * Condensed sample RDF streaming: 740,000 variants, 5,180,000 vectors
+    * Condensed sample RDF streaming: 750,000 variants, 5,250,000 vectors
+    * Condensed sample RDF streaming: 760,000 variants, 5,320,000 vectors
+    * Condensed sample RDF streaming: 770,000 variants, 5,390,000 vectors
+    * Condensed sample RDF streaming: 780,000 variants, 5,460,000 vectors
+    * Condensed sample RDF streaming: 790,000 variants, 5,530,000 vectors
+    * Condensed sample RDF streaming: 800,000 variants, 5,600,000 vectors
+    * Condensed sample RDF streaming: 810,000 variants, 5,670,000 vectors
+    * Condensed sample RDF streaming: 820,000 variants, 5,740,000 vectors
+    * Condensed sample RDF streaming: 830,000 variants, 5,810,000 vectors
+    * Condensed sample RDF streaming: 840,000 variants, 5,880,000 vectors
+    * Condensed sample RDF streaming: 850,000 variants, 5,950,000 vectors
+    * Condensed sample RDF streaming: 860,000 variants, 6,020,000 vectors
+    * Condensed sample RDF streaming: 870,000 variants, 6,090,000 vectors
+    * Condensed sample RDF streaming: 880,000 variants, 6,160,000 vectors
+    * Condensed sample RDF streaming: 890,000 variants, 6,230,000 vectors
+    * Condensed sample RDF streaming: 900,000 variants, 6,300,000 vectors
+    * Condensed sample RDF streaming: 910,000 variants, 6,370,000 vectors
+    * Condensed sample RDF streaming: 920,000 variants, 6,440,000 vectors
+    * Condensed sample RDF streaming: 930,000 variants, 6,510,000 vectors
+    * Condensed sample RDF streaming: 940,000 variants, 6,580,000 vectors
+    * Condensed sample RDF streaming: 950,000 variants, 6,650,000 vectors
+    * Condensed sample RDF streaming: 960,000 variants, 6,720,000 vectors
+    * Condensed sample RDF streaming: 970,000 variants, 6,790,000 vectors
+    * Condensed sample RDF streaming: 980,000 variants, 6,860,000 vectors
+    * Condensed sample RDF streaming: 990,000 variants, 6,930,000 vectors
+    * Condensed sample RDF streaming: 1,000,000 variants, 7,000,000 vectors
+    * Condensed matrices streamed: 1,000,000; FORMAT vectors: 7,000,000; reusable samples: 1
+    * Streaming structured header RDF
+    * Header lines typed: 233; contigs: 195
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 86,517 values
+    * INFO RDF streaming: 20,000 variants, 172,611 values
+    * INFO RDF streaming: 30,000 variants, 258,856 values
+    * INFO RDF streaming: 40,000 variants, 344,574 values
+    * INFO RDF streaming: 50,000 variants, 430,130 values
+    * INFO RDF streaming: 60,000 variants, 516,011 values
+    * INFO RDF streaming: 70,000 variants, 601,383 values
+    * INFO RDF streaming: 80,000 variants, 686,378 values
+    * INFO RDF streaming: 90,000 variants, 771,477 values
+    * INFO RDF streaming: 100,000 variants, 856,210 values
+    * INFO RDF streaming: 110,000 variants, 942,080 values
+    * INFO RDF streaming: 120,000 variants, 1,027,310 values
+    * INFO RDF streaming: 130,000 variants, 1,112,387 values
+    * INFO RDF streaming: 140,000 variants, 1,197,627 values
+    * INFO RDF streaming: 150,000 variants, 1,282,598 values
+    * INFO RDF streaming: 160,000 variants, 1,368,396 values
+    * INFO RDF streaming: 170,000 variants, 1,460,001 values
+    * INFO RDF streaming: 180,000 variants, 1,545,622 values
+    * INFO RDF streaming: 190,000 variants, 1,631,293 values
+    * INFO RDF streaming: 200,000 variants, 1,716,392 values
+    * INFO RDF streaming: 210,000 variants, 1,801,587 values
+    * INFO RDF streaming: 220,000 variants, 1,886,650 values
+    * INFO RDF streaming: 230,000 variants, 1,971,965 values
+    * INFO RDF streaming: 240,000 variants, 2,058,340 values
+    * INFO RDF streaming: 250,000 variants, 2,143,650 values
+    * INFO RDF streaming: 260,000 variants, 2,228,870 values
+    * INFO RDF streaming: 270,000 variants, 2,314,043 values
+    * INFO RDF streaming: 280,000 variants, 2,400,162 values
+    * INFO RDF streaming: 290,000 variants, 2,485,385 values
+    * INFO RDF streaming: 300,000 variants, 2,571,179 values
+    * INFO RDF streaming: 310,000 variants, 2,657,664 values
+    * INFO RDF streaming: 320,000 variants, 2,744,228 values
+    * INFO RDF streaming: 330,000 variants, 2,829,551 values
+    * INFO RDF streaming: 340,000 variants, 2,914,772 values
+    * INFO RDF streaming: 350,000 variants, 2,999,925 values
+    * INFO RDF streaming: 360,000 variants, 3,084,968 values
+    * INFO RDF streaming: 370,000 variants, 3,169,724 values
+    * INFO RDF streaming: 380,000 variants, 3,254,817 values
+    * INFO RDF streaming: 390,000 variants, 3,339,804 values
+    * INFO RDF streaming: 400,000 variants, 3,424,872 values
+    * INFO RDF streaming: 410,000 variants, 3,510,432 values
+    * INFO RDF streaming: 420,000 variants, 3,596,256 values
+    * INFO RDF streaming: 430,000 variants, 3,681,480 values
+    * INFO RDF streaming: 440,000 variants, 3,769,592 values
+    * INFO RDF streaming: 450,000 variants, 3,855,130 values
+    * INFO RDF streaming: 460,000 variants, 3,942,392 values
+    * INFO RDF streaming: 470,000 variants, 4,027,584 values
+    * INFO RDF streaming: 480,000 variants, 4,112,831 values
+    * INFO RDF streaming: 490,000 variants, 4,201,651 values
+    * INFO RDF streaming: 500,000 variants, 4,286,898 values
+    * INFO RDF streaming: 510,000 variants, 4,372,185 values
+    * INFO RDF streaming: 520,000 variants, 4,457,475 values
+    * INFO RDF streaming: 530,000 variants, 4,542,979 values
+    * INFO RDF streaming: 540,000 variants, 4,628,275 values
+    * INFO RDF streaming: 550,000 variants, 4,713,636 values
+    * INFO RDF streaming: 560,000 variants, 4,798,501 values
+    * INFO RDF streaming: 570,000 variants, 4,883,756 values
+    * INFO RDF streaming: 580,000 variants, 4,969,172 values
+    * INFO RDF streaming: 590,000 variants, 5,054,696 values
+    * INFO RDF streaming: 600,000 variants, 5,139,876 values
+    * INFO RDF streaming: 610,000 variants, 5,224,891 values
+    * INFO RDF streaming: 620,000 variants, 5,310,167 values
+    * INFO RDF streaming: 630,000 variants, 5,395,806 values
+    * INFO RDF streaming: 640,000 variants, 5,481,399 values
+    * INFO RDF streaming: 650,000 variants, 5,566,801 values
+    * INFO RDF streaming: 660,000 variants, 5,652,370 values
+    * INFO RDF streaming: 670,000 variants, 5,738,163 values
+    * INFO RDF streaming: 680,000 variants, 5,823,160 values
+    * INFO RDF streaming: 690,000 variants, 5,908,175 values
+    * INFO RDF streaming: 700,000 variants, 5,993,842 values
+    * INFO RDF streaming: 710,000 variants, 6,079,429 values
+    * INFO RDF streaming: 720,000 variants, 6,164,760 values
+    * INFO RDF streaming: 730,000 variants, 6,249,742 values
+    * INFO RDF streaming: 740,000 variants, 6,334,686 values
+    * INFO RDF streaming: 750,000 variants, 6,421,127 values
+    * INFO RDF streaming: 760,000 variants, 6,506,276 values
+    * INFO RDF streaming: 770,000 variants, 6,592,322 values
+    * INFO RDF streaming: 780,000 variants, 6,678,176 values
+    * INFO RDF streaming: 790,000 variants, 6,763,419 values
+    * INFO RDF streaming: 800,000 variants, 6,848,757 values
+    * INFO RDF streaming: 810,000 variants, 6,934,148 values
+    * INFO RDF streaming: 820,000 variants, 7,020,551 values
+    * INFO RDF streaming: 830,000 variants, 7,106,255 values
+    * INFO RDF streaming: 840,000 variants, 7,191,525 values
+    * INFO RDF streaming: 850,000 variants, 7,276,786 values
+    * INFO RDF streaming: 860,000 variants, 7,362,291 values
+    * INFO RDF streaming: 870,000 variants, 7,447,589 values
+    * INFO RDF streaming: 880,000 variants, 7,532,988 values
+    * INFO RDF streaming: 890,000 variants, 7,618,465 values
+    * INFO RDF streaming: 900,000 variants, 7,703,823 values
+    * INFO RDF streaming: 910,000 variants, 7,789,545 values
+    * INFO RDF streaming: 920,000 variants, 7,877,035 values
+    * INFO RDF streaming: 930,000 variants, 7,963,897 values
+    * INFO RDF streaming: 940,000 variants, 8,049,451 values
+    * INFO RDF streaming: 950,000 variants, 8,134,519 values
+    * INFO RDF streaming: 960,000 variants, 8,219,681 values
+    * INFO RDF streaming: 970,000 variants, 8,304,858 values
+    * INFO RDF streaming: 980,000 variants, 8,390,359 values
+    * INFO RDF streaming: 990,000 variants, 8,475,399 values
+    * INFO RDF streaming: 1,000,000 variants, 8,561,212 values
+    * QUAL values streamed: 1,000,000; INFO values: 8,561,212; declarations: 11
+    * Triples produced: 137,852,841
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/HG005_GRCh38_r1000000
+      - RDF aggregate: HG005_GRCh38_r1000000.nt.gz
+      - RDF (.gz): 556.01 MB (removed after successful compression)
+      - HDT (.hdt): 886.26 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/HG005_GRCh38_r1000000/HG005_GRCh38_r1000000.hdt)
+Total triples produced (full run): 137,852,841
+Conversion process finished.
+Run time (full mode): 37m 30.0s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/run_metrics/HG005_GRCh38_r1000000__20260918T045512/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_condensed__31g/out/run_metrics/HG005_GRCh38_r1000000__20260918T045512/summary.json

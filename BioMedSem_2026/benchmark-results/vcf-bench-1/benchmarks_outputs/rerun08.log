@@ -1,0 +1,89 @@
+=== 2026-09-24T13:27:39+02:00 re-run 08 with the shape layer scored
+--- installing pyshacl to match the image (0.30.1), not the newest
+host pyshacl: 0.30.1
+host rdflib : 7.6.0
+archived the first 08 (9 cells)
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 08_robustness.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== Regenerating fixtures ===
+wrote 18 fixtures to /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures
+  version_4.1.vcf
+  version_4.2.vcf
+  version_4.3.vcf
+  version_4.4.vcf
+  version_4.5.vcf
+  version_missing_declaration.vcf
+  version_4.0_declared.vcf
+  awkward_sites_only.vcf
+  awkward_symbolic_alleles.vcf
+  awkward_breakend.vcf
+  awkward_high_ploidy.vcf
+  awkward_half_and_haploid_calls.vcf
+  awkward_filter_variants.vcf
+  awkward_missing_values.vcf
+  awkward_declared_format_absent.vcf
+  awkward_no_records.vcf
+  awkward_crlf.vcf
+  awkward_truncated.vcf.gz
+
+=== §4.3 mutation score ===
+    - running the mutation harness (this takes a few minutes)
+  score report -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/mutation_score/mutation-score.json
+    - re-scoring with the full shape profile (slower: its constraints self-join the graph)
+  shape-attributed score report -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/mutation_score__shacl_full/mutation-score.json
+    - cite the score AND the remaining-gaps list; the gaps are the honest limitation
+
+=== §4.3 round-trip identity ===
+    - roundtrip__01_convert
+    - aggregate: HG005_GRCh38_r100000.nt
+    - roundtrip__02_compress
+    - roundtrip__03_decompress
+  roundtrip: IDENTICAL
+    left  17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    right 17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/roundtrip__verdict.json
+
+=== §4.3 determinism ===
+    - determinism__a
+    - determinism__b
+  determinism: IDENTICAL
+    left  17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    right 17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/determinism__verdict.json
+
+=== §4.3 index idempotence ===
+    - index__01_build
+    - index__02_reindex
+  index idempotence: IDENTICAL
+[1m==>[0m Done. Verdicts are in /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/*__verdict.json
+
+=== Collecting ===
+01_storage_mode: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/tidy.csv
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 9 cells — 9 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+09_awkward_inputs: 16 cells — 12 ok, 2 non-zero, 2 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/tidy.csv
+  exit 1: awkward_sites_only
+  exit 1: awkward_truncated
+10_feasibility: 9 cells — 9 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/tidy.csv
+11_covering_set: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+13_query_cost: 6 cells — 6 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/tidy.csv
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+=== 2026-09-24T14:11:56+02:00 finished

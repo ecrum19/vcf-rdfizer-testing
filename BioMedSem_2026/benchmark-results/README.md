@@ -7,8 +7,11 @@ which integrates all of it into one file.
 
 ```
 vcf-bench-1/ vcf-bench-2/     one directory per host, mirroring its disk
-  benchmarks_outputs/           the live run -- what the paper reports
+  benchmarks_outputs/           the live run -- VCF-RDFizer v3.1.0, what the paper reports
   benchmarks_outputs_calibration/        the identical cell both hosts ran
+  benchmarks_outputs__campaign1__<ts>/   the pre-release campaign on development
+                                         commits, set aside when the suite was
+                                         re-run on v3.1.0 (and its calibration)
   benchmarks_outputs__superseded/        runs replaced by a later re-run
   benchmarks_outputs__stalled/           runs killed because they could not finish
   benchmarks_outputs__offsplit/          started on the host that did not own it
@@ -18,7 +21,17 @@ _manifests/                   file counts, byte totals and sha256 per host
 summary.json                  the integrated record (see below)
 ```
 
-Only `benchmarks_outputs/` feeds the reported numbers. The other trees are kept
+Only `benchmarks_outputs/` feeds the reported numbers.
+
+**Current state (2026-09-24).** The whole suite is being re-run on the published
+image `ecrum19/vcf-rdfizer:3.1.0` (`sha256:1904e96d…34aa`, commit `d3b34d5`).
+vcf-bench-1's share (01, 04, 07–13) is finished and is its `benchmarks_outputs/`;
+09 was re-run once more with network access so the tier-3 linker has a result,
+and the first 09 run is under `__superseded/`. vcf-bench-2's share (03, 05, 06) is
+still running and is not mirrored yet, so bench-2 currently has no live tree
+here. Both hosts' first campaigns are kept under `__campaign1__<ts>/` with the
+names the VMs gave them; they are byte-identical to what this directory held as
+`benchmarks_outputs/` before the re-run. The other trees are kept
 because they are the reason the live numbers look the way they do — a superseded
 run explains why a re-run exists, and the two stalled trees are the only
 evidence for the COTTAS non-termination claim.
@@ -32,7 +45,7 @@ hosts to produce this directory.
 
 ## summary.json
 
-Built by `scripts/build_run_summary.py`. One record per cell (192 of them),
+Built by `scripts/build_run_summary.py`. One record per cell (327 of them),
 each tagged with its host, branch, experiment, tool commit and resolved image
 digest, plus per-experiment roll-ups, host provenance, and an integrity block.
 
@@ -48,8 +61,11 @@ experiment's internal comparison.
 
 ## Three things to know before citing these numbers
 
-**Four tool commits.** `025fb7d`, `be658a2`, `a3679e1`, `20d2cbb`. The split is
-in `summary.json` under `experiments.live`. Two experiments were re-run on a
+**One tool commit in the live run; several in the pre-release one.** Every live
+cell ran the published v3.1.0 image, and `summary.json` takes its digest from the
+`repo@sha256:` that `bench.json` records. The pre-release campaign used
+`025fb7d`, `be658a2`, `a3679e1`, `20d2cbb`; that split is
+in `summary.json` under `experiments.prerelease`. Two experiments were re-run on a
 later commit after their first run exposed a bug in the validation oracle; the
 originals are under `__superseded/`.
 

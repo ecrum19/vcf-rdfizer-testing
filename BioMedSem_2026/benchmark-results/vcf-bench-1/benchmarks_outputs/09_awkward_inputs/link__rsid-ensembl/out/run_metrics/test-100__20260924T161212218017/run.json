@@ -1,0 +1,71 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260924T161212218017",
+  "timestamp": "2026-09-24T16:12:12",
+  "mode": "link",
+  "source_label": "test-100.nt",
+  "output_root": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__rsid-ensembl/out",
+  "metrics_directory": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__rsid-ensembl/out/run_metrics/test-100__20260924T161212218017",
+  "inputs": [
+    {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__00_convert/out/test-100/test-100.nt",
+      "file_name": "test-100.nt",
+      "size_bytes": 1068353
+    }
+  ],
+  "options": {
+    "link": [
+      "rsid-ensembl"
+    ],
+    "cache_dir": "/home/ubuntu/.cache/vcf-rdfizer/linkers",
+    "offline": false,
+    "assembly": null
+  },
+  "linking": {
+    "test-100.links": {
+      "status": "success",
+      "records": 86,
+      "triples": 11,
+      "appended_bytes": 1720,
+      "output": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/link__rsid-ensembl/out/test-100.links.nt",
+      "dry_run": false,
+      "linkers": [
+        {
+          "id": "rsid-ensembl",
+          "version": "1.0.0",
+          "tier": 3,
+          "manifest_sha256": "199b544b7286feb5d3c72c8f04ac48140b71b9a7bbdbccc477708d2d46e48432",
+          "reference_digest": null,
+          "assembly": null,
+          "unique_keys": 86,
+          "skipped_records": 0,
+          "links": 0,
+          "requests": 1,
+          "cache_hits": 0,
+          "bytes_transferred": 2,
+          "final_service_status": 200,
+          "eligible_records": 86,
+          "linked_subjects": 0,
+          "coverage": 0.0,
+          "assertion_basis": "service-resolution: resolved against a live service, response digest recorded",
+          "assertion_verified": false,
+          "status": "success",
+          "wall_seconds": 20.82321,
+          "resolver_sha256": "c37361874af3f4467ebdbd26cd2eb337f0139414a95add85dc442ccf26906403",
+          "batches": 1,
+          "max_requests_per_run": 100,
+          "responses": [
+            {
+              "request_hash": "f8ce7123e6e34b7f4db5bb7caa5fc44f5d0a16f6c8aea3545f37d54fe2f4ae3a",
+              "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+              "fetched_at": "2026-09-24T14:12:33.169708+00:00"
+            }
+          ]
+        }
+      ],
+      "preview": [],
+      "link_triples": 0,
+      "wall_seconds": 20.95359
+    }
+  }
+}

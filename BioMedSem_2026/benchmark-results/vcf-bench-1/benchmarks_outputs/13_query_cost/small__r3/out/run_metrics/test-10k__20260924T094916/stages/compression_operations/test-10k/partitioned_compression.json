@@ -1,0 +1,275 @@
+{
+  "run_id": "20260924T094916",
+  "timestamp": "2026-09-24T09:49:16",
+  "output_name": "test-10k",
+  "rdf_name": "__partitioned_compression__",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k",
+  "compression_methods": "hdt,cottas",
+  "index_warnings": [],
+  "auxiliary_stages": {},
+  "build_profile": {
+    "chunk_stream_seconds": 0.9105136590078473,
+    "chunk_count": 1,
+    "chunk_input_bytes": 122644300,
+    "by_stage_kind": {
+      "hdt-chunk-build": {
+        "stage_count": 1,
+        "wall_seconds": 4.454973356798291,
+        "max_rss_kb": 68896
+      },
+      "cottas-chunk-build": {
+        "stage_count": 1,
+        "wall_seconds": 29.86853491095826,
+        "max_rss_kb": 2036216
+      },
+      "hdt-index": {
+        "stage_count": 1,
+        "wall_seconds": 0.3929508556611836,
+        "max_rss_kb": 2036216
+      },
+      "hdt-validate": {
+        "stage_count": 1,
+        "wall_seconds": 1.3404800733551383,
+        "max_rss_kb": 2036216
+      },
+      "cottas-validate": {
+        "stage_count": 1,
+        "wall_seconds": 1.734956743195653,
+        "max_rss_kb": 2036216
+      }
+    },
+    "merge_rounds": {},
+    "peak_volume_workspace_bytes": 130148300,
+    "max_rss_kb": 2036216
+  },
+  "build_stages": [
+    {
+      "name": "hdt-build-00000",
+      "stage_name": "hdt-build-00000",
+      "exit_code": 0,
+      "wall_seconds": 4.454973356798291,
+      "output_path": "/work/chunk-00000.hdt",
+      "output_size_bytes": 6029849,
+      "workspace_tree_bytes_before": 122644300,
+      "workspace_tree_bytes_after": 128674149,
+      "workspace_free_bytes_after": 43558559744,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 43564593152,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 68896,
+      "max_rss_source": "rusage_children_highwater"
+    },
+    {
+      "name": "cottas-build-00000",
+      "stage_name": "cottas-build-00000",
+      "exit_code": 0,
+      "wall_seconds": 29.86853491095826,
+      "output_path": "/work/chunk-00000.cottas",
+      "output_size_bytes": 1474151,
+      "workspace_tree_bytes_before": 128674149,
+      "workspace_tree_bytes_after": 130148300,
+      "workspace_free_bytes_after": 43557085184,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 43558559744,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 2036216,
+      "max_rss_source": "rusage_children_highwater"
+    },
+    {
+      "name": "hdt-index",
+      "stage_name": "hdt-index",
+      "exit_code": 0,
+      "wall_seconds": 0.3929508556611836,
+      "output_path": "/data/out/test-10k.hdt.index.v1-1",
+      "output_size_bytes": 4877229,
+      "workspace_tree_bytes_before": 1474151,
+      "workspace_tree_bytes_after": 1474151,
+      "workspace_free_bytes_after": 43674849280,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 43679731712,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 2036216,
+      "max_rss_source": "rusage_children_highwater"
+    },
+    {
+      "name": "hdt-validate",
+      "stage_name": "hdt-validate",
+      "exit_code": 0,
+      "wall_seconds": 1.3404800733551383,
+      "output_path": "/work/.hdt-validate.validation.json",
+      "output_size_bytes": 156,
+      "workspace_tree_bytes_before": 1474151,
+      "workspace_tree_bytes_after": 1474307,
+      "workspace_free_bytes_after": 43674845184,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 43674849280,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 2036216,
+      "max_rss_source": "rusage_children_highwater"
+    },
+    {
+      "name": "cottas-validate",
+      "stage_name": "cottas-validate",
+      "exit_code": 0,
+      "wall_seconds": 1.734956743195653,
+      "output_path": "/work/.cottas-validate.validation.json",
+      "output_size_bytes": 168,
+      "workspace_tree_bytes_before": 0,
+      "workspace_tree_bytes_after": 168,
+      "workspace_free_bytes_after": 43674845184,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 43674849280,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 2036216,
+      "max_rss_source": "rusage_children_highwater"
+    }
+  ],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 4.847924212459475,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 2036216,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.hdt",
+      "output_size_bytes": 6029849,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 122644300,
+        "record_count": 958919,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 0.9105136590078473,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 958919,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 122644300,
+            "record_count": 958919,
+            "payload_bytes": 122644300,
+            "write_seconds": 0.9096961352042854
+          }
+        ],
+        "merge_rounds": 0,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.hdt.index.v1-1",
+        "index_size_bytes": 4877229,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 958919,
+          "decoded_triples": 958919,
+          "expected_triples": 958919,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 1.3404800733551383,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 2036216
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 958919,
+        "decoded_triples": 958919,
+        "expected_triples": 958919,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "timing": {
+          "wall_seconds": 1.3404800733551383,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": 2036216
+        }
+      }
+    },
+    "cottas": {
+      "exit_code": 0,
+      "wall_seconds": 29.86853491095826,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 2036216,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.cottas",
+      "output_size_bytes": 1474151,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 122644300,
+        "record_count": 958919,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 0.9105136590078473,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 958919,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 122644300,
+            "record_count": 958919,
+            "payload_bytes": 122644300,
+            "write_seconds": 0.9096961352042854
+          }
+        ],
+        "merge_rounds": 0,
+        "merge_strategy": "pyarrow_streaming_k_way",
+        "merge_batch_rows": "2048",
+        "index": "spo",
+        "validation": {
+          "valid": true,
+          "source_triples": 958919,
+          "decoded_triples": 958919,
+          "expected_triples": 958919,
+          "count_match": true,
+          "validator": "pycottas.cottas2rdf",
+          "timing": {
+            "wall_seconds": 1.734956743195653,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 2036216
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 958919,
+        "decoded_triples": 958919,
+        "expected_triples": 958919,
+        "count_match": true,
+        "validator": "pycottas.cottas2rdf",
+        "timing": {
+          "wall_seconds": 1.734956743195653,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": 2036216
+        }
+      }
+    }
+  }
+}

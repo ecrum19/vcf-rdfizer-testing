@@ -1,0 +1,138 @@
+{
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 10.379338038619608
+    },
+    "engineSetupSeconds": {
+      "comunica": 6.510462572798133
+    },
+    "oracleSeconds": 0.0679843109101057
+  },
+  "comparisonStatus": "PASS",
+  "datasetId": "test-1k",
+  "engine": "comunica",
+  "engineAgreement": true,
+  "engineStatuses": {
+    "comunica": "PASS"
+  },
+  "engines": [
+    "comunica"
+  ],
+  "gtRecordCount": 986,
+  "mappingPolicy": "strict",
+  "preflight": {
+    "preflight_blank_nodes": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_distinct_triple_count": {
+      "rows": 1,
+      "status": "PASS"
+    },
+    "preflight_duplicate_triples": {
+      "distinctTripleCount": 67308,
+      "duplicateTripleCount": 0,
+      "parsedTripleCount": 67308,
+      "status": "PASS"
+    },
+    "preflight_empty_values": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_missing_token_conformance": {
+      "anomalyCount": 0,
+      "limitedTo": 100,
+      "plainDotCountReturned": 0,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_position_datatype": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_record_cardinality": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_representation_profile": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "note": null,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_sample_gt_inventory": {
+      "actual": {
+        "gtValueNodeCount": 986,
+        "sampleCallCount": 986,
+        "sampleIdCount": 1
+      },
+      "expected": {
+        "gtValueNodeCount": 986,
+        "sampleCallCount": 986,
+        "sampleIdCount": 1
+      },
+      "status": "PASS"
+    }
+  },
+  "recordCount": 986,
+  "representation": "expanded",
+  "results": {
+    "benchmark": "/data/validation/benchmark.csv",
+    "comparison": "/data/validation/comparison.json",
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json"
+  },
+  "sampleCount": 1,
+  "shacl": {
+    "advisoryCount": 6,
+    "advisoryKinds": [
+      "Warning"
+    ],
+    "advisorySample": [
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://test-1k.vcf#header/line/9>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://test-1k.vcf#header/line/11>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://test-1k.vcf#header/line/10>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://test-1k.vcf#header/line/9>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://test-1k.vcf#header/line/11>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://test-1k.vcf#header/line/10>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations."
+    ],
+    "conforms": false,
+    "ontology": "/data/shacl-ontology/vcf-core-vocabulary.bundle.ttl",
+    "report": "/data/validation/shacl-report.txt",
+    "sample": [],
+    "sampleLimitedTo": 50,
+    "shapes": [
+      "/data/shacl/vcf-core-vocabulary.shacl.ttl"
+    ],
+    "status": "PASS",
+    "violationCount": 0,
+    "violationPaths": [
+      "vcfc:fieldSource",
+      "vcfc:fieldVersion"
+    ],
+    "wallSeconds": 26.5465064519085
+  },
+  "sourceFormat": "nt.gz",
+  "status": "PASS",
+  "strictConformance": false,
+  "temporaryRdf": {
+    "cleanupConfirmed": true,
+    "decompressedInsideContainer": true,
+    "persisted": false
+  }
+}

@@ -1,0 +1,16 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/out/run_metrics/awkward_truncated__20260923T224326
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/out/run_metrics/awkward_truncated__20260923T224326/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/out/run_metrics/awkward_truncated__20260923T224326/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: awkward_truncated.vcf.gz
+Conversion process completed with failures.
+Run time (full mode): 0.58s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/out/run_metrics/awkward_truncated__20260923T224326/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/out/run_metrics/awkward_truncated__20260923T224326/summary.json

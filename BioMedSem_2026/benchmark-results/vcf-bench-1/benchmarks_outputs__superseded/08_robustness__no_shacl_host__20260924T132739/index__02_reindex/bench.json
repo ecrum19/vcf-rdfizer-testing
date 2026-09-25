@@ -1,0 +1,30 @@
+{
+  "experiment": "08_robustness",
+  "cell": "index__02_reindex",
+  "exit_code": 0,
+  "started_epoch": 1790195860,
+  "ended_epoch": 1790195867,
+  "wrapper_wall_seconds": 7,
+  "peak_out_tree_bytes": 40960,
+  "final_out_tree_bytes": 65536,
+  "tool_commit": "d3b34d576958befd6e1fc3558c76e7c52aa0cd0d",
+  "tool_path": "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+  "image_ref": "ecrum19/vcf-rdfizer:3.1.0",
+  "image_digest": "ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa",
+  "image_mode": "local-build",
+  "host": "vcf-bench-1",
+  "command": [
+    "python3",
+    "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+    "--mode",
+    "index",
+    "--hdt",
+    "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/index__01_build/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt",
+    "--image",
+    "ecrum19/vcf-rdfizer:3.1.0",
+    "--no-build",
+    "--out",
+    "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/index__02_reindex/out"
+  ],
+  "assertion": "ok"
+}

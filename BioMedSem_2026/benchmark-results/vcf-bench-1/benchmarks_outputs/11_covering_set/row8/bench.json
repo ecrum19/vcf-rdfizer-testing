@@ -2,15 +2,15 @@
   "experiment": "11_covering_set",
   "cell": "row8",
   "exit_code": 0,
-  "started_epoch": 1789476972,
-  "ended_epoch": 1789477109,
-  "wrapper_wall_seconds": 137,
-  "peak_out_tree_bytes": 7299072,
-  "final_out_tree_bytes": 2846720,
-  "tool_commit": "a3679e1006c46d7a0caee80ef70d76e60ea21e19",
+  "started_epoch": 1790229675,
+  "ended_epoch": 1790229790,
+  "wrapper_wall_seconds": 115,
+  "peak_out_tree_bytes": 7122944,
+  "final_out_tree_bytes": 2883584,
+  "tool_commit": "d3b34d576958befd6e1fc3558c76e7c52aa0cd0d",
   "tool_path": "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
-  "image_ref": "vcf-rdfizer:local-a3679e1",
-  "image_digest": "vcf-rdfizer@sha256:f0fb17f6a04f896400add92f5a3cc545674d0eeef59401a49f9da2548ca13eef",
+  "image_ref": "ecrum19/vcf-rdfizer:3.1.0",
+  "image_digest": "ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa",
   "image_mode": "local-build",
   "host": "vcf-bench-1",
   "command": [
@@ -42,9 +42,10 @@
     "--spark-partitions",
     "8",
     "--image",
-    "vcf-rdfizer:local-a3679e1",
+    "ecrum19/vcf-rdfizer:3.1.0",
     "--no-build",
     "--out",
     "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row8/out"
-  ]
+  ],
+  "assertion": "ok"
 }

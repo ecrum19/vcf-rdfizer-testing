@@ -1,0 +1,46 @@
+TSV conversion: awkward_sites_only: started
+TSV conversion: awkward_sites_only: finished
+RMLStreamer: awkward_sites_only: started
+  RMLStreamer: awkward_sites_only: rmlstreamer started — 0 B · 0 parts
+  RMLStreamer: awkward_sites_only: rmlstreamer heartbeat — 0 B · 0 parts
+  RMLStreamer: awkward_sites_only: rmlstreamer heartbeat — 7.96 KB · 8 parts
+  RMLStreamer: awkward_sites_only: rmlstreamer complete — 7.96 KB · 8 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate started — 0 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 1 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 2 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 3 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 4 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 5 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 6 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 7 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate part — 8 parts
+  RMLStreamer: awkward_sites_only: rdf-aggregate complete — 8 parts
+RMLStreamer: awkward_sites_only: finished
+Partitioned compression: awkward_sites_only: started
+  Partitioned compression: awkward_sites_only: rdf-scan started — 0 triples
+  Partitioned compression: awkward_sites_only: rdf-scan chunk — 245 triples · 1 chunks · 32,636 bytes read
+  Partitioned compression: awkward_sites_only: hdt-chunks started — 0 chunks · hdt-build-00000
+  Partitioned compression: awkward_sites_only: hdt-chunks complete — 1 chunks · hdt-build-00000
+  Partitioned compression: awkward_sites_only: rdf-scan complete — 245 triples · 1 chunks
+  Partitioned compression: awkward_sites_only: hdt-chunks complete — 1 chunks
+  Partitioned compression: awkward_sites_only: hdt started — hdt-index
+  Partitioned compression: awkward_sites_only: hdt complete — hdt-index
+  Partitioned compression: awkward_sites_only: hdt started — hdt-validate
+  Partitioned compression: awkward_sites_only: hdt complete — hdt-validate
+Partitioned compression: awkward_sites_only: finished
+Validation: awkward_sites_only: started
+  Validation: awkward_sites_only: validation started — 0 queries · expanded validation started
+  Validation: awkward_sites_only: validation progress — 0 queries · materializing nt.gz artifact inside container
+  Validation: awkward_sites_only: validation failed — validation execution failed
+Validation: awkward_sites_only: finished
+Error: validation failed. See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/reports/validation/awkward_sites_only
+See log for details: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/logs/wrapper.log
+Validation: awkward_sites_only__hdt: started
+  Validation: awkward_sites_only__hdt: validation started — 0 queries · expanded validation started
+  Validation: awkward_sites_only__hdt: validation progress — 0 queries · materializing hdt artifact inside container
+  Validation: awkward_sites_only__hdt: validation failed — validation execution failed
+Validation: awkward_sites_only__hdt: finished
+Error: validation failed. See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/reports/validation/awkward_sites_only__hdt
+See log for details: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/logs/wrapper.log
+    ! Input 1/1 (awkward_sites_only.vcf) failed at validation: semantic VCF/RDF validation failed for 'awkward_sites_only' (aggregate, hdt). See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/reports/validation
+Completed with failures for 1/1 input(s). Failure report: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/reports/failed_inputs.csv

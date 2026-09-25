@@ -1,7 +1,7 @@
 Step 1/5: Validating inputs ✅
-  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829
-  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/logs/wrapper.log
-  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/logs/progress.log
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/logs/progress.log
 Step 2/5: Ensuring Docker image is available ✅
 Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
   Spark partition hint: 8
@@ -19,22 +19,22 @@ Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation
     * Header lines typed: 13; contigs: 2
     * Streaming QUAL and raw INFO RDF
     * QUAL values streamed: 986; INFO values: 0; declarations: 0
-    * Triples produced: 56,462
+    * Triples produced: 67,308
     * Compression ✅
     * Semantic validation (aggregate, comunica): test-1k.nt.gz
-Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/reports/validation/test-1k
-Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/stages/validation/test-1k.json
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/reports/validation/test-1k
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/stages/validation/test-1k.json
     * Semantic validation (hdt, comunica): test-1k.hdt
-Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/reports/validation/test-1k__hdt
-Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/stages/validation/test-1k__hdt.json
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/reports/validation/test-1k__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/stages/validation/test-1k__hdt.json
     * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/test-1k
       - RDF aggregate: test-1k.nt.gz
-      - RDF (.gz): 235.32 KB (retained because it is also the selected gzip artifact)
-      - gzip (.nt.gz): 235.32 KB
-      - HDT (.hdt): 387.82 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/test-1k/test-1k.hdt)
-      - gzip-on-HDT (.hdt.gz): 54.42 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/test-1k/test-1k.hdt.gz)
-Total triples produced (full run): 56,462
+      - RDF (.gz): 277.49 KB (retained because it is also the selected gzip artifact)
+      - gzip (.nt.gz): 277.49 KB
+      - HDT (.hdt): 426.31 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/test-1k/test-1k.hdt)
+      - gzip-on-HDT (.hdt.gz): 66.93 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/test-1k/test-1k.hdt.gz)
+Total triples produced (full run): 67,308
 Conversion process finished.
-Run time (full mode): 1m 37.0s
-Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/wrapper_execution_times.csv
-Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260915T145829/summary.json
+Run time (full mode): 1m 49.8s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row9/out/run_metrics/test-1k__20260924T080310/summary.json

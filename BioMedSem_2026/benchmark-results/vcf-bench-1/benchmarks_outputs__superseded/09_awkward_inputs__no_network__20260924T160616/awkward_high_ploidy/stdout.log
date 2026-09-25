@@ -1,0 +1,38 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: awkward_high_ploidy.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 2; FORMAT values: 4
+    * Streaming structured header RDF
+    * Header lines typed: 8; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 2; INFO values: 2; declarations: 1
+    * Triples produced: 350
+    * Compression ✅
+    * Semantic validation (aggregate, comunica): awkward_high_ploidy.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/reports/validation/awkward_high_ploidy
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/stages/validation/awkward_high_ploidy.json
+    * Semantic validation (hdt, comunica): awkward_high_ploidy.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/reports/validation/awkward_high_ploidy__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/stages/validation/awkward_high_ploidy__hdt.json
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/awkward_high_ploidy
+      - RDF aggregate: awkward_high_ploidy.nt.gz
+      - RDF (.gz): 4.31 KB (removed after successful compression)
+      - HDT (.hdt): 6.12 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/awkward_high_ploidy/awkward_high_ploidy.hdt)
+Total triples produced (full run): 350
+Conversion process finished.
+Run time (full mode): 35.46s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260923T224047/summary.json

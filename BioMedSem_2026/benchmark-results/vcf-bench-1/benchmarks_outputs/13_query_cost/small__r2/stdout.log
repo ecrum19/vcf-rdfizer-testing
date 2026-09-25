@@ -1,7 +1,7 @@
 Step 1/5: Validating inputs ✅
-  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212
-  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/logs/wrapper.log
-  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/logs/progress.log
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/logs/progress.log
 Step 2/5: Ensuring Docker image is available ✅
 Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
   Spark partition hint: 8
@@ -22,14 +22,14 @@ Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation
     * Triples produced: 958,919
     * Compression ✅
     * Semantic validation (aggregate, comunica, qlever, hdt, cottas): test-10k.nt.gz
-Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/reports/validation/test-10k
-Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/stages/validation/test-10k.json
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/reports/validation/test-10k
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/stages/validation/test-10k.json
     * Semantic validation (hdt, comunica, qlever, hdt, cottas): test-10k.hdt
-Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/reports/validation/test-10k__hdt
-Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/stages/validation/test-10k__hdt.json
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/reports/validation/test-10k__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/stages/validation/test-10k__hdt.json
     * Semantic validation (cottas, comunica, qlever, hdt, cottas): test-10k.cottas
-Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/reports/validation/test-10k__cottas
-Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/stages/validation/test-10k__cottas.json
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/reports/validation/test-10k__cottas
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/stages/validation/test-10k__cottas.json
     * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/test-10k
       - RDF aggregate: test-10k.nt.gz
       - RDF (.gz): 3.87 MB (retained because it is also the selected gzip artifact)
@@ -38,6 +38,6 @@ Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query
       - COTTAS (.cottas): 1.41 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/test-10k/test-10k.cottas)
 Total triples produced (full run): 958,919
 Conversion process finished.
-Run time (full mode): 2h 42m 49.5s
-Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/wrapper_execution_times.csv
-Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260916T133212/summary.json
+Run time (full mode): 50m 29.0s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r2/out/run_metrics/test-10k__20260924T085847/summary.json

@@ -1,0 +1,38 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: awkward_breakend.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 2; FORMAT values: 4
+    * Streaming structured header RDF
+    * Header lines typed: 10; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 2; INFO values: 4; declarations: 2
+    * Triples produced: 417
+    * Compression ✅
+    * Semantic validation (aggregate, comunica): awkward_breakend.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/reports/validation/awkward_breakend
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/stages/validation/awkward_breakend.json
+    * Semantic validation (hdt, comunica): awkward_breakend.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/reports/validation/awkward_breakend__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/stages/validation/awkward_breakend__hdt.json
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/awkward_breakend
+      - RDF aggregate: awkward_breakend.nt.gz
+      - RDF (.gz): 4.83 KB (removed after successful compression)
+      - HDT (.hdt): 6.80 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/awkward_breakend/awkward_breakend.hdt)
+Total triples produced (full run): 417
+Conversion process finished.
+Run time (full mode): 33.98s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_breakend/out/run_metrics/awkward_breakend__20260915T170837/summary.json
