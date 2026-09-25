@@ -70,7 +70,9 @@ A previous build was interrupted. Remove it and re-run, or keep it and point
 BM_SCALE_STORE elsewhere:
   rm -rf $store"
   fi
-  mkdir -p "$store"
+  # Not on a dry run: creating the store directory there leaves an empty,
+  # manifest-less entry that the guard above then refuses on the next real run.
+  [[ "$BM_DRY_RUN" == "1" ]] || mkdir -p "$store"
 
   bm_step "$scale: building from $(basename "$vcf") into $store"
 
