@@ -1,4 +1,4 @@
-## Introduction
+% Introduction
 @article{pharmcat,
 author = {Li, Binglan and Sangkuhl, Katrin and Keat, Karl and Whaley, Ryan M. and Woon, Mark and Verma, Shefali and Dudek, Scott and Tuteja, Sony and Verma, Anurag and Whirl-Carrillo, Michelle and Ritchie, Marylyn D. and Klein, Teri E.},
 title = {How to Run the Pharmacogenomics Clinical Annotation Tool (PharmCAT)},
@@ -22,6 +22,15 @@ year = {2023}
 	month = sep,
   year = {2022}
 }
+@article{hogan_knowledge_graphs_2021,
+  author  = {Hogan, Aidan and Blomqvist, Eva and Cochez, Michael and D'Amato, Claudia and de Melo, Gerard and Gutierrez, Claudio and Kirrane, Sabrina and Labra Gayo, Jos{\'e} Emilio and Navigli, Roberto and Neumaier, Sebastian and Ngonga Ngomo, Axel-Cyrille and Polleres, Axel and Rashid, Sabbir M. and Rula, Anisa and Schmelzeisen, Lukas and Sequeda, Juan and Staab, Steffen and Zimmermann, Antoine},
+  title   = {Knowledge Graphs},
+  journal = {ACM Computing Surveys},
+  volume  = {54},
+  number  = {4},
+  year    = {2021},
+  doi     = {10.1145/3447772}
+}
 @misc{odrl_2018,
 	title = {{ODRL} {Information} {Model} 2.2},
 	url = {https://www.w3.org/TR/odrl-model/},
@@ -34,7 +43,7 @@ year = {2023}
 @misc{W3CLinkedDataWiki,
   author       = {{World Wide Web Consortium (W3C)}},
   title        = {LinkedData},
-  url = https://www.w3.org/wiki/LinkedData,
+  url = {https://www.w3.org/wiki/LinkedData},
 	urldate = {2026-03-04},
 }
 @article{BCFtools,
@@ -129,15 +138,17 @@ year = {2023}
 	year = {2011},
 	pages = {2156--2158},
 }
+
+% VCF to RDF Tools
 @article{JVarkit_2015,
 author = "Pierre Lindenbaum",
 title = "{JVarkit: java-based utilities for Bioinformatics}",
 year = "2015",
 month = "5",
-url = "https://figshare.com/articles/journal_contribution/JVarkit_java_based_utilities_for_Bioinformatics/1425030",
+url = "https://figshare.com/articles/journal\_contribution/JVarkit\_java\_based\_utilities\_for\_Bioinformatics/1425030",
 doi = "10.6084/m9.figshare.1425030.v1"
 }
-@online{ruby_rdf_vcf,
+@misc{ruby_rdf_vcf,
 	title = {ruby-rdf/rdf-vcf: RDF VCF parser},
 	url = {https://github.com/ruby-rdf/rdf-vcf},
 	urldate = {2025-03-01},
@@ -145,16 +156,62 @@ doi = "10.6084/m9.figshare.1425030.v1"
 	month = nov,
 	year = {2025},
 }
+@article{vcfr_2017,
+  author  = {Penha, Emanuel Diego S. and Iriabho, Egiebade and Dussaq, Alex and de Oliveira, Diana Magalh{\~a}es and Almeida, Jonas S.},
+  title   = {Isomorphic semantic mapping of variant call format ({VCF2RDF})},
+  journal = {Bioinformatics},
+  year    = {2017},
+  volume  = {33},
+  number  = {4},
+  pages   = {547--548},
+  doi     = {10.1093/bioinformatics/btw652}
+}
+@article{bio_vcf,
+  author  = {Garrison, Erik and Kronenberg, Zev N. and Dawson, Eric T. and Pedersen, Brent S. and Prins, Pjotr},
+  title   = {A spectrum of free software tools for processing the {VCF} variant call format: vcflib, bio-vcf, cyvcf2, hts-nim and slivar},
+  journal = {PLOS Computational Biology},
+  year    = {2022},
+  volume  = {18},
+  number  = {5},
+  pages   = {e1009123},
+  doi     = {10.1371/journal.pcbi.1009123}
+}
+@article{variantkg_2025,
+  author  = {Prasanna, Shivika and Kumar, Ajay and Rao, Deepthi and Simoes, Eduardo J. and Rao, Praveen},
+  title   = {A scalable tool for analyzing genomic variants of humans using knowledge graphs and graph machine learning},
+  journal = {Frontiers in Big Data},
+  year    = {2025},
+  volume  = {7},
+  pages   = {1466391},
+  doi     = {10.3389/fdata.2024.1466391}
+}
+@misc{sparqling_genomics_2020,
+  author       = {B{\"o}hmer, Jasmin K. and Janssen, Roel},
+  title        = {Linked data in practice: An {RDF}-based approach with {SPARQLing Genomics}},
+  year         = {2020},
+  month        = jun,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3903111},
+  note         = {Version V4}
+}
+@misc{sparqling_genomics_software,
+  author       = {Janssen, Roel},
+  title        = {{SPARQLing Genomics}},
+  year         = {2019},
+  howpublished = {Open-source software},
+  url          = {https://gitlab.com/roelj/sparqling-genomics},
+  note         = {Accessed 2026-09-03}
+}
 
-## Related Work
+% Related Work
 
-# Software
+% Software
 @article{hdt_2013,
 author = {Javier D. Fernández and Miguel A. Martínez-Prieto and Claudio Gutiérrez and Axel Polleres and Mario Arias},
 title = {Binary RDF Representation for Publication and Exchange (HDT)},
 journal={Web Semantics: Science, Services and Agents on the World Wide Web},
 volume={19},
-pages={22–41},
+pages={22--41},
 year={2013},
 publisher={Elsevier}
 }
@@ -179,7 +236,7 @@ publisher={Elsevier}
 	volume = {13489},
 	isbn = {978-3-031-19432-0 978-3-031-19433-7},
 	shorttitle = {{RMLStreamer}-{SISO}},
-	url = {https://link.springer.com/10.1007/978-3-031-19433-7_40},
+	url = {https://link.springer.com/10.1007/978-3-031-19433-7\_40},
 	language = {en},
 	urldate = {2025-11-24},
 	booktitle = {The {Semantic} {Web} – {ISWC} 2022},
@@ -187,7 +244,7 @@ publisher={Elsevier}
 	author = {Oo, Sitt Min and Haesendonck, Gerald and De Meester, Ben and Dimou, Anastasia},
 	editor = {Sattler, Ulrike and Hogan, Aidan and Keet, Maria and Presutti, Valentina and Almeida, João Paulo A. and Takeda, Hideaki and Monnin, Pierre and Pirrò, Giuseppe and d’Amato, Claudia},
 	year = {2022},
-	doi = {10.1007/978-3-031-19433-7_40},
+	doi = {10.1007/978-3-031-19433-7\_40},
 	note = {Series Title: Lecture Notes in Computer Science},
 	pages = {697--713},
 }
@@ -212,7 +269,7 @@ publisher={Elsevier}
 	publisher={Elsevier}
 }
 
-# other software
+% other software
 @misc{yaml-spec_2025,
 	title = {yaml/yaml-spec},
 	url = {https://github.com/yaml/yaml-spec},
@@ -262,15 +319,21 @@ publisher={Elsevier}
   month        = {10},
   publisher    = {Springer International Publishing},
   pages        = {239--255},
-  doi          = {10.1007/978-3-030-00668-6_15},
+  doi          = {10.1007/978-3-030-00668-6\_15},
   url          = {https://comunica.dev/}
 }
 @inproceedings{cottas_2025,
-	author = {Arenas-Guerrero, Julián and Ferrada, Sebastián},
-	booktitle = {The Semantic Web -- ISWC 2025},
-	publisher = {Springer},
-	title = {COTTAS: Columnar Triple Table Storage for Efficient and Compressed RDF Management},
-	year = {2025}
+  author    = {Arenas-Guerrero, Juli{\'a}n and Ferrada, Sebasti{\'a}n},
+  title     = {{COTTAS}: Columnar Triple Table Storage for Efficient and Compressed {RDF} Management},
+  booktitle = {The Semantic Web -- ISWC 2025},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {16141},
+  pages     = {313--331},
+  publisher = {Springer Nature Switzerland},
+  address   = {Cham},
+  year      = {2026},
+  doi       = {10.1007/978-3-032-09530-5\_18},
+  url       = {https://doi.org/10.1007/978-3-032-09530-5\_18}
 }
 
 @article{sib_2024,
@@ -325,8 +388,8 @@ Version Number: 2},
 }
 
 
-## Methods
-# VCF data
+% Methods
+% VCF data
 @misc{nist_gib_2025,
 	title = {{NIST} {Genome} in a {Bottle}},
 	url = {https://www.nist.gov/programs-projects/genome-bottle},
@@ -336,11 +399,11 @@ Version Number: 2},
 }
 @misc{personal_genome_proj,
 	title = {Personal {Genome} {Project}},
-	url = {https://my.pgp-hms.org/public_genetic_data},
+	url = {https://my.pgp-hms.org/public\_genetic\_data},
 	urldate = {2025-11-24},
     year = {2005}
 }
-# VCF Spec
+% VCF Spec
 @misc{vcf_spec_2024,
 	title = {The {Variant} {Call} {Format} {Specification}},
 	url = {https://github.com/samtools/hts-specs},
@@ -348,7 +411,7 @@ Version Number: 2},
 	year = {2024},
 }
 
-# VCF Ontologies
+% VCF Ontologies
 @article{faldo_2016,
 	title = {{FALDO}: a semantic standard for describing the location of nucleotide and protein feature annotation},
 	volume = {7},
@@ -395,7 +458,7 @@ Version Number: 2},
 @inproceedings{hero-genomics_2025,
 	address = {Barcelona, Spain},
 	title = {{HERO}-{Genomics}: {Bridging} {Genomic} {Data} and {Ontological} {Modelling}},
-	url = {https://www.dei.unipd.it/~silvello/papers/2025_MCS_SWAT4HCLS.pdf},
+	url = {https://www.dei.unipd.it/~silvello/papers/2025\_MCS\_SWAT4HCLS.pdf},
 	language = {en},
 	publisher = {CEUR Workshop Proceedings},
 	author = {Menotti, Laura and Cazzaro, Mirco and Rueda, Manuel and Gut, Ivo G and Silvello, Gianmaria},
@@ -427,9 +490,9 @@ Version Number: 2},
 	year = {2022},
 	pages = {44},
 }
-@software{ga4gh2025VRS,
+@misc{ga4gh2025VRS,
   author       = {Wagner, Alex H. and Hart, Reece and Babb, Larry and Kuzma, Kori and Schuilenburg, Helen and Stevenson, James and ONeill, Terry and Epic, Mrinal-Thomas and Holmes, Brad and Moyer, Eric and Baudis, Michael and Robinson, Peter and Cline, Melissa and Patel, Ronak Y. and Freimuth, Robert R.},
-  title        = {{ga4gh/vrs: 2.0.1}},
+  title        = {{ga4gh/vrs} 2.0.1},
   year         = {2025},
   publisher    = {Zenodo},
   version      = {2.0.1},
@@ -462,14 +525,15 @@ Version Number: 2},
 
 @inproceedings{Diefenbach2020HDTCat,
   author    = {Dennis Diefenbach and Jos{\'e} M. Gim{\'e}nez-Garc{\'i}a},
-  title     = {HDTCat: Let's Make HDT Generation Scale},
+  title = {{HDTCat}: Let's Make {HDT} Generation Scale},
   booktitle = {The Semantic Web -- ISWC 2020},
   series    = {Lecture Notes in Computer Science},
   volume    = {12507},
   pages     = {18--33},
+  address = {Cham},
   publisher = {Springer},
   year      = {2020},
-  doi       = {10.1007/978-3-030-62466-8_2}
+  doi       = {10.1007/978-3-030-62466-8\_2}
 }
 @inproceedings{Willerval2024kHDTDiffCat,
   author    = {Antoine Willerval and Dennis Diefenbach and Angela Bonifati},
@@ -480,5 +544,202 @@ Version Number: 2},
   pages     = {128--144},
   publisher = {Springer},
   year      = {2024},
-  doi       = {10.1007/978-3-031-60635-9_8}
+  doi       = {10.1007/978-3-031-60635-9\_8}
+}
+
+% [ADDED 2026-08-31: semantic-equivalence oracle]
+@article{cyvcf2_2017,
+  author  = {Pedersen, Brent S. and Quinlan, Aaron R.},
+  title   = {cyvcf2: fast, flexible variant analysis with {Python}},
+  journal = {Bioinformatics},
+  volume  = {33},
+  number  = {12},
+  pages   = {1867--1869},
+  year    = {2017},
+  doi     = {10.1093/bioinformatics/btx057},
+  url     = {https://doi.org/10.1093/bioinformatics/btx057}
+}
+
+% [ADDED 2026-08-31: expanded VCF corpus]
+@article{thousand_genomes_2015,
+  author  = {{The 1000 Genomes Project Consortium}},
+  title   = {A global reference for human genetic variation},
+  journal = {Nature},
+  volume  = {526},
+  number  = {7571},
+  pages   = {68--74},
+  year    = {2015},
+  doi     = {10.1038/nature15393},
+  url     = {https://doi.org/10.1038/nature15393}
+}
+
+@article{hgsvc_2021,
+  author  = {Ebert, Peter and Audano, Peter A. and Zhu, Qihui and Rodriguez-Martin, Bernardo and Porubsky, David and Bonder, Marc J. and Sulovari, Arvis and Ebler, Jana and Zhou, Weichen and Serra Mari, Roger and others},
+  title   = {Haplotype-resolved diverse human genomes and integrated analysis of structural variation},
+  journal = {Science},
+  volume  = {372},
+  number  = {6537},
+  pages   = {eabf7117},
+  year    = {2021},
+  doi     = {10.1126/science.abf7117},
+  url     = {https://doi.org/10.1126/science.abf7117}
+}
+
+@article{giab_v421_2022,
+  author  = {Wagner, Justin and Olson, Nathan D. and Harris, Lindsay and Khan, Ziad and Farek, Jesse and Mahmoud, Medhat and Stankovic, Ana and Kovacevic, Vladimir and Yoo, Byunggil and Miller, Neil and others},
+  title   = {Benchmarking challenging small variants with linked and long reads},
+  journal = {Cell Genomics},
+  volume  = {2},
+  number  = {5},
+  pages   = {100128},
+  year    = {2022},
+  doi     = {10.1016/j.xgen.2022.100128},
+  url     = {https://doi.org/10.1016/j.xgen.2022.100128}
+}
+
+% [ADDED 2026-08-31: exact Comunica execution packages used in the query plan]
+@misc{comunica_file_docs_2026,
+  author  = {{Comunica Association}},
+  title   = {Querying local files from the command line},
+  year    = {2026},
+  url     = {https://comunica.dev/docs/query/getting\_started/query\_cli\_file/},
+  urldate = {2026-08-31}
+}
+
+@misc{comunica_hdt_docs_2026,
+  author  = {{Comunica Association}},
+  title   = {{HDT}: Querying {HDT} files with Comunica},
+  year    = {2026},
+  url     = {https://comunica.dev/docs/query/advanced/hdt/},
+  urldate = {2026-08-31}
+}
+
+
+% [ADDED 2026-08-31: COTTAS software implementation]
+@misc{pycottas_2026,
+  author  = {Arenas-Guerrero, Juli{\'a}n},
+  title   = {pycottas: Python COTTAS library for compressing and querying RDF},
+  year    = {2026},
+  url     = {https://pypi.org/project/pycottas/},
+  urldate = {2026-08-31},
+  note    = {RDFLib store backend, triple-pattern interface, and COTTAS conversion utilities}
+}
+
+@misc{dbsnp_b156,
+	title = {{dbSNP} {Build} 156 {VCF} {Release} ({GRCh38})},
+	author = {{National Center for Biotechnology Information}},
+	url = {https://ftp.ncbi.nlm.nih.gov/snp/latest\_release/VCF/},
+	note = {Header declares \texttt{\#\#fileformat=VCFv4.2}; accessed 8 September 2026},
+	month = sep,
+	year = {2026},
+}
+
+@misc{gnomad_v41,
+	title = {{gnomAD} v4.1 {Genome} {Aggregation} {Database} {VCF} {Release}},
+	author = {{Genome Aggregation Database Consortium}},
+	url = {https://gnomad.broadinstitute.org/downloads},
+	note = {Header declares \texttt{\#\#fileformat=VCFv4.2}; accessed 8 September 2026},
+	month = sep,
+	year = {2026},
+}
+
+@misc{clinvar_vcf,
+	title = {{ClinVar} {VCF} {Release} ({GRCh38})},
+	author = {{National Center for Biotechnology Information}},
+	url = {https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf\_GRCh38/},
+	note = {Header declares \texttt{\#\#fileformat=VCFv4.1}; accessed 8 September 2026},
+	month = sep,
+	year = {2026},
+}
+
+@misc{kgp_30x_grch38,
+	title = {1000 {Genomes} 30x {GRCh38} {Phased} {Call} {Set} (3,202 {Samples})},
+	author = {{International Genome Sample Resource}},
+	url = {https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data\_collections/1000G\_2504\_high\_coverage/working/20201028\_3202\_phased/},
+	note = {Header declares \texttt{\#\#fileformat=VCFv4.1}; accessed 8 September 2026},
+	month = sep,
+	year = {2026},
+}
+
+@misc{ensembl_variation,
+	title = {{Ensembl} {Variation} {VCF} {Release}},
+	author = {{Ensembl}},
+	url = {https://ftp.ensembl.org/pub/current\_variation/vcf/homo\_sapiens/},
+	note = {Header declares \texttt{\#\#fileformat=VCFv4.1}; accessed 8 September 2026},
+	month = sep,
+	year = {2026},
+}
+
+@article{baran2015gfvo,
+  author = {Baran, Joachim and Durgahee, Bibi Sehnaaz Begum and Eilbeck, Karen and Antezana, Erick and Hoehndorf, Robert and Dumontier, Michel},
+  title = {{GFVO}: the {Genomic Feature and Variation Ontology}},
+  journal = {PeerJ},
+  volume = {3}, pages = {e933}, year = {2015},
+  doi = {10.7717/peerj.933},
+  url = {https://peerj.com/articles/933/}
+}
+
+@article{katayama2019biohackathon,
+  author  = {Katayama, Toshiaki and Kawashima, Shuichi and Micklem, Gos and Kawano, Shin and Kim, Jin-Dong and Kocbek, Simon and Okamoto, Shinobu and Wang, Yue and Wu, Hongyan and Yamaguchi, Atsuko and others},
+  title   = {BioHackathon series in 2013 and 2014: improvements of semantic interoperability in life science data and services},
+  journal = {F1000Research},
+  volume  = {8},
+  pages   = {1677},
+  year    = {2019},
+  doi     = {10.12688/f1000research.18238.1},
+  url     = {https://doi.org/10.12688/f1000research.18238.1}
+}
+
+@article{larmande2025agrold,
+  author  = {Larmande, Pierre and Pittolat, Bertrand and Tando, Ndomassi and Pomie, Yann and Happi Happi, Bill Gates and Guignon, Valentin and Ruiz, Manuel},
+  title   = {{AgroLD}: a knowledge graph for the plant sciences},
+  journal = {BMC Genomic Data},
+  volume  = {26},
+  number  = {Suppl 1},
+  pages   = {73},
+  year    = {2025},
+  doi     = {10.1186/s12863-025-01359-6},
+  url     = {https://doi.org/10.1186/s12863-025-01359-6}
+}
+
+@misc{vcfc210,
+  author = {Crum, Elias},
+  title = {{VCF Core Vocabulary}},
+  year = {2026},
+  howpublished = {Version 2.1.3. GitHub repository},
+  url = {https://github.com/ecrum19/vcf-core-vocabulary/tree/8a5f23a},
+  note = {Version 2.1.3 with the SSSOM alignment set; source snapshot of 22 September 2026}
+}
+
+@software{hdtc_2026,
+  author  = {{FRINK OKN}},
+  title   = {{hdtc}: {HDT} Creator},
+  year    = {2026},
+  version = {1.1.0},
+  url     = {https://github.com/frink-okn/hdtc},
+  note    = {Computer software, MIT License}
+}
+
+@software{comunica_cottas_2026,
+  author  = {Crum, Elias},
+  title   = {Comunica {SPARQL} {COTTAS}: a {Comunica} engine for query evaluation over {COTTAS} files},
+  year    = {2026},
+  version = {0.1.0},
+  url     = {https://github.com/ecrum19/comunica-feature-cottas},
+  note    = {npm package \texttt{@elias.crum/query-sparql-cottas}}
+}
+
+@software{hdtcpp,
+  author  = {{RDF/HDT contributors}},
+  title   = {{hdt-cpp}: {HDT} {C++} Library and Tools},
+  year    = {2026},
+  url     = {https://github.com/rdfhdt/hdt-cpp},
+  note    = {Built from the repository head at image build time; the exact revision is fixed by the VCF-RDFizer v3.1.0 image digest}
+}
+
+@unpublished{crum_vcfcore_2027,
+  author  = {Crum, Elias and Buelens, Bart and Ertaylan, G{\"o}khan and Taelman, Ruben},
+  title   = {{VCF Core Vocabulary}: A Semantic Foundation for {RDF} Representations of {VCF}},
+  year    = {2026},
+  note    = {Manuscript in preparation for SWAT4HCLS 2027}
 }
