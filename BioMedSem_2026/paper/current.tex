@@ -371,7 +371,7 @@ T_{\mathrm{condensed}} &= \mathcal{O}(S + VF).
 \end{aligned}
 \label{eq:sample-profile-scaling}
 \end{equation}
-The condensed profile removes the per-sample factor from the repeated RDF structure, but still stores all $VSF$ values inside vector literals.
+The condensed profile removes the per-sample factor from the repeated RDF structure, but still stores all $VSF$ values inside vector literals, so its size in bytes keeps growing with $S$ even though its triple count does not (Section~\ref{subsec3.3}).
 Consequently, a nearly constant triple count as $S$ increases does not imply constant file size or sample-access cost.
 This trade-off motivates retaining expanded representation for direct sample-level RDF queries and condensed representation for cohort-scale storage, and measuring triple counts, artifact bytes, and peak workspace separately.
 
@@ -480,7 +480,6 @@ The GitHub README serves as the primary user guide, including quick-start comman
 For maintainability, the project follows a release-oriented workflow with versioned changelogs, public issue triage, planned periodic dependency/container updates, and extensive unit-testing within the tool to preserve reproducibility over time.
 
 \subsection{Tool Testing}\label{subsec2.3}
-\authorquery{Draft data: the tagged v3.1.0 benchmark is in progress.}
 
 \textbf{Benchmark objectives and public corpus.}
 The benchmark evaluates conversion coverage, scaling with record and sample counts, storage and representation-build costs, semantic preservation, query execution, and configuration coverage. 
@@ -493,7 +492,7 @@ Download commands and canonical filename definitions are maintained in the testi
   File names are canonical \texttt{.vcf.gz} stems; subsequent tables abbreviate the GIAB identifiers. 
   The five \texttt{NG}/\texttt{NB}/\texttt{6082} files are Personal Genome Project donations. 
   Assembly and sample counts were verified from each file's header. 
-  Sizes are approximate compressed download sizes; the input sizes in Table~\ref{tab:current-representations} describe the uncompressed streams actually processed.}\label{tab:test-corpus}%
+  Sizes are approximate compressed download sizes; the tool processes the uncompressed stream (Section~\ref{subsec3.4}).}\label{tab:test-corpus}%
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -520,7 +519,7 @@ Download commands and canonical filename definitions are maintained in the testi
 The corpus-breadth experiment uses the first 250,000 records of each input, with complete headers retained, except for \texttt{HG005\_GRCh38}, which is processed whole. 
 The expanded-representation arm excludes corpus inputs with more than 1,000 sample columns, so the 2,504-sample 1000 Genomes file is assessed separately through 10,000-record slices. 
 The resulting corpus measurements comprise eight 250,000-record conversions and one whole-file conversion. 
-All use space-optimized storage and build both HDT and COTTAS from the same RDF graph (Table~\ref{tab:current-representations}).
+All use space-optimized storage and build both HDT and COTTAS from the same RDF graph (Figure~\ref{fig:representations}).
 
 Record scaling uses \texttt{HG005\_GRCh38} at 10,000, 100,000, and one million records, with three replicates at each size, followed by one whole-file run. 
 Sample scaling uses \texttt{1000G\_phase3\_chr20} held at 10,000 variant records and varies the sample count from 1 to 2,504 under both expanded and condensed representations. 
@@ -632,18 +631,17 @@ The results characterize the benchmark design and input scopes defined in Sectio
 Conversion, storage, validation, and retrieval measurements are reported separately so that the cost and evidence associated with each stage remain explicit.
 
 \subsection{Campaign coverage and reproducibility}\label{subsec3.1}
-The two benchmark hosts produced byte-identical artifacts on the calibration workload, with a 29\,s conversion phase on each. 
-Validation took 324\,s and 336\,s, a 3.7\% difference. 
-The within-host experiment allocation in Section~\ref{subsec2.3} therefore provides the basis for configuration comparisons; the calibration characterizes, rather than eliminates, variation between hosts.
+On the calibration workload the two benchmark hosts produced the same graph: identical triple sets, a byte-identical COTTAS artifact and HDT index, and N-Triples and HDT files that differ only in line order and in the HDT header's \texttt{dcterms:issued} timestamp. 
+Their speed differed: the conversion phase took 26\,s on \texttt{vcf-bench-1} and 37\,s on \texttt{vcf-bench-2}, and validation 156\,s and 208\,s. 
+Timings are therefore compared only within a host, which is why each experiment runs entirely on one (Section~\ref{subsec2.3}); the calibration characterizes, rather than eliminates, variation between hosts.
 
-The campaign comprises 143 recorded cells over 95.3\,h of measured wall time (Table~\ref{tab:campaign}). 
+The campaign comprises 143 recorded cells over 96.2\,h of measured wall time (Table~\ref{tab:campaign}). 
 Every cell records its own argv, host, tool commit and image digest, and the integrated record of all cells is archived with the testing repository. 
 A non-zero exit is classified by what the cell asserted: two cells were required to be refused and were (\emph{refused}), two recorded an exit status without asserting an outcome (\emph{recorded}), and three were skipped by a stated guard. 
 No cell failed.
-\authorquery{The v3.1.0 run on \texttt{vcf-bench-1} is complete and its results are in (records scaling, storage mode, representation axes, robustness, difficult inputs, feasibility, covering set, modes, query cost). Still from the pre-release run, pending the v3.1.0 run on \texttt{vcf-bench-2}: the sample-representation ladder (§\ref{subsec3.3}, Samples), Table~\ref{tab:current-representations} and §\ref{subsec3.4}, the equivalence paragraph in §\ref{subsec3.9}, the calibration figures above, and the equivalence share of the counts in Table~\ref{tab:validation-evidence} (16 validations). The bench-1 share of those counts reproduces the pre-release values exactly.}
 
 \begin{table*}[t]
-\caption{The benchmark campaign, grouped by the question each experiment answers. \emph{Recorded}: a non-zero exit that the cell observed without asserting an outcome; \emph{refused}: the cell required the configuration to be rejected, and it was; \emph{skipped}: a guard refusal with a stated reason. Hosts: \texttt{vcf-bench-1} (b1), \texttt{vcf-bench-2} (b2). Every b1 row was produced by the published v3.1.0 image; rows marked $^{\ast}$ are still from the pre-release run on b2 and will be replaced when its v3.1.0 run completes.}\label{tab:campaign}%
+\caption{The benchmark campaign, grouped by the question each experiment answers. \emph{Recorded}: a non-zero exit that the cell observed without asserting an outcome; \emph{refused}: the cell required the configuration to be rejected, and it was; \emph{skipped}: a guard refusal with a stated reason. Hosts: \texttt{vcf-bench-1} (b1), \texttt{vcf-bench-2} (b2). Every cell was produced by the published v3.1.0 image.}\label{tab:campaign}%
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -654,9 +652,9 @@ No cell failed.
 \midrule
 \multicolumn{6}{@{}l}{\textit{Conversion, scaling and storage}} \\
 Records scaling            & 10 & all OK               & b1 & 10.99 & How cost grows with records (§\ref{subsec3.3}) \\
-Sample representation$^{\ast}$ & 30 & 29 OK, 1 skipped & b2 & 18.75 & How the two profiles grow with samples (§\ref{subsec3.3}) \\
+Sample representation      & 30 & 29 OK, 1 skipped & b2 & 19.69 & How the two profiles grow with samples (§\ref{subsec3.3}) \\
 Storage mode               & 8  & all OK               & b1 & 12.87 & Peak workspace of plain vs space-optimized (§\ref{subsec3.3}) \\
-Corpus breadth$^{\ast}$    & 10 & 9 OK, 1 skipped      & b2 & 24.90 & HDT and COTTAS on ten public inputs (§\ref{subsec3.4}) \\
+Corpus breadth             & 10 & 9 OK, 1 skipped      & b2 & 26.90 & HDT and COTTAS on ten public inputs (§\ref{subsec3.4}) \\
 \addlinespace
 \multicolumn{6}{@{}l}{\textit{Input and configuration coverage}} \\
 Representation axes        & 20 & all OK               & b1 & 4.82  & VCF 4.1--4.5; cost of INFO and header representations (§\ref{subsec3.2}, §\ref{subsec3.8}) \\
@@ -667,10 +665,10 @@ Feasibility                & 9  & all OK               & b1 & 9.03  & Memory cei
 \addlinespace
 \multicolumn{6}{@{}l}{\textit{Validation and retrieval}} \\
 Robustness                 & 9  & all OK               & b1 & 0.25  & Determinism, round trip, mutation score (§\ref{subsec3.5}) \\
-Equivalence$^{\ast}$       & 8  & 6 OK, 2 refused      & b2 & 8.98  & Four engines, both profiles, three artifacts (§\ref{subsec3.9}) \\
+Equivalence                & 8  & 6 OK, 2 refused      & b2 & 6.84  & Four engines, both profiles, three artifacts (§\ref{subsec3.9}) \\
 Query cost                 & 6  & all OK               & b1 & 4.27  & SPARQL vs cyvcf2 on identical work (§\ref{subsec3.6}) \\
 \midrule
-\textbf{Total}             & \textbf{143} & \textbf{136 OK, 2 recorded, 2 refused, 3 skipped} & & \textbf{95.34} & \\
+\textbf{Total}             & \textbf{143} & \textbf{136 OK, 2 recorded, 2 refused, 3 skipped} & & \textbf{96.16} & \\
 \bottomrule
 \end{tabularx}
 \end{table*}
@@ -685,7 +683,7 @@ This is preservation, not interpretation: nothing in the graph resolves a local 
 The undeclared-version file also converted, via the documented fallback.
 
 \textbf{Real cohorts}. 
-Nine of ten corpus files converted end to end, with HDT and COTTAS built and decode-checked for each (Table~\ref{tab:current-representations}). 
+Nine of ten corpus files converted end to end, with HDT and COTTAS built and decode-checked for each (Figure~\ref{fig:representations}). 
 The tenth, the 2,504-sample 1000 Genomes chromosome-20 call set, was skipped by the benchmark harness rather than refused by the tool: the harness withholds any corpus file with more than 1{,}000 sample columns from the expanded arm, because the expanded representation emits one call resource per record and sample. 
 The resulting sample-dependent growth in RDF structure is described in Section~\ref{subsec2.1}.
 The whole file was therefore not converted in either representation. Its full sample dimension was exercised instead through 10{,}000-record slices carrying all 2{,}504 samples, which converted in both representations, and Section~\ref{subsec3.3} quantifies why the expanded arm cannot be run on the whole file at this disk budget. The tool also applies a workspace check: before converting, it estimates the expanded workspace from the record and sample counts and refuses the run when that estimate exceeds three quarters of the free space, naming the condensed representation as the alternative. The completed corpus runs cover eight 250{,}000-record slices and one whole file (\texttt{HG005\_GRCh38}, 2.36\,GB uncompressed). Together with the 1000 Genomes sample slices, they provide feature coverage across ten public inputs.
@@ -719,51 +717,49 @@ Truncated gzip & refused at decompression & --- & not reached & Refused in 0.58\
 \end{table*}
 
 \subsection{Scaling with records, samples, and storage mode}\label{subsec3.3}
-\textbf{Records}. A four-rung ladder derived from \texttt{HG005\_GRCh38} (10\,k, 100\,k, 1\,M records, then the whole 2.36\,GB file) was run in triplicate at the first three rungs. Triple production is exactly linear in records: the fitted exponent is $+0.999$ (95\% CI $[+0.991,+1.007]$, $R^2 = 1.0000$), and the per-record yield is constant at 170.9--171.9 triples. Final artifact bytes scale at $+1.033$ and peak workspace at $+1.025$; end-to-end wall time scales at $+1.064$ from 10\,k to 1\,M records (40.7\,s, 423.7\,s, 5{,}476.0\,s; replicate sd $\leq 11.0$\,s). Peak resident memory of the mapping stage is effectively flat at $+0.115$, staying between 1.0 and 1.7\,GB across a hundredfold change in input --- the streaming design is memory-bounded, and it is disk, not RAM, that scales with the data. The one exception is the queryable-representation build on the whole 2.36\,GB file, which peaked at 4.9\,GB. The RMLStreamer mapping stage itself accounts for only 12.2--41.4\,s of that time; end-to-end cost is dominated by the downstream queryable-representation build.
+\textbf{Records}. A four-rung ladder derived from \texttt{HG005\_GRCh38} (10\,k, 100\,k, 1\,M records, then the whole 2.36\,GB file) was run in triplicate at the first three rungs (Figure~\ref{fig:scaling}a). Triple production is exactly linear in records: the fitted exponent is $+0.999$ (95\% CI $[+0.991,+1.007]$, $R^2 = 1.0000$), and the per-record yield is constant at 170.9--171.9 triples. Final artifact bytes scale at $+1.033$ and peak workspace at $+1.025$; end-to-end wall time scales at $+1.064$ from 10\,k to 1\,M records (40.7\,s, 423.7\,s, 5{,}476.0\,s; replicate sd $\leq 11.0$\,s). Peak resident memory of the mapping stage is effectively flat at $+0.115$, staying between 1.0 and 1.7\,GB across a hundredfold change in input --- the streaming design is memory-bounded, and it is disk, not RAM, that scales with the data. The one exception is the queryable-representation build on the whole 2.36\,GB file, which peaked at 4.9\,GB. The RMLStreamer mapping stage itself accounts for only 12.2--41.4\,s of that time; end-to-end cost is dominated by the downstream queryable-representation build.
 
-\textbf{Samples}. The same 10{,}000 variant records were re-emitted against a sample ladder of 1, 4, 16, 64, 256, 1024 and 2504 columns, holding variant content fixed. The two sample representations separate exactly as the semantic model predicts: condensed triple production has a fitted exponent of $+0.001$ (95\% CI $[+0.000,+0.002]$) --- 1{,}439{,}503 triples at one sample and 1{,}452{,}018 at 2{,}504, a 0.9\% increase over a 2{,}504-fold change --- while expanded production has an exponent of $+0.795$ (95\% CI $[+0.649,+0.940]$), reaching 627{,}372{,}018 triples, $432\times$ the condensed graph for the same variants. End-to-end wall time follows: exponent $+0.194$ condensed versus $+0.800$ expanded (236\,s versus 14{,}527\,s at 2{,}504 samples), and the stored artifact grows from 67\,MB to 8.77\,GB. Extrapolating the expanded representation to the full 1{,}812{,}841-record chromosome-20 call set gives roughly 2\,TB against a 189\,GB volume, which is the measured basis for the guard described in Section~\ref{subsec3.2}. Under the tested disk budget, condensed encoding is the feasible option for extending conversion to the full cohort.
+\textbf{Samples}. The same 10{,}000 variant records were re-emitted against a sample ladder of 1, 4, 16, 64, 256, 1024 and 2504 columns, holding variant content fixed (Figure~\ref{fig:samples}a). The two sample representations separate exactly as the semantic model predicts: condensed triple production has a fitted exponent of $+0.001$ (95\% CI $[+0.000,+0.002]$) --- 1{,}439{,}503 triples at one sample and 1{,}452{,}018 at 2{,}504, a 0.9\% increase over a 2{,}504-fold change --- while expanded production has an exponent of $+0.795$ (95\% CI $[+0.649,+0.940]$), reaching 627{,}372{,}018 triples, $432\times$ the condensed graph for the same variants. End-to-end wall time follows: exponent $+0.183$ condensed versus $+0.788$ expanded (250\,s versus 15{,}269\,s at 2{,}504 samples), and the stored artifact grows from 67\,MB to 8.77\,GB. Triple counts understate what the condensed profile stores, because its per-sample values move into vector literals rather than disappearing (Figure~\ref{fig:samples}b). From 1 to 2{,}504 samples its HDT grows $5.8\times$ (10.2\,MB to 59.2\,MB) while its triples grow 0.9\%; its gzip-framed N-Triples grow only $1.25\times$ (6.5\,MB to 8.1\,MB), because sample-ordered genotype vectors compress well. Measured in bytes, the expanded-to-condensed gap at 2{,}504 samples is $322\times$ in gzip-framed N-Triples and $69\times$ in HDT, against $432\times$ in triples (Figure~\ref{fig:samples}c). The condensed HDT nevertheless stays smaller than the uncompressed input VCF (59.2\,MB against 101.6\,MB), whereas the expanded HDT is $40\times$ larger than it (4.10\,GB). Extrapolating the expanded representation to the full 1{,}812{,}841-record chromosome-20 call set gives roughly 2\,TB against a 189\,GB volume, which is the measured basis for the guard described in Section~\ref{subsec3.2}. Under the tested disk budget, condensed encoding is the feasible option for extending conversion to the full cohort.
 
-\textbf{Storage mode}. The plain and space-optimized storage modes were run paired on two inputs. They are indistinguishable in output --- identical triple counts (17{,}098{,}746 and 269{,}272{,}677) and the same final artifact size, to within one 4\,kB filesystem block --- and differ only in transient disk. Peak host workspace falls by $9.19\times$ (2.98\,GB to 0.325\,GB) on the 100\,k-record input and by $7.68\times$ (43.40\,GB to 5.65\,GB) on the larger one, at a time cost of $+5.2\%$ and $+3.2\%$ end to end. A pre-registered two-one-sided-test style equivalence check on the mapping stage at a $\pm10\%$ margin returns $+0.0\%$ with a 90\% bootstrap CI of $[-1.9\%,+0.4\%]$, i.e.\ equivalent, on the replicated input; the single-replicate larger input is indeterminate by construction. The storage-mode effect is therefore a reduction in peak workspace while preserving final output size and content.
+\textbf{Storage mode}. The plain and space-optimized storage modes were run paired on two inputs (Figure~\ref{fig:scaling}b). They are indistinguishable in output --- identical triple counts (17{,}098{,}746 and 269{,}272{,}677) and the same final artifact size, to within one 4\,kB filesystem block --- and differ only in transient disk. Peak host workspace falls by $9.19\times$ (2.98\,GB to 0.325\,GB) on the 100\,k-record input and by $7.68\times$ (43.40\,GB to 5.65\,GB) on the larger one, at a time cost of $+5.2\%$ and $+3.2\%$ end to end. A pre-registered two-one-sided-test style equivalence check on the mapping stage at a $\pm10\%$ margin returns $+0.0\%$ with a 90\% bootstrap CI of $[-1.9\%,+0.4\%]$, i.e.\ equivalent, on the replicated input; the single-replicate larger input is indeterminate by construction. The storage-mode effect is therefore a reduction in peak workspace while preserving final output size and content.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-scaling.pdf}
+\caption{\textbf{Record scaling and storage mode.}
+(a)~Growth of each measure relative to the 10{,}000-record rung of the \texttt{HG005\_GRCh38} ladder (medians of three replicates; the whole file is one run). Triples, end-to-end wall time and peak disk workspace grow in proportion to the records, while the mapping stage's peak resident memory stays between 1.0 and 1.7\,GB.
+(b)~Peak disk workspace of the plain and space-optimized storage modes on two inputs, with the end-to-end time cost of space-optimized mode. Final artifacts and triple counts are identical in both modes.
+Both panels are from the v3.1.0 run on \texttt{vcf-bench-1}.}\label{fig:scaling}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-samples.pdf}
+\caption{\textbf{Triples against bytes for the two sample profiles.} The same 10{,}000 \texttt{1000G\_phase3\_chr20} records re-emitted against 1 to 2{,}504 sample columns (the unlabelled tick is 1{,}024); medians where the rung was replicated.
+(a)~Triples. The expanded profile adds resources for every sample call; the condensed profile adds five triples per sample and keeps each record's per-sample values in sample-ordered vector literals.
+(b)~Size on disk of the two stored artifacts, HDT (filled) and the gzip-framed N-Triples that space-optimized mode writes (open), with the uncompressed input VCF for reference. The condensed artifacts grow although their triple count barely changes, because the vectors lengthen with every sample.
+(c)~The expanded-to-condensed ratio at 2{,}504 samples, measured three ways.}\label{fig:samples}
+\end{figure*}
 
 \subsection{Constructing queryable representations}\label{subsec3.4}
-Table~\ref{tab:current-representations} reports artifact size, build time, and peak workspace for the corpus-breadth experiment. Every corpus cell was run with \texttt{--rdf-storage-mode space-optimized}, \texttt{--hdt-strategy partitioned} and \texttt{--representations hdt,cottas}, so HDT and COTTAS were built from the same graph in the same run.
+Figure~\ref{fig:representations} compares artifact size and build time across the corpus-breadth experiment. Every corpus cell was run with \texttt{--rdf-storage-mode space-optimized}, \texttt{--hdt-strategy partitioned} and \texttt{--representations hdt,cottas}, so HDT and COTTAS were built from the same graph in the same run.
 
-Two results stand out. First, COTTAS is consistently the smallest artifact: 0.37--0.55$\times$ the size of the stored gzip-framed N-Triples, and 0.29--0.36$\times$ the size of HDT built from the same graph. Second, uncompressed HDT is \emph{larger} than the gzip-framed N-Triples it was built from, by 1.36--1.82$\times$. HDT provides indexed triple-pattern access, but does not reduce size relative to the gzip-framed N-Triples in this experiment. Construction cost runs the other way: COTTAS takes 1.5--2.8$\times$ longer to build than HDT on the same graph (28{,}502\,s versus 19{,}480\,s on the whole \texttt{HG005\_GRCh38}).
+Two results stand out. First, COTTAS is consistently the smallest artifact: 0.37--0.55$\times$ the size of the stored gzip-framed N-Triples, and 0.27--0.37$\times$ the size of HDT built from the same graph. Second, uncompressed HDT is \emph{larger} than the gzip-framed N-Triples it was built from, by 1.36--1.82$\times$. HDT provides indexed triple-pattern access, but does not reduce size relative to the gzip-framed N-Triples in this experiment. Construction cost runs the other way: COTTAS takes 1.5--3.0$\times$ longer to build than HDT on the same graph (31{,}230\,s versus 20{,}911\,s on the whole \texttt{HG005\_GRCh38}).
 
-Peak workspace is 5.7--32.0$\times$ the uncompressed input across the corpus, with the whole-file cell peaking at 16.23\,GB against a 2.36\,GB input while producing a 10.88\,GB final tree. The whole-file conversion completed in 14.83\,h end to end, of which the RMLStreamer mapping stage was 127.9\,s.
+Peak workspace is 4.7--30.3$\times$ the uncompressed input across the corpus, with the whole-file cell peaking at 13.76\,GB against a 2.36\,GB input while producing a 10.88\,GB final tree. The whole-file conversion completed in 16.07\,h end to end, of which the RMLStreamer mapping stage was 146.8\,s.
 
 
-\begin{table*}[t]
-\caption{Queryable-representation construction in the corpus-breadth experiment, one run per completed input. Eight files use their first 250{,}000 records with headers retained; \texttt{HG005\_GRCh38} is processed whole. The 1000 Genomes corpus cell is guard-skipped. ``N-Triples'' is the stored gzip-framed artifact that space-optimized mode writes. ``Decode'' reports the tool's native streamed decode and source-versus-decoded triple-count check for both representations.}\label{tab:current-representations}%
+\begin{figure*}[t]
 \centering
-\scriptsize
-\setlength{\tabcolsep}{2.5pt}
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{@{}l r r r r r r r r c@{}}
-\toprule
-\textbf{Dataset} & \textbf{Input} & \textbf{Triples} & \textbf{N-Tr.} & \textbf{HDT} & \textbf{COTTAS} & \textbf{HDT} & \textbf{COTTAS} & \textbf{Peak} & \textbf{Dec.} \\
- & (MB) & (M) & (MB) & (MB) & (MB) & (min) & (min) & (GB) & \\
-\midrule
-\texttt{HG002}$^{\dagger}$ & 13.8 & 20.52 & 87.3 & 158.8 & 44.7 & 9.2 & 28.5 & 0.44 & \checkmark \\
-\texttt{60820188474283}$^{\dagger}$ & 68.4 & 72.13 & 334.4 & 484.7 & 179.9 & 23.7 & 65.8 & 1.53 & \checkmark \\
-\texttt{60820188475559}$^{\dagger}$ & 80.2 & 79.65 & 371.7 & 547.1 & 205.0 & 25.9 & 70.4 & 1.73 & \checkmark \\
-\texttt{NB72462M}$^{\dagger}$ & 67.0 & 59.96 & 283.5 & 413.7 & 153.0 & 20.3 & 45.7 & 1.31 & \checkmark \\
-\texttt{NG131FQA1I}$^{\dagger}$ & 63.8 & 58.23 & 276.7 & 403.7 & 148.6 & 20.3 & 46.9 & 1.27 & \checkmark \\
-\texttt{NG1N86S6FC}$^{\dagger}$ & 28.1 & 30.52 & 146.9 & 222.7 & 75.6 & 12.1 & 23.3 & 0.67 & \checkmark \\
-\texttt{HG004}$^{\dagger}$ & 173.3 & 40.83 & 181.3 & 278.0 & 93.7 & 14.6 & 32.9 & 0.99 & \checkmark \\
-\texttt{HGSVC2}$^{\dagger}$ & 145.5 & 96.75 & 556.0 & 754.6 & 204.1 & 31.8 & 69.8 & 2.31 & \checkmark \\
-\texttt{HG005} (whole) & 2359.6 & 657.43 & 2885.2 & 4630.3 & 1503.9 & 324.7 & 475.0 & 16.23 & \checkmark \\
-\midrule
-\multicolumn{10}{@{}l@{}}{\texttt{1000G\_phase3\_chr20} --- guard-skipped in \emph{expanded} mode (2{,}504 samples); Section~\ref{subsec3.3}} \\
-\bottomrule
-\end{tabular}
-\vspace{1mm}
-\parbox{0.97\textwidth}{\footnotesize $^{\dagger}$First 250{,}000 records, headers retained. Input size is the uncompressed stream as the tool measures it, not the distributed \texttt{.vcf.gz}. Dataset labels are abbreviated; full names are in Table~\ref{tab:test-corpus}. End-to-end wall time per file ranged from 0.67\,h to 14.83\,h.}
-\end{table*}
+\includegraphics[width=\textwidth]{fig-representations.pdf}
+\caption{\textbf{Queryable representations in the corpus-breadth experiment,} one run per completed input, ordered by graph size (triples after each label). Eight files use their first 250{,}000 records with headers retained; \texttt{HG005\_GRCh38} is processed whole. The 2{,}504-sample 1000 Genomes cell is guard-skipped in expanded mode (Section~\ref{subsec3.3}). Dataset labels are abbreviated; full names are in Table~\ref{tab:test-corpus}.
+(a)~Artifact size relative to the stored gzip-framed N-Triples that space-optimized mode writes.
+(b)~Build time of each representation from the same graph, on a log scale. Every artifact passed the tool's native streamed decode and source-versus-decoded triple-count check.}\label{fig:representations}
+\end{figure*}
 
 
 \subsection{Semantic validation and graph reproducibility}\label{subsec3.5}
-The tool ships a validation stage that executes SPARQL against the graph it just wrote and compares every answer with an independently computed VCF-side result from cyvcf2, with \texttt{bcftools} supplying exact FILTER text. Across the campaign this stage ran 78 times over 143 cells, on N-Triples, HDT and COTTAS artifacts, under four SPARQL engines (QLever, Comunica, an HDT-backed engine and the DuckDB-backed COTTAS engine). In v3.1.0 it also applies the vocabulary's SHACL shapes by default (Section~\ref{subsec2.1}); the default profile ran on 42 validations and passed all of them with no violations, at 0.8--34.1\,s each. The query-cost cells run without shapes, so that their timings measure the queries alone. Table~\ref{tab:validation-evidence} summarizes what that produced. The complete thirteen-query workload is defined in Table~\ref{tab:semantic-queries}: Q1--Q6 summarize records and genotypes, Q7--Q10 check metadata and graph structure, and Q11--Q13 compare digest summaries of record, INFO, and FORMAT values. Fourteen further graph-integrity preflight queries run before them.
+The tool ships a validation stage that executes SPARQL against the graph it just wrote and compares every answer with an independently computed VCF-side result from cyvcf2, with \texttt{bcftools} supplying exact FILTER text. Across the campaign this stage ran 78 times over 143 cells, on N-Triples, HDT and COTTAS artifacts, under four SPARQL engines (QLever, Comunica, an HDT-backed engine and the DuckDB-backed COTTAS engine). In v3.1.0 it also applies the vocabulary's SHACL shapes by default (Section~\ref{subsec2.1}); the default profile ran on 58 validations and passed all of them with no violations, at 0.8--396.8\,s each. The query-cost cells run without shapes, so that their timings measure the queries alone. Table~\ref{tab:validation-evidence} summarizes what that produced. The complete thirteen-query workload is defined in Table~\ref{tab:semantic-queries}: Q1--Q6 summarize records and genotypes, Q7--Q10 check metadata and graph structure, and Q11--Q13 compare digest summaries of record, INFO, and FORMAT values. Fourteen further graph-integrity preflight queries run before them.
 
 Of 988 paired query comparisons, 984 returned exact equality and 4 returned a verified not-applicable: the two genotype questions on each of the zero-record fixture's two artifacts, since a file with no records has no genotypes. None mismatched. All 1{,}144 cross-check invariants passed. Engine agreement was recorded as true in all 76 completed validations, including the 25 in which all four engines answered independently; the two sites-only validations were incomplete and contribute no paired-comparison result. The tool's own native decode check --- stream the built representation back and compare source and decoded triple counts --- passed 152 times out of 152 across 118 HDT and 34 COTTAS artifacts. Syntactic validation by \texttt{rapper} passed on all 76 artifacts it reached.
 
@@ -791,71 +787,28 @@ Compress and decompress & 1 pair & identical SHA-256 & Lossless through the pack
 Index idempotence & 1 pair & identical SHA-256 & Re-indexing does not perturb the artifact \\
 Mutation score, queries only & 113 injected faults & 96 detected (0.850) & 10 classes the queries cannot see \\
 Mutation score, queries $+$ shapes & 113 injected faults & 113 detected (1.000) & Shapes catch all 17 the queries miss; both controls pass \\
-SHACL shapes, default profile & 42 validations & 42 PASS, 0 violations & Cardinality and datatype constraints on every graph the tool validated with shapes enabled \\
+SHACL shapes, default profile & 58 validations & 58 PASS, 0 violations & Cardinality and datatype constraints on every graph the tool validated with shapes enabled \\
 \bottomrule
 \end{tabularx}
 \end{table*}
 
 
 \subsection{Retrieval cost: SPARQL against a VCF parser on identical work}\label{subsec3.6}
-Table~\ref{tab:query-cost} reports the paired retrieval experiment. The protocol, fixed before the run: three replicates; a cold start per cell; identical question scope on both sides; cyvcf2 as the VCF-side oracle with \texttt{bcftools query} for exact FILTER text; engine setup time reported separately from query time; and representation-build time excluded from both columns and reported instead in Section~\ref{subsec3.4}. Result equality was verified before any timing was compared --- every cell in Table~\ref{tab:query-cost} is a \texttt{PASS}.
+Figure~\ref{fig:retrieval} reports the retrieval experiments. The protocol, fixed before the run: three replicates; a cold start per cell; identical question scope on both sides; cyvcf2 as the VCF-side oracle with \texttt{bcftools query} for exact FILTER text; engine setup time reported separately from query time; and representation-build time excluded from both columns and reported instead in Section~\ref{subsec3.4}. Result equality was verified before any timing was compared --- every comparison in Figure~\ref{fig:retrieval} is a \texttt{PASS}.
 
-The dominant finding is that the artifact barely matters and the engine matters a great deal. On the 17.1M-triple graph, per-query times against N-Triples, HDT and COTTAS differ by under 5\% for the same engine, because each engine materializes what it needs. Across engines on the 0.96M-triple graph, the same thirteen questions cost a mean of 1.1\,s under QLever, 23.4\,s under Comunica, 38.2\,s under the COTTAS engine and 45.1\,s under the HDT-backed engine (Table~\ref{tab:query-engines}), with all four engines agreeing in every run. QLever is the outlier, 20--40$\times$ faster than the rest, while the other three lie within a factor of two of one another.
+The dominant finding is that the artifact barely matters and the engine matters a great deal. On the 17.1M-triple graph, per-query times against N-Triples, HDT and COTTAS differ by under 5\% for the same engine (Figure~\ref{fig:retrieval}c), because each engine materializes what it needs. Across engines on the 0.96M-triple graph, the same thirteen questions cost a mean of 1.1\,s under QLever, 23.4\,s under Comunica, 38.2\,s under the COTTAS engine and 45.1\,s under the HDT-backed engine (Figure~\ref{fig:retrieval}b), with all four engines agreeing in every run. QLever is the outlier, 20--40$\times$ faster than the rest, while the other three lie within a factor of two of one another.
 
-The comparison with the VCF parser depends on whether one question or the complete workload is evaluated. For a \emph{single} question against the 17.1M-triple graph, cyvcf2 must scan the VCF and costs 11.5\,s regardless of which question it is, whereas QLever answers in 0.005--4.62\,s: SPARQL is $2.5\times$ to $2300\times$ faster per question. For the \emph{whole thirteen-question batch}, cyvcf2 answers all of them in one 12.4\,s pass, while QLever needs 17.1\,s of query time plus 22.8\,s of one-time setup. The RDF path wins on selective, repeated and ad hoc interrogation; the parser wins on a single exhaustive sweep. These timings exclude the one-time conversion and representation-build costs reported in Section~\ref{subsec3.4}.
+The comparison with the VCF parser depends on whether one question or the complete workload is evaluated. For a \emph{single} question against the 17.1M-triple graph, cyvcf2 must scan the VCF and costs 11.5\,s regardless of which question it is, whereas QLever answers in 0.005--4.62\,s: SPARQL is $2.5\times$ to $2300\times$ faster per question (Figure~\ref{fig:retrieval}a). For the \emph{whole thirteen-question batch}, cyvcf2 answers all of them in one 12.4\,s pass, while QLever needs 17.1\,s of query time plus 22.8\,s of one-time setup. The RDF path wins on selective, repeated and ad hoc interrogation; the parser wins on a single exhaustive sweep. These timings exclude the one-time conversion and representation-build costs reported in Section~\ref{subsec3.4}.
 
 
-\begin{table*}[t]
-\caption{Paired per-query retrieval on the 17.1M-triple \texttt{HG005\_GRCh38} graph (100{,}000 records), mean of three replicates. Every comparison returned \texttt{PASS} before any timing was compared. The cyvcf2 column is the cost of answering that one question from the VCF, which requires a scan whichever question it is. QLever setup, 22.8\,s, is one-time and excluded; representation-build cost is in Section~\ref{subsec3.4}.}\label{tab:query-cost}%
+\begin{figure*}[t]
 \centering
-\scriptsize
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{0.95}
-\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X r r r@{}}
-\toprule
-\textbf{ID} & \textbf{Operation} & \textbf{QLever (s)} & \textbf{cyvcf2 (s)} & \textbf{Speed-up} \\
-\midrule
-Q1  & Record density by contig and 1-Mb window & 0.045 & 11.53 & 250$\times$ \\
-Q2  & Record-level allele-shape distribution   & 0.535 & 11.53 & 22$\times$ \\
-Q3  & Biallelic SNV transition/transversion    & 0.111 & 11.53 & 100$\times$ \\
-Q4  & FILTER state and exact value distribution & 0.239 & 11.53 & 48$\times$ \\
-Q5  & Per-sample genotype classes and call rate & 1.774 & 12.28 & 7$\times$ \\
-Q6  & GT-derived alternate-allele count/number  & 3.205 & 12.28 & 4$\times$ \\
-Q7  & File metadata                             & 0.008 & 11.53 & 1500$\times$ \\
-Q8  & Header-line census                        & 0.005 & 11.53 & 2300$\times$ \\
-Q9  & Predicate census                          & 0.201 & 11.53 & 57$\times$ \\
-Q10 & Class census                              & 0.883 & 11.53 & 13$\times$ \\
-Q11 & Record digest                             & 1.774 & 11.53 & 6.5$\times$ \\
-Q12 & INFO value digest                         & 4.620 & 11.53 & 2.5$\times$ \\
-Q13 & FORMAT value digest                       & 3.724 & 12.28 & 3.3$\times$ \\
-\midrule
-\multicolumn{2}{@{}l}{\textbf{All thirteen questions}} & \textbf{17.12} & \textbf{12.43} & \textbf{0.7$\times$} \\
-\bottomrule
-\end{tabularx}
-\end{table*}
-
-\begin{table*}[t]
-\caption{Cost of the same thirteen questions across engines and artifacts. On the 0.96M-triple graph each engine was run nine times, once against each of the three artifacts in each of three replicates; the table gives the mean and range, and all four engines agreed in every run. Artifact choice changes query time by under 5\% for a given engine. Setup is one-time per artifact and reported separately.}\label{tab:query-engines}%
-\centering
-\footnotesize
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabularx}{\textwidth}{@{}l l r r >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Graph} & \textbf{Engine} & \textbf{Q1--Q13 (s)} & \textbf{Setup (s)} & \textbf{Note} \\
-\midrule
-0.96M triples & QLever   &  1.1 \,[1.1--1.2]   & 2.0--2.1   & \\
-0.96M triples & Comunica & 23.4 \,[22.8--24.5] & 11.7--12.5 & \texttt{@comunica/query-sparql-file} \\
-0.96M triples & COTTAS   & 38.2 \,[37.1--39.6] & 6.6--39.2  & DuckDB over the Parquet triple table \\
-0.96M triples & HDT      & 45.1 \,[44.2--46.9] & 6.1--11.3  & \texttt{@comunica/query-sparql-hdt} \\
-\midrule
-17.1M triples & QLever, N-Triples &  17.12 & 22.84 & \\
-17.1M triples & QLever, HDT       &  17.01 & 22.68 & \\
-17.1M triples & QLever, COTTAS    &  17.09 & 23.03 & \\
-17.1M triples & cyvcf2, one pass  &  12.43 & ---   & VCF-side oracle, single scan \\
-\bottomrule
-\end{tabularx}
-\end{table*}
+\includegraphics[width=\textwidth]{fig-retrieval.pdf}
+\caption{\textbf{Retrieval cost.} Every comparison returned \texttt{PASS} before any timing was compared, and representation-build cost is excluded throughout (Section~\ref{subsec3.4}).
+(a)~Paired per-question cost on the 17.1M-triple \texttt{HG005\_GRCh38} graph (100{,}000 records), mean of three replicates. The cyvcf2 cost is that of answering the one question from the VCF, which requires a scan whichever question it is. QLever's one-time setup is excluded from the per-question rows and drawn on the batch row, where one parser pass answers all thirteen questions.
+(b)~The same thirteen questions under each engine on the 0.96M-triple graph: mean of nine runs (three artifacts in each of three replicates), with the range. All four engines agreed in every run. One-time setup, not included: QLever 2.0--2.1\,s, Comunica (\texttt{@comunica/query-sparql-file}) 11.7--12.5\,s, the DuckDB-backed COTTAS engine 6.6--39.2\,s, and the HDT-backed Comunica engine (\texttt{@comunica/query-sparql-hdt}) 6.1--11.3\,s.
+(c)~QLever on the 17.1M-triple graph from each artifact, mean of three replicates; setup 22.7--23.0\,s in each case.}\label{fig:retrieval}
+\end{figure*}
 
 
 \subsection{External linking}\label{subsec3.7}
@@ -897,7 +850,7 @@ Finally, the INFO representation axis has a measurable cost: on the structural-v
 
 
 \subsection{Cross-encoding equivalence and remaining limitations}\label{subsec3.9}
-\textbf{Both sample encodings are equivalent across every engine and artifact.} The equivalence experiment converted one 10{,}000-record, multi-sample fixture in both sample representations and both storage modes, built HDT and COTTAS from each, and ran the full twenty-seven-query suite (the fourteen preflight checks and Q1--Q13) under all four engines against all three artifacts. All sixteen validations passed with all four engines in agreement, on graphs of 0.96M triples (expanded) and 0.79M triples (condensed). The complete condensed cell took 99.8\,min end to end. Two further cells asserted that the tool must refuse \texttt{--hdt-strategy single} beside COTTAS and beside space-optimized storage, and it did, with exit status 2. The tested workload therefore supports representation equivalence across both sample encodings, all three artifacts, and all four engines.
+\textbf{Both sample encodings are equivalent across every engine and artifact.} The equivalence experiment converted one 10{,}000-record, multi-sample fixture in both sample representations and both storage modes, built HDT and COTTAS from each, and ran the full twenty-seven-query suite (the fourteen preflight checks and Q1--Q13) under all four engines against all three artifacts. All sixteen validations passed with all four engines in agreement, on graphs of 0.96M triples (expanded) and 0.79M triples (condensed). The complete condensed cell took 70.4\,min end to end. Two further cells asserted that the tool must refuse \texttt{--hdt-strategy single} beside COTTAS and beside space-optimized storage, and it did, with exit status 2. The tested workload therefore supports representation equivalence across both sample encodings, all three artifacts, and all four engines.
 
 \textbf{Scope limits.} The sample ladders hold INFO fields fixed while changing sample columns, so they characterize structural scaling rather than INFO-dependent cohort summaries. Corpus conversion covers eight 250,000-record slices and one whole genome; the 2,504-sample chromosome-20 call set is exercised only through 10,000-record slices. The full paired query workload is run on fixtures and a 100,000-record \texttt{HG005\_GRCh38} slice. Correctness evidence for the corpus-breadth cells is limited to native decoding and source-versus-decoded triple counts. These scopes support comparisons within the measured workloads, without establishing whole-cohort throughput or exhaustive value-level validation for every public input.
 
@@ -932,11 +885,11 @@ The sites-only fixture produced 245 triples and a valid HDT artifact, but its tw
 
 
 \section{Discussion}\label{sec4}
-The current benchmark demonstrates conversion across heterogeneous public VCF inputs, with eight 250,000-record slices and one whole 2.36\,GB genome processed through RDF, HDT, and COTTAS construction. The whole-file output contains 657.43 million triples and completes in 14.83\,h. On the replicated record ladder, peak resident memory remains between 1.0 and 1.7\,GB over a hundredfold increase in records, while queryable-representation construction dominates end-to-end time. These results support a memory-bounded workflow whose practical resource requirements are governed primarily by build time and disk space.
+The current benchmark demonstrates conversion across heterogeneous public VCF inputs, with eight 250,000-record slices and one whole 2.36\,GB genome processed through RDF, HDT, and COTTAS construction. The whole-file output contains 657.43 million triples and completes in 16.07\,h. On the replicated record ladder, peak resident memory remains between 1.0 and 1.7\,GB over a hundredfold increase in records, while queryable-representation construction dominates end-to-end time. These results support a memory-bounded workflow whose practical resource requirements are governed primarily by build time and disk space.
 
 The paired storage-mode experiment quantifies the temporary disk requirement directly. Plain and space-optimized modes produce identical triples and final artifacts, while space-optimized mode reduces peak host workspace by 7.7--9.2 times at a 3--5\% increase in end-to-end time (Section~\ref{subsec3.3}). This trade-off is useful when temporary storage limits conversion capacity. Final artifact size alone would not capture it.
 
-Sample representation has a larger effect on graph size. Holding 10,000 records fixed, condensed triple production increases by 0.9\% from 1 to 2,504 samples, whereas the expanded graph reaches 432 times the condensed graph at 2,504 samples. The expanded representation offers individual sample-call resources, but its projected workspace for the whole chromosome-20 cohort exceeds the tested disk budget. The condensed representation is therefore the practical setting for extending the measured workload to cohort scale. Whole-cohort feasibility still requires a dedicated run, because the campaign evaluates that input through 10,000-record slices.
+Sample representation has a larger effect on graph size. Holding 10,000 records fixed, condensed triple production increases by 0.9\% from 1 to 2,504 samples, whereas the expanded graph reaches 432 times the condensed graph at 2,504 samples. Counted in bytes the gap is smaller, 69 times in HDT, because the condensed vectors still carry every sample value; the condensed HDT nonetheless remains smaller than the input VCF. The expanded representation offers individual sample-call resources, but its projected workspace for the whole chromosome-20 cohort exceeds the tested disk budget. The condensed representation is therefore the practical setting for extending the measured workload to cohort scale. Whole-cohort feasibility still requires a dedicated run, because the campaign evaluates that input through 10,000-record slices.
 
 Table~\ref{tab:capabilities-summary} summarizes the implementation and evaluation status of VCF-RDFizer v3.1.0. Each row states what the release does and what the campaign measured, so that support and evidence are not conflated.
 
@@ -958,7 +911,7 @@ FORMAT and sample/genotype values & Supported & Validated for Q5--Q6; Q13 digest
 HEADER metadata & Supported & Census queries and shapes & Header lines are typed and their declarations represented; header attribute values are checked by the shapes rather than by a comparison query \\
 Multi-sample conversion & Implemented in model and pipeline & Measured, 1--2504 samples & Condensed is flat in sample count; expanded grows at $+0.795$ and is not tractable at 2{,}504 samples (Section~\ref{subsec3.3}) \\
 Structural and symbolic/sequence alleles & Lexically supported; semantic typing partial & HGSVC2 converted; Q2 passes & Symbolic and breakend ALT fixtures convert and validate; ALT remains the source lexical field; detecting the injected allele-value mutations requires the SHACL layer \\
-Queryable HDT output & Supported & Measured & 118 artifacts, all native decode/count checks passed; $1.36$--$1.82\times$ the stored N-Triples (Table~\ref{tab:current-representations}) \\
+Queryable HDT output & Supported & Measured & 118 artifacts, all native decode/count checks passed; $1.36$--$1.82\times$ the stored N-Triples (Figure~\ref{fig:representations}) \\
 Queryable COTTAS output & Supported; \texttt{spo} index fixed & Measured & 34 artifacts, all decode checks passed, smallest artifact throughout; queried with the DuckDB-backed engine in both sample encodings (Section~\ref{subsec3.9}) \\
 Gzip/Brotli artifact packaging & Supported & Exercised in the covering set & All values of both compression axes ran and validated (Section~\ref{subsec3.8}); packaged files must be unpacked before direct querying \\
 Provenance/policy annotations & Not implemented in conversion pipeline & Not evaluated & RDF permits later linkage, but governance semantics are not generated by the current default mapping \\
@@ -982,7 +935,7 @@ The benchmark supports a division of responsibility between query-based comparis
 
 
 \textbf{Transformation Architecture and Performance}.
-RML provides a declarative framework in which semantic intent is separated from procedural parsing logic, allowing transformation rules to be versioned and reused across datasets. The mapping stage is not the bottleneck: in the current campaign RMLStreamer accounted for 12.2--41.4\,s of a 41\,s to 5{,}476\,s run on the records ladder and 127.9\,s of the 14.83\,h whole-file conversion, with peak resident memory flat at 1.0--1.7\,GB across a hundredfold change in input (Section~\ref{subsec3.3}). End-to-end cost is dominated by building the queryable representations.
+RML provides a declarative framework in which semantic intent is separated from procedural parsing logic, allowing transformation rules to be versioned and reused across datasets. The mapping stage is not the bottleneck: in the current campaign RMLStreamer accounted for 12.2--41.4\,s of a 41\,s to 5{,}476\,s run on the records ladder and 146.8\,s of the 16.07\,h whole-file conversion, with peak resident memory flat at 1.0--1.7\,GB across a hundredfold change in input (Section~\ref{subsec3.3}). End-to-end cost is dominated by building the queryable representations.
 
 The pipeline includes a lightweight preprocessing step that converts VCF files into tabular intermediates compatible with existing RML engines. Because VCF is not yet supported as a native logical source within RML, this step enables stable field extraction and declarative mapping execution. Future extensions to the RML ecosystem could support VCF as a native logical source and eliminate the preprocessing stage.
 
@@ -996,7 +949,7 @@ For compressed RDF that remains queryable, VCF-RDFizer offers both HDT and COTTA
 
 Representation construction operates on bounded, record-safe chunks. HDT parts are merged pairwise with \texttt{hdtc} under a fixed memory budget \cite{hdtc_2026,Diefenbach2020HDTCat}, while COTTAS parts are combined in one streaming $k$-way merge. Final representations are indexed and checked through native streamed decoding and source-versus-decoded triple counts. Temporary representation parts, merge workspaces, indexes, and converter scratch data still contribute to peak disk use.
 
-The corpus measurements show a consistent storage/build-time trade-off (Table~\ref{tab:current-representations}). COTTAS occupies 0.37--0.55 times the stored gzip-framed N-Triples and 0.29--0.36 times the HDT built from the same graph. HDT occupies 1.36--1.82 times the stored N-Triples, but builds faster: COTTAS requires 1.5--2.8 times its construction time. Artifact choice has little effect on query time for a fixed engine in the tested workload (Section~\ref{subsec3.6}). These results make storage size and construction cost the principal measured trade-offs between HDT and COTTAS.
+The corpus measurements show a consistent storage/build-time trade-off (Figure~\ref{fig:representations}). COTTAS occupies 0.37--0.55 times the stored gzip-framed N-Triples and 0.27--0.37 times the HDT built from the same graph. HDT occupies 1.36--1.82 times the stored N-Triples, but builds faster: COTTAS requires 1.5--3.0 times its construction time. Artifact choice has little effect on query time for a fixed engine in the tested workload (Section~\ref{subsec3.6}). These results make storage size and construction cost the principal measured trade-offs between HDT and COTTAS.
 
 
 \textbf{Tool Availability and Community Impact}.
