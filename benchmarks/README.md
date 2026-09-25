@@ -143,6 +143,14 @@ a time** — two concurrent runs invalidate every timing and memory number.
 | `12_modes_smoke.sh` | §5.2–5.3 | Phase A/B separation; every mode exercised once. |
 | `13_query_cost.sh` | §4.5 | SPARQL retrieval vs the cyvcf2 parser, on identical work. |
 
+### Investigations outside the suite
+
+Not in `run_all.sh`, and not part of any profile. Run directly when wanted.
+
+| Script | What it investigates |
+|---|---|
+| `14_regional_access.sh` | Indexed regional access: SPARQL against bgzip+tabix seeks, on five region-restricted questions. It reuses `13_query_cost`'s graphs, so run it after 13 on the same host. It needs an image with VCF-RDFizer's regional runner and tabix (`BM_REGIONAL_IMAGE`); v3.1.0 has neither and records a skip. |
+
 ## Get the data out
 
 ```bash
@@ -162,6 +170,7 @@ python3 analysis/datasets.py awkward 09_awkward_inputs
 python3 analysis/datasets.py feasibility 10_feasibility
 python3 analysis/datasets.py coverage 11_covering_set
 python3 analysis/datasets.py querycost 13_query_cost   # aggregate + per-query
+python3 analysis/datasets.py regional 14_regional_access
 ```
 
 `tidy.csv` is the schema everything else joins on. Values stay numeric; missing
@@ -179,7 +188,7 @@ results/descriptors.json        per-input structural descriptors
 Each cell gets a fresh `--out`; re-running a cell fails rather than overwriting.
 Move or delete the cell, or set `BM_RESULTS` to a new root.
 
-## Seven things that will bite you
+## Eight things that will bite you
 
 1. **Peak workspace, not final bytes.** Both storage modes emit the same
    triples, so a final-size table shows ~0% and looks like it refutes §1.
@@ -201,7 +210,12 @@ Move or delete the cell, or set `BM_RESULTS` to a new root.
    on each row for join convenience, so a row-wise ratio against it is wrong by
    ~27×. `datasets.py querycost` writes both an aggregate and a per-query file
    and uses the right column in each.
-7. **Detach long runs** (`systemd-run --user --scope`, or `nohup`). Ctrl-C on the
+7. **A window means POS, not overlap.** A tabix seek returns every record whose
+   span overlaps the region, so an indel starting before the window comes back
+   from htslib but not from a SPARQL `?pos` filter. Every VCF arm in
+   `14_regional_access` keeps the seek and then drops out-of-window POS, which
+   is what makes the arms comparable; if you add an arm, it must do the same.
+8. **Detach long runs** (`systemd-run --user --scope`, or `nohup`). Ctrl-C on the
    wrapper leaves its container running.
 
 ## Environment variables
@@ -210,5 +224,7 @@ Move or delete the cell, or set `BM_RESULTS` to a new root.
 `BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` ladder rungs · `BM_VALIDATION_ENGINES` ·
 `BM_SPARK_PARTITIONS` (default 8) · `BM_CEILINGS` §10 ceilings ·
 `BM_IMAGE_VERSION` pin a published release · `BM_REBUILD=1` force a rebuild ·
+`BM_REGIONAL_SCALES` small/slice/whole (default `small slice`, mirroring 13) · `BM_REGIONAL_ARMS` (or `_SMALL`/`_SLICE`/`_WHOLE`) · `BM_REGIONAL_THIN_ARMS` arms timed on `BM_SCAN_WINDOWS_PER_SIZE` windows only (default: the scan arm) · `BM_WINDOW_SEED` ·
+`BM_REGIONAL_RDF_SMALL` / `_SLICE` / `_WHOLE` reuse a specific graph · `BM_REGIONAL_IMAGE` run 14 on its own image (v3.1.0 lacks the regional runner) ·
 `BM_DRY_RUN=1` print commands without running · `BM_ALLOW_NETWORK=1` +
 `BM_CONTACT_EMAIL` tier-3 linker · `BM_CUSTOM_RULES` custom mapping

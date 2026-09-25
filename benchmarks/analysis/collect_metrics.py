@@ -243,6 +243,52 @@ def read_query_cost(metrics_dir: pathlib.Path) -> dict:
     return out
 
 
+def read_regional(cell_dir: pathlib.Path) -> dict:
+    """Lift the regional-access run's own report out of the cell.
+
+    14_regional_access does not drive the wrapper, so there is no run_metrics
+    tree to read: the regional runner writes regional.json / regional.csv
+    straight into the cell's out/ directory. The per-execution rows stay in the
+    CSV -- there are thousands of them -- and this records the path plus the
+    headline facts a cell-level row can carry.
+    """
+    report = cell_dir / "out" / "regional.json"
+    if not report.is_file():
+        return {}
+    try:
+        data = json.loads(report.read_text())
+    except json.JSONDecodeError:
+        return {"regional_report_unreadable": True}
+
+    out: dict = {
+        "regional_csv": str(cell_dir / "out" / "regional.csv"),
+        "regional_report": str(report),
+        "regional_windows": str(cell_dir / "out" / "windows.json"),
+        "regional_executions": data.get("executions"),
+        "regional_failures": data.get("failures"),
+        "regional_disagreements": data.get("disagreements"),
+        "regional_arms": ",".join(data.get("arms") or []),
+        "regional_window_count": data.get("windowCount"),
+        "regional_replicates": data.get("replicates"),
+        "input": pathlib.Path(data.get("vcf") or "").name or None,
+    }
+    setup = data.get("setup") or {}
+    index = setup.get("vcfIndex") or {}
+    if index:
+        out["vcf_bgzip_seconds"] = index.get("bgzipSeconds")
+        out["vcf_index_seconds"] = index.get("indexSeconds")
+        out["vcf_index_kind"] = index.get("indexKind")
+        out["vcf_index_bytes"] = index.get("indexBytes")
+        out["vcf_indexed_bytes"] = index.get("bgzipBytes")
+    for engine, seconds in (setup.get("engineSetupSeconds") or {}).items():
+        out[f"engine_setup_seconds__{engine}"] = seconds
+    if setup.get("engineErrors"):
+        out["regional_engine_errors"] = ";".join(
+            f"{name}: {message}" for name, message in setup["engineErrors"].items()
+        )
+    return out
+
+
 def read_partitioned_workspace(metrics_dir: pathlib.Path) -> dict:
     """Peak Docker-VOLUME workspace, and the build breakdown beside it.
 
@@ -342,6 +388,9 @@ def collect_cell(cell_dir: pathlib.Path) -> dict | None:
         return row
 
     row.update(factors_from_argv(bench.get("command") or []))
+
+    # 14_regional_access writes its own report instead of a run_metrics tree.
+    row.update(read_regional(cell_dir))
 
     metrics_dir = newest_metrics_dir(cell_dir / "out")
     if metrics_dir is not None:

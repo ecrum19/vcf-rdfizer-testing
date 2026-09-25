@@ -32,6 +32,13 @@ TOOL_DIR="$(dirname -- "$BM_TOOL")"
 # --------------------------------------------------------------------------
 run_fixtures() {
   bm_banner "Regenerating fixtures"
+  # A dry run plans; it does not write. Regenerating here rewrote the tracked
+  # FIXTURES.json timestamp on every BM_DRY_RUN=1 pass, which turned "show me
+  # what this would do" into a dirty working tree.
+  if [[ "$BM_DRY_RUN" == "1" ]]; then
+    bm_step "skipped (BM_DRY_RUN=1)"
+    return 0
+  fi
   python3 "$BM_ROOT/lib/make_fixtures.py" "$FIXTURE_DIR"
 }
 
