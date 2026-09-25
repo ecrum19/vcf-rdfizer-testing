@@ -381,6 +381,24 @@ produced which number.
 
 ---
 
+## The optional experiments are not part of this
+
+14, 15 and 16 are in no profile and are not part of the manuscript campaign, so
+none of the steps above apply to them. Two things to remember anyway:
+
+* **Do not archive the scale store.** `BM_SCALE_STORE` holds tens of gigabytes
+  of built graphs. Archive each `manifest.json` instead — it records the source
+  VCF digest, the triple count, every artifact's sha256, and the tool commit
+  and image digest that produced it, which is what makes the store
+  reproducible. The artifacts themselves are regenerable from that record, in
+  hours.
+* **Do not merge 16's timings into the campaign dataset.** `q01`-`q13` are
+  byte-identical to v3.1.0 and so are comparable with Figure 6, but the runs
+  are `TIMING_ONLY` by construction — they carry no validation verdict, and a
+  dataset that mixes them with validated cells would report a pass rate over
+  cells that never claimed one. `analysis/scale_retrieval.py` keeps them in
+  their own file for that reason.
+
 ## Step 7 — archive for Zenodo
 
 `merged/` after Step 5 is already the right shape: the artifacts were pruned
