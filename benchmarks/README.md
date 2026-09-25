@@ -221,7 +221,7 @@ Move or delete the cell, or set `BM_RESULTS` to a new root.
 ## Environment variables
 
 `BM_RESULTS` results root · `BM_REPS` repetitions · `BM_SIZES` §1 inputs ·
-`BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` ladder rungs · `BM_VALIDATION_ENGINES` ·
+`BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` ladder rungs · `BM_SAMPLE_REPRESENTATIONS` (default `hdt,cottas`) and `BM_SAMPLE_PARTS` (`structure timing anchors`) for 03 · `BM_VALIDATION_ENGINES` ·
 `BM_SPARK_PARTITIONS` (default 8) · `BM_CEILINGS` §10 ceilings ·
 `BM_IMAGE_VERSION` pin a published release · `BM_REBUILD=1` force a rebuild ·
 `BM_REGIONAL_SCALES` small/slice/whole (default `small slice`, mirroring 13) · `BM_REGIONAL_ARMS` (or `_SMALL`/`_SLICE`/`_WHOLE`) · `BM_REGIONAL_THIN_ARMS` arms timed on `BM_SCAN_WINDOWS_PER_SIZE` windows only (default: the scan arm) · `BM_WINDOW_SEED` ·
