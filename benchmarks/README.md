@@ -150,6 +150,59 @@ Not in `run_all.sh`, and not part of any profile. Run directly when wanted.
 | Script | What it investigates |
 |---|---|
 | `14_regional_access.sh` | Indexed regional access: SPARQL against bgzip+tabix seeks, on five region-restricted questions. It reuses `13_query_cost`'s graphs, so run it after 13 on the same host. It needs an image with VCF-RDFizer's regional runner and tabix (`BM_REGIONAL_IMAGE`); v3.1.0 has neither and records a skip. |
+| `15_scale_prepare.sh` | **Generation half** of the scale experiment. Builds one large graph per scale into `BM_SCALE_STORE` and writes a manifest. Roughly 3-4 h at 1M records (171M triples) and ~16 h for the whole HG005 genome (657M triples). Idempotent: a scale that is already built is skipped, so an interrupted campaign resumes by re-running the same command. |
+| `16_scale_retrieval.sh` | **Querying half.** Reads the store and *never builds anything* — it refuses a scale that is not prepared. Every axis is selectable, so one question against one artifact is a minute's work rather than a rebuild. |
+
+#### The scale store, and why 15 and 16 are separate
+
+`13_query_cost.sh` re-converts its input on every replicate. That is affordable
+at 17.1M triples and not at 657M: three replicates would spend ~48 h rebuilding
+the same graph to ask ~33 minutes of questions. So the build happens once, in
+15, and writes to a **store outside `benchmarks_outputs`** — outside, because
+freeing disk by deleting `out/<dataset>/` is a normal thing to do in a results
+tree, and a 16-hour artifact must not live somewhere anyone would reasonably
+clear.
+
+```bash
+BM_IMAGE_VERSION=3.1.0 ./15_scale_prepare.sh r1000000   # build once
+./16_scale_retrieval.sh r1000000                        # query as often as you like
+python3 analysis/scale_store.py list                    # what is built
+python3 analysis/scale_store.py verify                  # re-hash against the manifests
+python3 analysis/scale_retrieval.py                     # -> results/16_*/retrieval.csv
+```
+
+Every axis of 16 is selectable, which is what makes a targeted follow-up cheap:
+
+```bash
+# one query, one replicate
+BM_SCALE_QUERIES=q03_titv BM_REPS=1 ./16_scale_retrieval.sh r1000000
+# the cross-engine comparison, each engine on its native artifact
+BM_SCALE_CELLS="qlever:nt.gz comunica:nt.gz hdt:hdt cottas:cottas" ./16_scale_retrieval.sh r1000000
+# one engine reading all three artifacts (Figure 6c's question)
+BM_SCALE_CELLS="qlever:nt.gz qlever:hdt qlever:cottas" ./16_scale_retrieval.sh whole
+```
+
+Two things to know before quoting a number from it:
+
+* **The default query set is `core`, the thirteen queries Figure 6 reports** —
+  not the whole suite. Per artifact on the 17.1M cell the thirteen cost 17 s and
+  the preflight set costs 201 s, so running everything pays twelve times over
+  for numbers the figure does not contain. A subset makes the tool report
+  `TIMING_ONLY` instead of a validation verdict, *by design*; each selected
+  query is still compared against the cyvcf2 oracle, so equality is still
+  established before any timing is compared. `BM_SCALE_QUERIES=all` buys the
+  verdict back at full cost.
+* **`q01`–`q13` are byte-identical between v3.1.0 and current `main`, and the
+  two `preflight_missing_token_conformance` queries are not** — they were
+  narrowed after v3.1.0. Core timings from 16 may be put beside Figure 6's;
+  preflight timings may not.
+
+Generation pins the *published* release image so a stored graph is traceable to
+a release rather than to whatever the checkout was that afternoon; 15 refuses a
+local build unless `BM_SCALE_ALLOW_LOCAL_IMAGE=1`. Querying may run a newer
+image — it needs `--validation-queries`, which postdates v3.1.0 — and that
+asymmetry is safe precisely because the halves are separate: a newer engine
+reading an older graph changes retrieval cost, not the graph.
 
 ## Get the data out
 
@@ -227,4 +280,11 @@ Move or delete the cell, or set `BM_RESULTS` to a new root.
 `BM_REGIONAL_SCALES` small/slice/whole (default `small slice`, mirroring 13) · `BM_REGIONAL_ARMS` (or `_SMALL`/`_SLICE`/`_WHOLE`) · `BM_REGIONAL_THIN_ARMS` arms timed on `BM_SCAN_WINDOWS_PER_SIZE` windows only (default: the scan arm) · `BM_WINDOW_SEED` ·
 `BM_REGIONAL_RDF_SMALL` / `_SLICE` / `_WHOLE` reuse a specific graph · `BM_REGIONAL_IMAGE` run 14 on its own image (v3.1.0 lacks the regional runner) ·
 `BM_DRY_RUN=1` print commands without running · `BM_ALLOW_NETWORK=1` +
-`BM_CONTACT_EMAIL` tier-3 linker · `BM_CUSTOM_RULES` custom mapping
+`BM_CONTACT_EMAIL` tier-3 linker · `BM_CUSTOM_RULES` custom mapping ·
+`BM_SCALE_STORE` where built graphs live (default `../scale_store`) ·
+`BM_SCALE_SET` `<id>:<input>` pairs · `BM_SCALE_REPRS` which artifacts 15 builds ·
+`BM_SCALE_QUERY_SCALES` / `BM_SCALE_CELLS` `<engine>:<artifact>` pairs /
+`BM_SCALE_QUERIES` ids or `core`/`preflight`/`all` ·
+`BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES` ceiling above which the in-memory Comunica
+arm is refused and the refusal recorded ·
+`BM_SCALE_ALLOW_LOCAL_IMAGE=1` let 15 build from an unpinned image
