@@ -768,28 +768,35 @@ Three graph-stability properties were tested directly rather than assumed. Two c
 \textbf{How much would this validation catch?} A mutation-score experiment injected 113 targeted corruptions into the graph --- wrong allele, wrong coordinate, wrong filter token, wrong file metadata, blank nodes, flipped phasing, corrupted sample index --- and measured how many the validation suite detects. With all three SHACL profiles enabled it detected all 113, a score of 1.000. The two layers contribute differently, and the split is the useful part of the result. The comparison queries alone detect 96 (0.850); the other 17 fall into ten classes that the queries structurally cannot see --- allele kind and value are counted but never compared against the raw ALT column, header attribute values and the derived contig count are counted but not read, and record index, sample index, called allele and phasing status have no oracle --- and the shapes catch every one of them. Both unmutated controls pass in both sample representations, so the shapes are not simply rejecting conformant graphs. The perfect score has a price: the two profiles that check uniqueness and value agreement self-join the graph and cost 33.7\,s and 73.2\,s on a 2{,}000-triple graph, against 1.7\,s for the default profile, which checks cardinality and datatypes only. v3.1.0 therefore applies the default profile to every validation and reserves the full set for inputs up to 16\,MiB.
 
 \begin{table*}[t]
-\caption{Completed validation comparisons and reproducibility tests. Counts are derived from archived reports; the two incomplete sites-only validations are excluded from paired-comparison totals.}\label{tab:validation-evidence}%
+\caption{Validation evidence, grouped by the question each layer answers. Counts are pass/total, derived from archived reports. The sensitivity block is what licenses the two above it: a suite that cannot fail proves nothing by passing.}\label{tab:validation-evidence}%
 \centering
 \scriptsize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{0.95}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.125\textwidth} >{\raggedright\arraybackslash}p{0.175\textwidth} >{\raggedright\arraybackslash}X@{}}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.28\textwidth} r >{\raggedright\arraybackslash}X@{}}
 \toprule
-\textbf{Validation layer} & \textbf{Instances} & \textbf{Outcome} & \textbf{Interpretation} \\
+\textbf{Check} & \textbf{Passed} & \textbf{What it establishes} \\
 \midrule
-N-Triples syntax (\texttt{rapper}) & 76 artifacts & 76 PASS & The serialization parses \\
-Paired SPARQL vs cyvcf2 (Q1--Q13) & 988 comparisons & 984 PASS, 4 n/a-verified & Exact equality of normalized query results \\
-Cross-check invariants & 1{,}144 assertions & 1{,}144 PASS & E.g.\ transitions $+$ transversions $=$ biallelic SNVs \\
-Cross-engine agreement & 76 validations (25 with 4 engines) & agreement in all 76 & QLever, Comunica, HDT, COTTAS \\
-Native decode and triple count & 152 artifacts & 152 PASS & 118 HDT, 34 COTTAS; source $=$ decoded \\
-Determinism (two runs) & 1 pair & identical SHA-256 & 17{,}098{,}746 triples, 0 duplicate lines \\
-Compress and decompress & 1 pair & identical SHA-256 & Lossless through the packaging path \\
-Index idempotence & 1 pair & identical SHA-256 & Re-indexing does not perturb the artifact \\
-Mutation score, queries only & 113 injected faults & 96 detected (0.850) & 10 classes the queries cannot see \\
-Mutation score, queries $+$ shapes & 113 injected faults & 113 detected (1.000) & Shapes catch all 17 the queries miss; both controls pass \\
-SHACL shapes, default profile & 58 validations & 58 PASS, 0 violations & Cardinality and datatype constraints on every graph the tool validated with shapes enabled \\
+\multicolumn{3}{@{}l}{\itshape Is the graph faithful to the source VCF?}\\
+N-Triples syntax (\texttt{rapper}) & 76/76 & The serialization parses \\
+Paired SPARQL vs cyvcf2 (Q1--Q13) & 984/988\rlap{$^{\dagger}$} & Exact equality of normalized query results \\
+Cross-check invariants & 1{,}144/1{,}144 & E.g.\ transitions $+$ transversions $=$ biallelic SNVs \\
+Cross-engine agreement & 76/76 & QLever, Comunica, HDT, COTTAS (25 with all four) \\
+Native decode and triple count & 152/152 & 118 HDT, 34 COTTAS; source $=$ decoded \\
+\addlinespace
+\multicolumn{3}{@{}l}{\itshape Is the pipeline reproducible?}\\
+Determinism, two runs & 1/1 & Identical SHA-256; 17{,}098{,}746 triples, 0 duplicate lines \\
+Compress and decompress & 1/1 & Lossless through the packaging path \\
+Index idempotence & 1/1 & Re-indexing does not perturb the artifact \\
+\addlinespace
+\multicolumn{3}{@{}l}{\itshape Would a fault actually be noticed?}\\
+Injected faults caught, queries only & 96/113 \;(0.850) & 17 faults, spanning 10 mutation classes, are invisible to the queries \\
+\quad with SHACL shapes enabled & \textbf{113/113} \;(1.000) & Shapes catch all 17; both controls still pass \\
+SHACL shapes, default profile & 58/58 & Cardinality and datatype constraints, 0 violations \\
 \bottomrule
 \end{tabularx}
+\vspace{2pt}
+{\footnotesize $^{\dagger}$Four comparisons were verified as not-applicable rather than passed; they are excluded from paired-comparison totals.}
 \end{table*}
 
 
@@ -839,6 +846,32 @@ The fair summary is that the linking architecture --- tiered linkers, offline an
 \bottomrule
 \end{tabularx}
 \end{table*}
+
+
+\subsection{Policy attachment demonstrator}\label{subsec:policy}
+VCF-RDFizer also includes a demonstrator plug-in, \texttt{vcf-rdfizer-policy} (v0.1.0), that attaches ODRL policies \cite{odrl_2018} to converted graphs. It postdates v3.1.0 and is not part of the benchmark campaign. It runs on a synthetic cohort of five single-sample VCFs: 139 records at real GRCh38 loci, with synthetic genotypes, converted by v3.1.0 in both sample profiles. Each participant's consent is a policy on their file. Two cohort-wide rules target a genomic region (\textit{BRCA1}, readable only for clinical care) and a single variant (the APOE $\varepsilon$4-defining rs429358, readable only for disease-specific research). Purposes are GA4GH Data Use Ontology terms \cite{lawson2021duo}, matched through the DUO hierarchy, so a disease-specific study falls within a general-research consent but not the reverse (Figure~\ref{fig:policy}a). Conflicts resolve deny-wins, and anything no permission covers is withheld.
+
+Evaluated for three requesters, one set of policies yields three release views (Figure~\ref{fig:policy}b), with 37, 76 and 56 of the 139 records released. Each view differs in which consents admit which files: P003's health-research consent admits the disease-specific study but not a general-research request. It also differs in which cohort rule is lifted: \textit{BRCA1} for clinical genetics only, and rs429358 for the disease-specific study only. P004 withdrew, and that prohibition overrides every permission. Each view is checked against an oracle computed directly from the VCF text, without the graph or SPARQL, and must equal it exactly: an extra record is a leak, and a missing one is over-withholding. All three views pass in both sample profiles, and each of six planted faults is detected: a reinstated \textit{BRCA1} record, a restored triple of the withdrawn file, a deleted record, a dangling reference, a swapped view, and a changed policy. The check also caught a real defect during development. Every record decision was correct, but a withdrawn file's header and sample set remained in every view, which the record counts alone could not show.
+
+Because the policies are RDF in the same graph as the data, one SPARQL query can ask which records a collaborator may not receive, and under which rule. A VCF has no place to state a region- or variant-level policy, and repository consent codes apply to whole datasets. The demonstrator's limits are deliberate and stated in its documentation:
+\begin{itemize}
+\item the cohort is a small synthetic fixture;
+\item evaluation happens in memory, after conversion;
+\item views keep the original IRIs, since there is no pseudonymization;
+\item obligations are recorded but not enforced.
+\end{itemize}
+It provides governed release, not anonymization: a released genotype remains identifying.
+
+\begin{figure*}[t]
+\centering
+\parbox{\textwidth}{\footnotesize\textbf{(a)}~Where policies attach}\\[1pt]
+\includegraphics[width=\textwidth]{fig-policy-attach.pdf}\\[4pt]
+\parbox{\textwidth}{\footnotesize\textbf{(b)}~What each requester receives}\\[1pt]
+\includegraphics[width=\textwidth]{fig-policy-grid.pdf}
+\caption{\textbf{Policy attachment demonstrator} (\texttt{vcf-rdfizer-policy} v0.1.0, after the v3.1.0 release).
+(a)~Participant P003's consent is attached to its file. The cohort policy's two prohibitions target a region selection (\textit{BRCA1}) and a variant selection (APOE $\varepsilon$4, rs429358). \texttt{attach} writes the \texttt{odrl:hasPolicy} links, so policies and data can be queried together. GRU, HMB, DS and CC are the DUO terms for general research use, health/medical/biomedical research, disease-specific research and clinical care use; $\sqsubseteq$ is DUO subsumption.
+(b)~What three requesters receive from the same policies over the synthetic five-file cohort. Blue is released and gray is withheld. The two cohort-rule rows count records in the files the requester may otherwise see. Every view equals an oracle computed from the source VCFs.}\label{fig:policy}
+\end{figure*}
 
 
 \subsection{Configuration coverage, operating modes and memory feasibility}\label{subsec3.8}
@@ -914,7 +947,7 @@ Structural and symbolic/sequence alleles & Lexically supported; semantic typing 
 Queryable HDT output & Supported & Measured & 118 artifacts, all native decode/count checks passed; $1.36$--$1.82\times$ the stored N-Triples (Figure~\ref{fig:representations}) \\
 Queryable COTTAS output & Supported; \texttt{spo} index fixed & Measured & 34 artifacts, all decode checks passed, smallest artifact throughout; queried with the DuckDB-backed engine in both sample encodings (Section~\ref{subsec3.9}) \\
 Gzip/Brotli artifact packaging & Supported & Exercised in the covering set & All values of both compression axes ran and validated (Section~\ref{subsec3.8}); packaged files must be unpacked before direct querying \\
-Provenance/policy annotations & Not implemented in conversion pipeline & Not evaluated & RDF permits later linkage, but governance semantics are not generated by the current default mapping \\
+Provenance/policy annotations & Not in v3.1.0; v0.1.0 demonstrator after the release & Exercised on a synthetic fixture & ODRL policies on files, regions and variants with DUO purposes; per-request views verified against a VCF-side oracle; post-conversion only, no pseudonymization; governed release, not anonymization (Section~\ref{subsec:policy}) \\
  External linking (tiers 1--3) & Implemented, instrumented & Partially exercised & Tier 1 links 86/86 records offline; tier 2 executes but yields zero links on the demonstration reference; tier 3 runs against live Ensembl and correctly links none of the synthetic identifiers (Section~\ref{subsec3.7}) \\
 \bottomrule
 \end{tabularx}
@@ -960,7 +993,7 @@ Public issue tracking, release notes, and a documented maintenance plan support 
 \textbf{Queryable Genomic RDF as a Complementary Access Layer}.
 The selected workload illustrates the practical scope of SPARQL even before external annotations are linked. Density windows, allele-shape summaries, Ti/Tv, FILTER distributions, per-sample missingness/genotype classes, and genotype-derived AC/AN are recognizable bioinformatic operations rather than synthetic graph queries. Reproducing them from RDF tests whether genomic coordinates, alleles, filter semantics, sample identities, FORMAT values, and record-to-sample relationships survive semantic lifting.
 
-The longer-term value of SPARQL is not limited to reproducing operations that VCF-native tools already perform well. Once variant records use stable IRIs and ontology-aligned predicates, a query can combine variant/genotype constraints with linked gene, phenotype, pharmacogenomic, provenance, or policy statements without exporting each relation into a new ad hoc table. Multiple VCF-derived graphs can be queried through the same data model, and Comunica's source-oriented architecture can query one or more local HDT files through a common SPARQL interface \cite{Taelman2018Comunica,comunica_hdt_docs_2026}. COTTAS provides another compressed query path through the same Comunica architecture \cite{cottas_2025,comunica_cottas_2026}. These capabilities could support cohort QC across independently produced VCFs, integrated variant prioritization, knowledge-graph enrichment, and governance-aware retrieval using standards such as ODRL \cite{odrl_2018}.
+The longer-term value of SPARQL is not limited to reproducing operations that VCF-native tools already perform well. Once variant records use stable IRIs and ontology-aligned predicates, a query can combine variant/genotype constraints with linked gene, phenotype, pharmacogenomic, provenance, or policy statements without exporting each relation into a new ad hoc table. Multiple VCF-derived graphs can be queried through the same data model, and Comunica's source-oriented architecture can query one or more local HDT files through a common SPARQL interface \cite{Taelman2018Comunica,comunica_hdt_docs_2026}. COTTAS provides another compressed query path through the same Comunica architecture \cite{cottas_2025,comunica_cottas_2026}. These capabilities could support cohort QC across independently produced VCFs, integrated variant prioritization, knowledge-graph enrichment, and governance-aware retrieval using standards such as ODRL \cite{odrl_2018}. Section~\ref{subsec:policy} demonstrates the attachment side of this on a synthetic cohort: consents on files, and rules on a region and a variant, evaluated per request and verified against the source VCFs.
 
 VCF-native tools remain an essential comparator and, for many format-specific operations, are likely to remain the operational baseline. bcftools and cyvcf2 operate directly over VCF/BCF and expose highly optimized parsing, indexing, and genotype access \cite{BCFtools,cyvcf2_2017}. The RDF pathway adds conversion and representation-build costs in exchange for a generic graph query model and semantic joins. It should therefore be positioned as complementary infrastructure rather than an unconditional replacement for VCF/BCF.
 
@@ -996,7 +1029,7 @@ Gokhan Ertaylan acknowledges support from ...
 The large VCF inputs are downloaded from their original public providers rather than redistributed in Git. Canonical filenames, source URLs/download commands, experiment manifests, query files, normalized outputs, and comparison reports are maintained at \url{https://github.com/ecrum19/vcf-rdfizer-testing}. The archive provides run manifests and hashes for tracing the source inputs, generated artifacts, and executed queries.
 
 \subsection{Code availability}
-The VCF-RDFizer source is available at \url{https://github.com/ecrum19/VCF-RDFizer}. The target benchmark release is v3.1.0 (commit \texttt{d3b34d5}), distributed through PyPI, Conda-Forge, and Docker Hub; its container configuration is specified in Section~\ref{subsec2.3}. Each run records its tool commit, command, and resolved image digest. Testing scripts, the integrated per-cell run record, normalized outputs, and paper artifacts are available at \url{https://github.com/ecrum19/vcf-rdfizer-testing}.
+The VCF-RDFizer source is available at \url{https://github.com/ecrum19/VCF-RDFizer}. The target benchmark release is v3.1.0 (commit \texttt{d3b34d5}), distributed through PyPI, Conda-Forge, and Docker Hub; its container configuration is specified in Section~\ref{subsec2.3}. Each run records its tool commit, command, and resolved image digest. The policy demonstrator of Section~\ref{subsec:policy}, with its fixture and tests, is at \url{https://github.com/ecrum19/VCF-RDFizer/pull/26} and follows the v3.1.0 release. Testing scripts, the integrated per-cell run record, normalized outputs, and paper artifacts are available at \url{https://github.com/ecrum19/vcf-rdfizer-testing}.
 
 \subsection{Author contributions statement}
 E.C. and G.E. conceived the tool and the experiments.

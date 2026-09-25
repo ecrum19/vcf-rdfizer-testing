@@ -1,0 +1,29 @@
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix vcfp: <https://w3id.org/vcf-rdfizer/policy#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#release> a vcfp:ReleaseView ;
+    prov:generatedAtTime "2026-09-25T11:42:49+00:00"^^xsd:dateTime ;
+    prov:wasGeneratedBy <urn:vcf-rdfizer-policy:0.1.0> ;
+    vcfp:derivedFrom <file://P001.vcf>,
+        <file://P002.vcf>,
+        <file://P003.vcf>,
+        <file://P004.vcf>,
+        <file://P005.vcf> ;
+    vcfp:disclosureModel "governed release; not anonymization" ;
+    vcfp:filesWithheld 3 ;
+    vcfp:obligation [ odrl:action odrl:attribute ] ;
+    vcfp:policy <https://example.org/policy/demo-cohort/cohort>,
+        <https://example.org/policy/demo-cohort/consent-P001>,
+        <https://example.org/policy/demo-cohort/consent-P002>,
+        <https://example.org/policy/demo-cohort/consent-P003>,
+        <https://example.org/policy/demo-cohort/consent-P004>,
+        <https://example.org/policy/demo-cohort/consent-P005> ;
+    vcfp:policyDigest "sha256:4b08d12876a1be4847c579a71e912919a221752846912b27fbded0dd7e33929e" ;
+    vcfp:recordsReleased 56 ;
+    vcfp:recordsWithheld 83 ;
+    vcfp:request [ odrl:assignee <https://example.org/party/clinical-genetics> ;
+            odrl:purpose <http://purl.obolibrary.org/obo/DUO_0000043> ] ;
+    vcfp:triplesWithheld 6539 .
+

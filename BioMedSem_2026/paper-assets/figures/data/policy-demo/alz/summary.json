@@ -1,0 +1,50 @@
+{
+  "request": {
+    "assignee": "https://example.org/party/alz-consortium",
+    "purpose": "http://purl.obolibrary.org/obo/DUO_0000007"
+  },
+  "files": {
+    "file://P001.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://P001.vcf>",
+      "records_released": 22,
+      "records_withheld": 12
+    },
+    "file://P002.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://P002.vcf>",
+      "records_released": 16,
+      "records_withheld": 7
+    },
+    "file://P003.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://P003.vcf>",
+      "records_released": 18,
+      "records_withheld": 9
+    },
+    "file://P004.vcf": {
+      "released": false,
+      "reason": "withheld: prohibition on <file://P004.vcf>",
+      "records_released": 0,
+      "records_withheld": 26
+    },
+    "file://P005.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://P005.vcf>",
+      "records_released": 20,
+      "records_withheld": 9
+    }
+  },
+  "records_released": 76,
+  "records_withheld": 63,
+  "triples_released": 6284,
+  "triples_withheld": 4649,
+  "reasons": {
+    "released: permission on <file://P001.vcf>": 22,
+    "withheld: prohibition on <https://example.org/policy/demo-cohort/brca1>": 37,
+    "released: permission on <file://P002.vcf>": 16,
+    "released: permission on <file://P003.vcf>": 18,
+    "withheld: prohibition on <file://P004.vcf>": 26,
+    "released: permission on <file://P005.vcf>": 20
+  }
+}

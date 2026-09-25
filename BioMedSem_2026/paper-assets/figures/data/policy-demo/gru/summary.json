@@ -1,0 +1,51 @@
+{
+  "request": {
+    "assignee": "https://example.org/party/research-consortium",
+    "purpose": "http://purl.obolibrary.org/obo/DUO_0000042"
+  },
+  "files": {
+    "file://P001.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://P001.vcf>",
+      "records_released": 21,
+      "records_withheld": 13
+    },
+    "file://P002.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://P002.vcf>",
+      "records_released": 16,
+      "records_withheld": 7
+    },
+    "file://P003.vcf": {
+      "released": false,
+      "reason": "withheld: no permission covers <file://P003.vcf> for this purpose",
+      "records_released": 0,
+      "records_withheld": 27
+    },
+    "file://P004.vcf": {
+      "released": false,
+      "reason": "withheld: prohibition on <file://P004.vcf>",
+      "records_released": 0,
+      "records_withheld": 26
+    },
+    "file://P005.vcf": {
+      "released": false,
+      "reason": "withheld: no permission covers <file://P005.vcf> for this purpose",
+      "records_released": 0,
+      "records_withheld": 29
+    }
+  },
+  "records_released": 37,
+  "records_withheld": 102,
+  "triples_released": 3064,
+  "triples_withheld": 7869,
+  "reasons": {
+    "released: permission on <file://P001.vcf>": 21,
+    "withheld: prohibition on <https://example.org/policy/demo-cohort/brca1>": 19,
+    "withheld: prohibition on <https://example.org/policy/demo-cohort/apoe-e4>": 1,
+    "released: permission on <file://P002.vcf>": 16,
+    "withheld: no permission covers <file://P003.vcf> for this purpose": 27,
+    "withheld: prohibition on <file://P004.vcf>": 26,
+    "withheld: no permission covers <file://P005.vcf> for this purpose": 29
+  }
+}
