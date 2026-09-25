@@ -13,11 +13,28 @@
 #   ./run_all.sh smoke        # fast end-to-end pass: every cheap script, tiny inputs
 #   ./run_all.sh biomedsem    # the manuscript configuration: every claim, ~2-3 days
 #   ./run_all.sh 03 06 11     # only these
+#   ./run_all.sh 15 16        # optional experiments, never run by a profile
+#
+# The optional experiments (14, 15, 16) are in no profile. `all` does not
+# include them, and it is not an oversight: each is a standalone investigation
+# costing hours to days, and 16 depends on 15 having been run first.
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
 ALL="00 02 01 03 04 05 06 07 08 09 10 11 12 13"
 CHEAP="00 02 03 06 07 08 09 11 12 13"
+
+# OPTIONAL experiments. Deliberately absent from ALL, CHEAP and biomedsem:
+# they are standalone investigations, not part of the manuscript campaign, and
+# each costs hours to days. Nothing runs them unless they are named.
+#
+#   14  regional access -- windowed retrieval against indexed VCF readers
+#   15  scale generation -- builds the large graphs 16 queries (~16 h at 657M)
+#   16  scale retrieval  -- queries what 15 built, and never builds
+#
+# 15 and 16 are two halves of one experiment, split so the expensive half runs
+# once. Run 15, then 16 as many times as you like.
+OPTIONAL="14 15 16"
 
 # A profile may be followed by an explicit experiment list, so one profile can
 # be split across hosts: `run_all.sh biomedsem 05 06 10`. Without the shift the
@@ -129,6 +146,13 @@ for prefix in $SELECTED; do
     continue
   fi
   bm_banner "$(basename "$script")"
+  # Say so out loud. An optional experiment is never reached by a profile, so
+  # if one is running, someone asked for it -- and should be told what it costs.
+  case " $OPTIONAL " in
+    *" $prefix "*)
+      bm_warn "$prefix is an OPTIONAL experiment: it is in no profile and can run for hours."
+      ;;
+  esac
   if bash "$script"; then
     :
   else
