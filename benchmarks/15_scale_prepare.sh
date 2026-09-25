@@ -97,6 +97,10 @@ BM_SCALE_STORE elsewhere:
       --out "$store"
   bm_record_outcome "built $scale"
 
+  if [[ "${BM_LAST_DRY_RUN:-0}" == "1" ]]; then
+    bm_step "$scale: dry run -- command recorded, nothing built, no manifest written"
+    continue
+  fi
   if [[ "$BM_LAST_RC" -ne 0 ]]; then
     bm_warn "$scale: build exited $BM_LAST_RC; no manifest written"
     continue
