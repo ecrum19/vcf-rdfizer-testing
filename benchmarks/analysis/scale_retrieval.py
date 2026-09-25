@@ -75,6 +75,13 @@ def cell_rows(cell: pathlib.Path) -> list[dict]:
 
     summary_path = find_one(cell / "out", "summary.json")
     summary = read_json(summary_path) if summary_path else None
+    # The runner decodes the artifact to N-Triples before any engine runs, for
+    # the syntax and cardinality check, and that cost is paid once per cell
+    # whatever the engine. At whole-genome scale it is roughly 99 GB of text,
+    # so it dominates cell wall time while belonging to neither side of the
+    # retrieval comparison. Report it separately rather than letting it hide
+    # inside the cell total.
+    materialization = read_json(find_one(cell / "out", "materialization.json")) or {}
     benchmark_csv = find_one(cell / "out", "benchmark.csv")
     if benchmark_csv is None:
         return [{
@@ -114,6 +121,8 @@ def cell_rows(cell: pathlib.Path) -> list[dict]:
                 "tool_commit": bench.get("tool_commit", ""),
                 "image_digest": bench.get("image_digest", ""),
                 "host": bench.get("host", ""),
+                "materialize_seconds": materialization.get("wallSeconds", ""),
+                "materialized": materialization.get("materialized", ""),
             })
     return rows
 
