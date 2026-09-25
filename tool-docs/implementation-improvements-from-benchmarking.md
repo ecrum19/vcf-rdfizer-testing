@@ -823,7 +823,7 @@ the change could flip, and use the determinism digest to certify the rest.**
 | Experiment | Campaign | Re-run | Change |
 |---|---|---|---|
 | `08_robustness` | 8 cells, 8 ok | 9 cells, 9 ok | new `mutation_score__shacl_full` cell |
-| `09_awkward_inputs` | 12 ok, 2 non-zero, 2 skipped | 13 ok, 2 non-zero, 2 skipped | `awkward_no_records` 1 → 0 |
+| `09_awkward_inputs` | 11 ok, 3 non-zero, 2 skipped | 12 ok, 2 non-zero, 2 skipped | `awkward_no_records` 1 → 0 |
 | `11_covering_set` | 10 ok | 7 ok, 3 non-zero | `row3`, `row9`, `row10` 0 → 1 |
 | `12_modes_smoke` | 7 ok | 7 ok | unchanged |
 
