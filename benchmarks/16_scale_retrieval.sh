@@ -69,6 +69,45 @@ CELLS="${BM_SCALE_CELLS:-qlever:nt.gz}"
 # omission.
 BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES="${BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES:-50000000}"
 
+# Disk, which is the constraint that actually bites at this size.
+#
+# Only a plain .nt artifact is queried in place; every other format is
+# decompressed to N-Triples inside the container before an engine sees it
+# (DIRECT_FORMATS in the validation runner is exactly {"nt"}). So querying the
+# 657M-triple .nt.gz materializes the whole graph as text.
+#
+# The constant is measured, not guessed: the v3.1.0 whole-HG005 build recorded
+# chunk_input_bytes = 99,325,167,164 for 657,425,805 triples, i.e. 151 bytes of
+# N-Triples per triple. QLever's index is allowed a further 50 B/triple, which
+# is a rough upper bound rather than a measurement and is why the total is
+# checked with a margin rather than exactly.
+#
+# Discovering this after a 16-hour build has already been paid would be the
+# expensive way to learn it.
+BM_SCALE_BYTES_PER_TRIPLE="${BM_SCALE_BYTES_PER_TRIPLE:-201}"
+BM_SCALE_SKIP_DISK_CHECK="${BM_SCALE_SKIP_DISK_CHECK:-0}"
+
+bm_scale_disk_ok() {
+  local triples="$1" kind="$2" label="$3"
+  [[ "$BM_SCALE_SKIP_DISK_CHECK" == "1" ]] && return 0
+  [[ "$triples" == "unknown" || -z "$triples" ]] && return 0
+  # A plain .nt is queried where it lies, so it needs index space only.
+  local per_triple="$BM_SCALE_BYTES_PER_TRIPLE"
+  [[ "$kind" == "nt" ]] && per_triple=50
+
+  local need free
+  need=$(( triples * per_triple ))
+  free=$(( $(df -kP "$BM_SCALE_STORE" | awk 'NR==2 {print $4}') * 1024 ))
+  if (( free < need )); then
+    bm_skip "$EXPERIMENT" "$label" \
+      "needs about $(( need / 1000000000 )) GB free to materialize and index \
+$triples triples from a '$kind' artifact, and $(( free / 1000000000 )) GB is available. \
+Free space, query a plain .nt artifact in place, or set BM_SCALE_SKIP_DISK_CHECK=1."
+    return 1
+  fi
+  return 0
+}
+
 WANTED="${*:-}"
 if [[ -z "$WANTED" ]]; then
   for scale in $(bm_scale_ids); do
@@ -115,6 +154,8 @@ BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES=$BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES ceiling. 
 Raise it to run anyway."
       continue
     fi
+
+    bm_scale_disk_ok "$triples" "$kind" "${scale}__${engine}__${kind}__disk" || continue
 
     for rep in $(seq 1 "$REPS"); do
       label="${scale}__${engine}__${kind//./_}__r${rep}"
