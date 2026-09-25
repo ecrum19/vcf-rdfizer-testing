@@ -41,6 +41,28 @@
 # holds. Pass BM_SCALE_QUERIES=all to get a verdict as well, at full cost.
 #
 # ---------------------------------------------------------------------------
+# --no-shacl, FOR THE SAME REASON 13_query_cost.sh PASSES IT
+# ---------------------------------------------------------------------------
+# The shape layer is a fixed per-run cost belonging to neither side of a
+# retrieval comparison, so including it would blur the measurement and make
+# these numbers incomparable with Figure 6's.
+#
+# Omitting it here was also a live defect, not just a tidiness issue. The
+# wrapper size-gates pyshacl by the PACKAGED ARTIFACT's bytes, while pyshacl's
+# memory cost tracks the GRAPH. On the 170,935,101-triple rung the same graph
+# fell on both sides of that gate:
+#
+#   cottas    390,728,158 B  under the 512 MiB gate  -> pyshacl ran -> OOM
+#   nt.gz     756,594,166 B  over                    -> skipped
+#   hdt     1,182,206,289 B  over                    -> skipped
+#
+# So the format that compresses best is the one most likely to exhaust memory,
+# which inverts the guard. The COTTAS cell was killed at 32.2 GB RSS on a 31 GB
+# machine after decoding and rapper had both SUCCEEDED on all 170,935,101
+# triples. That is a tool defect and is reported separately; --no-shacl is
+# correct here regardless of whether it is fixed.
+#
+# ---------------------------------------------------------------------------
 # COMPARABILITY WITH FIGURE 6
 # ---------------------------------------------------------------------------
 # q01..q13 are byte-identical between v3.1.0 (which produced Figure 6) and the
@@ -198,6 +220,7 @@ Raise it to run anyway."
           --info-representation structured \
           --validation-engine "$engine" \
           --validation-queries "$QUERIES" \
+          --no-shacl \
           --validation-id "${scale}_${engine}_${rep}" \
           --image "$BM_IMAGE_REF" \
           --no-build \
