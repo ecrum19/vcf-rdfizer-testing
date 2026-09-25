@@ -20,6 +20,7 @@
 # Usage:
 #   ./03_sample_representation.sh
 #   BM_TIMING_RUNGS="1 2504" BM_REPS=3 ./03_sample_representation.sh
+#   BM_SAMPLE_PARTS=structure BM_SAMPLE_REPRESENTATIONS=cottas ./03_sample_representation.sh
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
@@ -29,10 +30,23 @@ FIXED_RECORDS="${BM_FIXED_RECORDS:-10000}"
 TIMING_RUNGS="${BM_TIMING_RUNGS:-1 2504}"   # rungs that get repetitions
 REPS="${BM_REPS:-3}"
 
+# Both queryable representations, so the byte side of the claim is measured in
+# each: condensed moves its per-sample values into vector literals rather than
+# dropping them, and HDT and COTTAS store those literals very differently.
+# Until v3.1.0's second campaign this built HDT alone, which left COTTAS with
+# no sample-ladder numbers at all.
+REPRESENTATIONS="${BM_SAMPLE_REPRESENTATIONS:-hdt,cottas}"
+
+# Which parts to run: any of structure, timing, anchors. A supplementary run
+# that only needs the ladder's bytes runs `structure` alone.
+PARTS=" ${BM_SAMPLE_PARTS:-structure timing anchors} "
+has_part() { [[ "$PARTS" == *" $1 "* ]]; }
+
 # One conversion per (rung, mode) for the deterministic triple count.
-bm_banner "§2 sample-representation ladder — structure (n=1 per cell)"
+has_part structure && bm_banner "§2 sample-representation ladder — structure (n=1 per cell)"
 
 for rung in $RUNGS; do
+  has_part structure || break
   input="1000G_${FIXED_RECORDS}r_s${rung}.vcf.gz"
   if ! bm_have_vcf "$input"; then
     bm_skip "$EXPERIMENT" "s${rung}__missing" \
@@ -47,7 +61,7 @@ for rung in $RUNGS; do
       --sample-representation "$mode" \
       --rdf-storage-mode space-optimized \
       --hdt-strategy partitioned \
-      --representations hdt \
+      --representations "$REPRESENTATIONS" \
       --rdf-compression none \
       --artifact-compression none \
       --spark-partitions "${BM_SPARK_PARTITIONS:-8}"
@@ -56,9 +70,10 @@ done
 
 # Repetitions only where a timing comparison is actually reported: the S=1
 # endpoint (the equivalence claim) and the top rung (the difference claim).
-bm_banner "§2 endpoint timing ($REPS reps on rungs: $TIMING_RUNGS)"
+has_part timing && bm_banner "§2 endpoint timing ($REPS reps on rungs: $TIMING_RUNGS)"
 
 for rung in $TIMING_RUNGS; do
+  has_part timing || break
   input="1000G_${FIXED_RECORDS}r_s${rung}.vcf.gz"
   if ! bm_have_vcf "$input"; then
     bm_skip "$EXPERIMENT" "s${rung}__timing__missing" "derived rung not built: $input"
@@ -73,7 +88,7 @@ for rung in $TIMING_RUNGS; do
         --sample-representation "$mode" \
         --rdf-storage-mode space-optimized \
         --hdt-strategy partitioned \
-        --representations hdt \
+        --representations "$REPRESENTATIONS" \
         --rdf-compression none \
         --artifact-compression none \
         --spark-partitions "${BM_SPARK_PARTITIONS:-8}"
@@ -90,9 +105,10 @@ done
 # smoke` does exactly that.
 ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-1000G_phase3_chr20.vcf.gz:cohort HG004_GRCh38.vcf.gz:single}"
 
-bm_banner "§2.4 real-cohort anchors"
+has_part anchors && bm_banner "§2.4 real-cohort anchors"
 
 for pair in $ANCHOR_PAIRS; do
+  has_part anchors || break
   input="${pair%%:*}"; role="${pair##*:}"
   if ! bm_have_vcf "$input"; then
     bm_skip "$EXPERIMENT" "anchor_${role}__missing" "corpus input not available: $input"
@@ -110,7 +126,7 @@ for pair in $ANCHOR_PAIRS; do
       --sample-representation "$mode" \
       --rdf-storage-mode space-optimized \
       --hdt-strategy partitioned \
-      --representations hdt \
+      --representations "$REPRESENTATIONS" \
       --rdf-compression none \
       --artifact-compression none \
       --spark-partitions "${BM_SPARK_PARTITIONS:-8}"

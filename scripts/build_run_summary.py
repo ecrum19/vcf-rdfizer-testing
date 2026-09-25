@@ -20,6 +20,9 @@ the branches apart:
   archive     an older tool's data, kept separate because its labels collide
   prerelease  the first campaign, on development commits, set aside when the
               whole suite was re-run on the v3.1.0 release ("__campaign1__")
+  supplementary  a targeted run added after a campaign to measure what it did
+              not ("__supplement_"), e.g. the sample ladder's COTTAS bytes;
+              reported where it is used, never counted as campaign cells
 
 Only `live` feeds the reported numbers. Everything else is carried so a reader
 can see what was excluded and why, rather than having to take it on trust.
@@ -56,6 +59,7 @@ TREE_KINDS = (
     ("__offsplit", "offsplit"),
     ("__partial", "partial"),
     ("__tool", "archive"),
+    ("__supplement", "supplementary"),
     ("_calibration", "calibration"),
     ("benchmarks_outputs", "live"),
 )
