@@ -645,7 +645,7 @@ def policy_rows(key):
     counts = json.loads((view / "summary.json").read_text(encoding="utf-8"))
     decisions = list(csv.DictReader((view / "decisions.csv").open(encoding="utf-8")))
     rows = []
-    for file_iri, info in counts["files"].items():
+    for file_iri, info in counts["groups"].items():
         name = file_iri.split("//")[1].replace(".vcf", "")
         if info["released"]:
             rows.append((name, True, f"{info['records_released']} records"))
@@ -654,13 +654,13 @@ def policy_rows(key):
 
     def selected(test):
         # Records the rule decides: those in files this requester may otherwise see.
-        hits = [d for d in decisions if test(d) and counts["files"][d["file"]]["released"]]
+        hits = [d for d in decisions if test(d) and counts["groups"][d["group"]]["released"]]
         released = sum(d["released"] == "True" for d in hits)
         return released == len(hits), f"{released} of {len(hits)}"
 
     chrom, start, end = BRCA1_WINDOW
     rows.append(("BRCA1", *selected(lambda d: d["chrom"] == chrom and start <= int(d["pos"]) <= end)))
-    rows.append(("rs429358", *selected(lambda d: (d["chrom"], int(d["pos"]), d["ref"], d["alts"]) ==
+    rows.append(("rs429358", *selected(lambda d: (d["chrom"], int(d["pos"]), d["ref"], d["alt"]) ==
                                        (APOE_E4[0], APOE_E4[1], APOE_E4[2], APOE_E4[3]))))
     return rows, counts
 
