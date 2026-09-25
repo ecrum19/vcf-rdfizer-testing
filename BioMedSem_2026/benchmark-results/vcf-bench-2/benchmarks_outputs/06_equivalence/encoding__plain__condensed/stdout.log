@@ -1,0 +1,43 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: condensed
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica, qlever, hdt, cottas
+  - Input 1/1: test-10k.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming condensed multi-sample RDF (no expanded helper TSVs)
+    * Condensed matrices streamed: 9,986; FORMAT vectors: 19,972; reusable samples: 1
+    * Streaming structured header RDF
+    * Header lines typed: 13; contigs: 2
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 9,986; INFO values: 29,958; declarations: 3
+    * Triples produced: 789,157
+    * Compression ✅
+    * Semantic validation (aggregate, comunica, qlever, hdt, cottas): test-10k.nt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/stages/validation/test-10k.json
+    * Semantic validation (hdt, comunica, qlever, hdt, cottas): test-10k.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/stages/validation/test-10k__hdt.json
+    * Semantic validation (cottas, comunica, qlever, hdt, cottas): test-10k.cottas
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k__cottas
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/stages/validation/test-10k__cottas.json
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k
+      - RDF aggregate: test-10k.nt
+      - N-Triples (.nt): 93.99 MB (removed after successful compression)
+      - gzip (.nt.gz): 3.67 MB
+      - HDT (.hdt): 4.89 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.hdt)
+      - COTTAS (.cottas): 1006.18 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.cottas)
+Total triples produced (full run): 789,157
+Conversion process finished.
+Run time (full mode): 1h 10m 22.4s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/summary.json

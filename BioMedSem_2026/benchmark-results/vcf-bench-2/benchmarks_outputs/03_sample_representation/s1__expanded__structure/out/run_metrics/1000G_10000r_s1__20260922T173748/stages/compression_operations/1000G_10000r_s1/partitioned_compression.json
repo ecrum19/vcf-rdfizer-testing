@@ -1,0 +1,161 @@
+{
+  "run_id": "20260922T173748",
+  "timestamp": "2026-09-22T17:37:48",
+  "output_name": "1000G_10000r_s1",
+  "rdf_name": "__partitioned_compression__",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__structure/out/1000G_10000r_s1",
+  "compression_methods": "hdt",
+  "index_warnings": [],
+  "auxiliary_stages": {},
+  "build_profile": {
+    "chunk_stream_seconds": 1.8939259280450642,
+    "chunk_count": 1,
+    "chunk_input_bytes": 231849353,
+    "by_stage_kind": {
+      "hdt-chunk-build": {
+        "stage_count": 1,
+        "wall_seconds": 12.8947809538804,
+        "max_rss_kb": 125968
+      },
+      "hdt-index": {
+        "stage_count": 1,
+        "wall_seconds": 0.7468711351975799,
+        "max_rss_kb": 125968
+      },
+      "hdt-validate": {
+        "stage_count": 1,
+        "wall_seconds": 2.6295750718563795,
+        "max_rss_kb": 125968
+      }
+    },
+    "merge_rounds": {},
+    "peak_volume_workspace_bytes": 243074310,
+    "max_rss_kb": 125968
+  },
+  "build_stages": [
+    {
+      "name": "hdt-build-00000",
+      "stage_name": "hdt-build-00000",
+      "exit_code": 0,
+      "wall_seconds": 12.8947809538804,
+      "output_path": "/work/chunk-00000.hdt",
+      "output_size_bytes": 11224957,
+      "workspace_tree_bytes_before": 231849353,
+      "workspace_tree_bytes_after": 243074310,
+      "workspace_free_bytes_after": 132320862208,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 132332089344,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 125968,
+      "max_rss_source": "rusage_children_highwater"
+    },
+    {
+      "name": "hdt-index",
+      "stage_name": "hdt-index",
+      "exit_code": 0,
+      "wall_seconds": 0.7468711351975799,
+      "output_path": "/data/out/1000G_10000r_s1.hdt.index.v1-1",
+      "output_size_bytes": 8490184,
+      "workspace_tree_bytes_before": 0,
+      "workspace_tree_bytes_after": 0,
+      "workspace_free_bytes_after": 132544217088,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 132552712192,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 125968,
+      "max_rss_source": "rusage_children_highwater"
+    },
+    {
+      "name": "hdt-validate",
+      "stage_name": "hdt-validate",
+      "exit_code": 0,
+      "wall_seconds": 2.6295750718563795,
+      "output_path": "/work/.hdt-validate.validation.json",
+      "output_size_bytes": 159,
+      "workspace_tree_bytes_before": 0,
+      "workspace_tree_bytes_after": 159,
+      "workspace_free_bytes_after": 132544212992,
+      "workspace_total_bytes": 202022608896,
+      "workspace_free_bytes_before": 132544217088,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 125968,
+      "max_rss_source": "rusage_children_highwater"
+    }
+  ],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 13.64165208907798,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 125968,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__structure/out/1000G_10000r_s1/1000G_10000r_s1.hdt",
+      "output_size_bytes": 11224957,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__structure/out/1000G_10000r_s1/1000G_10000r_s1.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 231849353,
+        "record_count": 1609503,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 1.8939259280450642,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 1609503,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 231849353,
+            "record_count": 1609503,
+            "payload_bytes": 231849353,
+            "write_seconds": 1.8927933052182198
+          }
+        ],
+        "merge_rounds": 0,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__expanded__structure/out/1000G_10000r_s1/1000G_10000r_s1.hdt.index.v1-1",
+        "index_size_bytes": 8490184,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 1609503,
+          "decoded_triples": 1609503,
+          "expected_triples": 1609503,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 2.6295750718563795,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 125968
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 1609503,
+        "decoded_triples": 1609503,
+        "expected_triples": 1609503,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "timing": {
+          "wall_seconds": 2.6295750718563795,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": 125968
+        }
+      }
+    }
+  }
+}

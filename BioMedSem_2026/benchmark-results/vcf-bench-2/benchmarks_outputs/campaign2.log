@@ -1,0 +1,147 @@
+=== 2026-09-22T17:33:30+02:00 vcf-bench-2: campaign 2, share [00 03 05 06] ===
+tool    d3b34d5 Merge pull request #19 from ecrum19/release/v3.1.0  (v3.1.0)
+harness 75828db Correct why bm_find_vcf rejects empty inputs
+image   ecrum19/vcf-rdfizer:3.1.0
+digest  ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa
+free    124G
+--- calibration (identical cell on both hosts) ---
+  calibration phaseA_convert   37.0s  host=vcf-bench-2
+--- share ---
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 00_environment.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== Environment manifest ===
+    - tool: /home/ubuntu/VCF-RDFizer/vcf_rdfizer.py (checkout)
+    - commit: d3b34d576958befd6e1fc3558c76e7c52aa0cd0d
+    - image:  ecrum19/vcf-rdfizer:3.1.0 (local-build)
+    - digest: ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/manifest.json
+  note: not detected -> bcftools, bash
+    - system conditions -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/system_conditions.txt
+[1m==>[0m Environment captured: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/manifest.json
+
+=== 03_sample_representation.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §2 sample-representation ladder — structure (n=1 per cell) ===
+    - s1__expanded__structure
+    - s1__condensed__structure
+    - s4__expanded__structure
+    - s4__condensed__structure
+    - s16__expanded__structure
+    - s16__condensed__structure
+    - s64__expanded__structure
+    - s64__condensed__structure
+    - s256__expanded__structure
+    - s256__condensed__structure
+    - s1024__expanded__structure
+    - s1024__condensed__structure
+    - s2504__expanded__structure
+    - s2504__condensed__structure
+
+=== §2 endpoint timing (3 reps on rungs: 1 2504) ===
+    - s1__expanded__r1
+    - s1__condensed__r1
+    - s1__expanded__r2
+    - s1__condensed__r2
+    - s1__expanded__r3
+    - s1__condensed__r3
+    - s2504__expanded__r1
+    - s2504__condensed__r1
+    - s2504__expanded__r2
+    - s2504__condensed__r2
+    - s2504__expanded__r3
+    - s2504__condensed__r3
+
+=== §2.4 real-cohort anchors ===
+    - anchor_cohort__expanded — SKIPPED: 2504 sample columns exceeds BM_CORPUS_MAX_SAMPLES=1000; the expanded representation emits records x samples calls, which does not fit this volume. The condensed cell for the same input still runs. Raise BM_CORPUS_MAX_SAMPLES to force it.
+    - anchor_cohort__condensed
+    - anchor_single__expanded
+    - anchor_single__condensed
+[1m==>[0m Done. Analyse with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 03_sample_representation
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/fit_scaling.py 03_sample_representation --x samples --y triples --group mode --cell-filter __structure
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/equivalence.py 03_sample_representation --cell-filter s1__ --margin 0.10
+
+Reporting reminders (§2.3):
+  * Report the STRUCTURE ratio and the ARTIFACT-BYTE ratio in separate columns
+    and label them differently. The guide's worked example gives ~1,070x on
+    structure; final .hdt bytes shrink far less, because the scalar values
+    persist inside vector literals and HDT's dictionary already recovers part
+    of the repetition. Conflating them reads as a compression claim that the
+    data does not support.
+  * The S=1 cell is an equivalence claim. Use the same +/-10% margin framing as
+    §1, and here it CAN be pre-registered — do that before running.
+
+=== 05_corpus_breadth.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §3.2 corpus breadth (one config, one rep per file) ===
+    - truncating to first 250000 records (whole: HG005_GRCh38.vcf.gz)
+    - sv_batch__HGSVC2__first250000
+    - cohort__1000G_phase3_chr20__too_many_samples — SKIPPED: 2504 sample columns exceeds BM_CORPUS_MAX_SAMPLES=1000; the expanded representation emits records x samples calls, which does not fit this volume. The condensed cell for the same input still runs. Raise BM_CORPUS_MAX_SAMPLES to force it.
+    - giab_single__HG004_GRCh38__first250000
+    - giab_single__HG005_GRCh38
+    - giab_single__0GOOR_HG002__first250000
+    - consumer_wgs__NG1N86S6FC__first250000
+    - consumer_wgs__NG131FQA1I__first250000
+    - consumer_wgs__NB72462M__first250000
+    - consumer_wgs__60820188475559__first250000
+    - consumer_wgs__60820188474283__first250000
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 05_corpus_breadth
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/describe_inputs.py --corpus
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py corpus 05_corpus_breadth
+
+describe_inputs.py emits the structural descriptors (records, samples, sample
+calls, allele shape, INFO/FORMAT key counts, VCF version) that go NEXT TO the
+cost in the same row. Without them an off-trend file reads as noise; with them
+it reads as explained.
+
+=== 06_equivalence.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §4.1 representation equivalence on test-10k.vcf ===
+    - engines: all  (targets: all produced artifacts)
+    - encoding__plain__expanded
+    - encoding__plain__condensed
+    - encoding__space-optimized__expanded
+    - encoding__space-optimized__condensed
+
+=== §4.1 mechanism check: single-pass vs partitioned merge ===
+    - mechanism__hdt_single
+    - mechanism__hdt_partitioned
+
+=== §1.2 refusals are enforced, not silent ===
+    - refusal__single_with_cottas
+    -   exit 2 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/refusal__single_with_cottas/stderr.log)
+    - refusal__single_with_space_optimized
+    -   exit 2 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/refusal__single_with_space_optimized/stderr.log)
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 06_equivalence
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py equivalence 06_equivalence
+
+Every cell equal to the oracle is one quotable sentence: 'every configuration
+answers all six biological queries identically to the source VCF.' Call out
+Q5/Q6 separately — they are the sample-layer traversals.
+
+=== Collecting ===
+03_sample_representation: 30 cells — 29 ok, 0 non-zero, 1 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/tidy.csv
+05_corpus_breadth: 10 cells — 9 ok, 0 non-zero, 1 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/tidy.csv
+06_equivalence: 8 cells — 6 ok, 2 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/tidy.csv
+  exit 2: refusal__single_with_cottas
+  exit 2: refusal__single_with_space_optimized
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/provenance.vcf-bench-2.d3b34d5.json
+  tool   d3b34d5 Merge pull request #19 from ecrum19/release/v3.1.0
+  image   created 
+=== 2026-09-24T23:03:44+02:00 campaign 2 share finished ===

@@ -1,0 +1,58 @@
+{
+  "run_id": "20260924T184522",
+  "timestamp": "2026-09-24T18:45:22",
+  "stage": "validation",
+  "validation_id": "test-10k",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.nt.gz",
+  "rdf_format": "nt.gz",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260924T184522/reports/validation/test-10k",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260924T184522/reports/validation/test-10k/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 166.53224250441417,
+      "cottas": 779.1045930217952,
+      "hdt": 185.60335536580533,
+      "qlever": 7.6819725702516735
+    },
+    "engineSetupSeconds": {
+      "comunica": 15.451023403089494,
+      "cottas": 53.92480197083205,
+      "hdt": 13.208290152717382,
+      "qlever": 2.283352246042341
+    },
+    "oracleSeconds": 0.7230558069422841
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/run_metrics/test-10k__20260924T184522/reports/validation/test-10k/benchmark.csv",
+  "input_rdf_size_bytes": 4058855,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 1622.8310870290734,
+    "user_seconds": 654.46,
+    "sys_seconds": 13.14,
+    "max_rss_kb": 3611800
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  },
+  "rdf_gzip_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__space-optimized__expanded/out/test-10k/test-10k.nt.gz"
+}

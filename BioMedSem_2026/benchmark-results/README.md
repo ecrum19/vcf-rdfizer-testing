@@ -23,29 +23,33 @@ summary.json                  the integrated record (see below)
 
 Only `benchmarks_outputs/` feeds the reported numbers.
 
-**Current state (2026-09-24).** The whole suite is being re-run on the published
-image `ecrum19/vcf-rdfizer:3.1.0` (`sha256:1904e96d…34aa`, commit `d3b34d5`).
-vcf-bench-1's share (01, 04, 07–13) is finished and is its `benchmarks_outputs/`;
+**Current state (2026-09-25).** The whole suite has been re-run on the published
+image `ecrum19/vcf-rdfizer:3.1.0` (`sha256:1904e96d…34aa`, commit `d3b34d5`), and
+both hosts' shares are mirrored: vcf-bench-1's (01, 04, 07–13) and vcf-bench-2's
+(03, 05, 06), each with its calibration run. Together they are the 143 live
+cells (136 OK, 2 recorded, 2 refused as required, 3 skipped by a stated guard).
 09 was re-run once more with network access so the tier-3 linker has a result,
-and the first 09 run is under `__superseded/`. vcf-bench-2's share (03, 05, 06) is
-still running and is not mirrored yet, so bench-2 currently has no live tree
-here. Both hosts' first campaigns are kept under `__campaign1__<ts>/` with the
-names the VMs gave them; they are byte-identical to what this directory held as
-`benchmarks_outputs/` before the re-run. The other trees are kept
-because they are the reason the live numbers look the way they do — a superseded
-run explains why a re-run exists, and the two stalled trees are the only
-evidence for the COTTAS non-termination claim.
+and the first 09 run is under `__superseded/`. Both hosts' first campaigns are
+kept under `__campaign1__<ts>/` with the names the VMs gave them. The other
+trees are kept because they are the reason the live numbers look the way they
+do — a superseded run explains why a re-run exists, and the two stalled trees
+are the only evidence for the COTTAS non-termination claim.
+
+A supplementary run is in progress on vcf-bench-2: the sample ladder's 14
+structure cells with `--representations cottas`, because the campaign's 03
+built HDT only. It will be mirrored as
+`vcf-bench-2/benchmarks_outputs__supplement_cottas_ladder/`.
 
 ## What is not here
 
-The generated RDF: 137 GB of `.nt`, `.hdt` and `.cottas` under
+The generated RDF: about 196 GB of `.nt`, `.hdt` and `.cottas` under
 `out/<dataset>/`. Every cell records the argv, `tool_commit` and image digest
 that produced it, so any artifact can be rebuilt. Nothing was deleted from the
 hosts to produce this directory.
 
 ## summary.json
 
-Built by `scripts/build_run_summary.py`. One record per cell (327 of them),
+Built by `scripts/build_run_summary.py`. One record per cell (382 of them),
 each tagged with its host, branch, experiment, tool commit and resolved image
 digest, plus per-experiment roll-ups, host provenance, and an integrity block.
 

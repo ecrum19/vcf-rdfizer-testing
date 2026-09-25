@@ -1,0 +1,616 @@
+{
+  "run_id": "20260924T095116",
+  "timestamp": "2026-09-24T09:51:16",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000",
+  "output_name": "NG131FQA1I_first250000",
+  "compression_methods": "hdt,cottas",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.nt.gz",
+  "combined_rdf_size_bytes": 276704838,
+  "index_warnings": [],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 1237.3959889197722,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 4446984,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.hdt",
+      "output_size_bytes": 403686350,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.nt.gz"
+        ],
+        "chunk_count": 18,
+        "chunk_input_bytes": 9263247745,
+        "record_count": 58231176,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 65.01961548160762,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3665399,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536871033,
+            "record_count": 3665399,
+            "payload_bytes": 536871033,
+            "write_seconds": 3.782874254975468
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3665399,
+            "end_record": 6845996,
+            "start_uncompressed_byte": 536871033,
+            "end_uncompressed_byte": 1073741968,
+            "record_count": 3180597,
+            "payload_bytes": 536870935,
+            "write_seconds": 3.5561079871840775
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 6845996,
+            "end_record": 10020810,
+            "start_uncompressed_byte": 1073741968,
+            "end_uncompressed_byte": 1610612952,
+            "record_count": 3174814,
+            "payload_bytes": 536870984,
+            "write_seconds": 3.646701208781451
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 10020810,
+            "end_record": 13177590,
+            "start_uncompressed_byte": 1610612952,
+            "end_uncompressed_byte": 2147483969,
+            "record_count": 3156780,
+            "payload_bytes": 536871017,
+            "write_seconds": 3.6115928729996085
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 13177590,
+            "end_record": 16336046,
+            "start_uncompressed_byte": 2147483969,
+            "end_uncompressed_byte": 2684354885,
+            "record_count": 3158456,
+            "payload_bytes": 536870916,
+            "write_seconds": 3.6394734936766326
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 16336046,
+            "end_record": 19492830,
+            "start_uncompressed_byte": 2684354885,
+            "end_uncompressed_byte": 3221225929,
+            "record_count": 3156784,
+            "payload_bytes": 536871044,
+            "write_seconds": 3.4135875422507524
+          },
+          {
+            "chunk_id": 6,
+            "path": "chunk-00006.nt",
+            "start_record": 19492830,
+            "end_record": 22934715,
+            "start_uncompressed_byte": 3221225929,
+            "end_uncompressed_byte": 3758096961,
+            "record_count": 3441885,
+            "payload_bytes": 536871032,
+            "write_seconds": 3.6673302967101336
+          },
+          {
+            "chunk_id": 7,
+            "path": "chunk-00007.nt",
+            "start_record": 22934715,
+            "end_record": 26394051,
+            "start_uncompressed_byte": 3758096961,
+            "end_uncompressed_byte": 4294968028,
+            "record_count": 3459336,
+            "payload_bytes": 536871067,
+            "write_seconds": 4.156329583376646
+          },
+          {
+            "chunk_id": 8,
+            "path": "chunk-00008.nt",
+            "start_record": 26394051,
+            "end_record": 29853629,
+            "start_uncompressed_byte": 4294968028,
+            "end_uncompressed_byte": 4831838978,
+            "record_count": 3459578,
+            "payload_bytes": 536870950,
+            "write_seconds": 3.810312243178487
+          },
+          {
+            "chunk_id": 9,
+            "path": "chunk-00009.nt",
+            "start_record": 29853629,
+            "end_record": 33311284,
+            "start_uncompressed_byte": 4831838978,
+            "end_uncompressed_byte": 5368709936,
+            "record_count": 3457655,
+            "payload_bytes": 536870958,
+            "write_seconds": 3.7694973149336874
+          },
+          {
+            "chunk_id": 10,
+            "path": "chunk-00010.nt",
+            "start_record": 33311284,
+            "end_record": 36757839,
+            "start_uncompressed_byte": 5368709936,
+            "end_uncompressed_byte": 5905580961,
+            "record_count": 3446555,
+            "payload_bytes": 536871025,
+            "write_seconds": 3.7796396957710385
+          },
+          {
+            "chunk_id": 11,
+            "path": "chunk-00011.nt",
+            "start_record": 36757839,
+            "end_record": 40190946,
+            "start_uncompressed_byte": 5905580961,
+            "end_uncompressed_byte": 6442451947,
+            "record_count": 3433107,
+            "payload_bytes": 536870986,
+            "write_seconds": 3.7627849681302905
+          },
+          {
+            "chunk_id": 12,
+            "path": "chunk-00012.nt",
+            "start_record": 40190946,
+            "end_record": 43623260,
+            "start_uncompressed_byte": 6442451947,
+            "end_uncompressed_byte": 6979323003,
+            "record_count": 3432314,
+            "payload_bytes": 536871056,
+            "write_seconds": 3.79175316169858
+          },
+          {
+            "chunk_id": 13,
+            "path": "chunk-00013.nt",
+            "start_record": 43623260,
+            "end_record": 47056863,
+            "start_uncompressed_byte": 6979323003,
+            "end_uncompressed_byte": 7516193998,
+            "record_count": 3433603,
+            "payload_bytes": 536870995,
+            "write_seconds": 3.7848658049479127
+          },
+          {
+            "chunk_id": 14,
+            "path": "chunk-00014.nt",
+            "start_record": 47056863,
+            "end_record": 50494857,
+            "start_uncompressed_byte": 7516193998,
+            "end_uncompressed_byte": 8053065017,
+            "record_count": 3437994,
+            "payload_bytes": 536871019,
+            "write_seconds": 3.798267961014062
+          },
+          {
+            "chunk_id": 15,
+            "path": "chunk-00015.nt",
+            "start_record": 50494857,
+            "end_record": 53928085,
+            "start_uncompressed_byte": 8053065017,
+            "end_uncompressed_byte": 8589936060,
+            "record_count": 3433228,
+            "payload_bytes": 536871043,
+            "write_seconds": 3.8355773999355733
+          },
+          {
+            "chunk_id": 16,
+            "path": "chunk-00016.nt",
+            "start_record": 53928085,
+            "end_record": 57358680,
+            "start_uncompressed_byte": 8589936060,
+            "end_uncompressed_byte": 9126807060,
+            "record_count": 3430595,
+            "payload_bytes": 536871000,
+            "write_seconds": 4.1495095561258495
+          },
+          {
+            "chunk_id": 17,
+            "path": "chunk-00017.nt",
+            "start_record": 57358680,
+            "end_record": 58231176,
+            "start_uncompressed_byte": 9126807060,
+            "end_uncompressed_byte": 9263247745,
+            "record_count": 872496,
+            "payload_bytes": 136440685,
+            "write_seconds": 1.059673734009266
+          }
+        ],
+        "merge_rounds": 5,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.hdt.index.v1-1",
+        "index_size_bytes": 369028141,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 58231176,
+          "decoded_triples": 58231176,
+          "expected_triples": 58231176,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 95.47402335889637,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 4446984
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    },
+    "cottas": {
+      "exit_code": 0,
+      "wall_seconds": 3036.334490618203,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 4446984,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.cottas",
+      "output_size_bytes": 148593751,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.nt.gz"
+        ],
+        "chunk_count": 18,
+        "chunk_input_bytes": 9263247745,
+        "record_count": 58231176,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 65.01961548160762,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3665399,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536871033,
+            "record_count": 3665399,
+            "payload_bytes": 536871033,
+            "write_seconds": 3.782874254975468
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3665399,
+            "end_record": 6845996,
+            "start_uncompressed_byte": 536871033,
+            "end_uncompressed_byte": 1073741968,
+            "record_count": 3180597,
+            "payload_bytes": 536870935,
+            "write_seconds": 3.5561079871840775
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 6845996,
+            "end_record": 10020810,
+            "start_uncompressed_byte": 1073741968,
+            "end_uncompressed_byte": 1610612952,
+            "record_count": 3174814,
+            "payload_bytes": 536870984,
+            "write_seconds": 3.646701208781451
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 10020810,
+            "end_record": 13177590,
+            "start_uncompressed_byte": 1610612952,
+            "end_uncompressed_byte": 2147483969,
+            "record_count": 3156780,
+            "payload_bytes": 536871017,
+            "write_seconds": 3.6115928729996085
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 13177590,
+            "end_record": 16336046,
+            "start_uncompressed_byte": 2147483969,
+            "end_uncompressed_byte": 2684354885,
+            "record_count": 3158456,
+            "payload_bytes": 536870916,
+            "write_seconds": 3.6394734936766326
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 16336046,
+            "end_record": 19492830,
+            "start_uncompressed_byte": 2684354885,
+            "end_uncompressed_byte": 3221225929,
+            "record_count": 3156784,
+            "payload_bytes": 536871044,
+            "write_seconds": 3.4135875422507524
+          },
+          {
+            "chunk_id": 6,
+            "path": "chunk-00006.nt",
+            "start_record": 19492830,
+            "end_record": 22934715,
+            "start_uncompressed_byte": 3221225929,
+            "end_uncompressed_byte": 3758096961,
+            "record_count": 3441885,
+            "payload_bytes": 536871032,
+            "write_seconds": 3.6673302967101336
+          },
+          {
+            "chunk_id": 7,
+            "path": "chunk-00007.nt",
+            "start_record": 22934715,
+            "end_record": 26394051,
+            "start_uncompressed_byte": 3758096961,
+            "end_uncompressed_byte": 4294968028,
+            "record_count": 3459336,
+            "payload_bytes": 536871067,
+            "write_seconds": 4.156329583376646
+          },
+          {
+            "chunk_id": 8,
+            "path": "chunk-00008.nt",
+            "start_record": 26394051,
+            "end_record": 29853629,
+            "start_uncompressed_byte": 4294968028,
+            "end_uncompressed_byte": 4831838978,
+            "record_count": 3459578,
+            "payload_bytes": 536870950,
+            "write_seconds": 3.810312243178487
+          },
+          {
+            "chunk_id": 9,
+            "path": "chunk-00009.nt",
+            "start_record": 29853629,
+            "end_record": 33311284,
+            "start_uncompressed_byte": 4831838978,
+            "end_uncompressed_byte": 5368709936,
+            "record_count": 3457655,
+            "payload_bytes": 536870958,
+            "write_seconds": 3.7694973149336874
+          },
+          {
+            "chunk_id": 10,
+            "path": "chunk-00010.nt",
+            "start_record": 33311284,
+            "end_record": 36757839,
+            "start_uncompressed_byte": 5368709936,
+            "end_uncompressed_byte": 5905580961,
+            "record_count": 3446555,
+            "payload_bytes": 536871025,
+            "write_seconds": 3.7796396957710385
+          },
+          {
+            "chunk_id": 11,
+            "path": "chunk-00011.nt",
+            "start_record": 36757839,
+            "end_record": 40190946,
+            "start_uncompressed_byte": 5905580961,
+            "end_uncompressed_byte": 6442451947,
+            "record_count": 3433107,
+            "payload_bytes": 536870986,
+            "write_seconds": 3.7627849681302905
+          },
+          {
+            "chunk_id": 12,
+            "path": "chunk-00012.nt",
+            "start_record": 40190946,
+            "end_record": 43623260,
+            "start_uncompressed_byte": 6442451947,
+            "end_uncompressed_byte": 6979323003,
+            "record_count": 3432314,
+            "payload_bytes": 536871056,
+            "write_seconds": 3.79175316169858
+          },
+          {
+            "chunk_id": 13,
+            "path": "chunk-00013.nt",
+            "start_record": 43623260,
+            "end_record": 47056863,
+            "start_uncompressed_byte": 6979323003,
+            "end_uncompressed_byte": 7516193998,
+            "record_count": 3433603,
+            "payload_bytes": 536870995,
+            "write_seconds": 3.7848658049479127
+          },
+          {
+            "chunk_id": 14,
+            "path": "chunk-00014.nt",
+            "start_record": 47056863,
+            "end_record": 50494857,
+            "start_uncompressed_byte": 7516193998,
+            "end_uncompressed_byte": 8053065017,
+            "record_count": 3437994,
+            "payload_bytes": 536871019,
+            "write_seconds": 3.798267961014062
+          },
+          {
+            "chunk_id": 15,
+            "path": "chunk-00015.nt",
+            "start_record": 50494857,
+            "end_record": 53928085,
+            "start_uncompressed_byte": 8053065017,
+            "end_uncompressed_byte": 8589936060,
+            "record_count": 3433228,
+            "payload_bytes": 536871043,
+            "write_seconds": 3.8355773999355733
+          },
+          {
+            "chunk_id": 16,
+            "path": "chunk-00016.nt",
+            "start_record": 53928085,
+            "end_record": 57358680,
+            "start_uncompressed_byte": 8589936060,
+            "end_uncompressed_byte": 9126807060,
+            "record_count": 3430595,
+            "payload_bytes": 536871000,
+            "write_seconds": 4.1495095561258495
+          },
+          {
+            "chunk_id": 17,
+            "path": "chunk-00017.nt",
+            "start_record": 57358680,
+            "end_record": 58231176,
+            "start_uncompressed_byte": 9126807060,
+            "end_uncompressed_byte": 9263247745,
+            "record_count": 872496,
+            "payload_bytes": 136440685,
+            "write_seconds": 1.059673734009266
+          }
+        ],
+        "merge_rounds": 1,
+        "merge_strategy": "pyarrow_streaming_k_way",
+        "merge_batch_rows": "2048",
+        "index": "spo",
+        "validation": {
+          "valid": true,
+          "source_triples": 58231176,
+          "decoded_triples": 58231176,
+          "expected_triples": 58231176,
+          "count_match": true,
+          "validator": "pycottas.cottas2rdf",
+          "timing": {
+            "wall_seconds": 66.18304821429774,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 4446984
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    }
+  },
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.cottas",
+    "output_cottas_size_bytes": 148593751,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 3036.334490618203,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 4446984
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 58231176,
+      "decoded_triples": 58231176,
+      "expected_triples": 58231176,
+      "count_match": true,
+      "validator": "pycottas.cottas2rdf",
+      "timing": {
+        "wall_seconds": 66.18304821429774,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 4446984
+      }
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG131FQA1I__first250000/out/NG131FQA1I_first250000/NG131FQA1I_first250000.hdt",
+    "output_hdt_size_bytes": 403686350,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 1237.3959889197722,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 4446984
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 58231176,
+      "decoded_triples": 58231176,
+      "expected_triples": 58231176,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 95.47402335889637,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 4446984
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  }
+}

@@ -1,16 +1,29 @@
 {
   "host": "vcf-bench-2",
-  "files": 10356,
-  "bytes": 55226501,
-  "artifacts_excluded_files": 195,
-  "artifacts_excluded_bytes": 69161088345,
-  "tarball_sha256": "85d3394b66bf8125843be5fcbd4bc9e31363f61b51528010bdbc094cbd7f76c5",
+  "pulled": "2026-09-25",
+  "files": 15614,
+  "bytes": 89146563,
   "trees": [
     "benchmarks_outputs",
-    "benchmarks_outputs_calibration",
-    "benchmarks_outputs__stalled",
+    "benchmarks_outputs__campaign1__20260922T173002",
     "benchmarks_outputs__offsplit",
     "benchmarks_outputs__partial",
+    "benchmarks_outputs__stalled",
+    "benchmarks_outputs_calibration",
+    "benchmarks_outputs_calibration__campaign1__20260922T173330",
     "benchmarks_outputs_calibration__pre_rebalance_20260914T154843"
-  ]
+  ],
+  "rule": "every file under the trees except generated RDF: a path under out/<name>/ where <name> is not run_metrics",
+  "this_pull": {
+    "trees": [
+      "benchmarks_outputs",
+      "benchmarks_outputs_calibration"
+    ],
+    "campaign": "v3.1.0, ecrum19/vcf-rdfizer:3.1.0 sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa, commit d3b34d5",
+    "files": 5258,
+    "artifacts_excluded_files": 116,
+    "artifacts_excluded_bytes": 58536128256,
+    "tarball_sha256": "1f878441c1d16efa5c2a00a62db1cd84c99b3dc0c1261c82ad4d5bfa3e5e56ec"
+  },
+  "earlier_pull": "vcf-bench-2_manifest__campaign1.json (its tree names are the pre-rename ones)"
 }

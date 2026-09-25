@@ -1,0 +1,53 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260923T085248",
+  "timestamp": "2026-09-23T08:52:48",
+  "mode": "full",
+  "source_label": "1000G_10000r_s2504",
+  "output_root": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out",
+  "metrics_directory": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out/run_metrics/1000G_10000r_s2504__20260923T085248",
+  "inputs": [
+    {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/vcf_data/derived/1000G_10000r_s2504.vcf.gz",
+      "file_name": "1000G_10000r_s2504.vcf.gz",
+      "size_bytes": 1963586
+    }
+  ],
+  "options": {
+    "link": [],
+    "linking_options": null,
+    "requested_image": "ecrum19/vcf-rdfizer:3.1.0",
+    "requested_image_version": null,
+    "sample_representation": "condensed",
+    "info_representation": "structured",
+    "header_representation": "structured",
+    "vcf_version": "auto",
+    "rdf_storage_mode": "space-optimized",
+    "compression_methods": [
+      "hdt"
+    ],
+    "hdt_strategy": "partitioned",
+    "chunk_target_bytes": 536870912,
+    "chunk_min_bytes": 134217728,
+    "chunk_max_bytes": 1073741824,
+    "spark_partitions": 8,
+    "run_validation": false,
+    "validation_artifacts": null,
+    "validation_engine": [
+      "qlever"
+    ],
+    "validation_strict_conformance": false,
+    "validation_shacl_shapes": "[PosixPath('/home/ubuntu/VCF-RDFizer/vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl')]",
+    "validation_shacl_ontology": "/home/ubuntu/VCF-RDFizer/vcf_rdfizer_data/ontology/vcf-core-vocabulary.bundle.ttl",
+    "validation_engine_options": null,
+    "filter_oracle": "auto",
+    "quiet": false,
+    "no_progress": false,
+    "index_format": null,
+    "decompression_format": null,
+    "validation_representation": null,
+    "validation_rdf_gzip": null
+  },
+  "resolved_image": "ecrum19/vcf-rdfizer:3.1.0",
+  "image_version_requested": false
+}

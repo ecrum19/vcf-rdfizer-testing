@@ -1,0 +1,57 @@
+{
+  "run_id": "20260924T173459",
+  "timestamp": "2026-09-24T17:34:59",
+  "stage": "validation",
+  "validation_id": "test-10k",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt",
+  "rdf_format": "nt",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "condensed",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 136.02024502679706,
+      "cottas": 721.3901344528422,
+      "hdt": 149.48807807080448,
+      "qlever": 6.94424075493589
+    },
+    "engineSetupSeconds": {
+      "comunica": 13.454964234028012,
+      "cottas": 36.57425032230094,
+      "hdt": 12.042117066681385,
+      "qlever": 2.1828194661065936
+    },
+    "oracleSeconds": 0.7574376128613949
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k/benchmark.csv",
+  "input_rdf_size_bytes": 98559961,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 1398.7759608458728,
+    "user_seconds": 484.55,
+    "sys_seconds": 11.76,
+    "max_rss_kb": 3014600
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": false,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}

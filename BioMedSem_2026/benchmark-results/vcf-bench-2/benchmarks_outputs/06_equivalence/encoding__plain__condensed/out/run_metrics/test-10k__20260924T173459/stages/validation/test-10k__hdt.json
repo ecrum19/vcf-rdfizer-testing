@@ -1,0 +1,57 @@
+{
+  "run_id": "20260924T173459",
+  "timestamp": "2026-09-24T17:34:59",
+  "stage": "validation",
+  "validation_id": "test-10k__hdt",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.hdt",
+  "rdf_format": "hdt",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "condensed",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k__hdt",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k__hdt/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 143.55093236686662,
+      "cottas": 718.3845584262162,
+      "hdt": 157.8918927256018,
+      "qlever": 7.08119717752561
+    },
+    "engineSetupSeconds": {
+      "comunica": 13.382334819063544,
+      "cottas": 39.16345883579925,
+      "hdt": 8.599209256004542,
+      "qlever": 2.2370467423461378
+    },
+    "oracleSeconds": 0.8635091898031533
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/run_metrics/test-10k__20260924T173459/reports/validation/test-10k__hdt/benchmark.csv",
+  "input_rdf_size_bytes": 5127665,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 1403.2447668360546,
+    "user_seconds": 485.79,
+    "sys_seconds": 11.46,
+    "max_rss_kb": 3015340
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}

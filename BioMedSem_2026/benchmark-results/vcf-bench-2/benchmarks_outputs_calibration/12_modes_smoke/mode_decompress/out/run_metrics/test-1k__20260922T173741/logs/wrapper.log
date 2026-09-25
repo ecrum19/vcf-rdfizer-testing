@@ -1,0 +1,138 @@
+
+[2026-09-22T17:37:41] $ docker version
+Client: Docker Engine - Community
+ Version:           29.7.2
+ API version:       1.55
+ Go version:        go1.26.5
+ Git commit:        a7dcaa6
+ Built:             Wed Aug  5 18:28:53 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.7.2
+  API version:      1.55 (minimum version 1.40)
+  Go version:       go1.26.5
+  Git commit:       6a43e3d
+  Built:            Wed Aug  5 18:28:53 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.3
+  GitCommit:        aad11006b869517fcd3009450b6f82da282e1a9b
+ runc:
+  Version:          1.4.3
+  GitCommit:        v1.4.3-0-gbb14dabe
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+[exit 0]
+
+[2026-09-22T17:37:41] $ docker image inspect ecrum19/vcf-rdfizer:3.1.0
+[
+    {
+        "Id": "sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa",
+        "RepoTags": [
+            "ecrum19/vcf-rdfizer:3.1.0"
+        ],
+        "RepoDigests": [
+            "ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-22T14:46:10.326645637Z",
+        "Config": {
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-11.0.32+9",
+                "RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "HDTC_BIN=/usr/local/bin/hdtc",
+                "HDT_INDEX_MEMORY_LIMIT=512M",
+                "HDT_MERGE_MEMORY_LIMIT=512M",
+                "COTTAS_MERGE_BATCH_ROWS=2048",
+                "RDF2HDT_BIN=/usr/local/bin/rdf2hdt",
+                "HDT2RDF_BIN=/usr/local/bin/hdt2rdf",
+                "COTTAS_PYTHON_BIN=/opt/pycottas-venv/bin/python",
+                "QLEVER_INDEX_BUILDER_BIN=/opt/qlever/bin/qlever-index",
+                "QLEVER_SERVER_BIN=/opt/qlever/bin/qlever-server",
+                "LD_LIBRARY_PATH=/usr/local/lib"
+            ],
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.created": "2026-09-22T14:39:06.312Z",
+                "org.opencontainers.image.description": "A Python tool for the semantic conversion of VCF to serialized RDF and various compressed formats (HDT, GZ, COTTAS, BR).",
+                "org.opencontainers.image.licenses": "MIT",
+                "org.opencontainers.image.revision": "d3b34d576958befd6e1fc3558c76e7c52aa0cd0d",
+                "org.opencontainers.image.source": "https://github.com/ecrum19/VCF-RDFizer",
+                "org.opencontainers.image.title": "VCF-RDFizer",
+                "org.opencontainers.image.url": "https://github.com/ecrum19/VCF-RDFizer",
+                "org.opencontainers.image.version": "3.1.0"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 826636895,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:485d137fd3bfb545f1b417ea708e2281594be7a334e8a85ab75c5332db6089e9",
+                "sha256:598e8330e2e633ea6b06bbf1e8b80c275553b7c1de53899af154d1f480a7eefa",
+                "sha256:26e0c5f2f2ea6a0602ff01033d767d81371ca2a1ac10ed18b5501c40e247a427",
+                "sha256:fba3fa5bb248907b3d98f94f7aaef38c77d0bb26f509eb1b65b13fedbdca6cf4",
+                "sha256:714e1749d314bced589b41523ac008f83fe9b0e20c4688b974e7f1ea4cf11705",
+                "sha256:36df17dfc7739f0a33bdeadb2c57284d052e9e824db76a771ebc9d354779bdd9",
+                "sha256:2a0d78bd31844558e1c105048360be1090ee5971b3edb8a2d41f4c09fc59697d",
+                "sha256:72024358bd24d9fbd612b7c590eebd2372bbb96a9a7aad9dc4648c71a8466c94",
+                "sha256:0991059a1f5204673affabd5b9666559d1cfdd47c5cb82a168038c778bc4d31e",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:85cbe86fb839ac200d39edb51590f7585371ace1459bfe48138b6370f4eb6c58",
+                "sha256:f5e20e33026c866c8e135d2034c03ef62865a0bc6f351f1b2f0f740735a93cf2",
+                "sha256:a69f1395727a520ec08fe8148260b110788364a5aed5eb38d9a68300d9c41beb",
+                "sha256:84c59161ff9c22143a04437575cde51792de1913ff844e7ed1d03ab7014689b0",
+                "sha256:4bd82820aef64839d129dc10bbadb66ceaa75fbc5c651504d388fcfed982057f",
+                "sha256:c6201e842a899a3186984006c820e3b45a90f3bf81b95bd209c068b95f4dc34c",
+                "sha256:11c573ba00e0cebe6f7c78ffd30206c8dd86bc71723a0df2ae89851c8e1b982c",
+                "sha256:e7e88d1e4babff58f5c3ba3e1c14b5b5b9d277004b62964c0d8833b1689847b1",
+                "sha256:3731717103da7e9387dc4e47650143857f3dafb2d95f5555612b47de3e86b4b3",
+                "sha256:6d72e0fb0a3d75bdb3aa3772f51403869c55ad8452a6fc7c36790a3118de7f6a",
+                "sha256:dd657f011dcc68788b04e35b4d4a6f9ca685fb21a88ef7af7637a3457aea145e",
+                "sha256:9000b7de3d700dcee2ae3666416f0523eb4ad2ea4e95c67ffd9d5675e7a57449",
+                "sha256:7e4c68e1bc45706c4cafa711eaae903d9417be0b45456667bd8a57e1bab45900",
+                "sha256:b7d3d88c3d72337cd01dfa1b6d470b83d6348c7a1349d5ee1fd430a7d7c3f4cf",
+                "sha256:80cbbc406261863922305a81f12adc03df6ebc266367b885f3a553b574619039",
+                "sha256:4710a019e648a2d68f819c6479cebcc489bf5e76ac52391c3168f029ce0404ee",
+                "sha256:63b62d819113e53a558150437886a6b6194e97a4cb0eda4c159c771b532940b6",
+                "sha256:44ee3497e8a05eae054dda30cbd2929e40ddaa04284618bbc624fa8f43e17d57",
+                "sha256:62167e4cc25c20ae577f541d21e9a9f55691ebcf3c1308dfed8c13dc524185ea",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-22T15:30:30.00304458Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa",
+            "size": 1609
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "docker.io/ecrum19/vcf-rdfizer"
+                }
+            ]
+        }
+    }
+]
+[exit 0]
+
+[2026-09-22T17:37:41] $ docker run --rm --label vcf-rdfizer.run=20260922T173741-1690540 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert/out/test-1k:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress/out/test-1k:/data/out -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_decompress/out/run_metrics/test-1k__20260922T173741:/data/metrics ecrum19/vcf-rdfizer:3.1.0 bash -lc 'set -euo pipefail; rm -f /data/metrics/timings/decompression/test-1k.nt.gz.txt; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/metrics/timings/decompression/test-1k.nt.gz.txt -- bash -lc '"'"'set -euo pipefail; rm -f /data/out/test-1k.nt; gzip -dc /data/in/test-1k.nt.gz > /data/out/test-1k.nt'"'"'; else { time -p bash -lc '"'"'set -euo pipefail; rm -f /data/out/test-1k.nt; gzip -dc /data/in/test-1k.nt.gz > /data/out/test-1k.nt'"'"'; } > /data/metrics/timings/decompression/test-1k.nt.gz.txt 2>&1; fi'
+[exit 0]

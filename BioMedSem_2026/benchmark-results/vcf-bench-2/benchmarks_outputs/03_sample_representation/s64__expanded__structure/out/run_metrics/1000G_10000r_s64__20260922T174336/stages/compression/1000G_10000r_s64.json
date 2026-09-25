@@ -1,0 +1,228 @@
+{
+  "run_id": "20260922T174336",
+  "timestamp": "2026-09-22T17:43:36",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out/1000G_10000r_s64",
+  "output_name": "1000G_10000r_s64",
+  "compression_methods": "hdt",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out/1000G_10000r_s64/1000G_10000r_s64.nt.gz",
+  "combined_rdf_size_bytes": 70182703,
+  "index_warnings": [],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 301.45650834264234,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 533180,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out/1000G_10000r_s64/1000G_10000r_s64.hdt",
+      "output_size_bytes": 103961401,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out/1000G_10000r_s64/1000G_10000r_s64.nt.gz"
+        ],
+        "chunk_count": 6,
+        "chunk_input_bytes": 2690704905,
+        "record_count": 17359818,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 21.202222560998052,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3473493,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536871049,
+            "record_count": 3473493,
+            "payload_bytes": 536871049,
+            "write_seconds": 4.26676213927567
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3473493,
+            "end_record": 6912329,
+            "start_uncompressed_byte": 536871049,
+            "end_uncompressed_byte": 1073742045,
+            "record_count": 3438836,
+            "payload_bytes": 536870996,
+            "write_seconds": 3.863230139017105
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 6912329,
+            "end_record": 10351164,
+            "start_uncompressed_byte": 1073742045,
+            "end_uncompressed_byte": 1610613045,
+            "record_count": 3438835,
+            "payload_bytes": 536871000,
+            "write_seconds": 4.321274057962
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 10351164,
+            "end_record": 13790000,
+            "start_uncompressed_byte": 1610613045,
+            "end_uncompressed_byte": 2147484064,
+            "record_count": 3438836,
+            "payload_bytes": 536871019,
+            "write_seconds": 4.258973305113614
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 13790000,
+            "end_record": 17316085,
+            "start_uncompressed_byte": 2147484064,
+            "end_uncompressed_byte": 2684354992,
+            "record_count": 3526085,
+            "payload_bytes": 536870928,
+            "write_seconds": 4.438026874791831
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 17316085,
+            "end_record": 17359818,
+            "start_uncompressed_byte": 2684354992,
+            "end_uncompressed_byte": 2690704905,
+            "record_count": 43733,
+            "payload_bytes": 6349913,
+            "write_seconds": 0.0508770770393312
+          }
+        ],
+        "merge_rounds": 3,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out/1000G_10000r_s64/1000G_10000r_s64.hdt.index.v1-1",
+        "index_size_bytes": 104149502,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 17359818,
+          "decoded_triples": 17359818,
+          "expected_triples": 17359818,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 29.400009313598275,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 533180
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    }
+  },
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "",
+    "output_cottas_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": null
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s64__expanded__structure/out/1000G_10000r_s64/1000G_10000r_s64.hdt",
+    "output_hdt_size_bytes": 103961401,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 301.45650834264234,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 533180
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 17359818,
+      "decoded_triples": 17359818,
+      "expected_triples": 17359818,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 29.400009313598275,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 533180
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  }
+}

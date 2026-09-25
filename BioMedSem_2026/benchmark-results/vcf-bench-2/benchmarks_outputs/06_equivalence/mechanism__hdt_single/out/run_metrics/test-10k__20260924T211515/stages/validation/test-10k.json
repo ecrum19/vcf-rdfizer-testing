@@ -1,0 +1,57 @@
+{
+  "run_id": "20260924T211515",
+  "timestamp": "2026-09-24T21:15:15",
+  "stage": "validation",
+  "validation_id": "test-10k",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/test-10k.nt",
+  "rdf_format": "nt",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260924T211515/reports/validation/test-10k",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260924T211515/reports/validation/test-10k/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 162.02676717750728,
+      "cottas": 778.0592269599438,
+      "hdt": 183.83681467548013,
+      "qlever": 7.646212540566921
+    },
+    "engineSetupSeconds": {
+      "comunica": 14.666994886938483,
+      "cottas": 54.65763269783929,
+      "hdt": 13.377573991194367,
+      "qlever": 2.378279385622591
+    },
+    "oracleSeconds": 0.7375402878969908
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260924T211515/reports/validation/test-10k/benchmark.csv",
+  "input_rdf_size_bytes": 122644300,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 1619.2832626891322,
+    "user_seconds": 657.93,
+    "sys_seconds": 13.16,
+    "max_rss_kb": 3618460
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": false,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}
