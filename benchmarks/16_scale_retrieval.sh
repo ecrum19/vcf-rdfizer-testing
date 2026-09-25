@@ -60,6 +60,18 @@ REPS="${BM_REPS:-3}"
 QUERIES="${BM_SCALE_QUERIES:-core}"
 CELLS="${BM_SCALE_CELLS:-qlever:nt.gz}"
 
+# A filesystem-safe tag for the query selection, so it can go in a cell label.
+# A long explicit list collapses to a short digest rather than an unreadable
+# directory name; the full selection is recorded in the cell's summary.json
+# either way, so nothing is lost by shortening it here.
+if [[ "$QUERIES" == "core" || "$QUERIES" == "all" || "$QUERIES" == "preflight" ]]; then
+  QSLUG="$QUERIES"
+elif [[ "$QUERIES" != *,* ]]; then
+  QSLUG="$QUERIES"
+else
+  QSLUG="sel$(printf '%s' "$QUERIES" | cksum | awk '{print $1}')"
+fi
+
 # An engine that will not finish is worth refusing rather than discovering
 # after six hours. comunica-sparql-file holds the graph in memory; on the 0.96M
 # fixture it already needed 11.7-12.5 s of setup, and nothing in the campaign
@@ -158,7 +170,23 @@ Raise it to run anyway."
     bm_scale_disk_ok "$triples" "$kind" "${scale}__${engine}__${kind}__disk" || continue
 
     for rep in $(seq 1 "$REPS"); do
-      label="${scale}__${engine}__${kind//./_}__r${rep}"
+      # The query selection is part of the cell identity. Without it, asking
+      # the same engine for one query and then for the core thirteen produces
+      # two different measurements competing for one cell name -- and bm_run
+      # refuses an existing cell by aborting, which took the rest of the matrix
+      # down with it.
+      label="${scale}__${engine}__${kind//./_}__${QSLUG}__r${rep}"
+
+      # Re-running a matrix to add one engine should not require deleting the
+      # cells that are already there. An existing cell is left alone and
+      # reported, so 16 is as re-runnable as 15 is; BM_SCALE_REDO=1 is the
+      # explicit opt-out for when a re-measurement IS what you want.
+      if [[ -e "$BM_RESULTS/$EXPERIMENT/$label" && "${BM_SCALE_REDO:-0}" != "1" ]]; then
+        bm_step "$label — already recorded, skipping (BM_SCALE_REDO=1 to re-measure)"
+        continue
+      fi
+      [[ "${BM_SCALE_REDO:-0}" == "1" ]] && rm -rf "$BM_RESULTS/$EXPERIMENT/$label"
+
       # bm_run_raw creates $BM_RESULTS/<exp>/<label>/out before the command
       # runs, which is what --out needs to exist.
       bm_run_raw "$EXPERIMENT" "$label" -- \
