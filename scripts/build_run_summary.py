@@ -18,6 +18,8 @@ the branches apart:
   partial     interrupted before bench.json was written
   calibration the identical cell each host ran so the two can be compared
   archive     an older tool's data, kept separate because its labels collide
+  prerelease  the first campaign, on development commits, set aside when the
+              whole suite was re-run on the v3.1.0 release ("__campaign1__")
 
 Only `live` feeds the reported numbers. Everything else is carried so a reader
 can see what was excluded and why, rather than having to take it on trust.
@@ -46,6 +48,9 @@ SCHEMA_VERSION = "biomedsem-1.0"
 #: matching marker wins, and "benchmarks_outputs" alone must be tested last
 #: because every other name starts with it.
 TREE_KINDS = (
+    # Tested first: "benchmarks_outputs_calibration__campaign1__..." is the
+    # pre-release calibration, and must not be read as the current one.
+    ("__campaign1", "prerelease"),
     ("__superseded", "superseded"),
     ("__stalled", "stalled"),
     ("__offsplit", "offsplit"),
@@ -146,6 +151,7 @@ def collect_cells(root: Path) -> list[dict[str, Any]]:
             "wrapper_wall_seconds": bench.get("wrapper_wall_seconds"),
             "tool_commit": bench.get("tool_commit"),
             "image_ref": bench.get("image_ref"),
+            "image_digest_recorded": bench.get("image_digest"),
             "command": bench.get("command"),
             "path": str(cell_dir.relative_to(root)),
         }
@@ -197,6 +203,16 @@ def attach_image_digests(cells: list[dict[str, Any]], table: dict[str, dict[str,
             # it cannot be mistaken for a missing record.
             cell["image_digest"] = None
             cell["image_note"] = "no container image (host-side cell)"
+            continue
+        # A cell that pulled a published image records the registry's own
+        # digest ("repo@sha256:..."), which names the exact bits it ran; prefer
+        # it. Locally built tags carry no such record and are resolved against
+        # the host's image inventory instead, because the same tag names
+        # different bits on two hosts that each built it.
+        recorded = cell.get("image_digest_recorded") or ""
+        if "@sha256:" in recorded:
+            cell["image_digest"] = recorded.split("@", 1)[1]
+            cell["image_note"] = "registry digest recorded by the cell"
             continue
         cell["image_digest"] = (table.get(cell["host"]) or {}).get(tag)
         if cell["image_digest"] is None:
