@@ -185,3 +185,98 @@ mv merged/00_environment/manifest.json merged/00_environment/manifest.<host>.jso
   archive. The claim is a *ratio* and a tool change moves both arms together,
   so it remains usable — but the profile re-runs §1 on the current tool so the
   reported dataset can be one commit throughout.
+
+---
+
+# Scale-retrieval plan (optional; `15_scale_prepare.sh` + `16_scale_retrieval.sh`)
+
+Separate from the two-host campaign above. It ran on a third host,
+`vcf-bench-3`, and answers one question the campaign cannot: **does retrieval
+cost behave the same way on a cohort-sized graph as it does on a fixture?**
+
+## Why it is two scripts and not one
+
+`13_query_cost.sh` re-converts its input on every replicate. At 17.1M triples
+that is affordable. At 657M it is not: the graph takes 14.25 h to build and the
+thirteen questions take 10.6 min to ask, so three replicates would spend ~43 h
+rebuilding the same graph to do ~32 min of work. Generation therefore happens
+once, into a store outside `benchmarks_outputs`, and querying reads it.
+
+## The two graphs
+
+Both derived from `HG005_GRCh38`, both converted by the **published**
+`ecrum19/vcf-rdfizer:3.1.0` (`sha256:1904e96d…`) — the same image behind the
+manuscript's Figure 6, so a timing taken here measures the same pipeline.
+
+| scale | input | triples | build |
+|---|---|---:|---:|
+| `r1000000` | `HG005_GRCh38_r1000000.vcf.gz` | 170,935,101 | 3.98 h |
+| `whole` | `HG005_GRCh38.vcf.gz` | 657,425,805 | 14.25 h |
+
+```bash
+BM_IMAGE_VERSION=3.1.0 ./15_scale_prepare.sh r1000000
+BM_IMAGE_VERSION=3.1.0 ./15_scale_prepare.sh whole
+python3 analysis/scale_store.py verify      # re-hash before trusting anything
+```
+
+`15` refuses an unpinned image, and refuses a scale whose store directory
+exists without a complete manifest. Both are idempotent: re-running skips what
+is already built.
+
+## The query runs, in the order they were made
+
+Each is a complete, re-runnable invocation. The querying image must carry
+`--validation-queries` (it postdates v3.1.0); `BM_LOCAL_IMAGE` names it.
+
+```bash
+# 1. Does SPARQL scale?  QLever on N-Triples, both scales, three replicates.
+BM_SCALE_CELLS="qlever:nt.gz" BM_REPS=3 ./16_scale_retrieval.sh r1000000
+BM_SCALE_CELLS="qlever:nt.gz" BM_REPS=3 ./16_scale_retrieval.sh whole
+
+# 2. Do the other engines get there?  One replicate: at 171M the HDT engine
+#    needs ~42 min per query, so three would cost ~54 h for a number whose
+#    replicate variance is already established at 0.8% from the QLever arm.
+BM_SCALE_CELLS="cottas:cottas hdt:hdt" BM_REPS=1 \
+  BM_SCALE_NODE_HEAP_MB=24576 ./16_scale_retrieval.sh r1000000
+
+# 3. Does the artifact matter?  Figure 6c's question at whole-genome scale:
+#    one engine, one graph, three packagings.
+BM_SCALE_CELLS="qlever:hdt qlever:cottas" BM_REPS=3 ./16_scale_retrieval.sh whole
+```
+
+Run 3 completes the comparison: run 1 already measured `qlever:nt.gz` on the
+same graph, so the three artifacts differ only in packaging and any difference
+in query time is attributable to the artifact alone.
+
+## Costs, measured rather than guessed
+
+Per cell at 657M triples: materialization 3–17 min depending on the artifact
+(gzip is the cheapest, HDT the dearest), QLever index 14.5 min, the thirteen
+questions 10.6 min, oracle parse ~8 min. Budget **45–55 min per cell**.
+
+Disk is the binding constraint, not time. Only a plain `.nt` is queried in
+place; every other format is decompressed to N-Triples first, which at 657M is
+~99 GB, plus a QLever index. `16` refuses a cell it cannot fit and records the
+refusal with the numbers — see `BM_SCALE_BYTES_PER_TRIPLE`.
+
+## Two things that will mislead you
+
+**`--no-shacl` is not optional here.** The shape layer is a fixed per-run cost
+belonging to neither side of a retrieval comparison, and leaving it on killed a
+cell outright: the wrapper size-gated `pyshacl` on the *packaged artifact*
+while its memory cost tracks the *graph*, so the best-compressing format was
+the likeliest to exhaust memory. `16` passes `--no-shacl` for both reasons.
+
+**Only the thirteen core questions are comparable with Figure 6.** They are
+byte-identical between v3.1.0 and later builds. The two
+`preflight_missing_token_conformance` queries are not — they were narrowed
+after v3.1.0 — so preflight timings from these runs must not be set beside the
+figure's.
+
+## Reproducing from the archived record
+
+The built graphs are not in git; they are 17 GB. Their manifests are, under
+`BioMedSem_2026/benchmark-results/vcf-bench-3/scale-store-manifests/`, and each
+records the source VCF digest, triple count, every artifact's sha256, and the
+tool commit and image digest that produced it. Rebuilding from that record
+reproduces the store; `analysis/scale_store.py verify` then confirms it.
