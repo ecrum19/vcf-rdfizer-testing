@@ -157,7 +157,7 @@ In addition to raw N-Triples and general-purpose gzip/Brotli artifacts, the curr
 We evaluate VCF-RDFizer v3.1.0 on a ten-file public corpus, record and sample scaling series, and purpose-built fixtures. Validation combines native representation decoding with thirteen paired SPARQL/VCF-parser queries and SHACL checks on designated inputs; a mutation experiment tests detection of 113 injected corruptions.
 
 \textbf{Results:} 
-Eight corpus files converted as 250,000-record slices, and a ninth, a 2.36\,GB Genome in a Bottle VCF, converted whole (657M triples). The tenth, a 2,504-sample cohort, was exercised through 10,000-record slices. COTTAS was the smallest queryable artifact throughout, at 0.37--0.55$\times$ the gzip-compressed N-Triples, while uncompressed HDT was 1.36--1.82$\times$ larger than those N-Triples. Space-optimized storage cut peak workspace by 7.7--9.2$\times$ for a 3--5\% time cost, and memory stayed at 1.0--1.7\,GB across a hundredfold change in input. Of 988 paired comparisons, 984 were exactly equal and 4 were verified not-applicable; all completed cross-engine comparisons agreed across both sample encodings and all three artifact types. The queries alone detected 96 of 113 injected corruptions; adding the shapes detected all 113. Per question, SPARQL answered 2.5--2300$\times$ faster than a VCF parser; a single parser pass remained faster for all thirteen questions together.
+Eight corpus files converted as 250,000-record slices, and a ninth, a 2.36\,GB Genome in a Bottle VCF, converted whole (657M triples). The tenth, a 2,504-sample cohort, was exercised through 10,000-record slices. COTTAS was the smallest queryable artifact throughout, at 0.37--0.55$\times$ the gzip-compressed N-Triples, while uncompressed HDT was 1.36--1.82$\times$ larger than those N-Triples. Space-optimized storage cut peak workspace by 7.7--9.2$\times$ for a 3--5\% time cost, and memory stayed at 1.0--1.7\,GB across a hundredfold change in input. Of 988 paired comparisons, 984 were exactly equal and 4 were verified not-applicable; all completed cross-engine comparisons agreed across both sample encodings and all three artifact types. The queries alone detected 96 of 113 injected corruptions; adding the shapes detected all 113. Per question, SPARQL answered 2.5--2300$\times$ faster than a VCF parser; a single parser pass remained faster for all thirteen questions together. On region-restricted queries against an indexed VCF the two cross over: SPARQL cost was flat in window size while indexed readers grew with it, so tabix was $2.2$--$2.9\times$ faster at 1\,kb windows and SPARQL $2.9$--$10.6\times$ faster at 10\,Mb.
 
 \textbf{Conclusion:} 
 VCF-RDFizer provides a reproducible route from VCF to interoperable and optionally queryable compressed RDF, supporting both semantic integration and testable preservation of core variant and genotype information.%
@@ -816,6 +816,34 @@ The comparison with the VCF parser depends on whether one question or the comple
 (b)~The same thirteen questions under each engine on the 0.96M-triple graph: mean of nine runs (three artifacts in each of three replicates), with the range. All four engines agreed in every run. One-time setup, not included: QLever 2.0--2.1\,s, Comunica (\texttt{@comunica/query-sparql-file}) 11.7--12.5\,s, the DuckDB-backed COTTAS engine 6.6--39.2\,s, and the HDT-backed Comunica engine (\texttt{@comunica/query-sparql-hdt}) 6.1--11.3\,s.
 (c)~QLever on the 17.1M-triple graph from each artifact, mean of three replicates; setup 22.7--23.0\,s in each case.}\label{fig:retrieval}
 \end{figure*}
+
+
+\subsection{Regional retrieval: windowed queries against indexed VCF access}\label{subsec:regional}
+Section~\ref{subsec3.6} compares whole-file questions, where the VCF side must scan. That is the workload least favourable to a parser, and it is not the workload the introduction actually names: retrieving variants within genomic position intervals is normally served by a tabix or CSI index, which does not scan. A separate experiment therefore asks the narrower and fairer question --- when the VCF is indexed, does SPARQL still pay off? --- over five region-restricted questions, four window sizes from 1\,kb to 10\,Mb, twenty windows per size, and three replicates (Table~\ref{tab:regional}).
+
+Two coordinate conventions had to be reconciled before any timing was comparable. A tabix or CSI seek returns every record whose \emph{span} overlaps the region, so a deletion beginning before the window and reaching into it is returned by \texttt{bcftools -r} and by cyvcf2's region iterator, while a POS filter in SPARQL excludes it. Every VCF arm therefore keeps the seek and then drops out-of-window POS, which is what makes the arms comparable; without it the arms would disagree on any window whose left edge cuts an indel, and that would have looked like a graph defect rather than a coordinate convention. Across 11{,}160 executions the seven arms recorded \textbf{0 failures and 0 disagreements}. This experiment sits outside the campaign of Table~\ref{tab:campaign}: the regional runner and the \texttt{tabix} dependency postdate v3.1.0, so these two cells were produced by a later build (commit \texttt{3da1a5a}) rather than by the published release image, and they are reported separately for that reason.
+
+The result is a crossover, not a ranking. On the 17.1M-triple graph, QLever's cost is almost independent of window size --- 9.6\,ms at 1\,kb and 11.1\,ms at 10\,Mb, a factor of 1.16 across a $10{,}000\times$ range --- because the index is over the graph, not over the coordinate. The indexed readers behave the opposite way: their cost tracks the number of records the window contains, growing $35.7\times$ for cyvcf2 and $7.5\times$ for \texttt{bcftools} over the same range. At 1\,kb the indexed readers win, cyvcf2 by $2.9\times$ and \texttt{bcftools} by $2.2\times$. By 1\,Mb QLever has overtaken cyvcf2, and at 10\,Mb it leads both, by $10.6\times$ and $2.9\times$ respectively. The unindexed scan is flat at $\approx$\,640\,ms, since it reads the whole file whichever window is asked for, and is $58\times$ slower than QLever at the largest window.
+
+Two caveats bound this. First, QLever's advantage at wide windows is bought with a one-time index build of 23.2\,s, against 0.39\,s to bgzip and tabix-index the same file into a 46\,kB index; the graph must also already exist (Section~\ref{subsec3.4}). Regional access is therefore a case where the RDF path wins on repeated wide-window interrogation and loses on a single narrow lookup. Second, the in-memory RDF engines are not competitive at any window: on the smaller 0.96M-triple graph, Comunica, the HDT-backed engine and the COTTAS engine cost 896--1005\,ms per window against QLever's 18.8\,ms, so they were not carried to the larger graph.
+
+\begin{table*}[t]
+\caption{Regional retrieval on the 17.1M-triple \texttt{HG005\_GRCh38} graph (100{,}000 records). Median over the five region questions of each question's median across twenty windows and three replicates, in milliseconds. Every arm answers the same POS-based window (see text); across both graphs, 11{,}160 executions produced 0 failures and 0 disagreements. One-time setup, excluded: QLever index 23.2\,s; bgzip plus tabix 0.39\,s.}\label{tab:regional}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} r r r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Arm} & \textbf{1\,kb} & \textbf{100\,kb} & \textbf{1\,Mb} & \textbf{10\,Mb} & \textbf{Cost shape} \\
+\midrule
+QLever (SPARQL) & 9.6 & 10.0 & 9.6 & \textbf{11.1} & Flat: $1.16\times$ over a $10{,}000\times$ window range \\
+cyvcf2, indexed & \textbf{3.3} & 4.8 & 14.9 & 117.8 & Grows with records returned ($35.7\times$) \\
+\texttt{bcftools}, indexed & 4.3 & \textbf{4.8} & \textbf{7.5} & 32.7 & Grows with records returned ($7.5\times$) \\
+cyvcf2, unindexed scan & 635.2 & 638.0 & 632.0 & 649.9 & Flat: reads the whole file regardless \\
+\bottomrule
+\end{tabularx}
+\end{table*}
 
 
 \subsection{External linking}\label{subsec3.7}

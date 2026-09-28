@@ -52,7 +52,12 @@ def default_results_root() -> pathlib.Path:
     return pathlib.Path(__file__).resolve().parent.parent / "results"
 
 
-def read_json(path: pathlib.Path):
+def read_json(path: pathlib.Path | None):
+    # find_one() returns None when nothing matched, and a cell that failed
+    # before writing its reports is exactly the case this has to survive --
+    # crashing there would lose the analysis of every cell that did succeed.
+    if path is None:
+        return None
     try:
         return json.loads(path.read_text())
     except (OSError, json.JSONDecodeError):
