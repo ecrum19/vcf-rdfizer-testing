@@ -823,12 +823,14 @@ Figure~\ref{fig:retrieval} measures retrieval on graphs of 0.96M and 17.1M tripl
 
 The thirteen core questions were then asked of each graph, three replicates on the whole genome, with every answer compared against cyvcf2 before any timing was read. \textbf{QLever's cost is linear in triples across the whole range.} Per million triples the thirteen questions cost 1.15\,s at 0.96M, 0.99\,s at 17.1M, 0.96\,s at 171M and 0.97\,s at 657M; the index build is similarly flat at 1.27--1.35\,s per million above the smallest graph. On the whole genome the thirteen questions took 634.6\,s after an 868.0\,s one-time index build, and the three replicates spread 0.7\%. A graph of 657 million triples is therefore not a qualitatively different proposition from a fixture: it costs proportionally more and nothing else changes.
 
+The artifact, by contrast, makes no difference at all. Asked of the same 657M-triple graph packaged three ways, QLever answered the thirteen questions in 634.6\,s from gzip-framed N-Triples, 636.3\,s from HDT and 636.6\,s from COTTAS --- a spread of 0.3\%, with index build times within 0.8\% of one another and every answer equal to the parser's. Figure~\ref{fig:retrieval}c reports the same independence at 17.1M triples, and it survives a $38\times$ increase in graph size intact. What the artifact does change is the one-time cost of getting the graph into the engine: decoding to N-Triples took 179--192\,s from the gzip-framed serialization, 592--601\,s from COTTAS and 955--972\,s from HDT. That cost is paid once per run, belongs to neither side of the comparison, and is reported separately for exactly that reason.
+
 The same cannot be said of the other engines, and that is the more useful finding. \textbf{Neither Comunica-backed engine completes the workload at 171M triples}, and they fail in different ways: the DuckDB-backed COTTAS engine answers five questions and then aborts with a native allocation failure, while the HDT-backed engine answers five and reaches the one-hour per-query ceiling on the fifth. Both were run with the shape layer disabled and a 24\,GB JavaScript heap, so neither failure is the memory misconfiguration described in Section~\ref{subsec3.10}.
 
 More striking is that the two reorder. On the five questions both completed, COTTAS is $16.7\times$ faster in total than the HDT-backed engine and $9.8$--$46.5\times$ faster question by question (Table~\ref{tab:scale}). On the 0.96M-triple graph of Figure~\ref{fig:retrieval}b the same two engines sat within a factor of $1.2$ of one another. The ordering of engines at fixture scale therefore does not survive two orders of magnitude, and Figure~\ref{fig:retrieval}b should not be read as predicting behaviour on a cohort.
 
 \begin{table*}[t]
-\caption{Retrieval at scale, on graphs built from \texttt{HG005\_GRCh38} by the published v3.1.0 image. Times are for the thirteen core questions of Table~\ref{tab:semantic-queries}, excluding the one-time index build, which is reported separately. Every completed question's answer was compared against cyvcf2 before its timing was read. The Comunica-backed engines do not complete the workload at this size; their totals cover the five questions they answered, and are not comparable with a thirteen-question total.}\label{tab:scale}%
+\caption{Retrieval at scale, on graphs built from \texttt{HG005\_GRCh38} by the published v3.1.0 image. Times are for the thirteen core questions of Table~\ref{tab:semantic-queries}, excluding the one-time index build, which is reported separately. Every completed question's answer was compared against cyvcf2 before its timing was read. The Comunica-backed engines do not complete the workload at this size; their totals cover the five questions they answered, and are not comparable with a thirteen-question total. The three packagings of the whole-genome graph differ by 0.3\% in query time; what differs between them is the one-time decode, reported in the last column.}\label{tab:scale}%
 \centering
 \scriptsize
 \setlength{\tabcolsep}{6pt}
@@ -842,6 +844,11 @@ Fixture          & 958{,}919       & QLever & 1.1   & 1.15\,s per million triple
 100\,k records   & 17{,}098{,}746  & QLever & 17.0  & 0.99\,s per million \\
 1\,M records     & 170{,}935{,}101 & QLever & 163.3 & 0.96\,s per million \\
 Whole genome     & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\% \\
+\addlinespace
+\multicolumn{5}{@{}l}{\itshape Does the artifact matter? (whole genome, one engine, three packagings)}\\
+\quad from N-Triples & \multicolumn{2}{r}{gzip-framed} & 634.6 & Decode 179--192\,s; setup 868.0\,s \\
+\quad from HDT       & \multicolumn{2}{r}{---}         & 636.3 & Decode 955--972\,s; setup 861.8\,s \\
+\quad from COTTAS    & \multicolumn{2}{r}{---}         & 636.6 & Decode 592--601\,s; setup 868.4\,s \\
 \addlinespace
 \multicolumn{5}{@{}l}{\itshape Do the other engines get there at all? (1\,M records, 170{,}935{,}101 triples)}\\
 \quad COTTAS engine & \multicolumn{2}{r}{5 of 13 answered} & 743.1 & Native allocation failure on Q6 \\
