@@ -1,0 +1,54 @@
+{
+  "answersAgree": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "qlever": 162.79183319599179
+    },
+    "engineSetupSeconds": {
+      "qlever": 217.07651531199735
+    },
+    "oracleSeconds": 127.61980546600171
+  },
+  "datasetId": "r1000000_qlever_2",
+  "disagreeingQueries": [],
+  "engine": "qlever",
+  "engineAgreement": true,
+  "engineStatuses": {
+    "qlever": "TIMING_ONLY"
+  },
+  "engines": [
+    "qlever"
+  ],
+  "gtRecordCount": 1000000,
+  "recordCount": 1000000,
+  "representation": "expanded",
+  "results": {
+    "benchmark": "/data/validation/benchmark.csv",
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json"
+  },
+  "sampleCount": 1,
+  "selectedQueries": [
+    "q01_record_density_1mb",
+    "q02_variant_shape_counts",
+    "q03_titv",
+    "q04_filter_distribution",
+    "q05_sample_genotype_counts",
+    "q06_ac_an_distribution",
+    "q07_file_metadata",
+    "q08_header_line_census",
+    "q09_predicate_census",
+    "q10_class_census",
+    "q11_record_digest",
+    "q12_info_value_digest",
+    "q13_format_value_digest"
+  ],
+  "sourceFormat": "nt.gz",
+  "status": "TIMING_ONLY",
+  "temporaryRdf": {
+    "cleanupConfirmed": true,
+    "decompressedInsideContainer": true,
+    "persisted": false
+  }
+}
