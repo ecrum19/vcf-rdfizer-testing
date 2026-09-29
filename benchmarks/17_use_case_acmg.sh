@@ -91,7 +91,8 @@ skip_done() {
 
 # The converted aggregate for an input stem, or empty.
 graph_for() { bm_first_file "$EXP_DIR/convert__$1/out" "$1.acmg.nt.gz" 4; }
-links_for() { bm_first_file "$EXP_DIR/link__$1/out" "*.links.nt" 4; }
+# Plain in the first runs, gzipped since (stage_link); either is read the same way.
+links_for() { bm_first_file "$EXP_DIR/link__$1/out" "*.links.nt*" 4; }
 
 # The image runs bcftools and the query engines. The corpus and the case files
 # are mounted read-only; derived inputs and results are the only writable paths,
@@ -229,10 +230,17 @@ stage_link() {
     python3 -c 'import json,sys
 sys.exit(0 if any(p["id"]==sys.argv[2] and p["rsids"] for p in json.load(open(sys.argv[1]))["participants"]) else 1)' \
       "$CASE_JSON" "$id" && linkers="$linkers,rsid-dbsnp"
-    bm_run_raw "$EXPERIMENT" "link__$id" -- \
-      "${PYTHON:-python3}" "$(dirname -- "$BM_TOOL")/vcf_rdfizer_link.py" run \
-        -i "$DERIVED/$id.acmg.vcf" --link "$linkers" --offline \
-        -o "$EXP_DIR/link__$id/out/$id.acmg.links.nt"
+    # The linker writes plain N-Triples; a whole genome's links are ~1 GB of
+    # them, so the cell keeps them gzipped (with the linker's JSON report).
+    bm_run_raw "$EXPERIMENT" "link__$id" -- bash -c '
+      set -euo pipefail
+      work="$(mktemp -d)"; trap "rm -rf \"$work\"" EXIT
+      "$1" "$2" run -i "$3" --link "$4" --offline -o "$work/$5.links.nt"
+      mkdir -p "$6"
+      gzip -1 -c "$work/$5.links.nt" > "$6/$5.links.nt.gz"
+      mv "$work/$5.links.json" "$6/"' _ \
+      "${PYTHON:-python3}" "$(dirname -- "$BM_TOOL")/vcf_rdfizer_link.py" "$DERIVED/$id.acmg.vcf" \
+      "$linkers" "$id.acmg" "$EXP_DIR/link__$id/out"
     bm_expect_ok
   done
 }
@@ -281,9 +289,13 @@ stage_govern() {
     vcfs+=("$DERIVED/$id.acmg.vcf")
   done
   mkdir -p "$EXP_DIR/oracle"
-  [[ -s "$EXP_DIR/oracle/oracle.nt" ]] || policy_cli oracle --vcf "${vcfs[@]}" -o "$EXP_DIR/oracle/oracle.nt"
+  local oracle; oracle="$(bm_first_file "$EXP_DIR/oracle" "oracle.nt*" 1)"
+  if [[ -z "$oracle" ]]; then
+    oracle="$EXP_DIR/oracle/oracle.nt.gz"
+    policy_cli oracle --vcf "${vcfs[@]}" -o "$oracle"
+  fi
   serve source 7201 "${source[@]}"
-  serve oracle 7202 "$EXP_DIR/oracle/oracle.nt" "${links[@]}"
+  serve oracle 7202 "$oracle" "${links[@]}"
   for requester in $(requesters); do
     skip_done "govern__$requester" && continue
     out="$EXP_DIR/govern__$requester/out"
