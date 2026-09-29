@@ -134,9 +134,8 @@ class OnQLever(unittest.TestCase):
         """check_stream with the view served on its own endpoint (by default, this view)."""
         view = Path(view or view_dir / "view.nt.gz")
         with contextlib.ExitStack() as stack:
-            empty = not gzip.open(view, "rb").read(1)
-            view_store = (MemoryStore(rdflib.Graph()) if empty
-                          else EndpointStore(stack.enter_context(qlever([view]))))
+            empty = not gzip.open(view, "rb").read(1)   # no endpoint can index an empty view
+            view_store = None if empty else EndpointStore(stack.enter_context(qlever([view])))
             return check_stream(view_dir, policy_path=POLICY, rules=self.rules, profile=self.profile,
                                 vocabulary=self.vocabulary, store=EndpointStore(url), view_store=view_store,
                                 oracle=MemoryStore(graph_from_vcfs(VCFS)) if oracle else None)
@@ -198,6 +197,14 @@ class OnQLever(unittest.TestCase):
             with gzip.open(other, "wt", encoding="utf-8") as out:
                 out.writelines(kept[: len(kept) // 2])
             self.assertTrue(any("the view endpoint serves" in f for f in self.check(good, url, view=other)))
+            with self.assertRaisesRegex(PolicyError, "needs an endpoint serving it"):
+                check_stream(good, policy_path=POLICY, rules=self.rules, profile=self.profile,
+                             vocabulary=self.vocabulary, store=EndpointStore(url))
+            empty = self.work / "empty"                      # nothing released: nothing to serve
+            shutil.copytree(good, empty)
+            with gzip.open(empty / "view.nt.gz", "wt", encoding="utf-8"):
+                pass
+            self.assertEqual(self.check(empty, url, oracle=False), [])
 
             record = next(line.split(">")[0][1:] for line in kept if line.split(" ")[0].endswith("#record/1>"))
             no_record = [line for line in kept if not line.startswith(f"<{record}")]
