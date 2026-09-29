@@ -3,7 +3,7 @@
 #
 # Runs INSIDE the VCF-RDFizer image (it needs bcftools), one call per input:
 #
-#   derive.sh <input.vcf.gz> <id> <out-dir> <reference.fna> <regions.bed> [drop-info]
+#   derive.sh <input.vcf.gz> <id> <out-dir> <reference.fna> <regions.bed|all> [drop-info]
 #
 # Writes <out-dir>/<id>.acmg.vcf.gz (+ .csi) for the bcftools baseline,
 # <out-dir>/<id>.acmg.vcf for conversion, and <out-dir>/<id>.derive.json.
@@ -18,6 +18,8 @@
 # * ##reference is replaced with the reference this script normalised against.
 #   The files declare a lab path (file:///mnt/ssd/.../hg38.fa) or nothing, so a
 #   policy's assembly check could otherwise never pass on real data.
+# * `all` in place of the regions keeps the whole genome (arm 3); it is
+#   normalised exactly like a restricted input.
 # * `drop-info` removes every INFO field. Arm 2 uses it: the 1000 Genomes
 #   panel's ~70 INFO fields describe all 3,202 samples, not the participant,
 #   and would be ~95% of each participant's triples.
@@ -45,11 +47,11 @@ printf 'chrM\tMT\n' >> "$work/chr_to_plain"
 printf 'MT\tchrM\n' >> "$work/plain_to_chr"
 
 if [[ "$style" == plain ]]; then
-  sed 's/^chr//' "$bed" > "$work/regions.bed"
+  [[ "$bed" == all ]] || sed 's/^chr//' "$bed" > "$work/regions.bed"
   to_reference=(bcftools annotate --rename-chrs "$work/plain_to_chr" -Ou -)
   from_reference=(bcftools annotate --rename-chrs "$work/chr_to_plain" -Ou -)
 else
-  cp "$bed" "$work/regions.bed"
+  [[ "$bed" == all ]] || cp "$bed" "$work/regions.bed"
   to_reference=(bcftools view -Ou -)
   from_reference=(bcftools view -Ou -)
 fi
@@ -62,7 +64,8 @@ fi
 # the result is a file whose records name contigs its own header does not
 # declare, and reading it back fails with "Invalid CONTIG id 0". VCF text needs
 # no such dictionary, so the subset survives and the header is repaired below.
-bcftools view -T "$work/regions.bed" -Ov -o "$work/in_regions.vcf" "$input" 2>"$work/view.log"
+regions=(-T "$work/regions.bed"); [[ "$bed" == all ]] && regions=()
+bcftools view "${regions[@]}" -Ov -o "$work/in_regions.vcf" "$input" 2>"$work/view.log"
 grep -cv '^#' "$work/in_regions.vcf" > "$work/in_regions" || echo 0 > "$work/in_regions"
 if [[ "$drop_info" == drop-info ]]; then
   bcftools annotate -x INFO -Ov -o "$work/no_info.vcf" "$work/in_regions.vcf"

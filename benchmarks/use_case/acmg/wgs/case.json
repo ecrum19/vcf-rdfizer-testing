@@ -16,30 +16,6 @@
   },
   "participants": [
     {
-      "id": "NB72462M",
-      "input": "NB72462M.vcf.gz",
-      "source": "PGP huF7A4DE (Nebula Genomics, GATK)",
-      "rsids": true
-    },
-    {
-      "id": "NG131FQA1I",
-      "input": "NG131FQA1I.vcf.gz",
-      "source": "PGP huFFFE77 (Dante Labs, GATK)",
-      "rsids": true
-    },
-    {
-      "id": "HG002",
-      "input": "0GOOR_HG002.vcf.gz",
-      "source": "GIAB HG002, precisionFDA Truth Challenge v2 submission 0GOOR (CLC)",
-      "rsids": false
-    },
-    {
-      "id": "HG004",
-      "input": "HG004_GRCh38.vcf.gz",
-      "source": "GIAB HG004 v4.2.1 benchmark",
-      "rsids": false
-    },
-    {
       "id": "HG005",
       "input": "HG005_GRCh38.vcf.gz",
       "source": "GIAB HG005 v4.2.1 benchmark",
@@ -67,28 +43,6 @@
   "policy": {
     "note": "Consents are SIMULATED and stated as such in every output. The genomes are real; nobody consented to anything here.",
     "consents": {
-      "NB72462M": {
-        "permits": [
-          "DUO:0000042",
-          "DUO:0000043"
-        ]
-      },
-      "NG131FQA1I": {
-        "permits": [
-          "DUO:0000006"
-        ]
-      },
-      "HG002": {
-        "permits": [
-          "DUO:0000042"
-        ]
-      },
-      "HG004": {
-        "permits": [
-          "DUO:0000042"
-        ],
-        "withdrawn": true
-      },
       "HG005": {
         "permits": [
           "DUO:0000043"
@@ -141,69 +95,6 @@
       "biobank": {
         "assignee": "https://example.org/party/biobank-researcher",
         "purpose": "DUO:0000042"
-      }
-    }
-  },
-  "cohort": {
-    "note": "Arm 2. make_cohort.py selects the samples and draws their consents; the consents are SIMULATED.",
-    "source": {
-      "panel": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20220422_3202_phased_SNV_INDEL_SV/1kGP_high_coverage_Illumina.{chrom}.filtered.SNV_INDEL_SV_phased_panel.vcf.gz",
-      "ped": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/20130606_g1k_3202_samples_ped_population.txt",
-      "unrelated": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/1000G_2504_high_coverage.sequence.index",
-      "license": "1000 Genomes data are open access; see the 20190405_1000G_2504_high_cov_data_reuse_README.md beside them",
-      "panel_overrides": {
-        "chrX": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20220422_3202_phased_SNV_INDEL_SV/1kGP_high_coverage_Illumina.chrX.filtered.SNV_INDEL_SV_phased_panel.v2.vcf.gz"
-      }
-    },
-    "per_population": 4,
-    "seed": 20260928,
-    "consent_mix": [
-      {
-        "permits": [
-          "DUO:0000042",
-          "DUO:0000043"
-        ],
-        "weight": 25
-      },
-      {
-        "permits": [
-          "DUO:0000042"
-        ],
-        "weight": 25
-      },
-      {
-        "permits": [
-          "DUO:0000006"
-        ],
-        "weight": 25
-      },
-      {
-        "permits": [
-          "DUO:0000007"
-        ],
-        "weight": 10
-      },
-      {
-        "permits": [
-          "DUO:0000043"
-        ],
-        "weight": 15
-      }
-    ],
-    "withdrawal_percent": 5,
-    "panel_frequencies": {
-      "note": "The panel's site frequencies, recorded once: a sites-only file of the sites any participant carries, joined to every participant by SPDI. The participants' own files drop INFO (derive.sh drop-info). AC and AN are left out: the fetch's sample subset recounted them over the cohort, so they no longer describe the panel.",
-      "fields": [
-        "AF",
-        "AF_AFR",
-        "AF_AMR",
-        "AF_EAS",
-        "AF_EUR",
-        "AF_SAS"
-      ],
-      "rare": {
-        "field": "AF",
-        "below": 0.01
       }
     }
   },

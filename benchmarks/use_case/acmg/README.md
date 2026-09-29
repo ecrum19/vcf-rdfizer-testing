@@ -94,6 +94,24 @@ BM_ACMG_ARM=cohort BM_ACMG_STAGES="fetch_cohort derive convert link baseline gov
   BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
 ```
 
+### Arm 3: one whole genome
+
+`make_wgs.py` writes `wgs/case.json`: arm 1's question, participant (HG005)
+and consent, unchanged. `BM_ACMG_ARM=wgs` runs the same stages, except that
+`derive.sh` keeps the whole genome (`all` in place of the regions); ClinVar
+stays restricted. Only the scale changes, so HG005's carriers must equal its
+arm-1 carriers. HG005 consents to clinical care only, so two of the three
+views are empty: their evaluation still streams the whole graph, and their
+check needs no view endpoint.
+
+Each large stage first checks the disk it will need (`need_space`: about 20
+GB for convert, 55 for govern, 35 for query) and stops instead of filling it.
+
+```bash
+BM_ACMG_ARM=wgs BM_ACMG_STAGES="derive convert link baseline govern query compare" \
+  BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
+```
+
 ## Definitions
 
 These are in `use_case.json`, and both routes implement them:

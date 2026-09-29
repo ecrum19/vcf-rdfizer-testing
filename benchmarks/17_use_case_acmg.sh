@@ -39,14 +39,17 @@
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
 CASE_DIR="$BM_ROOT/use_case/acmg"
-# Which arm: arm1, the five heterogeneous genomes (use_case.json), or cohort,
-# arm 2's 1000 Genomes participants (cohort/cohort.json, from make_cohort.py).
-# Each arm has its own results and derived inputs; they share the downloads.
+# Which arm: arm1, the five heterogeneous genomes (use_case.json); cohort,
+# arm 2's 1000 Genomes participants (cohort/cohort.json, from make_cohort.py);
+# or wgs, arm 3: one arm-1 participant's whole genome (wgs/case.json, from
+# make_wgs.py). Each arm has its own results and derived inputs; they share the
+# downloads.
 ARM="${BM_ACMG_ARM:-arm1}"
 case "$ARM" in
   arm1)   CASE_JSON="$CASE_DIR/use_case.json"; POLICY="$CASE_DIR/policy.ttl"; SUFFIX="" ;;
   cohort) CASE_JSON="$CASE_DIR/cohort/cohort.json"; POLICY="$CASE_DIR/cohort/policy.ttl"; SUFFIX="__cohort" ;;
-  *)      bm_die "unknown BM_ACMG_ARM: $ARM (expected arm1 or cohort)" ;;
+  wgs)    CASE_JSON="$CASE_DIR/wgs/case.json"; POLICY="$CASE_DIR/wgs/policy.ttl"; SUFFIX="__wgs" ;;
+  *)      bm_die "unknown BM_ACMG_ARM: $ARM (expected arm1, cohort or wgs)" ;;
 esac
 EXPERIMENT="17_use_case_acmg$SUFFIX"
 STAGES="${BM_ACMG_STAGES:-derive convert link govern query baseline compare}"
@@ -84,6 +87,19 @@ policy_cli() { "${PYTHON:-python3}" "$(dirname -- "$BM_TOOL")/vcf_rdfizer_policy
 # 15_scale_prepare already follows for the scale store. To redo a cell, move it
 # aside (keeping it as evidence) or point BM_RESULTS at a new root.
 have_cell() { [[ -d "$EXP_DIR/$1" ]]; }
+
+# Stop before a stage that cannot fit, rather than let an index fill the disk
+# half-way through (arm 2's first run). The figures are arm 3's estimates,
+# scaled from arm 1 (workstream-a-implementation.md, 2026-09-29); the smaller
+# arms need little.
+need_space() {
+  local gb="$1" what="$2" free
+  [[ "$ARM" == wgs ]] || gb=3
+  mkdir -p "$EXP_DIR"
+  free="$(df --output=avail -BG "$EXP_DIR" | tail -1 | tr -dc 0-9)"
+  (( free >= gb )) || bm_die "$what needs ~$gb GB free; $free GB left"
+  bm_step "$what: $free GB free (needs ~$gb)"
+}
 skip_done() {
   have_cell "$1" || return 1
   bm_step "$1 — already recorded, skipping"
@@ -159,16 +175,18 @@ stage_derive() {
   [[ -s "$REFERENCE" && -s "$DATA/clinvar.vcf.gz" ]] \
     || bm_die "inputs not fetched; run BM_ACMG_STAGES=fetch first"
   mkdir -p "$DERIVED"
-  local id input drop=""
+  local id input drop="" regions=/case/acmg_sf_v3.2.GRCh38.bed
   # Arm 2's INFO is the panel's, not the participant's (derive.sh).
   [[ "$ARM" == cohort ]] && drop=drop-info
+  # Arm 3 keeps the whole genome; ClinVar, below, stays restricted either way.
+  [[ "$ARM" == wgs ]] && regions=all
   for id in $(participant_ids); do
     skip_done "derive__$id" && continue
     input="$(participant_input "$id")"
     [[ -s "$INPUTS/$input" ]] || bm_die "input not in $INPUTS: $input"
     in_image "derive__$id" \
       bash /case/derive.sh "/inputs/$input" "$id" /derived \
-        "/data/$(basename -- "$REFERENCE")" /case/acmg_sf_v3.2.GRCh38.bed $drop
+        "/data/$(basename -- "$REFERENCE")" "$regions" $drop
     bm_expect_ok
   done
   if ! skip_done "derive__clinvar"; then
@@ -196,6 +214,7 @@ stage_derive() {
 
 stage_convert() {
   bm_banner "convert — VCF-RDFizer, expanded, one cell per input"
+  need_space 20 "convert"
   local id
   for id in $(participant_ids) $(annotation_ids); do
     skip_done "convert__$id" && continue
@@ -280,6 +299,8 @@ unserve() { docker rm -f "acmg-$1" >/dev/null 2>&1 || true; }
 # third endpoint serves that view while its check runs.
 stage_govern() {
   bm_banner "govern — one release view per requester, on QLever, checked"
+  # The source index, one view and that view's index can be on disk at once.
+  need_space 55 "govern"
   local -a source=() links=() vcfs=()
   local id requester out
   for id in $(participant_ids); do
@@ -305,10 +326,15 @@ stage_govern() {
         --assignee "$(requester_field "$requester" assignee)" \
         --purpose "$(requester_field "$requester" purpose)" -o "$out"
     bm_expect_ok
-    # The check asks the view's own endpoint about the view as a whole (dangling references).
-    serve view 7203 "$out/view.nt.gz"
+    # The check asks the view's own endpoint about the view as a whole (dangling
+    # references). An empty view, which no index can hold, needs none.
+    local -a view=()
+    if [[ -n "$({ gzip -dc "$out/view.nt.gz" | head -c 1; } 2>/dev/null || true)" ]]; then
+      serve view 7203 "$out/view.nt.gz"
+      view=(--view-endpoint http://127.0.0.1:7203/)
+    fi
     policy_cli check --endpoint http://127.0.0.1:7201/ --oracle-endpoint http://127.0.0.1:7202/ \
-      --view-endpoint http://127.0.0.1:7203/ --view "$out" --rdf "${source[@]}" --policy "$POLICY" \
+      "${view[@]}" --view "$out" --rdf "${source[@]}" --policy "$POLICY" \
       > "$EXP_DIR/govern__$requester/check.txt" 2>&1 \
       || { unserve source; unserve oracle; unserve view
            bm_die "the $requester view failed its check; see $EXP_DIR/govern__$requester/check.txt"; }
@@ -322,6 +348,7 @@ in_container() { printf '/results/%s\n' "${1#"$EXP_DIR"/}"; }
 
 stage_query() {
   bm_banner "query — carriers.rq (and rare.rq) under QLever, per requester"
+  need_space 35 "query"
   local id requester path
   # The annotation files and their links go beside every requester's graphs.
   local -a shared=() queries=(--query "$QUERIES/carriers.rq")

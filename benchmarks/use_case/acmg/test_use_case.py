@@ -35,6 +35,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import baseline_carriers as B  # noqa: E402
 import make_cohort as M  # noqa: E402
+import make_wgs as W  # noqa: E402
 import compare as C  # noqa: E402
 
 from rdflib import Graph, Literal, Namespace, RDF, URIRef, XSD  # noqa: E402
@@ -129,7 +130,8 @@ class GeneratedFilesAreCurrent(unittest.TestCase):
     def test_the_committed_copies_match_use_case_json(self):
         for committed, case, names in ((HERE, HERE / "use_case.json", ("policy.ttl", "carriers.rq")),
                                        (HERE / "cohort", HERE / "cohort" / "cohort.json",
-                                        ("policy.ttl", "carriers.rq", "rare.rq"))):
+                                        ("policy.ttl", "carriers.rq", "rare.rq")),
+                                       (HERE / "wgs", HERE / "wgs" / "case.json", ("policy.ttl", "carriers.rq"))):
             with tempfile.TemporaryDirectory() as work:
                 fresh = generate_into(pathlib.Path(work), case)
                 self.assertEqual(sorted(p.name for p in fresh.iterdir()), sorted(names))
@@ -138,6 +140,16 @@ class GeneratedFilesAreCurrent(unittest.TestCase):
                         self.assertEqual((fresh / name).read_text(encoding="utf-8"),
                                          (committed / name).read_text(encoding="utf-8"),
                                          f"{name} is stale; re-run generate.py and commit it")
+
+    def test_the_whole_genome_case_is_one_arm_1_participant(self):
+        committed = json.loads((HERE / "wgs" / "case.json").read_text(encoding="utf-8"))
+        self.assertEqual(committed, W.wgs_case(CASE), "wgs/case.json is stale; re-run make_wgs.py")
+        pid = CASE["whole_genome"]["participant"]
+        self.assertEqual([p["id"] for p in committed["participants"]], [pid])
+        self.assertEqual(committed["policy"]["consents"], {pid: CASE["policy"]["consents"][pid]})
+        self.assertEqual((committed["definition"], committed["policy"]["requesters"]),
+                         (CASE["definition"], CASE["policy"]["requesters"]))
+        self.assertNotIn("cohort", committed)
 
     def test_the_cohort_carries_the_panel_definition(self):
         cohort = json.loads((HERE / "cohort" / "cohort.json").read_text(encoding="utf-8"))
@@ -463,6 +475,24 @@ class Derive(unittest.TestCase):
             stats = json.loads((work / "out" / "T.derive.json").read_text(encoding="utf-8"))
             self.assertEqual((stats["contig_style"], stats["records_in_regions"], stats["records_out"]), ("plain", 3, 3))
             self.assertFalse(stats["info_dropped"])
+
+    def test_all_keeps_the_whole_genome_and_normalises_it(self):
+        with tempfile.TemporaryDirectory() as work:
+            work = pathlib.Path(work)
+            seq = "ACGTCAGCAGCAGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+            (work / "ref.fna").write_text(f">chr1\n{seq}\n>chr2\n{'G' * 50}\n", encoding="utf-8")
+            (work / "ref.fna.fai").write_text("chr1\t50\t6\t50\t51\nchr2\t50\t63\t50\t51\n", encoding="utf-8")
+            (work / "in.vcf").write_text(
+                "##fileformat=VCFv4.2\n##contig=<ID=1,length=50>\n##contig=<ID=2,length=50>\n"
+                '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">\n'
+                "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS\n"
+                "1\t10\t.\tGCAG\tG\t.\tPASS\t.\tGT\t0/1\n"          # left-aligns to 4
+                "2\t5\t.\tG\tT\t.\tPASS\t.\tGT\t0/1\n", encoding="utf-8")  # outside any region
+            subprocess.run(["bash", str(HERE / "derive.sh"), str(work / "in.vcf"), "W", str(work / "out"),
+                            str(work / "ref.fna"), "all"], check=True, capture_output=True)
+            text = (work / "out" / "W.acmg.vcf").read_text(encoding="utf-8")
+            records = [line.split("\t")[:5] for line in text.splitlines() if not line.startswith("#")]
+            self.assertEqual(records, [["1", "4", ".", "TCAG", "T"], ["2", "5", ".", "G", "T"]])
 
     def test_drop_info_keeps_every_record_and_no_info(self):
         with tempfile.TemporaryDirectory() as work:

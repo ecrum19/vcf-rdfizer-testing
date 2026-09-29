@@ -60,6 +60,7 @@ def main(argv: list[str]) -> int:
     case = json.loads((HERE / "use_case.json").read_text(encoding="utf-8"))
     cohort = case.pop("cohort")
     panel = cohort.pop("panel_frequencies")
+    case.pop("whole_genome")                  # arm 3's, not the cohort's
     rng = random.Random(cohort["seed"])
     pools = populations(ped, unrelated(index))
     if len(pools) != 26:
