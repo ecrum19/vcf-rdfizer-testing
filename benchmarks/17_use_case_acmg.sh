@@ -302,10 +302,15 @@ unserve() { docker rm -f "acmg-$1" >/dev/null 2>&1 || true; }
 # third endpoint serves that view while its check runs.
 stage_govern() {
   bm_banner "govern — one release view per requester, on QLever, checked"
+  # Nothing to govern means nothing to serve: a resumed run would otherwise
+  # rebuild the source index (~45 min for arm 3) for no requester.
+  local pending=0 requester
+  for requester in $(requesters); do have_cell "govern__$requester" || pending=1; done
+  (( pending )) || { bm_step "every requester already governed; no endpoints needed"; return 0; }
   # The source index, one view and that view's index can be on disk at once.
   need_space 55 "govern"
   local -a source=() links=() vcfs=()
-  local id requester out
+  local id out
   for id in $(participant_ids); do
     [[ -n "$(graph_for "$id")" && -n "$(links_for "$id")" ]] || bm_die "govern: $id is not converted and linked"
     source+=("$(graph_for "$id")" "$(links_for "$id")")
