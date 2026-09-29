@@ -219,10 +219,13 @@ stage_convert() {
   for id in $(participant_ids) $(annotation_ids); do
     skip_done "convert__$id" && continue
     [[ -s "$DERIVED/$id.acmg.vcf" ]] || { bm_skip "$EXPERIMENT" "convert__$id" "not derived"; continue; }
+    # space-optimized streams each part through gzip, so no uncompressed copy of
+    # the graph ever exists: plain wrote one first, and a whole genome's (~80 GB)
+    # filled the disk. The triples are the same either way.
     bm_run "$EXPERIMENT" "convert__$id" -- \
       --mode full --input "$DERIVED/$id.acmg.vcf" \
       --sample-representation expanded \
-      --rdf-storage-mode plain --rdf-compression gzip --representations none
+      --rdf-storage-mode space-optimized --rdf-compression gzip --representations none
     bm_expect_ok
   done
 }
