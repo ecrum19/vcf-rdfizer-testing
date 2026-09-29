@@ -30,6 +30,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import unittest.mock
 
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -410,6 +411,32 @@ QLEVER = pathlib.Path("/opt/qlever/bin/qlever-index")
 
 
 @unittest.skipUnless(QLEVER.is_file(), "QLever not installed; run inside the image")
+class RunQueryPlumbing(unittest.TestCase):
+    """What arm 3's first query run got wrong: a failed count read as an empty answer."""
+
+    def test_a_failed_query_is_an_error_not_an_empty_answer(self):
+        import run_query as Q
+        engine = unittest.mock.Mock()
+        engine.execute.return_value = {"status": "FAIL", "error": "memory limit exceeded"}
+        with self.assertRaisesRegex(RuntimeError, "count: memory limit exceeded"):
+            Q.answer(engine, "count", pathlib.Path("count.rq"))
+
+    def test_streaming_counts_each_inputs_lines_including_an_empty_one(self):
+        import run_query as Q
+        with tempfile.TemporaryDirectory() as work:
+            work = pathlib.Path(work)
+            empty, two = work / "empty.nt", work / "two.nt.gz"
+            empty.write_text("", encoding="utf-8")
+            with gzip.open(two, "wt", encoding="utf-8") as handle:
+                handle.write("<urn:a> <urn:b> <urn:c> .\n\n<urn:a> <urn:b> <urn:d> .\n")
+            fifos, writers = Q.stream([empty, two], work)
+            received = [fifo.read_bytes() for fifo in fifos]          # the index builder's part
+            self.assertEqual([w.wait() for w in writers], [0, 0])
+            self.assertEqual(received[1].count(b"\n"), 3)
+            self.assertEqual([Q.lines_file(f).read_text().strip() for f in fifos], ["0", "2"])
+
+
+@unittest.skipUnless(QLEVER.is_file(), "QLever not installed; run inside the image")
 class RunQueryOnQLever(CarriersQuery):
     """run_query.py answers carriers.rq on QLever exactly as rdflib does.
 
@@ -434,7 +461,11 @@ class RunQueryOnQLever(CarriersQuery):
                             "--scratch-dir", str(work / "scratch"), *map(str, files)],
                            check=True, capture_output=True)
             timing = json.loads((work / "out" / "timing.json").read_text(encoding="utf-8"))
-            self.assertEqual(timing["triples_per_graph"], {f.name: len(g.graph) for f, g in zip(files, graphs)})
+            self.assertEqual(timing["lines_per_graph"], {f.name: len(g.graph) for f, g in zip(files, graphs)})
+            union = Graph()
+            for g in graphs:
+                union += g.graph
+            self.assertEqual(timing["triples"], len(union))
             self.assertEqual(len(timing["replicates"]["q"]), 2)
             with (work / "out" / "q.tsv").open(encoding="utf-8") as handle:
                 found = list(csv.DictReader(handle, delimiter="\t"))
