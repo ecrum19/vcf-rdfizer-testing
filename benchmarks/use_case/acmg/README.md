@@ -112,6 +112,19 @@ BM_ACMG_ARM=wgs BM_ACMG_STAGES="derive convert link baseline govern query compar
   BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
 ```
 
+### Effort
+
+`effort.py` measures what each route asks its author to write (arm 1: rules and
+data, apart), then applies four changes to both routes as real edits: a
+withdrawal, a requester with a new purpose, a cardiac panel in place of the
+cancer one, and a rule on one variant. It counts the lines each changes, and
+checks that both edited routes still release the same records to every
+requester on a fixture. The result is committed as `effort.json`.
+
+```bash
+VCF_RDFIZER_SRC=/path/to/VCF-RDFizer python3 effort.py out/
+```
+
 ## Definitions
 
 These are in `use_case.json`, and both routes implement them:

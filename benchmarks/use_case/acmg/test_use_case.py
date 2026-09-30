@@ -204,6 +204,33 @@ class BaselineRules(unittest.TestCase):
         self.assertFalse(B.overlaps("14", start, "A", spans))
 
 
+class EffortCounting(unittest.TestCase):
+    """effort.py counts authored lines, not comments, blanks or docstrings."""
+
+    def test_python_lines_skip_docstrings_comments_and_blanks(self):
+        import effort as F
+        text = 'def f():\n    """Doc\n    string."""\n    # a comment\n\n    return 1  # trailing\n'
+        self.assertEqual(F.python_lines(text), {1, 6})
+
+    def test_changed_counts_only_counted_lines(self):
+        import effort as F
+        before = "# header\nex:a ex:b ex:c .\n"
+        after = "# a new header\nex:a ex:b ex:c .\n\nex:d ex:e ex:f .\n"
+        self.assertEqual(F.changed(before, after, "turtle"), {"added": 1, "removed": 0})
+        # A module docstring (the first statement) is not code.
+        self.assertEqual(F.changed("x = 1\n", '"""doc"""\nx = 2\n', "python"), {"added": 1, "removed": 1})
+
+    def test_the_committed_report_agrees_everywhere(self):
+        report = json.loads((HERE / "effort.json").read_text(encoding="utf-8"))
+        self.assertTrue(report["base_check"]["agree"])
+        self.assertEqual([s["name"] for s in report["scenarios"]],
+                         ["withdrawal", "new purpose", "panel change", "variant rule"])
+        for scenario in report["scenarios"]:
+            with self.subTest(scenario=scenario["name"]):
+                self.assertTrue(scenario["check"]["agree"])
+                self.assertGreater(scenario["check"]["distinct_outcomes"], 1)   # not two routes that release nothing
+
+
 class RareBaseline(unittest.TestCase):
     def test_rare_is_each_requesters_carriers_below_the_panel_threshold(self):
         cohort = json.loads((HERE / "cohort" / "cohort.json").read_text(encoding="utf-8"))
