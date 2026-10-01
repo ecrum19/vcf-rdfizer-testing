@@ -6,7 +6,9 @@ are maintained apart. They run by hand; there is no CI for them.
 
 | Directory | Plug-in | Covers |
 | --- | --- | --- |
-| `policy/` | `vcf-rdfizer-policy` | The select → partition → decide engine on the example cohort (both sample profiles), its generality (a selector declared in Turtle, a non-VCF graph with a property-path partition, a SKOS purpose vocabulary), and mutation tests that `check` must catch |
+| `policy/` | `vcf-rdfizer-policy` | The select → partition → decide engine on the example cohort (both sample profiles), its generality (a selector declared in Turtle, a non-VCF graph with a property-path partition, a SKOS purpose vocabulary), and mutation tests that `check` must catch. `test_policy_endpoint.py` runs the streaming executor against QLever (inside the image): inline parameters, equality with the in-memory executor, `check_stream`'s mutations, `LinkedSelector` |
+| `genes/` | `ensembl-genes-grch38` | Real Ensembl 116 loci around *BRCA1* link exactly to the genes an independent scan of the GFF3 finds, under both contig styles, including a base inside two genes. Needs the cached GFF3; never downloads |
+| `spdi/` | the `spdi` linker | Real ClinVar BRCA1 variants of every class against NCBI's own SPDI (recorded, so the suite is offline). Outside repeats the identifier is NCBI's exactly; inside one it is the trimmed form, which must still denote NCBI's allele. Also checks that `17` and `chr17` give the same IRI |
 
 ## Running
 

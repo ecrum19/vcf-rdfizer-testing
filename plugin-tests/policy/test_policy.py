@@ -31,7 +31,7 @@ import unittest
 def _tool_root() -> Path:
     here = Path(__file__).resolve()
     candidates = [os.environ.get("VCF_RDFIZER_SRC")] + [
-        str(here.parents[3] / name) for name in ("VCF-RDFizer", "vcf-rdfizer")]
+        str(here.parents[3] / name) for name in ("VCF-RDFizer", "vcf-rdfizer") if len(here.parents) > 3]
     for candidate in filter(None, candidates):
         if (Path(candidate) / "vcf_rdfizer_policies").is_dir():
             return Path(candidate)
@@ -121,8 +121,10 @@ class ProfileTests(unittest.TestCase):
     def test_the_bundled_profile_declares_the_vcf_selectors_and_partition(self):
         profile = load_profile()
         vcfp = "https://w3id.org/vcf-rdfizer/policy#"
-        self.assertEqual(set(profile.selectors), {vcfp + "RegionSelector", vcfp + "VariantSelector"})
+        self.assertEqual(set(profile.selectors),
+                         {vcfp + "RegionSelector", vcfp + "VariantSelector", vcfp + "LinkedSelector"})
         self.assertTrue(profile.iri_subtree and profile.ownership_path and profile.unit_query)
+        self.assertEqual(profile.node_space, ("file://",))
 
     def test_a_declaration_that_cannot_work_is_refused_at_load_time(self):
         cases = {
@@ -205,7 +207,7 @@ class DecisionTests(Views):
 
     def released(self, key, pos, file="P001", kind="expanded"):
         release, _ = self.views[kind, key]
-        return {u["pos"].toPython(): ok for u, ok, _ in release.units
+        return {int(u["pos"]): ok for u, ok, _ in release.units
                 if str(u["group"]) == f"file://{file}.vcf"}.get(pos)
 
     def test_files_follow_each_participants_consent(self):
@@ -352,7 +354,7 @@ class MutationTests(Views):
         release, _ = self.views["expanded", "gru"]
         window = FIXTURE["loci"]["brca1"]
         return next(u["resource"] for u, _, _ in release.units if str(u["group"]).endswith("P001.vcf")
-                    and window["start"] < u["pos"].toPython() < window["end"])
+                    and window["start"] < int(u["pos"]) < window["end"])
 
     def test_a_reinstated_prohibited_record_is_caught(self):
         record = f"<{self.brca1_record()}>"

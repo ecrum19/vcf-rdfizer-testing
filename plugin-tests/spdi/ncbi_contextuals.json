@@ -1,0 +1,84 @@
+{
+  "about": "Known answers for the spdi linker: seven expert-panel pathogenic BRCA1 records from ClinVar (GRCh38, 2026-09-13 archive), one or two per variant class, and NCBI's own SPDI for each.",
+  "source": "GET https://api.ncbi.nlm.nih.gov/variation/v0/vcf/NC_000017.11/{pos}/{ref}/{alt}/contextuals, one request per case, 2 s apart, 2026-09-25",
+  "note": "NCBI returns the contextual form, which spans the whole repeat for an indel in one. The linker writes the trimmed form. The two agree as strings outside repeats and denote the same allele everywhere; the tests check both.",
+  "cases": [
+    {
+      "clinvar_variation": 55630,
+      "clinvar_class": "single_nucleotide_variant",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43045711,
+        "ref": "G",
+        "alt": "C"
+      },
+      "ncbi_contextual": "NC_000017.11:43045710:G:C"
+    },
+    {
+      "clinvar_variation": 266565,
+      "clinvar_class": "Deletion",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43045709,
+        "ref": "AG",
+        "alt": "A"
+      },
+      "ncbi_contextual": "NC_000017.11:43045709:GG:G"
+    },
+    {
+      "clinvar_variation": 55628,
+      "clinvar_class": "Duplication",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43045711,
+        "ref": "G",
+        "alt": "GT"
+      },
+      "ncbi_contextual": "NC_000017.11:43045711:T:TT"
+    },
+    {
+      "clinvar_variation": 548197,
+      "clinvar_class": "Insertion",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43045736,
+        "ref": "T",
+        "alt": "TC"
+      },
+      "ncbi_contextual": "NC_000017.11:43045736::C"
+    },
+    {
+      "clinvar_variation": 418073,
+      "clinvar_class": "Microsatellite",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43045736,
+        "ref": "TAG",
+        "alt": "T"
+      },
+      "ncbi_contextual": "NC_000017.11:43045736:AGAG:AG"
+    },
+    {
+      "clinvar_variation": 55597,
+      "clinvar_class": "Indel",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43045764,
+        "ref": "CTCGGGTCACC",
+        "alt": "T"
+      },
+      "ncbi_contextual": "NC_000017.11:43045763:CTCGGGTCACC:T"
+    },
+    {
+      "clinvar_variation": 187349,
+      "clinvar_class": "Indel",
+      "vcf": {
+        "chrom": "17",
+        "pos": 43049164,
+        "ref": "CCACA",
+        "alt": "TCACT"
+      },
+      "ncbi_contextual": "NC_000017.11:43049163:CCACA:TCACT"
+    }
+  ]
+}
