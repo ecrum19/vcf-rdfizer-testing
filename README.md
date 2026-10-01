@@ -1,3 +1,13 @@
+# Legacy archive
+
+This branch preserves the repository before the October 2026 cleanup, including
+the ECCB manuscript, finished experiments, superseded test runners, reporting
+scripts, design notes and figures. The current tests and paper are maintained
+on [`main`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/main).
+The ECCB paper's previously untracked template files are included here as well.
+
+The documentation below is retained as historical context for these files.
+
 # Test Data (VCF Inputs)
 
 This repository contains automated tests for a tool that converts genomic **VCF** files into **RDF**.
