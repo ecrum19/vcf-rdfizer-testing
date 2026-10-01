@@ -1,0 +1,200 @@
+% Advisor briefing: state of the VCF-RDFizer paper, its key results, and open questions.
+% Build: pdflatex report.tex (figures are copies from BioMedSem_2026/paper-assets).
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=1.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx,booktabs,tabularx,array,xcolor,enumitem}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+\setlist{nosep,leftmargin=*}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\definecolor{accent}{HTML}{1F7F83}
+\newcommand{\hd}[1]{\needspace{6\baselineskip}\vspace{6pt}{\large\bfseries\color{accent}#1}\par\vspace{2pt}}
+\newcommand{\sub}[1]{\needspace{4\baselineskip}\vspace{2pt}{\bfseries #1}\par}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+{\LARGE\bfseries VCF-RDFizer: status, key results, open questions}\\[2pt]
+{\small Elias Crum \textbullet\ advisor meeting, 1 October 2026 \textbullet\ paper target: J.\ Biomedical Semantics, SWAT4HCLS series}
+
+\hd{Core message}
+\textbf{Converting VCF to RDF does not pay in speed or in lines of code. It pays where variant identity, external meaning and consent must be explicit, shared across files, and checkable against the source.} VCF-RDFizer makes that conversion reproducible and verifiable. The paper shows this on real genomes, against a conventional bcftools pipeline, up to a whole genome, and states plainly where a VCF tool is the better choice.
+
+\hd{Purpose}
+VCF is the dominant format for genomic variants, but a VCF file has no identifiers it shares with other files or with external knowledge, and no place for the rules that govern who may see its contents. Three needs strain the format:
+\begin{itemize}
+\item \textbf{Linking:} clinical interpretation needs variants joined to external knowledge (ClinVar, genes, dbSNP). VCF offers free-text annotation fields, not machine-interpretable links, and even the same variant in two files is only ``the same'' if both name the chromosome alike.
+\item \textbf{Privacy and consent:} genomic data need access control per participant, region or variant, under consents that differ between participants and can be withdrawn. VCF has no notion of either.
+\item \textbf{Cross-file questions:} today these are answered with bcftools and custom scripts, rather than a declarative query over a shared model.
+\end{itemize}
+RDF offers all three: shared IRIs, SPARQL, and W3C-standard policies (ODRL) stored beside the data. The paper asks what converting costs, whether the conversion is faithful, and what it lets a user do that a conventional pipeline does not.
+
+\hd{What we built and measured}
+\begin{itemize}
+\item \textbf{VCF-RDFizer} (PyPI, Conda-Forge, Docker; MIT) converts VCF to RDF in the public VCF Core vocabulary, and optionally builds compressed, queryable HDT and COTTAS representations.
+\item \textbf{A validation layer} answers 13 questions in SPARQL and independently with a VCF parser, requires exact equality, and applies SHACL shapes.
+\item \textbf{Two plug-ins:} \emph{linkers} attach shared identifiers (NCBI SPDI, Ensembl genes, dbSNP via MyVariant.info), and a \emph{policy} plug-in attaches ODRL consent policies and derives a checked release view per requester.
+\item \textbf{Evaluation:}
+  \begin{itemize}
+  \item a 143-cell campaign on a 10-file public corpus, record and sample ladders, and a whole genome;
+  \item one clinical question answered over real genomes by an RDF route and by a bcftools route.
+  \end{itemize}
+\end{itemize}
+
+\hd{Contributions, and the evidence for each}
+\begin{enumerate}
+\item \textbf{Faithful, verified conversion:} 984/988 paired comparisons exactly equal (4 not applicable). Fault injection detects 96/113 corruptions with the queries alone and 113/113 with the shapes.
+\item \textbf{Linked, governed variant data across files, on real genomes:} identical answers to a bcftools pipeline for every requester, at three scales up to 668M triples.
+\item \textbf{Cohort-scale modelling, measured:} two sample profiles, and why triple counts mislead about their size.
+\item \textbf{A cost model with guidance:} when conversion, HDT, COTTAS and SPARQL pay, and when a VCF tool is better.
+\end{enumerate}
+
+\hd{Result 1: linking and governed release on real genomes}
+\emph{Which participants carry a ClinVar-classified variant in the 81 ACMG SF v3.2 genes, and what may each of three requesters see?}
+
+\textbf{Setup.} We used real public genomes and simulated consents (DUO purposes as ODRL policies; a withdrawal is a prohibition, so deny wins). One cohort rule releases the 28 cancer genes for clinical care only. The three requesters are a clinical lab (CC), a cardiovascular study (DS) and a biobank (GRU). Both routes share no code, and a gate compares their carrier lists for every requester.
+
+\begin{center}\includegraphics[width=0.93\textwidth]{figs/fig-usecase.pdf}\end{center}
+
+\begin{minipage}[t]{0.5\textwidth}
+\footnotesize
+\begin{tabular}{@{}l r r r r@{}}
+\toprule
+\textbf{Arm} & \textbf{All} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
+\midrule
+1: 5 genomes & 7{,}211 & 2{,}878 & 2{,}988 & 1{,}987\\
+2: 104-person cohort & 173{,}102 & 63{,}529 & 92{,}870 & 48{,}207\\
+3: whole genome & 1{,}496 & 1{,}496 & 0 & 0\\
+\bottomrule
+\end{tabular}\\[2pt]
+{\footnotesize Carriers each requester sees (arm 3: 668M triples). \textbf{Identical to the bcftools route in every cell}, and arm 3 equals HG005's arm-1 answer key for key.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\small
+\textbf{Effort:}
+\begin{itemize}
+\item Rules: 72 lines for the RDF route against 131 for the script.
+\item Three of four changes were equal-sized data edits in both routes.
+\item A rule on one variant (HFE C282Y) took 6 policy lines and \emph{no code}. Being stated on the SPDI identity, it also holds for a file that names the contig \texttt{6}.
+\end{itemize}
+\textbf{Cost:}
+\begin{itemize}
+\item A cold query took 172--209\,s at every scale.
+\item Index build is what scales: 2\,min $\rightarrow$ 45\,min for the whole genome.
+\end{itemize}
+\end{minipage}
+
+\sub{Linking results}
+\begin{itemize}
+\item \textbf{SPDI identity:}
+  \begin{itemize}
+  \item Every eligible call in every file was linked (3.89M in the whole genome, 87\,s), and the links joined the genomes to ClinVar across \texttt{chr17}/\texttt{17} naming.
+  \item On real ClinVar \emph{BRCA1} variants the linker matched NCBI's own SPDI character for character outside repeats.
+  \item Arm 2 joins three files through one identifier (genome, ClinVar, panel allele frequencies): 4,154 rare-variant carriers, equal to the baseline.
+  \end{itemize}
+\item \textbf{Live services:} MyVariant.info confirmed 92--93\% of the rsIDs the files carry, in 21 rate-limited batch requests. The unconfirmed ones we checked had been \emph{merged} in dbSNP, so taking a file's rsIDs at face value passes stale identifiers through. Ensembl's API returned a persistent HTTP 500, and the linker \emph{failed closed}, publishing nothing partial.
+\end{itemize}
+
+\sub{Privacy and governance results}
+\begin{itemize}
+\item \textbf{Checks:} every release view, in every arm, passed four checks:
+  \begin{itemize}
+  \item the policy digest matches;
+  \item nothing prohibited is present;
+  \item nothing unpermitted is present;
+  \item no dangling references remain.
+  \end{itemize}
+  Each view also matched an \emph{oracle} that evaluates the same policy over the VCF text, never touching the converter. An extra record is a leak, and a missing one is over-withholding.
+\item \textbf{Planted and real faults:} on a synthetic five-file cohort, the checks caught all six planted faults. They also caught one real defect: a withdrawn participant's header and sample list leaked into every view while every record decision was correct.
+\item \textbf{A subtle SPARQL pitfall:} written the common way (a trailing \texttt{VALUES}), a region prohibition selects nothing and \emph{fails open}. The plug-in injects parameters where SPARQL evaluates them first.
+\item \textbf{Scale:} writing a view went from 20--27\,min to 59--80\,s per requester for the cohort, with byte-identical output.
+\item \textbf{Scope, stated honestly:} this is governed release, not anonymization. A released genotype remains identifying.
+\end{itemize}
+
+\hd{Result 2: fidelity, and what the validation can see}
+\begin{itemize}
+\item On fixtures and slices of up to 17.1M triples, 984/988 paired comparisons were exactly equal and none mismatched. All 152 HDT/COTTAS artifacts decoded back to the source triple count, and two conversions were byte-identical.
+\item The queries alone detect 96/113 injected faults. The remaining 17 fall in 10 classes no oracle can observe, such as which allele a genotype calls, and the SHACL shapes catch all of them.
+\item The validation layer caught three real conversion defects during development, which were then fixed.
+\end{itemize}
+
+\hd{Result 3: what it costs, conditionally}
+\begin{center}\includegraphics[width=0.9\textwidth]{figs/fig-retrieval.pdf}\end{center}
+\begin{itemize}
+\item \textbf{Engine, not artifact, sets query cost:} N-Triples, HDT and COTTAS are within 5\% under one engine (0.3\% at 657M triples). QLever is 20--40$\times$ faster than the Comunica-based engines.
+\item \textbf{Against a VCF parser:} once indexed, SPARQL answers single questions 2.5--2300$\times$ faster. But the parser wins any single cold question, and conversion breaks even after $\approx$44 questions.
+\item \textbf{Against tabix:} tabix wins 1\,kb windows; SPARQL wins 10\,Mb windows. QLever stays linear to 657M triples.
+\item \textbf{Conversion:}
+  \begin{itemize}
+  \item A whole genome takes 16.07\,h, 14.5\,h of it building HDT and COTTAS.
+  \item The outputs are 78$\times$ the download, and HDT and COTTAS act as transport formats under QLever.
+  \item Mapping memory stays at 1.0--1.7\,GB across a hundredfold change in input.
+  \end{itemize}
+\item \textbf{Sample profiles:} at 2{,}504 samples the expanded graph has 432$\times$ the condensed graph's triples but is 69$\times$ larger in HDT, so triple counts overstate the gap.
+\end{itemize}
+
+\hd{Making the tool usable and robust}
+\begin{tabularx}{\textwidth}{@{}p{0.22\textwidth} L@{}}
+\toprule
+\textbf{Install and use} & Matched releases on PyPI, Conda-Forge and Docker Hub. A README quick start and troubleshooting guide, 18 documentation pages, and a full CLI reference. \\
+\textbf{Tested} & 1{,}007 unit tests at v3.3.0, in CI on Linux, macOS and Windows; the linking package has 99\% line coverage. Plug-in tests on real data are kept apart from the code. \\
+\textbf{Bounded resources} & Streaming conversion with flat memory. Space-optimized storage cuts peak disk 7.7--9.2$\times$ for 3--5\% more time, with identical output. \\
+\textbf{Refuses clearly, never silently} & A run that would not fit on disk is refused before it starts, naming the alternative. Truncated or non-UTF-8 input fails with a diagnostic. The policy plug-in refuses anything it cannot evaluate, and linkers fail closed. \\
+\textbf{Verifies its own output} & Every artifact is decoded back and its triple count checked before the source is deleted. Optional SPARQL-vs-VCF validation runs under four engines. \\
+\textbf{Reproducible} & Byte-identical repeated conversions. Every run records its command, tool commit and image digest. Live-service responses are cached with digests, so link runs replay offline. \\
+\textbf{Polite to services} & Live linkers batch requests under a declared rate limit and per-run request budget. \\
+\textbf{Hardened at scale} & Scaling to 171M triples exposed two memory guards that measured the wrong quantity (artifact size rather than graph size; Node's default heap). Both are fixed in v3.3.0. \\
+\bottomrule
+\end{tabularx}
+
+\hd{Current state}
+\begin{itemize}
+\item \textbf{Paper:}
+  \begin{itemize}
+  \item Use case, cost reframing and scope fixes are written.
+  \item The restructure is a first pass: a contributions list, Implementation / Evaluation design / Results / Discussion sections, and a 9-page supplement.
+  \item The body is at 23 pages.
+  \end{itemize}
+\item \textbf{Software:} the v3.3.0 release (linkers, policy plug-in 0.2.0) is in review. CI found one platform-specific bug in loading RDF input, and its fix is in progress.
+\item \textbf{Experiments:} all three use-case arms are complete and agree with the baseline. Two validation runs wait on the compute cluster.
+\end{itemize}
+
+\hd{Planned TODO}
+\textbf{Paper}
+\begin{itemize}
+\item Cut the body to $\approx$20 pages.
+\item Add the two pending runs: the mutation score under the default shape profile, and full paired validation of a real 250k-record genome slice.
+\item Funding statements, Zenodo DOIs, and the v3.3.0 tag.
+\end{itemize}
+\textbf{Tool}
+\begin{itemize}
+\item Sample-level masking, so policies reach multi-sample (condensed) files.
+\item GA4GH VRS identifiers beside SPDI, so identity does not depend on NCBI accessions.
+\item Federation with existing SPARQL resources (UniProt, Wikidata).
+\item Streaming or indexed versions of the costly SHACL profiles, so value-level validation reaches whole genomes.
+\item Whole multi-sample conversion (the 2{,}504-sample cohort, condensed).
+\item Split large files across view-writing workers, and cache the gene annotation across files. That annotation load is 19 of the 22 minutes of cohort linking.
+\item Semantics for the VCF 4.4/4.5 local-allele fields, which are currently carried through, not interpreted.
+\end{itemize}
+
+\hd{Questions for you}
+\begin{enumerate}
+\item \textbf{Is the use case convincing?} The consents are simulated, and the bcftools baseline was not much longer. Is an effort measure in lines of code credible, or would a real consent setting, a data-access-committee partner or a small user study be needed to show value?
+\item \textbf{Validation depth:} value-level validation stops at 17.1M triples, and the whole genome gets triple counts only. Acceptable if stated, or must one whole genome be validated end to end?
+\item \textbf{Comparison with other converters:} ours is documentation-based only, with no other converter run on the same input. Is a measured comparison necessary for this venue?
+\item \textbf{HDT and COTTAS:} our own data show they are transport formats under the fastest engine. Should they stay a headline feature, or be demoted?
+\item \textbf{Scope and split:}
+  \begin{itemize}
+  \item The vocabulary is in a companion paper (in preparation). Which should be submitted first?
+  \item Should the policy plug-in stay central here, or become its own paper?
+  \end{itemize}
+\item \textbf{Privacy framing:} we claim governed, checkable release, not anonymization. Is that framing safe for a biomedical audience, and should we address re-identification or GA4GH/GDPR positioning explicitly?
+\item \textbf{Federation:} the motivation promises it, but it is future work. Will that read as a gap, and is a small federated query with UniProt or Wikidata worth adding now?
+\item \textbf{Length:} which of the 12 figures and tables would you move to the supplement?
+\end{enumerate}
+
+\end{document}
