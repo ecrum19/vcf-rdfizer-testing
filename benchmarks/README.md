@@ -20,7 +20,7 @@ so nothing rebuilds mid-sweep. To reproduce against a published release
 instead:
 
 ```bash
-export BM_IMAGE_VERSION=1.1.0     # pulls and pins ecrum19/vcf-rdfizer:1.1.0
+export BM_IMAGE_VERSION=3.1.0     # base manuscript campaign release
 ```
 
 `BM_REBUILD=1` forces a rebuild. A dirty checkout gets a `-dirty` tag and is

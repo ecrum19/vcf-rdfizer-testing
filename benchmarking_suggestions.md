@@ -7,12 +7,10 @@
 > do. Section numbers match.
 
 
-The suite today (`test_full_spaceopt_all_compressions.sh`) runs one monolithic
-job per input at `--validate-artifacts all --validation-engine all`. Everything
-is coupled, validation dominates the cost, and a failure anywhere loses the
-whole run. Worse for the paper: it produces numbers, not *claims*. Nothing in
-that design isolates a single factor, so no sentence in the Results section can
-be attributed to it.
+This plan motivates the current benchmark suite's separation of conversion,
+representation construction and validation. Each experiment isolates a factor
+or tests a stated claim. The preceding single-configuration runners are
+preserved on the [`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy).
 
 This plan is organized the other way round — around the four things the paper
 argues, with one experiment per argument.
@@ -393,12 +391,16 @@ available cheaply. Four sub-arguments; the first is the load-bearing one.
 Every option in §1 and §2 is a *different physical encoding of the same
 information*. That is the claim that makes configurability a feature rather
 than a menu of ways to get different answers — and it is directly testable with
-the six queries already specified in
-[`vcf_rdfizer_testing_queries_plan.md`](vcf_rdfizer_testing_queries_plan.md)
+the six core queries specified in the
+[archived query proposal](https://github.com/ecrum19/vcf-rdfizer-testing/blob/legacy/tool-docs/vcf_rdfizer_testing_queries_plan.md)
 (Q1 density, Q2 allele shape, Q3 Ti/Tv, Q4 FILTER, Q5 per-sample genotype
 classes, Q6 GT-derived AC/AN).
 
-Run all six against a VCF-side oracle (cyvcf2 / `bcftools`) and against every
+The implemented suite in `benchmarks/06_equivalence.sh` extends these with
+Q7–Q13 metadata, census and value-digest checks; it runs all thirteen.
+The matrix below explains the six original bioinformatic comparisons.
+
+Run them against a VCF-side oracle (cyvcf2 / `bcftools`) and against every
 representation of the same input:
 
 | Encoding | Q1 | Q2 | Q3 | Q4 | Q5 | Q6 |

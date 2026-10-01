@@ -6,19 +6,10 @@ vcf_data/
 *.hdt
 *.nt
 *.nt.gz
-!tests/test-queries/fixtures/*.nt
-
-tests/test-queries/results/
-
 testing-results/
 experiments/*
-!experiments/finished_experiments/
-
-ECCB_2026/paper/*
-!*.pdf
-!*.tex
-!*.bib
-!*.png
+# The legacy branch owns the retired experiment and ECCB trees.
+ECCB_2026/
 
 BioMedSem_2026/paper/*
 !*.pdf
@@ -33,8 +24,6 @@ BioMedSem_2026/paper/*
 !BioMedSem_2026/paper/template/sn-jnl.cls
 !BioMedSem_2026/paper/template/bst/
 !BioMedSem_2026/paper/template/bst/sn-mathphys-num.bst
-.vscode/
-
 # Keep the manuscript's portable LaTeX Workshop recipe under version control.
 !BioMedSem_2026/paper/.vscode/
 !BioMedSem_2026/paper/.vscode/settings.json

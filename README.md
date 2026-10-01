@@ -1,7 +1,82 @@
-# Test Data (VCF Inputs)
+# VCF-RDFizer testing
 
-This repository contains automated tests for a tool that converts genomic **VCF** files into **RDF**.
-Because the VCF inputs are large, they are **not stored in Git**. The experiment pipeline downloads them from their original hosting sources.
+This repository contains the current benchmark harness, plug-in tests, archived
+measurement evidence, and the BioMedSem manuscript for VCF-RDFizer.
+Large VCF inputs are downloaded from their original providers and are not stored
+in Git.
+
+| Directory or file | Purpose |
+| --- | --- |
+| [`benchmarks/`](benchmarks/README.md) | Experiment runners, fixtures and analysis; includes the separate regional, whole-genome retrieval and ACMG use-case experiments. |
+| [`benchmarks/RUN_PLAN.md`](benchmarks/RUN_PLAN.md) | Configuration and host allocation for the manuscript campaign. |
+| [`benchmarking_suggestions.md`](benchmarking_suggestions.md) | Design rationale behind the numbered benchmark experiments. |
+| [`plugin-tests/`](plugin-tests/README.md) | Policy, SPDI and gene-linker verification. |
+| [`BioMedSem_2026/paper/`](BioMedSem_2026/paper/README.md) | Current manuscript, supplement, compiled PDFs and portable source ZIP builder. |
+| [`BioMedSem_2026/benchmark-results/`](BioMedSem_2026/benchmark-results/README.md) | Measurement records and provenance used by the paper, including evidence for its testing-issues supplement. |
+| [`tool-docs/`](tool-docs/) | Current review, revision and implementation work, plus the advisor report. |
+
+The ECCB manuscript, finished experiments and superseded runners, reports and
+figures are preserved on the [`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy).
+See [the archive inventory](LEGACY.md) for what moved and how to retrieve it.
+
+## Running the current tests
+
+Start with the [benchmark operator's guide](benchmarks/README.md) for the tool
+checkout, Docker and Python dependencies. From this repository's root:
+
+```bash
+export BM_IMAGE_VERSION=3.1.0
+bash benchmarks/00_environment.sh
+bash benchmarks/run_all.sh smoke
+python3 benchmarks/analysis/collect_metrics.py --all
+```
+
+The smoke profile checks the pipeline with small inputs; its timings are not
+benchmark measurements. Follow [the run plan](benchmarks/RUN_PLAN.md) to reproduce
+the manuscript campaign. Regional retrieval, scale retrieval and the ACMG use
+case are separate experiments; see the operator's guide and
+[the ACMG instructions](benchmarks/use_case/acmg/README.md).
+
+Run plug-in checks using [their separate instructions](plugin-tests/README.md).
+The paired Q1–Q13 validation workload is exercised by
+`benchmarks/06_equivalence.sh` through VCF-RDFizer's validation runner.
+
+## Building the paper and reports
+
+```bash
+make -C BioMedSem_2026/paper
+make -C BioMedSem_2026/paper bundle
+```
+
+These build the main paper and supplement; `bundle` also produces a self-contained
+LaTeX source ZIP. See [the paper README](BioMedSem_2026/paper/README.md) for
+compilation requirements and instructions for recipients.
+
+The integrated archive summary is rebuilt with:
+
+```bash
+python3 scripts/build_run_summary.py BioMedSem_2026/benchmark-results \
+  --output BioMedSem_2026/benchmark-results/summary.json
+```
+
+| Support script | Current use |
+| --- | --- |
+| `scripts/download_test_data.sh` | Downloads and normalizes the ten public VCF inputs. |
+| `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and, optionally, the VCF-RDFizer CLI on Ubuntu. |
+| `scripts/report_system_conditions.py` | Captures host/software details; called by `00_environment.sh`. |
+| `scripts/build_run_summary.py` | Integrates archived cells, provenance and validation outcomes. |
+| `scripts/combine_benchmark_metrics.py` | Extracts per-run measurements; imported by the archive summary builder. |
+
+## Ubuntu setup
+
+```bash
+bash scripts/install_vcf_rdfizer_ubuntu.sh --docker-only
+```
+
+Open a new login shell afterwards for Docker group membership to take effect.
+To install the CLI as well, omit `--docker-only`; use
+`VCF_RDFIZER_VERSION=3.1.0` to select the base benchmark release. The installer
+skips dependencies already installed.
 
 ## Datasets
 
@@ -63,250 +138,3 @@ Before downloading each dataset, the script checks for its canonical filename in
 The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After the download succeeds, the script extracts the archive in a temporary directory, keeps the member `KatSuricata-NG1N86S6FC-30x-WGS-Sequencing_com-03-18-24.snp-indel.genome.vcf.gz`, renames it to `NG1N86S6FC.vcf.gz`, and removes the other extracted files and archive. The other downloaded files are likewise normalized to the ten canonical names shown in the table above.
 
 The four additional datasets are direct downloads from the public IGSR and NIST FTP servers. The 1000 Genomes Phase 3 chromosome-20 file is a phased GRCh37 batch VCF with 2,504 samples. The HGSVC2 `freeze3.sv.alt.vcf.gz` file is a GRCh38 structural-variant batch VCF with 32 samples; it uses sequence alleles in the `REF`/`ALT` columns rather than the symbolic-allele representation. The HG004 and HG005 files are single-sample GRCh38 Genome in a Bottle benchmark VCFs covering chromosomes 1–22. Their canonical names and download URLs are listed in the table above and are also used directly by `scripts/download_test_data.sh`.
-
-## Scripts
-
-| Script | Description |
-|---|---|
-| `scripts/combine_benchmark_metrics.py` | Combines conversion, TSV, and compression metrics from one or more benchmark runs into a consolidated JSON file. |
-| `scripts/localize_experiment.py` | Copies a timestamped run into a named `experiments/finished_experiments/` directory and rebuilds the aggregate metrics JSON for all named runs. |
-| `scripts/download_test_data.sh` | Downloads the public VCF inputs, extracts the Sequencing.com archive member, and normalizes all files to the canonical names used by the benchmarks. |
-| `scripts/export_latex_tables.py` | Converts consolidated benchmark metrics into LaTeX-ready conversion and compression tables. |
-| `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and the VCF-RDFizer Python CLI on Ubuntu; supports a `--docker-only` mode. |
-| `scripts/plot_combined_metrics.py` | Generates a comparison figure from consolidated benchmark metrics. |
-| `scripts/repair_compression_wall_times.py` | Reconstructs incorrect historical compression wall times from wrapper logs and updates the affected benchmark artifacts. |
-| `scripts/report_system_conditions.py` | Collects host and software details and emits paper-ready system-condition text or JSON. |
-
-
-## Automated Ubuntu Setup
-
-On Ubuntu, the setup script ensures `unzip` is installed, installs Docker Engine from Docker's official apt repository, enables the Docker service, and adds the current user to the `docker` group. By default it also installs the VCF-RDFizer Python CLI in a dedicated virtual environment and adds `~/.local/bin` to the user's `PATH`:
-
-```bash
-bash scripts/install_vcf_rdfizer_ubuntu.sh
-```
-
-Open a new login shell after the script completes so the Docker group membership takes effect. A specific VCF-RDFizer release can be installed with:
-
-```bash
-VCF_RDFIZER_VERSION=1.0.0 bash scripts/install_vcf_rdfizer_ubuntu.sh
-```
-
-The installer is safe to rerun: it installs only missing apt packages, downloads
-Docker's signing key and repository configuration only when absent, and skips
-the VCF-RDFizer package download when the requested package is already present.
-If `VCF_RDFIZER_VERSION` is set, it reinstalls only when that exact version is
-not already available.
-
-To install and activate Docker only, while running VCF-RDFizer from an existing git checkout:
-
-```bash
-bash scripts/install_vcf_rdfizer_ubuntu.sh --docker-only
-```
-
-This mode does not install Python packages or modify the user's `PATH`.
-
-## Replicating Conversion & Compression Tests
-
-TSV Benchmarks only:
-```bash
-vcf_rdfizer --mode tsv --input vcf-rdfizer-testing/vcf_data/ --out vcf-rdfizer-testing/benchmark-results/v1.1 --build
-```
-
-Full Run Benchmarks (including all compression types):
-```bash
-vcf_rdfizer --mode full --input vcf-rdfizer-testing/vcf_data/ --spark-partitions 8 --rdf-layout batch --out vcf-rdfizer-testing/benchmark-results/v1.1 --compression gzip,brotli,hdt,hdt_gzip,hdt_brotli --build
-```
-
-Full space-optimized run for one or more VCFs with all supported raw-RDF and
-artifact compression options:
-
-```bash
-bash test_full_spaceopt_all_compressions.sh \
-  test-larger.vcf.gz \
-  vcf_data/another-sample.vcf.gz
-```
-
-Each argument may be a basename in `VCF-RDFizer/test/test_vcf_files/`, a path
-relative to the invoking directory or this repository, or an absolute path.
-The script runs each VCF in turn, selecting raw RDF `gzip,brotli`, both
-`hdt,cottas` representations, and gzip plus Brotli packaging for each
-representation. (`space-optimized` is the VCF-RDFizer CLI spelling of the
-space-efficient mode.)
-
-## Semantic VCF Query Equivalence Tests
-
-The Dockerized suite in [`tests/test-queries`](tests/test-queries/README.md)
-compares six bioinformatic summaries computed independently from a source VCF
-and its converted N-Triples: genomic density, allele shape, Ti/Tv, exact FILTER
-distribution, per-sample genotype classes/call rate, and genotype-derived
-AC/AN. Run its edge-case fixture with:
-
-```bash
-tests/test-queries/run_in_docker.sh
-```
-
-For a real conversion, provide one VCF and its corresponding `.nt` file or
-partition directory:
-
-```bash
-tests/test-queries/run_in_docker.sh \
-  --vcf vcf_data/HG004_GRCh38.vcf.gz \
-  --rdf path/to/HG004/rdf \
-  --dataset-id HG004_GRCh38
-```
-
-The query runner consumes `.nt` only; decode generated `.hdt`/`.cottas` output
-with VCF-RDFizer first (details in the [test-specific README](tests/test-queries/README.md)).
-
-See the [test-specific README](tests/test-queries/README.md) for exact query
-semantics, multiple-partition usage, provenance options, result files, status
-interpretation, and large-dataset memory guidance.
-
-
-## Benchmark Suite
-
-[`benchmarks/`](benchmarks/) is the runnable form of
-[`benchmarking_suggestions.md`](benchmarking_suggestions.md): one script per
-plan section, a driver, and an analysis layer that emits CSV/JSON.
-
-```bash
-bash benchmarks/00_environment.sh     # capture the environment manifest first
-bash benchmarks/run_all.sh cheap      # skips the large-input experiments
-python3 benchmarks/analysis/collect_metrics.py --all
-```
-
-`BM_DRY_RUN=1` prints every command without running anything, which is the
-quickest way to see what a sweep will do. See
-[`benchmarks/README.md`](benchmarks/README.md) for the run order, the
-per-experiment table, and the handful of gotchas that actually matter.
-
-The older `test_full_*.sh` scripts in the repository root are the previous
-single-configuration runners. They still work, but they couple conversion to
-`--validate-artifacts all --validation-engine all`, which is the coupling the
-suite exists to undo.
-
-## Metrics and Reporting Scripts
-
-### 1) Combine Conversion + Compression Metrics
-
-Script: `scripts/combine_benchmark_metrics.py`
-
-Single run directory:
-
-```bash
-python3 scripts/combine_benchmark_metrics.py benchmark-results/20260305T102641
-```
-
-This writes:
-
-- `benchmark-results/20260305T102641/combined_metrics.json`
-
-Multiple run directories:
-
-```bash
-python3 scripts/combine_benchmark_metrics.py \
-  benchmark-results/20260305T102641 \
-  benchmark-results/20260308T120000 \
-  -o benchmark-results/combined_metrics_all_runs.json
-```
-
-### 2) Localize a Finished Experiment
-
-After a VCF-RDFizer run has written metrics to
-`experiments/run_metrics/<run-id>`, give it a human-readable name and add it
-to the aggregate archive:
-
-```bash
-python3 scripts/localize_experiment.py \
-  20260824T173012 \
-  --name plain-hdt-cottas
-```
-
-This copies the run to
-`experiments/finished_experiments/plain-hdt-cottas/` and writes or refreshes
-`experiments/finished_experiments/combined_metrics_multi_run.json` using every
-named run already in `finished_experiments`. Before aggregation, it repairs
-recoverable compression wall times across all named runs and verifies that every
-successful compression method has a recorded wall-clock time. It refuses to
-publish an aggregate if a successful operation still lacks that measurement,
-rather than inventing a value. A method that was selected but has no recorded
-result is kept in the aggregate's integrity audit and is not emitted as a
-null-valued compression measurement, so an older incomplete archive does not
-block a later completed run. The original run ID and timestamp remain available
-in the copied metric files, while the aggregate uses the chosen directory name
-as `run_name`.
-
-Use `--source-root`, `--finished-root`, or `--output` when working with a
-different layout. An existing name is protected by default; pass
-`--overwrite` only when replacing that localized copy is intentional.
-
-### 3) Generate Comparison Figure
-
-Script: `scripts/plot_combined_metrics.py`
-
-Requirements:
-
-```bash
-python3 -m pip install matplotlib
-```
-
-Generate figure PNG from combined metrics:
-
-```bash
-python3 scripts/plot_combined_metrics.py \
-  benchmark-results/20260305T102641/combined_metrics.json \
-  -o benchmark-results/20260305T102641/combined_metrics_figure.png
-```
-
-### 4) Export LaTeX Tables (Conversion + Compression)
-
-Script: `scripts/export_latex_tables.py`
-
-```bash
-python3 scripts/export_latex_tables.py \
-  benchmark-results/20260305T102641/combined_metrics.json
-```
-
-This writes two LaTeX-ready files beside the JSON:
-
-- `conversion_stats_table.tex`
-- `compression_stats_table.tex`
-
-Custom output directory:
-
-```bash
-python3 scripts/export_latex_tables.py \
-  benchmark-results/20260305T102641/combined_metrics.json \
-  --output-dir benchmark-results/latex
-```
-
-### 5) Report System/Test Conditions
-
-Script: `scripts/report_system_conditions.py`
-
-Generate a paper-ready sentence:
-
-```bash
-python3 scripts/report_system_conditions.py --format sentence
-```
-
-Generate machine-readable JSON:
-
-```bash
-python3 scripts/report_system_conditions.py --format json
-```
-
-Generate both sentence + JSON:
-
-```bash
-python3 scripts/report_system_conditions.py --format both
-```
-
-Write output to a file:
-
-```bash
-python3 scripts/report_system_conditions.py \
-  --format both \
-  -o benchmark-results/system_conditions.txt
-```

@@ -629,84 +629,10 @@ def fig_retrieval() -> None:
         print(f"  qlever on {t}: {st.mean(per_target[t]):.2f} setup {st.mean(setup[(t, 'qlever')]):.2f}")
 
 
-# ---------------------------------------------------------------------------
-# Figure: the policy demonstrator's decision grid
-# ---------------------------------------------------------------------------
-POLICY_DEMO = HERE / "data" / "policy-demo"
-REQUESTERS = [("gru", "General research", "GRU"), ("alz", "Alzheimer's study", "DS"),
-              ("clinical", "Clinical genetics", "CC")]
-BRCA1_WINDOW = ("chr17", 43044295, 43125483)
-APOE_E4 = ("chr19", 44908684, "T", "C")
-
-
-def policy_rows(key):
-    """(label, released?, cell text) per row of the grid, for one requester's view."""
-    view = POLICY_DEMO / key
-    counts = json.loads((view / "summary.json").read_text(encoding="utf-8"))
-    decisions = list(csv.DictReader((view / "decisions.csv").open(encoding="utf-8")))
-    rows = []
-    for file_iri, info in counts["groups"].items():
-        name = file_iri.split("//")[1].replace(".vcf", "")
-        if info["released"]:
-            rows.append((name, True, f"{info['records_released']} records"))
-        else:
-            rows.append((name, False, "withdrawn" if "prohibition" in info["reason"] else "no consent"))
-
-    def selected(test):
-        # Records the rule decides: those in files this requester may otherwise see.
-        hits = [d for d in decisions if test(d) and counts["groups"][d["group"]]["released"]]
-        released = sum(d["released"] == "True" for d in hits)
-        return released == len(hits), f"{released} of {len(hits)}"
-
-    chrom, start, end = BRCA1_WINDOW
-    rows.append(("BRCA1", *selected(lambda d: d["chrom"] == chrom and start <= int(d["pos"]) <= end)))
-    rows.append(("rs429358", *selected(lambda d: (d["chrom"], int(d["pos"]), d["ref"], d["alt"]) ==
-                                       (APOE_E4[0], APOE_E4[1], APOE_E4[2], APOE_E4[3]))))
-    return rows, counts
-
-
-def fig_policy() -> None:
-    views = {key: policy_rows(key) for key, _, _ in REQUESTERS}
-    labels = [label for label, _, _ in views["gru"][0]]
-    rule_text = {"P001": "GRU + CC", "P002": "GRU + CC", "P003": "HMB", "P004": "withdrew",
-                 "P005": "DS", "BRCA1": "region: CC only", "rs429358": "variant: DS only"}
-    fig, ax = plt.subplots(figsize=(WIDTH_IN, 2.7))
-    fig.subplots_adjust(left=0.25, right=0.99, top=0.85, bottom=0.16)
-    n_rows = len(labels)
-    for col, (key, _, _) in enumerate(REQUESTERS):
-        rows, _ = views[key]
-        for row, (label, released, text) in enumerate(rows):
-            y = n_rows - 1 - row
-            ax.add_patch(plt.Rectangle((col + 0.04, y + 0.08), 0.92, 0.84, linewidth=0,
-                                       facecolor=BLUE if released else "#e7e6e2"))
-            ax.text(col + 0.5, y + 0.5, text, ha="center", va="center", fontsize=6.5,
-                    color="white" if released else INK_2)
-    ax.axhline(2.0, color=AXIS, linewidth=0.6)            # consents above, cohort rules below
-    ax.set_xlim(0, len(REQUESTERS))
-    ax.set_ylim(0, n_rows)
-    ax.set_yticks([n_rows - 0.5 - i for i in range(n_rows)])
-    ax.set_yticklabels([f"{label}  ({rule_text[label]})" for label in labels])
-    ax.set_xticks([i + 0.5 for i in range(len(REQUESTERS))])
-    ax.set_xticklabels([f"{name}\npurpose {code}" for _, name, code in REQUESTERS])
-    ax.xaxis.tick_top()
-    ax.tick_params(length=0)
-    for side in ax.spines.values():
-        side.set_visible(False)
-    for col, (key, _, _) in enumerate(REQUESTERS):
-        s = views[key][1]
-        ax.text(col + 0.5, -0.25, f"{s['records_released']} of {s['records_released'] + s['records_withheld']} "
-                "records released\n"
-                f"{views[key][1]['triples_withheld']:,} triples withheld",
-                ha="center", va="top", fontsize=6.2, color=INK_2)
-    fig.savefig(OUT / "fig-policy-grid.pdf", metadata=PDF_METADATA)
-    plt.close(fig)
-
-
 if __name__ == "__main__":
     fig_scaling()
     fig_samples()
     fig_representations()
     fig_retrieval()
-    fig_policy()
-    for name in ("fig-scaling", "fig-samples", "fig-representations", "fig-retrieval", "fig-policy-grid"):
+    for name in ("fig-scaling", "fig-samples", "fig-representations", "fig-retrieval"):
         print("wrote", OUT / f"{name}.pdf")
