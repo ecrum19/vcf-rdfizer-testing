@@ -1,0 +1,370 @@
+% Supplementary material for current.tex. Section numbers in the main text
+% are read from its .aux (xr), so build the main text first: `make` does both.
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xr-hyper}
+\usepackage[hidelinks]{hyperref}
+\externaldocument[M-]{current}
+
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\newcommand{\main}[1]{Section~\ref{M-#1} of the main text}
+
+\title{Supplementary material\\[4pt]\large VCF-RDFizer: A Conversion Tool to Represent Variant Data as a Knowledge Graph}
+\author{Elias Crum, Bart Buelens, Ruben Taelman, Gökhan Ertaylan}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent This document holds the evaluation's bookkeeping: how the campaign was run and recorded (\ref{sup:repro}), the coverage of VCF versions and awkward inputs (\ref{sup:inputs}), configuration and operating-mode coverage (\ref{sup:config}), and the defects testing found and how each was resolved (\ref{sup:issues}), and two measurements the main text reports in its prose (\ref{sup:measurements}). The main text reports the results that bear on its contributions; everything here supports them and none of it changes them.
+
+\section{Reproducibility and execution}\label{sup:repro}
+
+\textbf{Release and image.}
+The tagged benchmark configuration uses VCF-RDFizer v3.1.0 (commit \texttt{d3b34d5}) from \texttt{ecrum19/vcf-rdfizer:v3.1.0}, with resolved image digest
+\begin{center}\small\texttt{sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa}\end{center}
+\noindent
+Image rebuilding is disabled during execution so that all cells in the tagged run use the same container.
+The per-cell manifests retain the actual commit and image identifiers used for each measurement.
+v3.1.0 bundles the VCF Core SHACL shapes from vocabulary commit \texttt{5bfd19d}.
+The regional-retrieval cells postdate v3.1.0 (they need the regional runner and \texttt{tabix}) and were produced by commit \texttt{3da1a5a}.
+The use case (\main{subsec:usecase}) converts with the v3.2.0 image and links and governs with v3.3.0's linkers and policy plug-in v0.2.0.
+
+\textbf{Pinned toolchain.}
+VCF-RDFizer v3.1.0 fixes its dependencies inside the container image: RMLStreamer 2.5.0, hdtc 1.1.0, pycottas 1.1.0, DuckDB 1.5.5, cyvcf2 0.34.0, pyshacl 0.30.1, Comunica 5.3.0 for N-Triples, \texttt{@comunica/query-sparql-hdt} 5.0.1, the COTTAS Comunica engine 0.1.0, bcftools from the base distribution, and QLever pinned by image digest.
+\texttt{rdf2hdt} and \texttt{hdt2rdf} are compiled from the hdt-cpp repository at image build time, so their exact revision is fixed by the image digest rather than by a version number; the resolved image for each benchmark run is recorded with its command and metrics.
+
+\textbf{Hosts.}
+Experiments run on two physically separate, identically specified hosts (\texttt{vcf-bench-1} and \texttt{vcf-bench-2}):
+Ubuntu 24.04.4 LTS, kernel 6.8.0-85-generic, Intel Xeon Silver 4309Y at 2.80\,GHz (8 cores), 33.6\,GB RAM with swap disabled, a 210\,GB SSD, Docker 29.7.2, and Python 3.12.3.
+Each complete experiment is assigned to one host and executed without concurrent benchmark jobs, keeping comparisons within-host.
+On a shared calibration workload the two hosts produced the same graph: identical triple sets, a byte-identical COTTAS artifact and HDT index, and N-Triples and HDT files that differ only in line order and in the HDT header's \texttt{dcterms:issued} timestamp.
+Their speed differed: the conversion phase took 26\,s on \texttt{vcf-bench-1} and 37\,s on \texttt{vcf-bench-2}, and validation 156\,s and 208\,s.
+Timings are therefore compared only within a host; the calibration characterizes, rather than eliminates, variation between hosts.
+
+\textbf{What each cell records.}
+The harness creates a fresh output directory for each cell and records its command, host, tool commit, container image, exit status, and wall time.
+Tool reports provide stage timings, peak resident set size, triple counts, artifact sizes, and validation outcomes; workspace monitoring records transient disk use separately from final artifact size.
+Input sizes used in performance comparisons are uncompressed VCF bytes, while the corpus table reports compressed download sizes.
+Replicated comparisons report variability or confidence intervals; single-run corpus measurements describe the tested input and configuration without estimating run-to-run variation.
+The per-cell records, normalized query results, and comparison reports are archived in the testing repository.
+
+\textbf{The campaign.}
+The campaign comprises 143 recorded cells over 96.2\,h of measured wall time (Table~\ref{tab:campaign}).
+Every cell records its own argv, host, tool commit and image digest, and the integrated record of all cells is archived with the testing repository.
+A non-zero exit is classified by what the cell asserted: two cells were required to be refused and were (\emph{refused}), two recorded an exit status without asserting an outcome (\emph{recorded}), and three were skipped by a stated guard.
+No cell failed.
+
+\begin{table}[t]
+\caption{The benchmark campaign, grouped by the question each experiment answers. \emph{Recorded}: a non-zero exit that the cell observed without asserting an outcome; \emph{refused}: the cell required the configuration to be rejected, and it was; \emph{skipped}: a guard refusal with a stated reason. Hosts: \texttt{vcf-bench-1} (b1), \texttt{vcf-bench-2} (b2). Every cell was produced by the published v3.1.0 image. Section numbers prefixed S are in this document; the others are in the main text.}\label{tab:campaign}%
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{}l r >{\raggedright\arraybackslash}p{0.2\textwidth} c r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Experiment} & \textbf{Cells} & \textbf{Outcome} & \textbf{Host} & \textbf{Hours} & \textbf{Question answered} \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Conversion, scaling and storage}} \\
+Records scaling            & 10 & all OK               & b1 & 10.99 & How cost grows with records (§\ref{M-subsec3.3}) \\
+Sample representation      & 30 & 29 OK, 1 skipped & b2 & 19.69 & How the two profiles grow with samples (§\ref{M-subsec3.3}) \\
+Storage mode               & 8  & all OK               & b1 & 12.87 & Peak workspace of plain vs space-optimized (§\ref{M-subsec3.3}) \\
+Corpus breadth             & 10 & 9 OK, 1 skipped      & b2 & 26.90 & HDT and COTTAS on ten public inputs (§\ref{M-subsec3.4}) \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{Input and configuration coverage}} \\
+Representation axes        & 20 & all OK               & b1 & 4.82  & VCF 4.1--4.5; cost of INFO and header representations (§\ref{sup:inputs}, §\ref{sup:config}) \\
+Difficult inputs           & 16 & 13 OK, 2 recorded, 1 skipped & b1 & 0.10 & Eleven awkward VCFs and the demonstration linkers (§\ref{sup:inputs}) \\
+Covering set               & 10 & all OK               & b1 & 0.35  & Every option value and pair (§\ref{sup:config}) \\
+Modes                      & 7  & all OK               & b1 & 0.03  & Each operating mode on its own (§\ref{sup:config}) \\
+Feasibility                & 9  & all OK               & b1 & 9.03  & Memory ceiling $\times$ configuration (§\ref{sup:config}) \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{Validation and retrieval}} \\
+Robustness                 & 9  & all OK               & b1 & 0.25  & Determinism, round trip, mutation score (§\ref{M-subsec3.5}) \\
+Equivalence                & 8  & 6 OK, 2 refused      & b2 & 6.84  & Four engines, both profiles, three artifacts (§\ref{sup:config}) \\
+Query cost                 & 6  & all OK               & b1 & 4.27  & SPARQL vs cyvcf2 on identical work (§\ref{M-subsec3.6}) \\
+\midrule
+\textbf{Total}             & \textbf{143} & \textbf{136 OK, 2 recorded, 2 refused, 3 skipped} & & \textbf{96.16} & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Chunked construction of HDT and COTTAS.}
+The representation stage reads the plain or gzip aggregate incrementally, respects newline-terminated N-Triples record boundaries, and materializes one raw chunk in a Docker-managed workspace.
+Each selected representation builder consumes that chunk before it is deleted and the next one is created (Figure~\ref{fig:chunks}).
+At most one uncompressed RDF chunk exists at a time; the final parts, merge intermediates, indexes and converter scratch space still require storage, but no full decompressed duplicate of the aggregate is created.
+HDT chunks are converted with \texttt{rdf2hdt} from hdt-cpp \cite{hdtcpp,hdt_2013} and merged pairwise in a balanced tree with \texttt{hdtc create} \cite{hdtc_2026}, which performs the same logical merge as HDTCat \cite{Diefenbach2020HDTCat} under a fixed memory budget and without Java; an unpaired file is carried into the next round, and each merge's scratch directory is removed as soon as that merge completes.
+The final HDT is indexed by \texttt{hdtc}, producing the sibling \texttt{.hdt.index.v1-1} index without executing a query; intermediate indexes are not retained.
+COTTAS chunks are converted with pycottas \cite{pycottas_2026} and merged in one streaming $k$-way pass rather than pairwise, so no global in-memory hash table or full-size temporary spill is built.
+In v3.1.0 the merged output carries a fixed \texttt{spo} index; v3.2.0 adds the other index orders.
+Each COTTAS operation runs in an isolated temporary working directory, so that its local DuckDB scratch database cannot be reused by a later chunk or merge.
+Chunk conversion, merging, final indexing, validation, and packaging are timed separately.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize, >={Stealth[length=3.5pt]},
+  st/.style={draw, rounded corners=1.5pt, align=center, inner sep=2.5pt, minimum height=0.62cm, line width=0.5pt, font=\scriptsize},
+  fl/.style={->, line width=0.5pt, draw=black!75},
+]
+\node[st, minimum width=1.9cm] (agg) at (0,0) {aggregate\\\texttt{.nt} or \texttt{.nt.gz}};
+\node[st, minimum width=2.1cm] (chk) at (2.75,0) {raw chunk $i$\\record-safe, $\leq$1\,GiB};
+\node[st, minimum width=1.45cm] (h) at (5.35,0.45) {\texttt{rdf2hdt}};
+\node[st, minimum width=1.45cm] (c) at (5.35,-0.45) {pycottas};
+\node[st, minimum width=1.8cm] (hp) at (7.65,0.45) {HDT part $i$};
+\node[st, minimum width=1.8cm] (cp) at (7.65,-0.45) {COTTAS part $i$};
+\node[st, minimum width=1.9cm] (fin) at (10.55,0) {final merge, index\\{\tiny after the last chunk}\\\texttt{.hdt}, \texttt{.cottas}};
+\draw[fl] (agg) -- (chk);
+\draw[fl] (chk.east) -- ++(0.3,0) |- (h.west);
+\draw[fl] (chk.east) -- ++(0.3,0) |- (c.west);
+\draw[fl] (h) -- (hp); \draw[fl] (c) -- (cp);
+\draw[fl] (hp.east) -- ++(0.3,0) |- (fin.west);
+\draw[fl] (cp.east) -- ++(0.3,0) |- (fin.west);
+\draw[fl, dashed] (c.south) -- ++(0,-0.35) -| node[pos=0.27, below, font=\tiny]{delete chunk $i$, then read chunk $i{+}1$} (agg.south);
+\end{tikzpicture}
+\caption{One chunk at a time: each record-safe chunk is consumed by every selected builder and deleted before the next is read.}\label{fig:chunks}
+\end{figure}
+
+\textbf{Chunk sizes.}
+By default a chunk targets 512\,MiB of uncompressed N-Triples, bounded below by 128\,MiB and above by 1\,GiB (\texttt{--chunk-target-bytes}, \texttt{--chunk-min-bytes}, \texttt{--chunk-max-bytes}).
+For constrained workspaces the documented lower-peak setting is 128\,MiB target, 64\,MiB minimum and 256\,MiB maximum, trading additional chunks and merges for a lower temporary peak.
+Every experiment used the defaults except six cells of the memory-feasibility sweep, which used the lower-peak setting (\ref{sup:config}).
+
+\textbf{Distribution and maintenance.}
+Each tagged VCF-RDFizer version is published across PyPI, Conda-Forge, and Docker Hub, so users can choose pip-, conda-, or container-based installation with matched versions, under the MIT License \cite{jimenez_2017_f1000}.
+The GitHub README is the primary user guide: quick-start commands, end-to-end examples, command-line option documentation, and troubleshooting notes.
+The project follows a release-oriented workflow with versioned release notes, public issue triage, and a unit-test suite that runs on Linux, macOS and Windows.
+
+\section{Input and version coverage}\label{sup:inputs}
+
+\textbf{The public corpus.}
+Table~\ref{tab:test-corpus} lists the ten public VCFs. Download commands and canonical filename definitions are maintained in the testing repository.
+
+\begin{table}[t]
+\caption{
+  Public VCF corpus. File names are canonical \texttt{.vcf.gz} stems; later tables abbreviate the GIAB identifiers. Assembly and sample counts were verified from each file's header. Sizes are approximate compressed download sizes; the tool processes the uncompressed stream.}\label{tab:test-corpus}%
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{}l l c r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{File} & \textbf{Provider} & \textbf{Assembly} & \textbf{Samples} & \textbf{MB (gz)} & \textbf{Evaluation role} \\
+\midrule
+\texttt{NG1N86S6FC}     & Sequencing.com  & GRCh38 & 1 & 379 & Consumer WGS \\
+\texttt{NG131FQA1I}     & Dante Labs      & GRCh38 & 1 & 224 & Consumer WGS \\
+\texttt{NB72462M}       & Nebula Genomics & GRCh38 & 1 & 341 & Consumer WGS \\
+\texttt{60820188475559} & PGP upload      & GRCh37 & 1 & 325 & SNP-only profile \\
+\texttt{60820188474283} & Dante Labs      & GRCh37 & 1 & 222 & Consumer WGS \\
+\texttt{0GOOR\_HG002}   & precisionFDA    & GRCh38 & 1 & 69  & GIAB Truth Challenge v2 \\
+\texttt{1000G\_phase3\_chr20} & 1000 Genomes & GRCh37 & 2{,}504 & 327  & Phased cohort \\
+\texttt{HGSVC2}               & HGSVC2       & GRCh38 & 32      & 31.5 & Multi-sample SVs \\
+\texttt{HG004\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 149  & Benchmark genome, chr1--22 \\
+\texttt{HG005\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 139  & Benchmark genome, chr1--22 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Declared VCF versions.}
+Six single-purpose fixtures covering VCFv4.1 through VCFv4.5, plus one file with no \texttt{\#\#fileformat} declaration, all converted with exit code 0.
+The generated RML mapping for each version is byte-identical apart from the asserted file class (\texttt{vcfc:VCF41File} through \texttt{vcfc:VCF45File}), which locates version awareness in the typed file resource rather than in field-level rules.
+Field handling is therefore data-driven: the VCFv4.5 fixture's local-allele \texttt{FORMAT} keys (\texttt{LAA}, \texttt{LAD}) and the VCFv4.4 fixture's phase-set key (\texttt{PS}) are carried through as ordinary FORMAT entries, raising the per-record triple yield from 210 (4.4) to 252.5 (4.5) on otherwise matched two-record fixtures.
+This is preservation, not interpretation: nothing in the graph resolves a local allele index to a global allele, so VCFv4.4/4.5 support is lexical carry-through pending a dedicated local-allele semantics layer.
+The undeclared-version file also converted, via the documented fallback.
+
+\textbf{Real cohorts.}
+Nine of ten corpus files converted end to end, with HDT and COTTAS built and decode-checked for each.
+The tenth, the 2,504-sample 1000 Genomes chromosome-20 call set, was skipped by the benchmark harness rather than refused by the tool: the harness withholds any corpus file with more than 1{,}000 sample columns from the expanded arm, because the expanded representation emits one call resource per record and sample.
+Its full sample dimension was exercised instead through 10{,}000-record slices carrying all 2{,}504 samples, which converted in both representations; \main{subsec3.3} quantifies why the expanded arm cannot be run on the whole file at this disk budget.
+The tool also applies a workspace check: before converting, it estimates the expanded workspace from the record and sample counts and refuses the run when that estimate exceeds three quarters of the free space, naming the condensed representation as the alternative.
+
+\textbf{Difficult inputs.}
+Eleven adversarial fixtures were run (Table~\ref{tab:awkward}; fixture files are named \texttt{awkward\_*} in the testing repository).
+Nine converted and passed validation, including CRLF line endings, symbolic alleles, breakend ALT syntax, ploidy 4 and 3 in the same file, half-calls and haploid calls, missing values in every optional field, header keys declared but never used, the three-way \texttt{PASS}/\texttt{.}/failed-filter distinction, and a header-only file with no data records.
+Two cells exited non-zero.
+One is a refusal to convert: the truncated gzip stream, rejected in 0.58\,s at the decompression stage with a clear diagnostic, which is the intended behaviour.
+The sites-only file produced 245 triples and an HDT artifact, but its paired validation was not completed (\ref{sup:issues}).
+
+\begin{table}[t]
+\caption{Difficult-input fixtures. Both ``converted'' and ``refused with a clear diagnostic'' are acceptable outcomes; a crash or a silently wrong graph is not, and neither occurred. Triple counts are for the complete graph the run produced.}\label{tab:awkward}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.165\textwidth} >{\raggedright\arraybackslash}p{0.125\textwidth} r >{\raggedright\arraybackslash}p{0.135\textwidth} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Fixture} & \textbf{Outcome} & \textbf{Triples} & \textbf{Validation} & \textbf{Note} \\
+\midrule
+CRLF line endings & converted & 262 & PASS & No stray \texttt{\textbackslash r} in the last field's literal \\
+Symbolic alleles & converted & 453 & PASS & \texttt{<DEL>} not treated as a base string \\
+Breakend ALT & converted & 417 & PASS & Breakend ALT syntax preserved \\
+Mixed ploidy & converted & 350 & PASS & Ploidy 4 then 3 followed the data \\
+Half and haploid calls & converted & 446 & PASS & Four genotype cases stayed distinct \\
+Missing values & converted & 321 & PASS & Missing QUAL, FILTER, INFO and FORMAT absent from the graph \\
+FILTER variants & converted & 486 & PASS & \texttt{PASS}, \texttt{.} and a failed code are three states \\
+Declared FORMAT unused & converted & 293 & PASS & Header declaration represented although never used \\
+Zero data records & converted & 189 & PASS & Header-only input; no data records \\
+\midrule
+Sites only & converted; validation not completed & 245 & incomplete & Graph and HDT artifact produced \\
+Truncated gzip & refused at decompression & --- & not reached & Refused in 0.58\,s with a decompression diagnostic; intended \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Configuration coverage, operating modes and memory feasibility}\label{sup:config}
+
+\textbf{Covering set.}
+A ten-row covering set exercised every value of all seven configuration axes --- sample representation, INFO representation, storage mode, RDF compression, representations, artifact compression and HDT strategy --- and all ten rows exited 0 and passed validation, including the shapes.
+Pairwise coverage is complete except for three combinations the wrapper structurally refuses (\texttt{--hdt-strategy single} beside space-optimized storage, beside COTTAS, and beside \texttt{hdt,cottas}), so the remaining gaps are specification, not omission.
+Gzip and Brotli were exercised as values of both compression axes; the campaign does not compare the two codecs' ratios or throughput.
+
+\textbf{Operating modes.}
+Each of the tool's operating modes --- \texttt{tsv}, \texttt{compress}, \texttt{decompress}, \texttt{index} for HDT and for COTTAS, a conversion-only phase and a validation-only phase --- ran independently and exited 0, confirming that conversion and validation are separable stages rather than one monolithic command.
+
+\textbf{Memory feasibility.}
+A feasibility sweep crossed three memory ceilings (8, 16 and 31\,GB) with three configurations on a one-million-record input.
+All nine cells completed; peak resident memory was 1.34--1.93\,GB in every case, below every requested ceiling, which is consistent with the flat memory scaling in \main{subsec3.3}.
+This experiment carries one caveat that must be reported with it: the ceiling was requested through Docker memory limits but the harness could not confirm that the pinned release forwards them to its container invocations, so these cells establish that the workload is memory-light, not that it survives a genuinely enforced cap.
+
+\textbf{The cost of the INFO and header representations.}
+On the structural-variant file, structured INFO produced 96.75M triples against 89.01M for raw INFO ($+8.7\%$) and a 7.4\% larger artifact, and on the 100{,}000-record \texttt{HG005\_GRCh38} input it produced 17.10M against 12.52M ($+36.6\%$).
+Raw INFO still carries the allele layer here, because the expanded sample profile references it (\ref{sup:issues}); before that fix the raw arm omitted it and the difference looked larger than it is.
+Structured header representation costs almost nothing by comparison (17{,}098{,}746 against 17{,}094{,}293 triples, $+0.03\%$).
+
+\textbf{Cross-encoding equivalence.}
+The equivalence experiment converted one 10{,}000-record, multi-sample fixture in both sample representations and both storage modes, built HDT and COTTAS from each, and ran the full twenty-seven-query suite (the fourteen preflight checks and Q1--Q13) under all four engines against all three artifacts.
+All sixteen validations passed with all four engines in agreement, on graphs of 0.96M triples (expanded) and 0.79M triples (condensed).
+The complete condensed cell took 70.4\,min end to end.
+Two further cells asserted that the tool must refuse \texttt{--hdt-strategy single} beside COTTAS and beside space-optimized storage, and it did, with exit status 2.
+
+\section{Defects found during testing, and their resolution}\label{sup:issues}
+
+Testing identified problems in measurement, conversion, and validation.
+Three of them were conversion defects that the validation layer itself caught; the main text summarizes them in \main{subsec3.5}.
+None alters a measurement reported in the main text.
+
+\textbf{Header-only input omitted its declared samples.}
+A VCF with a declared sample column but no data records produced a graph without the \texttt{vcfc:SampleSet} and \texttt{vcfc:VCFSample} resources declared by its header.
+The emitters derived the file IRI from a source name learned from the first data row.
+The predicate and class censuses (Q9 and Q10) detected the missing resources.
+Emitting the sample set from the header increased the graph from 181 to 189 triples and allowed validation to complete.
+The same test exposed an incorrect oracle expectation: \texttt{preflight\_sample\_gt\_inventory} expected one \texttt{vcfc:sampleId}, although that property belongs to a per-record \texttt{vcfc:SampleCall}.
+The oracle was adjusted to expect no such calls when the file contains no records.
+
+\textbf{Allele references without corresponding resources.}
+Applying the shapes to the configuration covering set identified three failing rows, all combining raw INFO with expanded samples.
+Allele resources were emitted only for structured INFO, but expanded genotypes referenced them through \texttt{vcfc:calledAllele} regardless of the INFO setting.
+A 1,000-record test produced 1,972 such references without the corresponding allele descriptions.
+The comparison queries counted those edges without following them, whereas the shapes reported 5,916 violations.
+The emitter was changed to produce the allele layer when either representation requires it.
+The census oracle also needed the same dependency rule: its initial expectation reproduced the emitter's assumption and rejected the added triples.
+After both were updated, all ten covering-set rows passed.
+Each affected row gained 10,846 triples, while the other seven outputs remained byte-identical.
+Regression checks cover all four INFO/sample representation combinations and require every referenced allele to be described.
+
+\textbf{A withdrawn file's header remained in every release view.}
+During development of the policy plug-in, every record decision was correct, but a withdrawn file's header and sample set remained in every view, which the record counts alone could not show.
+The check against the VCF-text oracle caught it.
+That defect is why the plug-in defines what a withheld resource takes with it by an ownership rule rather than by a list of record subtrees (\main{subsec:plugins}).
+
+\textbf{Two memory guards that measured the wrong quantity.}
+Extending retrieval to 171M triples (\main{subsec3.6}) exposed two defects, neither visible at fixture scale.
+First, the shape layer is size-gated because \texttt{pyshacl} is in-memory, but the gate weighed the \emph{packaged artifact} while the cost it guards against is set by the \emph{graph}.
+One 170{,}935{,}101-triple graph therefore fell on both sides of a single 512\,MiB threshold according only to how it was packaged: as COTTAS (390.7\,MB) it passed the gate and the run was killed at 32.2\,GB resident on a 31\,GB machine, while the same graph as gzip-framed N-Triples (756.6\,MB) or HDT (1.18\,GB) was skipped.
+The better a format compressed, the likelier it was to exhaust memory.
+The gate now counts triples, which no packaging changes.
+Second, the Comunica-backed endpoints aborted with a JavaScript heap exhaustion while roughly 25\,GB of the host's memory was free, because Node does not size its heap from the machine and no ceiling was set; the ceiling is now configurable.
+Both corrections are released in v3.3.0 and neither alters conversion output; the failing runs are archived alongside the successful ones.
+
+\textbf{COTTAS query execution and timeout enforcement.}
+The initial COTTAS query implementation used pycottas' RDFLib store.
+On the condensed representation it completed the fourteen preflight queries and Q1--Q4, then failed to complete \texttt{q05\_sample\_genotype\_counts}.
+Two attempts ran for approximately 41\,h and 10\,h at roughly 190\% CPU before being stopped.
+The second had a 1,800\,s per-query timeout and a 14,400\,s validation budget, but neither interrupted the in-process query.
+Both runs are archived.
+Replacing this path with the DuckDB-backed Comunica engine reduced Q5 to 2--5\,s and the thirteen-query workload on the 0.96M-triple comparison graph to 38\,s, against 1,402\,s through RDFLib.
+Query execution now occurs where the timeout can terminate it, and the completed cross-engine measurements use this engine.
+
+\textbf{SHACL report interpretation.}
+Integrating the vocabulary's SHACL shapes exposed two reporting errors.
+The validator treated \texttt{pyshacl}'s \texttt{conforms} flag as a blocking verdict even for recommendations, causing conformant INFO declarations without \texttt{Source} to be rejected.
+Its violation matcher also expected a report format that \texttt{pyshacl} did not emit.
+The parser was corrected to classify results by severity, with only \texttt{sh:Violation} blocking a run.
+
+\textbf{Missing-token preflight false positives.}
+The preflight reports contain 608 checks: 599 passed and nine flagged the missing-token rule, all on the 100,000-record \texttt{HG005\_GRCh38} input.
+The rule looks for bare \texttt{"."} literals that should have been typed as \texttt{vcfc:Null}.
+It first returned 20 rows there, all on \texttt{vcfc:fieldNumber} or \texttt{vcfc:genotypeString}, where a dot is legitimate: \texttt{Number=.} denotes variable cardinality, and a fully missing genotype is written \texttt{.}.
+The rule was narrowed to exclude those two predicates.
+In v3.1.0 it still returns ten rows, and they are the same case one layer over: the header declares ten INFO fields with \texttt{Number=.}, and the header-attribute layer also carries each declaration's Number attribute verbatim as a \texttt{vcfc:attributeValue} of \texttt{"."}.
+A follow-up change excludes that attribute's value as well while still reporting a bare dot on any other attribute; it postdates v3.1.0, so the ten flags remain in this campaign's reports.
+None of the flags reflects malformed output.
+
+\textbf{Sites-only fixture limitation.}
+The sites-only fixture produced 245 triples and a valid HDT artifact, but its two validations ended with \texttt{EXECUTION\_FAILED}.
+The fixture declared a FORMAT column without sample columns, which \texttt{bcftools} rejects.
+This is a fixture/oracle limitation rather than evidence that the generated graph failed semantic comparison.
+No completed paired result is claimed for this input, and a conformant sites-only fixture remains necessary to establish that coverage.
+
+\textbf{Measurement and reporting in the legacy benchmark.}
+The earlier six-file, batch-oriented benchmark exposed two measurement problems.
+Partitioned compression wall times were under-reported; the timing implementation was corrected in commit \texttt{fb48e50}, and the affected historical durations were reconstructed from wrapper logs and execution timestamps.
+In addition, an input-size column labelled \texttt{.vcf.gz} actually contained the uncompressed VCF stream size: the retained \texttt{NG131FQA1I.vcf} contains 1{,}215{,}509{,}730 bytes, matching the reported 1215.5\,MB.
+The compression denominator also affected interpretation: the legacy HDT reduction of approximately 92--95\% was measured against uncompressed N-Triples, whereas in the current corpus experiment HDT is 1.36--1.82 times the size of the stored gzip-framed N-Triples.
+These use different reference artifacts and are not a like-for-like change in compression performance, so the legacy conversion and compression tables are excluded from the current analysis.
+
+\section{Additional measurements}\label{sup:measurements}
+
+Figure~\ref{fig:scaling} and Table~\ref{tab:scale} hold measurements that \main{subsec3.3} and \main{subsec3.6} report in the text.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-scaling.pdf}
+\caption{\textbf{Record scaling and storage mode.}
+(a)~Growth of each measure relative to the 10{,}000-record rung of the \texttt{HG005\_GRCh38} ladder (medians of three replicates; the whole file is one run). Triples, end-to-end wall time and peak disk workspace grow in proportion to the records, while the mapping stage's peak resident memory stays between 1.0 and 1.7\,GB.
+(b)~Peak disk workspace of the plain and space-optimized storage modes on two inputs, with the end-to-end time cost of space-optimized mode. Final artifacts and triple counts are identical in both modes.
+Both panels are from the v3.1.0 run on \texttt{vcf-bench-1}.}\label{fig:scaling}
+\end{figure}
+
+\begin{table}[t]
+\caption{Retrieval at scale, on graphs built from \texttt{HG005\_GRCh38} by the published v3.1.0 image. Times are for the thirteen core questions of Table~\ref{M-tab:semantic-queries}, excluding the one-time index build, which is reported separately. Every completed question's answer was compared against cyvcf2 before its timing was read. The Comunica-backed engines do not complete the workload at this size; their totals cover the five questions they answered, and are not comparable with a thirteen-question total. The three packagings of the whole-genome graph differ by 0.3\% in query time; what differs between them is the one-time decode, reported in the last column.}\label{tab:scale}%
+\centering
+\scriptsize
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth} r l r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Graph} & \textbf{Triples} & \textbf{Engine} & \textbf{Time (s)} & \textbf{Outcome} \\
+\midrule
+\multicolumn{5}{@{}l}{\itshape Does SPARQL scale to a whole genome? (all thirteen questions)}\\
+Fixture          & 958{,}919       & QLever & 1.1   & 1.15\,s per million triples \\
+100\,k records   & 17{,}098{,}746  & QLever & 17.0  & 0.99\,s per million \\
+1\,M records     & 170{,}935{,}101 & QLever & 163.3 & 0.96\,s per million \\
+Whole genome     & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\% \\
+\addlinespace
+\multicolumn{5}{@{}l}{\itshape Does the artifact matter? (whole genome, one engine, three packagings)}\\
+\quad from N-Triples & \multicolumn{2}{r}{gzip-framed} & 634.6 & Decode 179--192\,s; setup 868.0\,s \\
+\quad from HDT       & \multicolumn{2}{r}{---}         & 636.3 & Decode 955--972\,s; setup 861.8\,s \\
+\quad from COTTAS    & \multicolumn{2}{r}{---}         & 636.6 & Decode 592--601\,s; setup 868.4\,s \\
+\addlinespace
+\multicolumn{5}{@{}l}{\itshape Do the other engines get there at all? (1\,M records, 170{,}935{,}101 triples)}\\
+\quad COTTAS engine & \multicolumn{2}{r}{5 of 13 answered} & 743.1 & Native allocation failure on Q6 \\
+\quad HDT engine    & \multicolumn{2}{r}{5 of 13 answered} & 12{,}432.2 & Reached the one-hour per-query ceiling on Q5 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\bibliographystyle{unsrt}
+\bibliography{reference}
+
+\end{document}

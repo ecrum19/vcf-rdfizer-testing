@@ -10,9 +10,11 @@ SOURCES   = current.tex reference.bib template/sn-jnl.cls \
 	../paper-assets/fig-representations.pdf ../paper-assets/fig-retrieval.pdf \
 	../paper-assets/fig-usecase.pdf Makefile
 
-.PHONY: all manuscript $(PAPER).pdf clean distclean
+.PHONY: all manuscript $(PAPER).pdf supplementary.pdf clean distclean
 
-all manuscript: $(PAPER).pdf
+all: $(PAPER).pdf supplementary.pdf
+
+manuscript: $(PAPER).pdf
 
 $(PAPER).pdf: $(SOURCES)
 	mkdir -p "$(BUILD_DIR)"
@@ -25,10 +27,16 @@ $(PAPER).pdf: $(SOURCES)
 	cd "$(BUILD_DIR)" && $(LATEXMK) $(PAPER).tex
 	cp "$(BUILD_DIR)/$(PAPER).pdf" "$@"
 
+# The supplement reads the main text's section numbers from its .aux (xr).
+supplementary.pdf: supplementary.tex reference.bib $(PAPER).pdf
+	cp supplementary.tex "$(BUILD_DIR)/"
+	cd "$(BUILD_DIR)" && $(LATEXMK) supplementary.tex
+	cp "$(BUILD_DIR)/supplementary.pdf" "$@"
+
 # Remove intermediates while preserving the exported PDF.
 clean:
 	rm -rf .build
 
 # Remove intermediates and the exported PDF.
 distclean: clean
-	rm -f $(PAPER).pdf
+	rm -f $(PAPER).pdf supplementary.pdf
