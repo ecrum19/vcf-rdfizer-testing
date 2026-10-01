@@ -152,6 +152,7 @@ Not in `run_all.sh`, and not part of any profile. Run directly when wanted.
 | `14_regional_access.sh` | Indexed regional access: SPARQL against bgzip+tabix seeks, on five region-restricted questions. It reuses `13_query_cost`'s graphs, so run it after 13 on the same host. It needs an image with VCF-RDFizer's regional runner and tabix (`BM_REGIONAL_IMAGE`); v3.1.0 has neither and records a skip. |
 | `15_scale_prepare.sh` | **Generation half** of the scale experiment. Builds one large graph per scale into `BM_SCALE_STORE` and writes a manifest. Roughly 3-4 h at 1M records (171M triples) and ~16 h for the whole HG005 genome (657M triples). Idempotent: a scale that is already built is skipped, so an interrupted campaign resumes by re-running the same command. |
 | `16_scale_retrieval.sh` | **Querying half.** Reads the store and *never builds anything* — it refuses a scale that is not prepared. Every axis is selectable, so one question against one artifact is a minute's work rather than a rebuild. |
+| `17_use_case_acmg.sh` | The real-data use case: carriers of ClinVar pathogenic variants in the 81 ACMG SF v3.2 genes, across five real genomes, with simulated per-participant consents. An RDF route (convert, link through shared SPDI identifiers, one checked release view per requester, one SPARQL query) and a bcftools baseline must give identical carrier lists. See [`use_case/acmg/README.md`](use_case/acmg/README.md). The link stage needs the `spdi` linker, which comes after v3.2.0. |
 
 #### The scale store, and why 15 and 16 are separate
 

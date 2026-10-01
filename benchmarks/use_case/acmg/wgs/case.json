@@ -1,0 +1,105 @@
+{
+  "question": "Which participants carry a ClinVar-classified variant in an ACMG SF v3.2 gene, and what may each requester see?",
+  "reference": {
+    "name": "GCA_000001405.15_GRCh38_no_alt_analysis_set",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+    "fai_url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai",
+    "bytes": 872949833,
+    "note": "The reference the GIAB v4.2.1 benchmark files declare (human_GRCh38_no_alt_analysis_set). UCSC contig names (chr1...)."
+  },
+  "clinvar": {
+    "release": "2026-09-13",
+    "url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2026/clinvar_20260913.vcf.gz",
+    "md5_url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2026/clinvar_20260913.vcf.gz.md5",
+    "bytes": 193709143,
+    "license": "Public domain (NCBI); https://www.ncbi.nlm.nih.gov/home/about/policies/"
+  },
+  "participants": [
+    {
+      "id": "HG005",
+      "input": "HG005_GRCh38.vcf.gz",
+      "source": "GIAB HG005 v4.2.1 benchmark",
+      "rsids": false
+    }
+  ],
+  "definition": {
+    "classification_rule": "Any record ClinVar has classified. The first '|'-separated term of CLNSIG is reported as the classification, so 'Pathogenic|risk_factor' counts as Pathogenic and 'Conflicting_classifications_of_pathogenicity' as itself.",
+    "reportable_significance": [
+      "Pathogenic",
+      "Likely_pathogenic",
+      "Pathogenic/Likely_pathogenic"
+    ],
+    "reportable_note": "Counted and reported separately. In this cohort no carrier met it: five unselected individuals, against a ~1-3% per-person rate of reportable ACMG secondary findings. The empty subset is a result, not a filter failure.",
+    "excluded_review_status": [
+      "no_assertion_criteria_provided",
+      "no_classification_provided",
+      "no_classification_for_the_individual_variant"
+    ],
+    "gene_rule": "At least one GENEINFO symbol is an ACMG SF v3.2 gene. The gene reported is that symbol, not the region the variant falls in.",
+    "genotype_rule": "The participant's GT contains a non-zero allele index (multi-allelic records are split first, so that index is the ALT).",
+    "filter_rule": "FILTER is PASS or missing.",
+    "identity_rule": "Same CHROM (after contig-name harmonisation), POS, REF and ALT, after bcftools norm against the reference."
+  },
+  "policy": {
+    "note": "Consents are SIMULATED and stated as such in every output. The genomes are real; nobody consented to anything here.",
+    "consents": {
+      "HG005": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      }
+    },
+    "secondary_findings": {
+      "rule": "A record whose REF extent [POS, POS+len(REF)-1] overlaps a cancer-predisposition gene span (regions.json) is released only for clinical care (DUO:0000043), whatever gene ClinVar reports.",
+      "genes": [
+        "APC",
+        "BMPR1A",
+        "BRCA1",
+        "BRCA2",
+        "MAX",
+        "MEN1",
+        "MLH1",
+        "MSH2",
+        "MSH6",
+        "MUTYH",
+        "NF2",
+        "PALB2",
+        "PMS2",
+        "PTEN",
+        "RB1",
+        "RET",
+        "SDHAF2",
+        "SDHB",
+        "SDHC",
+        "SDHD",
+        "SMAD4",
+        "STK11",
+        "TMEM127",
+        "TP53",
+        "TSC1",
+        "TSC2",
+        "VHL",
+        "WT1"
+      ],
+      "source": "ACMG SF v3.2 Table 1, 'Cancer phenotypes' (28 genes)"
+    },
+    "requesters": {
+      "clinical": {
+        "assignee": "https://example.org/party/clinical-genetics-lab",
+        "purpose": "DUO:0000043"
+      },
+      "cardio": {
+        "assignee": "https://example.org/party/cardio-consortium",
+        "purpose": "DUO:0000007"
+      },
+      "biobank": {
+        "assignee": "https://example.org/party/biobank-researcher",
+        "purpose": "DUO:0000042"
+      }
+    }
+  },
+  "whole_genome": {
+    "note": "Arm 3: one arm-1 participant's whole genome, through the same pipeline (derive.sh normalises it without a region restriction). Its carriers must equal its arm-1 carriers: the question stays the ACMG genes, and only the scale changes.",
+    "participant": "HG005"
+  }
+}

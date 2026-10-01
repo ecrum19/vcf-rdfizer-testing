@@ -1,0 +1,1326 @@
+{
+  "question": "Which participants carry a ClinVar-classified variant in an ACMG SF v3.2 gene, and what may each requester see?",
+  "reference": {
+    "name": "GCA_000001405.15_GRCh38_no_alt_analysis_set",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+    "fai_url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai",
+    "bytes": 872949833,
+    "note": "The reference the GIAB v4.2.1 benchmark files declare (human_GRCh38_no_alt_analysis_set). UCSC contig names (chr1...)."
+  },
+  "clinvar": {
+    "release": "2026-09-13",
+    "url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2026/clinvar_20260913.vcf.gz",
+    "md5_url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2026/clinvar_20260913.vcf.gz.md5",
+    "bytes": 193709143,
+    "license": "Public domain (NCBI); https://www.ncbi.nlm.nih.gov/home/about/policies/"
+  },
+  "participants": [
+    {
+      "id": "HG02255",
+      "input": "HG02255.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ACB"
+    },
+    {
+      "id": "HG02476",
+      "input": "HG02476.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ACB"
+    },
+    {
+      "id": "HG02545",
+      "input": "HG02545.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ACB"
+    },
+    {
+      "id": "HG02546",
+      "input": "HG02546.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ACB"
+    },
+    {
+      "id": "NA19701",
+      "input": "NA19701.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ASW"
+    },
+    {
+      "id": "NA20334",
+      "input": "NA20334.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ASW"
+    },
+    {
+      "id": "NA20340",
+      "input": "NA20340.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ASW"
+    },
+    {
+      "id": "NA20348",
+      "input": "NA20348.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ASW"
+    },
+    {
+      "id": "HG03604",
+      "input": "HG03604.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), BEB"
+    },
+    {
+      "id": "HG03815",
+      "input": "HG03815.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), BEB"
+    },
+    {
+      "id": "HG03916",
+      "input": "HG03916.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), BEB"
+    },
+    {
+      "id": "HG03940",
+      "input": "HG03940.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), BEB"
+    },
+    {
+      "id": "HG01805",
+      "input": "HG01805.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CDX"
+    },
+    {
+      "id": "HG02156",
+      "input": "HG02156.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CDX"
+    },
+    {
+      "id": "HG02392",
+      "input": "HG02392.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CDX"
+    },
+    {
+      "id": "HG02408",
+      "input": "HG02408.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CDX"
+    },
+    {
+      "id": "NA06989",
+      "input": "NA06989.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CEU"
+    },
+    {
+      "id": "NA06994",
+      "input": "NA06994.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CEU"
+    },
+    {
+      "id": "NA12347",
+      "input": "NA12347.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CEU"
+    },
+    {
+      "id": "NA12414",
+      "input": "NA12414.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CEU"
+    },
+    {
+      "id": "NA18564",
+      "input": "NA18564.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHB"
+    },
+    {
+      "id": "NA18599",
+      "input": "NA18599.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHB"
+    },
+    {
+      "id": "NA18637",
+      "input": "NA18637.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHB"
+    },
+    {
+      "id": "NA18640",
+      "input": "NA18640.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHB"
+    },
+    {
+      "id": "HG00629",
+      "input": "HG00629.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHS"
+    },
+    {
+      "id": "HG00662",
+      "input": "HG00662.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHS"
+    },
+    {
+      "id": "HG00672",
+      "input": "HG00672.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHS"
+    },
+    {
+      "id": "HG00717",
+      "input": "HG00717.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CHS"
+    },
+    {
+      "id": "HG01130",
+      "input": "HG01130.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CLM"
+    },
+    {
+      "id": "HG01137",
+      "input": "HG01137.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CLM"
+    },
+    {
+      "id": "HG01259",
+      "input": "HG01259.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CLM"
+    },
+    {
+      "id": "HG01441",
+      "input": "HG01441.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), CLM"
+    },
+    {
+      "id": "HG02941",
+      "input": "HG02941.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ESN"
+    },
+    {
+      "id": "HG03118",
+      "input": "HG03118.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ESN"
+    },
+    {
+      "id": "HG03124",
+      "input": "HG03124.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ESN"
+    },
+    {
+      "id": "HG03294",
+      "input": "HG03294.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ESN"
+    },
+    {
+      "id": "HG00304",
+      "input": "HG00304.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), FIN"
+    },
+    {
+      "id": "HG00337",
+      "input": "HG00337.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), FIN"
+    },
+    {
+      "id": "HG00356",
+      "input": "HG00356.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), FIN"
+    },
+    {
+      "id": "HG00362",
+      "input": "HG00362.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), FIN"
+    },
+    {
+      "id": "HG00120",
+      "input": "HG00120.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GBR"
+    },
+    {
+      "id": "HG00125",
+      "input": "HG00125.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GBR"
+    },
+    {
+      "id": "HG00143",
+      "input": "HG00143.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GBR"
+    },
+    {
+      "id": "HG00259",
+      "input": "HG00259.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GBR"
+    },
+    {
+      "id": "NA20861",
+      "input": "NA20861.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GIH"
+    },
+    {
+      "id": "NA20874",
+      "input": "NA20874.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GIH"
+    },
+    {
+      "id": "NA20882",
+      "input": "NA20882.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GIH"
+    },
+    {
+      "id": "NA20885",
+      "input": "NA20885.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GIH"
+    },
+    {
+      "id": "HG02613",
+      "input": "HG02613.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GWD"
+    },
+    {
+      "id": "HG02722",
+      "input": "HG02722.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GWD"
+    },
+    {
+      "id": "HG02983",
+      "input": "HG02983.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GWD"
+    },
+    {
+      "id": "HG03046",
+      "input": "HG03046.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), GWD"
+    },
+    {
+      "id": "HG01500",
+      "input": "HG01500.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), IBS"
+    },
+    {
+      "id": "HG01613",
+      "input": "HG01613.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), IBS"
+    },
+    {
+      "id": "HG01679",
+      "input": "HG01679.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), IBS"
+    },
+    {
+      "id": "HG02230",
+      "input": "HG02230.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), IBS"
+    },
+    {
+      "id": "HG03714",
+      "input": "HG03714.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ITU"
+    },
+    {
+      "id": "HG04096",
+      "input": "HG04096.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ITU"
+    },
+    {
+      "id": "HG04098",
+      "input": "HG04098.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ITU"
+    },
+    {
+      "id": "HG04238",
+      "input": "HG04238.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), ITU"
+    },
+    {
+      "id": "NA18985",
+      "input": "NA18985.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), JPT"
+    },
+    {
+      "id": "NA19006",
+      "input": "NA19006.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), JPT"
+    },
+    {
+      "id": "NA19059",
+      "input": "NA19059.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), JPT"
+    },
+    {
+      "id": "NA19074",
+      "input": "NA19074.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), JPT"
+    },
+    {
+      "id": "HG01840",
+      "input": "HG01840.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), KHV"
+    },
+    {
+      "id": "HG01865",
+      "input": "HG01865.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), KHV"
+    },
+    {
+      "id": "HG02082",
+      "input": "HG02082.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), KHV"
+    },
+    {
+      "id": "HG02521",
+      "input": "HG02521.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), KHV"
+    },
+    {
+      "id": "NA19017",
+      "input": "NA19017.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), LWK"
+    },
+    {
+      "id": "NA19323",
+      "input": "NA19323.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), LWK"
+    },
+    {
+      "id": "NA19397",
+      "input": "NA19397.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), LWK"
+    },
+    {
+      "id": "NA19443",
+      "input": "NA19443.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), LWK"
+    },
+    {
+      "id": "HG03055",
+      "input": "HG03055.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MSL"
+    },
+    {
+      "id": "HG03452",
+      "input": "HG03452.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MSL"
+    },
+    {
+      "id": "HG03556",
+      "input": "HG03556.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MSL"
+    },
+    {
+      "id": "HG03575",
+      "input": "HG03575.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MSL"
+    },
+    {
+      "id": "NA19669",
+      "input": "NA19669.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MXL"
+    },
+    {
+      "id": "NA19719",
+      "input": "NA19719.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MXL"
+    },
+    {
+      "id": "NA19756",
+      "input": "NA19756.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MXL"
+    },
+    {
+      "id": "NA19764",
+      "input": "NA19764.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), MXL"
+    },
+    {
+      "id": "HG01917",
+      "input": "HG01917.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PEL"
+    },
+    {
+      "id": "HG01921",
+      "input": "HG01921.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PEL"
+    },
+    {
+      "id": "HG01932",
+      "input": "HG01932.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PEL"
+    },
+    {
+      "id": "HG02301",
+      "input": "HG02301.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PEL"
+    },
+    {
+      "id": "HG02774",
+      "input": "HG02774.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PJL"
+    },
+    {
+      "id": "HG03234",
+      "input": "HG03234.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PJL"
+    },
+    {
+      "id": "HG03491",
+      "input": "HG03491.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PJL"
+    },
+    {
+      "id": "HG03660",
+      "input": "HG03660.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PJL"
+    },
+    {
+      "id": "HG00740",
+      "input": "HG00740.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PUR"
+    },
+    {
+      "id": "HG01097",
+      "input": "HG01097.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PUR"
+    },
+    {
+      "id": "HG01303",
+      "input": "HG01303.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PUR"
+    },
+    {
+      "id": "HG01305",
+      "input": "HG01305.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), PUR"
+    },
+    {
+      "id": "HG03685",
+      "input": "HG03685.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), STU"
+    },
+    {
+      "id": "HG03736",
+      "input": "HG03736.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), STU"
+    },
+    {
+      "id": "HG03897",
+      "input": "HG03897.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), STU"
+    },
+    {
+      "id": "HG03943",
+      "input": "HG03943.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), STU"
+    },
+    {
+      "id": "NA20773",
+      "input": "NA20773.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), TSI"
+    },
+    {
+      "id": "NA20813",
+      "input": "NA20813.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), TSI"
+    },
+    {
+      "id": "NA20818",
+      "input": "NA20818.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), TSI"
+    },
+    {
+      "id": "NA20827",
+      "input": "NA20827.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), TSI"
+    },
+    {
+      "id": "NA18489",
+      "input": "NA18489.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), YRI"
+    },
+    {
+      "id": "NA18522",
+      "input": "NA18522.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), YRI"
+    },
+    {
+      "id": "NA18881",
+      "input": "NA18881.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), YRI"
+    },
+    {
+      "id": "NA19236",
+      "input": "NA19236.vcf.gz",
+      "rsids": false,
+      "source": "1000 Genomes high coverage (NYGC), YRI"
+    }
+  ],
+  "definition": {
+    "classification_rule": "Any record ClinVar has classified. The first '|'-separated term of CLNSIG is reported as the classification, so 'Pathogenic|risk_factor' counts as Pathogenic and 'Conflicting_classifications_of_pathogenicity' as itself.",
+    "reportable_significance": [
+      "Pathogenic",
+      "Likely_pathogenic",
+      "Pathogenic/Likely_pathogenic"
+    ],
+    "reportable_note": "Counted and reported separately. In this cohort no carrier met it: five unselected individuals, against a ~1-3% per-person rate of reportable ACMG secondary findings. The empty subset is a result, not a filter failure.",
+    "excluded_review_status": [
+      "no_assertion_criteria_provided",
+      "no_classification_provided",
+      "no_classification_for_the_individual_variant"
+    ],
+    "gene_rule": "At least one GENEINFO symbol is an ACMG SF v3.2 gene. The gene reported is that symbol, not the region the variant falls in.",
+    "genotype_rule": "The participant's GT contains a non-zero allele index (multi-allelic records are split first, so that index is the ALT).",
+    "filter_rule": "FILTER is PASS or missing.",
+    "identity_rule": "Same CHROM (after contig-name harmonisation), POS, REF and ALT, after bcftools norm against the reference."
+  },
+  "policy": {
+    "note": "Consents are SIMULATED and stated as such in every output. The genomes are real; nobody consented to anything here.",
+    "consents": {
+      "HG02255": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG02476": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG02545": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG02546": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "NA19701": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "NA20334": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA20340": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA20348": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG03604": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG03815": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG03916": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG03940": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG01805": {
+        "permits": [
+          "DUO:0000007"
+        ]
+      },
+      "HG02156": {
+        "permits": [
+          "DUO:0000007"
+        ]
+      },
+      "HG02392": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG02408": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ],
+        "withdrawn": true
+      },
+      "NA06989": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "NA06994": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA12347": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA12414": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA18564": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA18599": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "NA18637": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA18640": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00629": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00662": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00672": {
+        "permits": [
+          "DUO:0000042"
+        ],
+        "withdrawn": true
+      },
+      "HG00717": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG01130": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG01137": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG01259": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG01441": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG02941": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG03118": {
+        "permits": [
+          "DUO:0000042"
+        ],
+        "withdrawn": true
+      },
+      "HG03124": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG03294": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00304": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG00337": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG00356": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG00362": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00120": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00125": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG00143": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG00259": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA20861": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA20874": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA20882": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA20885": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG02613": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG02722": {
+        "permits": [
+          "DUO:0000007"
+        ]
+      },
+      "HG02983": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG03046": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG01500": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG01613": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG01679": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG02230": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG03714": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG04096": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG04098": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG04238": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA18985": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA19006": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA19059": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA19074": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG01840": {
+        "permits": [
+          "DUO:0000007"
+        ]
+      },
+      "HG01865": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG02082": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG02521": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA19017": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA19323": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA19397": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA19443": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG03055": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG03452": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG03556": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG03575": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA19669": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA19719": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA19756": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "NA19764": {
+        "permits": [
+          "DUO:0000007"
+        ],
+        "withdrawn": true
+      },
+      "HG01917": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG01921": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG01932": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG02301": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG02774": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG03234": {
+        "permits": [
+          "DUO:0000007"
+        ]
+      },
+      "HG03491": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG03660": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG00740": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG01097": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "HG01303": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG01305": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG03685": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "HG03736": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "HG03897": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "HG03943": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA20773": {
+        "permits": [
+          "DUO:0000042"
+        ]
+      },
+      "NA20813": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA20818": {
+        "permits": [
+          "DUO:0000007"
+        ]
+      },
+      "NA20827": {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ]
+      },
+      "NA18489": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA18522": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      },
+      "NA18881": {
+        "permits": [
+          "DUO:0000043"
+        ]
+      },
+      "NA19236": {
+        "permits": [
+          "DUO:0000006"
+        ]
+      }
+    },
+    "secondary_findings": {
+      "rule": "A record whose REF extent [POS, POS+len(REF)-1] overlaps a cancer-predisposition gene span (regions.json) is released only for clinical care (DUO:0000043), whatever gene ClinVar reports.",
+      "genes": [
+        "APC",
+        "BMPR1A",
+        "BRCA1",
+        "BRCA2",
+        "MAX",
+        "MEN1",
+        "MLH1",
+        "MSH2",
+        "MSH6",
+        "MUTYH",
+        "NF2",
+        "PALB2",
+        "PMS2",
+        "PTEN",
+        "RB1",
+        "RET",
+        "SDHAF2",
+        "SDHB",
+        "SDHC",
+        "SDHD",
+        "SMAD4",
+        "STK11",
+        "TMEM127",
+        "TP53",
+        "TSC1",
+        "TSC2",
+        "VHL",
+        "WT1"
+      ],
+      "source": "ACMG SF v3.2 Table 1, 'Cancer phenotypes' (28 genes)"
+    },
+    "requesters": {
+      "clinical": {
+        "assignee": "https://example.org/party/clinical-genetics-lab",
+        "purpose": "DUO:0000043"
+      },
+      "cardio": {
+        "assignee": "https://example.org/party/cardio-consortium",
+        "purpose": "DUO:0000007"
+      },
+      "biobank": {
+        "assignee": "https://example.org/party/biobank-researcher",
+        "purpose": "DUO:0000042"
+      }
+    }
+  },
+  "cohort": {
+    "note": "Arm 2. make_cohort.py selects the samples and draws their consents; the consents are SIMULATED.",
+    "source": {
+      "panel": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20220422_3202_phased_SNV_INDEL_SV/1kGP_high_coverage_Illumina.{chrom}.filtered.SNV_INDEL_SV_phased_panel.vcf.gz",
+      "ped": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/20130606_g1k_3202_samples_ped_population.txt",
+      "unrelated": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/1000G_2504_high_coverage.sequence.index",
+      "license": "1000 Genomes data are open access; see the 20190405_1000G_2504_high_cov_data_reuse_README.md beside them",
+      "panel_overrides": {
+        "chrX": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20220422_3202_phased_SNV_INDEL_SV/1kGP_high_coverage_Illumina.chrX.filtered.SNV_INDEL_SV_phased_panel.v2.vcf.gz"
+      }
+    },
+    "per_population": 4,
+    "seed": 20260928,
+    "consent_mix": [
+      {
+        "permits": [
+          "DUO:0000042",
+          "DUO:0000043"
+        ],
+        "weight": 25
+      },
+      {
+        "permits": [
+          "DUO:0000042"
+        ],
+        "weight": 25
+      },
+      {
+        "permits": [
+          "DUO:0000006"
+        ],
+        "weight": 25
+      },
+      {
+        "permits": [
+          "DUO:0000007"
+        ],
+        "weight": 10
+      },
+      {
+        "permits": [
+          "DUO:0000043"
+        ],
+        "weight": 15
+      }
+    ],
+    "withdrawal_percent": 5,
+    "inputs_sha256": {
+      "ped.txt": "4e164b717433fc9bfc16e29b20e5b4659b4216185b3275322d421fe3d323c132",
+      "seq2504.index": "0ac5fdda0b60b6575b1867827f53e39d723f915b325b10bf023b2dc3d71c08f2"
+    }
+  },
+  "panel": {
+    "note": "The panel's site frequencies, recorded once: a sites-only file of the sites any participant carries, joined to every participant by SPDI. The participants' own files drop INFO (derive.sh drop-info). AC and AN are left out: the fetch's sample subset recounted them over the cohort, so they no longer describe the panel.",
+    "fields": [
+      "AF",
+      "AF_AFR",
+      "AF_AMR",
+      "AF_EAS",
+      "AF_EUR",
+      "AF_SAS"
+    ],
+    "rare": {
+      "field": "AF",
+      "below": 0.01
+    }
+  }
+}

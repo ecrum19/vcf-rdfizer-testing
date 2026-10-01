@@ -1,0 +1,169 @@
+{
+  "inventory": {
+    "rdf": {
+      "policy.ttl": 69,
+      "of which panel IRIs (data)": 28,
+      "carriers.rq": 32,
+      "of which gene list (data)": 1,
+      "linkers, selectors, profile": 0
+    },
+    "baseline": {
+      "baseline.sh": 33,
+      "baseline_carriers.py": 98,
+      "case tables (data)": 100,
+      "acmg_sf_v3.2.genes.txt (data)": 81
+    }
+  },
+  "base_check": {
+    "cells": 15,
+    "distinct_outcomes": 3,
+    "agree": true,
+    "mismatches": []
+  },
+  "scenarios": [
+    {
+      "name": "withdrawal",
+      "summary": "NB72462M withdraws consent",
+      "edits": {
+        "rdf": {
+          "policy.ttl": {
+            "added": 2,
+            "removed": 1
+          },
+          "purpose vocabulary": {
+            "added": 0,
+            "removed": 0
+          },
+          "carriers.rq": {
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "baseline": {
+          "baseline_carriers.py": {
+            "added": 0,
+            "removed": 0
+          },
+          "case tables (data)": {
+            "added": 2,
+            "removed": 1
+          }
+        }
+      },
+      "check": {
+        "cells": 15,
+        "distinct_outcomes": 3,
+        "agree": true,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "new purpose",
+      "summary": "a new requester for ancestry research (DUO:0000011)",
+      "edits": {
+        "rdf": {
+          "policy.ttl": {
+            "added": 0,
+            "removed": 0
+          },
+          "purpose vocabulary": {
+            "added": 2,
+            "removed": 0
+          },
+          "carriers.rq": {
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "baseline": {
+          "baseline_carriers.py": {
+            "added": 0,
+            "removed": 0
+          },
+          "case tables (data)": {
+            "added": 4,
+            "removed": 0
+          }
+        }
+      },
+      "check": {
+        "cells": 20,
+        "distinct_outcomes": 3,
+        "agree": true,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "panel change",
+      "summary": "the restricted panel becomes 40 cardiac genes",
+      "edits": {
+        "rdf": {
+          "policy.ttl": {
+            "added": 40,
+            "removed": 28
+          },
+          "purpose vocabulary": {
+            "added": 0,
+            "removed": 0
+          },
+          "carriers.rq": {
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "baseline": {
+          "baseline_carriers.py": {
+            "added": 0,
+            "removed": 0
+          },
+          "case tables (data)": {
+            "added": 41,
+            "removed": 29
+          }
+        }
+      },
+      "check": {
+        "cells": 15,
+        "distinct_outcomes": 3,
+        "agree": true,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "variant rule",
+      "summary": "HFE C282Y is released only for clinical care",
+      "edits": {
+        "rdf": {
+          "policy.ttl": {
+            "added": 6,
+            "removed": 0
+          },
+          "purpose vocabulary": {
+            "added": 0,
+            "removed": 0
+          },
+          "carriers.rq": {
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "baseline": {
+          "baseline_carriers.py": {
+            "added": 3,
+            "removed": 0
+          },
+          "case tables (data)": {
+            "added": 9,
+            "removed": 1
+          }
+        }
+      },
+      "check": {
+        "cells": 15,
+        "distinct_outcomes": 3,
+        "agree": true,
+        "mismatches": []
+      }
+    }
+  ]
+}
