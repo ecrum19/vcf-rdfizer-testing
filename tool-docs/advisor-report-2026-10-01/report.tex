@@ -54,6 +54,19 @@ results. An IRI is a shared identifier, SPDI identifies a variant, DUO names
 permitted purposes, and ODRL expresses the rules. Counts are
 participant--variant--gene matches, not numbers of people.}
 
+\newpage
+{\Large\bfseries How the linking and policy framework works}
+
+\begin{center}
+\includegraphics[width=\textwidth]{figs/fig-linking-framework.pdf}
+\end{center}
+\figcaption{\textbf{Figure 2. The implemented path from VCF files to a permitted answer.}
+The diagram follows the use-case runner, policy generator, linker definitions
+and SPARQL files. Linkers read the normalized VCFs directly; conversion and links
+are stored separately. Inputs cover the gene regions except for whole HG005.
+The cancer-gene policy uses Ensembl overlap links, while
+the query reports the ACMG genes named in ClinVar's annotation.}
+
 \sub{What the experiment establishes}
 \begin{itemize}[itemsep=3pt]
 \item \textbf{Every requester receives the same answer in both implementations:}
@@ -141,7 +154,7 @@ were compared; results below average three repetitions.
 \begin{center}
 \includegraphics[width=0.91\textwidth]{figs/fig-retrieval.pdf}
 \end{center}
-\figcaption{\textbf{Figure 2. Query speed depends on the workload and engine.}
+\figcaption{\textbf{Figure 3. Query speed depends on the workload and engine.}
 (a) Individual questions and the complete batch on the 17.1M-triple graph;
 conversion is excluded, and indexing appears only on the batch row.
 (b) Four engines on a smaller, 0.96M-triple graph, excluding setup.
@@ -162,7 +175,7 @@ reuse of the same graph. This is not a universal threshold.
 \end{itemize}
 
 QLever builds its own index from each format. Query times differ by under 5\%
-(Figure 2c); HDT and COTTAS chiefly affect storage and transfer in this test.
+(Figure 3c); HDT and COTTAS chiefly affect storage and transfer in this test.
 
 \newpage
 {\Large\bfseries Cost trade-offs: region size and sample representation}
@@ -197,7 +210,7 @@ retrieving an individual sample value requires decoding its position.
 \begin{center}
 \includegraphics[width=0.83\textwidth]{figs/fig-samples.pdf}
 \end{center}
-\figcaption{\textbf{Figure 3. Fewer triples do not mean that sample data disappear.}
+\figcaption{\textbf{Figure 4. Fewer triples do not mean that sample data disappear.}
 Condensed vectors lengthen as samples are added: their HDT grows from 10.2 to
 59.2\,MB. At 2,504 samples, expanded has 432 times the triples but 69 times the
 HDT bytes (4.10\,GB). The $\times390$ label in (a) instead measures expanded
@@ -265,6 +278,8 @@ Reading map: manuscript Sections 4.1 (fidelity), 4.2 (use case), 4.3--4.4
 (costs), and 5 (interpretation); Supplementary Sections S1--S5 (execution,
 coverage and testing issues). Experiment status follows
 \nolinkurl{tool-docs/workstream-a-implementation.md} and the archived scale-retrieval
-reports. All figures are reproduced from the current manuscript.\par}
+reports. Figures 1, 3 and 4 are from the current manuscript; Figure 2 follows
+\nolinkurl{benchmarks/17_use_case_acmg.sh}, its case files and the tool's
+linking and policy implementation.\par}
 
 \end{document}
