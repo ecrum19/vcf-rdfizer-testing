@@ -5,7 +5,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
-\usepackage{booktabs,tabularx,array,xcolor,enumitem}
+\usepackage{booktabs,tabularx,array,xcolor,enumitem,graphicx}
 \usepackage{needspace}
 \usepackage[hidelinks]{hyperref}
 \setlist{nosep,leftmargin=*,topsep=3pt}
@@ -14,6 +14,7 @@
 \definecolor{accent}{HTML}{1F7F83}
 \newcommand{\hd}[1]{\needspace{5\baselineskip}\vspace{7pt}{\large\bfseries\color{accent}#1}\par\vspace{2pt}}
 \newcommand{\sub}[1]{\needspace{3\baselineskip}\vspace{3pt}{\bfseries #1}\par}
+\newcommand{\figcaption}[1]{{\small\raggedright #1\par}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \renewcommand{\arraystretch}{1.16}
 
@@ -23,171 +24,239 @@
 {\small 1 October 2026 \textbullet\ Current manuscript and next decisions}
 
 \hd{1. What is the paper's argument?}
-\textbf{VCF-RDFizer turns genomic variant files into a shared graph with explicit links and access rules. These benefits must justify the cost of conversion.}
+\textbf{VCF-RDFizer turns genomic variant files into a shared graph with explicit
+links and access rules. These benefits must justify the cost of conversion.}
 
-VCF is a file format for genomic variants. RDF represents those data as a graph;
-each statement is a \emph{triple}. VCF-RDFizer adds shared variant identifiers,
-links to external resources, and machine-readable access policies. SPARQL is the
-language used to query that graph. Conventional VCF tools can answer the same
-biological questions; the proposed benefit is making the links and rules explicit
-and independently checkable.
+VCF is a file format for genomic variants. RDF represents data as a graph of
+statements called \emph{triples}; SPARQL is its query language. Conventional VCF
+tools can answer the same biological questions. The proposed benefit is making
+links between datasets and access rules explicit and independently checkable.
 
-\textbf{Meeting goal:} agree on this central claim, the experiments needed before
-submission, and the detail that can move out of the main text.
+\textbf{Meeting goal:} agree on the central claim, the experiments needed before
+submission, and what belongs in the main text.
 
 \hd{2. What has been demonstrated?}
-\sub{A question that needs both external knowledge and access rules}
 \emph{Which participants carry a ClinVar-classified variant in the 81 genes on
 the ACMG secondary-findings list, and which results may each requester receive?}
 
-ClinVar supplies variant classifications. We use real public genomes but
-\textbf{simulated consents}: some participants permit research, some permit only
-clinical care, and some have withdrawn. A further rule restricts results in 28
-cancer-predisposition genes to clinical care. A clinical laboratory, cardiovascular
-study and biobank therefore receive different results.
+ClinVar supplies variant classifications. We use real public genomes with
+\textbf{simulated consents}: research, clinical care only, or withdrawal. A further
+rule restricts results in 28 cancer-predisposition genes to clinical care.
+A clinical laboratory, cardiovascular study and biobank therefore receive
+different results.
 
-Two independent implementations answer the same question: VCF-RDFizer with graph
-queries and policies, and a conventional \texttt{bcftools} pipeline with Python
-access-rule checks. \textbf{Their answers match for every requester in all three
-setups.}
+\begin{center}
+\includegraphics[width=0.95\textwidth]{figs/fig-usecase.pdf}
+\end{center}
+\figcaption{\textbf{Figure 1. From genomes to permitted results.} Read left to right:
+three dataset setups; shared variant and gene identifiers; access rules and
+results. An IRI is a shared identifier, SPDI identifies a variant, DUO names
+permitted purposes, and ODRL expresses the rules. Counts are
+participant--variant--gene matches, not numbers of people.}
+
+\sub{What the experiment establishes}
+\begin{itemize}[itemsep=3pt]
+\item \textbf{Every requester receives the same answer in both implementations:}
+the RDF route and an independent \texttt{bcftools} + Python pipeline. Each released
+dataset is also checked against the rules and the source VCF.
+\item Shared identifiers join variants despite different chromosome names; the
+cohort also joins a separate frequency file to identify rare variants.
+\item Results include \emph{all} ClinVar classifications. The pathogenic/likely
+pathogenic subset has 0 carrier matches in the five-genome setup and 8 in the cohort.
+\end{itemize}
+
+\textbf{Interpretation:} this supports linked analysis and correct implementation
+of the simulated access rules. It does not establish real-world consent validity.
+
+\newpage
+{\Large\bfseries Validation: what was tested}
+
+\hd{3. How well is the conversion checked?}
+\textbf{The test is whether conversion preserves the source data, and whether
+our checks would notice an error.} It does not assess whether the original
+biological variant calls are correct.
+
+The base benchmark contains 143 recorded cases across ten public files and
+controlled experiments that vary record or sample counts. The validation evidence
+comes from three complementary checks:
+
+\sub{A. Do the VCF and RDF give the same answers?}
+We ask 13 questions twice: once by reading the original VCF, and once by querying
+the converted graph. These \emph{paired comparisons} cover record and allele
+counts, genotypes, file metadata, and summaries of record and annotation values.
+They test more than whether conversion produced a readable file.
+
+\begin{tabularx}{\textwidth}{@{}L >{\raggedright\arraybackslash}p{0.39\textwidth}@{}}
+\toprule
+\textbf{Recorded result} & \textbf{What was covered}\\
+\midrule
+984 matching answers; 0 disagreements & Fixtures and slices up to 100,000 records (17.1M triples).\\
+\addlinespace
+4 comparisons not applicable & Two genotype questions on each of two empty-file artifacts; there are no records to compare.\\
+\addlinespace
+1,144 consistency checks passed & Relationships between results, such as component counts summing to the expected total.\\
+\bottomrule
+\end{tabularx}
+
+Separate retrieval experiments also found matching query answers on the
+657M-triple whole-genome graph. These runs check those answers; they do not run
+the full set of structural checks described below.
+
+\sub{B. Would a conversion error be detected?}
+Passing on valid data is only useful if the checks can fail on bad data. We
+therefore introduced 113 deliberate faults into test graphs, such as a wrong
+allele, coordinate, sample index or phasing value.
+
+\textbf{The query comparisons detected 96 of 113 faults (85\%).} The remaining
+17 escaped because the queries do not inspect every relationship or value.
+SHACL adds rules about the graph itself: which values and links must exist,
+their datatypes, and whether related values agree. With all three SHACL rule
+sets (\emph{profiles}) enabled, \textbf{113 of 113 faults were detected}; the two
+unchanged control graphs still passed.
+
+\textbf{The open experiment concerns the default settings.} The full rule set
+is costly: on a roughly 2,000-triple graph, the two advanced profiles took 33.7
+and 73.2 seconds, versus 1.7 seconds for the default profile. Routine validation
+therefore uses the default, with the full set reserved for small inputs. The
+default found no violations in 58 ordinary validations, but its detection rate
+on the 113 faulty graphs is not yet reported. These are different questions.
+
+\sub{C. Can the compressed output be read back?}
+HDT and COTTAS are compressed RDF formats. All \textbf{152 artifacts} (118 HDT,
+34 COTTAS) decoded successfully with the same triple count as their source graph.
+This covers larger outputs too, but matching counts alone cannot show that every
+value is preserved. In a separate round-trip test, compression and decompression
+also reproduced the original content digest.
+
+\newpage
+{\Large\bfseries Retrieval: the workload determines the benefit}
+
+\hd{4. When is the extra cost worthwhile?}
+\textbf{Repeated questions can repay the conversion cost; a single batch of
+summaries does not in this experiment.} We tested the same 13 questions on a
+100,000-record HG005 slice (17.1M triples), comparing a direct VCF reader
+(\texttt{cyvcf2}) with QLever, a graph query engine. Answers agreed before timings
+were compared; results below average three repetitions.
+
+\begin{center}
+\includegraphics[width=0.91\textwidth]{figs/fig-retrieval.pdf}
+\end{center}
+\figcaption{\textbf{Figure 2. Query speed depends on the workload and engine.}
+(a) Individual questions and the complete batch on the 17.1M-triple graph;
+conversion is excluded, and indexing appears only on the batch row.
+(b) Four engines on a smaller, 0.96M-triple graph, excluding setup.
+(c) QLever after loading the same 17.1M-triple graph from three storage formats.
+Panels (b) and (c) use different graph sizes.}
+
+\sub{Read the speed-up together with its setup cost}
+\begin{itemize}[itemsep=4pt]
+\item \textbf{One question:} a VCF scan takes 11.5\,s; an indexed QLever query
+takes 0.005--4.62\,s. However, conversion takes 423.7\,s and QLever indexing a
+further 22.8\,s before the first query.
+\item \textbf{All 13 questions together:} one VCF pass takes 12.4\,s, versus
+17.1\,s of QLever query time, even before setup. Batching avoids repeated VCF scans.
+\item \textbf{Repeated, separate questions:} QLever averages 1.32\,s per question,
+saving about 10.2\,s per VCF scan. Recovering the roughly 447\,s conversion and
+indexing cost takes \textbf{about 44 questions}, assuming this question mix and
+reuse of the same graph. This is not a universal threshold.
+\end{itemize}
+
+QLever builds its own index from each format. Query times differ by under 5\%
+(Figure 2c); HDT and COTTAS chiefly affect storage and transfer in this test.
+
+\newpage
+{\Large\bfseries Cost trade-offs: region size and sample representation}
+
+\sub{Indexed VCF is a stronger baseline for regional lookups}
+Tabix indexes VCF records by genomic position, avoiding a whole-file scan. We
+compared five regional questions over 20 windows per size, with three repetitions.
+Across both tested graphs, 11,160 executions had no failures or disagreements.
+On the 17.1M-triple graph:
 
 \begin{center}
 \small
 \begin{tabularx}{\textwidth}{@{}L r r r@{}}
 \toprule
-\textbf{Data tested} & \textbf{Clinical lab} & \textbf{Cardio study} & \textbf{Biobank}\\
+\textbf{Window width} & \textbf{QLever} & \textbf{Indexed cyvcf2} & \textbf{Indexed bcftools}\\
 \midrule
-5 genomes, restricted to the 81 genes & 2{,}878 & 2{,}988 & 1{,}987\\
-104 participants, the same gene regions & 63{,}529 & 92{,}870 & 48{,}207\\
-1 whole genome (HG005) & 1{,}496 & 0 & 0\\
+1\,kb (1,000 bases) & 9.6\,ms & \textbf{3.3\,ms} & 4.3\,ms\\
+10\,Mb (10 million bases) & \textbf{11.1\,ms} & 117.8\,ms & 32.7\,ms\\
 \bottomrule
 \end{tabularx}
 \end{center}
-{\small Counts are participant--variant--gene matches, \textbf{not numbers of people}.
-HG005 permits clinical care only; its whole-genome answer matches its gene-region
-answer. The whole-genome graph contains 668 million triples before links.}
+\figcaption{Median query times. Setup is excluded: QLever indexing took 23.2\,s;
+VCF compression and tabix indexing took 0.39\,s. Narrow windows favour indexed
+VCF; QLever wins for the broad windows tested.}
 
-\sub{What this result means}
-\begin{itemize}
-\item Shared identifiers join the genomes to ClinVar even when files name the
-same chromosome differently. The cohort also joins a separate frequency file to
-find rare variants, again matching the conventional pipeline.
-\item Each released dataset is checked against the access rules and against an
-independent result derived from the source VCF. Agreement supports correct
-implementation of these rules; it does not establish real-world consent validity.
-\item The question includes \emph{all} ClinVar classifications, not only harmful
-variants. The pathogenic/likely pathogenic subset is empty in the five-genome
-setup and contains 8 carrier matches in the cohort.
-\end{itemize}
+\sub{Sample profiles change the amount of graph we need to build}
+We held 10,000 variant records fixed and increased the sample columns from 1 to
+2,504. \textbf{Expanded} stores each sample call as graph resources and values.
+\textbf{Condensed} packs values into sample-ordered vectors: fewer triples, but
+retrieving an individual sample value requires decoding its position.
 
-\textbf{Effort is not yet a strong selling point.} The authored rules take 72 lines
-in the RDF route versus 131 in the conventional route, but three of four tested
-changes are similarly small in both. A rule on one named variant needs policy
-data only in RDF and a small code change in the baseline. This is evidence of
-flexibility, not a general productivity study.
+\begin{center}
+\includegraphics[width=0.83\textwidth]{figs/fig-samples.pdf}
+\end{center}
+\figcaption{\textbf{Figure 3. Fewer triples do not mean that sample data disappear.}
+Condensed vectors lengthen as samples are added: their HDT grows from 10.2 to
+59.2\,MB. At 2,504 samples, expanded has 432 times the triples but 69 times the
+HDT bytes (4.10\,GB). The $\times390$ label in (a) instead measures expanded
+growth from 1 to 2,504 samples.}
 
-\newpage
-{\Large\bfseries Evidence and limits}
-
-\hd{3. How well is the conversion checked?}
-The base benchmark comprises 143 recorded cases across ten public files and controlled
-record- and sample-count experiments. Validation compares RDF answers with the
-original VCF and uses SHACL rules to check graph structure and values.
-
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.25\textwidth} L@{}}
-\toprule
-\textbf{Check} & \textbf{Evidence and scope}\\
-\midrule
-13 paired query checks & 984 comparisons match; 4 are not applicable; none disagree. The full validation campaign covers fixtures and slices up to 17.1M triples.\\
-\addlinespace
-Injected faults & Queries detect 96/113; adding all SHACL profiles detects 113/113. The default profile's detection rate is not yet reported.\\
-\addlinespace
-Compressed files & All 152 HDT/COTTAS files decode with matching triple counts. Counts alone do not establish that every value is correct.\\
-\bottomrule
-\end{tabularx}
-
-\textbf{A wording gap to fix.} The scale-retrieval runs also compare query answers
-with the VCF at 657M triples, but record timing results rather than a complete
-validation verdict. The paper should distinguish this query agreement from the
-full validation pipeline; ``the whole genome received only count checks'' is too
-broad. Agreement with a VCF also does not establish that its biological calls are
-correct.
-
-\hd{4. When is the extra cost worthwhile?}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth} L@{}}
-\toprule
-\textbf{Workload} & \textbf{Finding and implication}\\
-\midrule
-One question or one batch of summaries & Reading the VCF directly is faster once graph conversion and query-index setup are included.\\
-\addlinespace
-Repeated questions on an existing graph & QLever, the fastest tested graph engine, answers individual questions faster after indexing. Conversion and setup break even after about 44 questions on the 100,000-record test; this is workload-specific.\\
-\addlinespace
-Small genomic-region lookups & Coordinate-indexed VCF access (tabix) wins at 1\,kb windows; QLever wins at 10\,Mb. The fastest route depends on the question.\\
-\addlinespace
-Whole-genome conversion & One benchmark run took 16.1\,h, including 14.5\,h building HDT and COTTAS. Its total retained outputs occupied about 78 times the compressed VCF download.\\
-\bottomrule
-\end{tabularx}
-
-\sub{What the representation choices mean}
-\textbf{HDT and COTTAS are compressed RDF formats.} QLever builds its own index
-from either, so the format barely affects its query time. Their main measured
-role here is storage and transfer. Engines querying them directly did not
-complete the tested 171M-triple workload.
-
-\textbf{Sample profiles trade direct access for size.} Expanded representation
-makes each sample value a graph resource. Condensed packs values into vectors:
-smaller, but individual access needs decoding. At 2,504 samples, expanded has
-432 times as many triples but 69 times the HDT bytes. Compare bytes as well as
-triple counts.
-
-\textbf{Do not mix whole-genome timings.} The 16.1-hour benchmark includes
-compressed-format construction. The clinical use case's 53-minute conversion
-uses another configuration and later software, with linking, release and indexing
-costs reported separately. This is not a before/after speed-up.
+\sub{Storage and construction remain substantial costs}
+In the whole-genome benchmark, producing 657M triples and compressed outputs took
+\textbf{16.1 hours}, including 14.5 hours building HDT and COTTAS. HDT, its index
+and COTTAS together occupied 10.88\,GB versus a 139\,MB compressed VCF download
+(78 times larger). This is a different configuration from the clinical use
+case's 53-minute conversion, which reports later stages separately.
 
 \newpage
 {\Large\bfseries What should we address before submission?}
 
 \hd{5. Current state and immediate work}
-The use case, performance comparisons and manuscript restructure are complete
-in the current draft. The narrative is about 23 pages (32 with declarations and
-references), plus a 9-page supplement. The earlier implementation notes still
-list the following two experiments as pending; their results are not in the draft.
+The draft contains the use case, performance comparisons and revised manuscript
+structure. It has about 23 narrative pages (32 including declarations and
+references), plus a 9-page supplement. Two targeted experiments remain unreported
+in the current draft:
 
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth} L@{}}
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth} L L@{}}
 \toprule
-\textbf{Priority} & \textbf{Action and reason}\\
+\textbf{Experiment} & \textbf{Next action} & \textbf{Result needed}\\
 \midrule
-Test the default validation settings & Repeat fault injection with the default SHACL profile. The reported 113/113 detection uses all profiles, which are more expensive. Readers need the sensitivity of the settings they normally run.\\
-\addlinespace
-Check a heterogeneous real input & Run full paired validation on a 250,000-record genome slice from a different sequencing provider. This tests value preservation beyond the existing fixtures and reference-genome slice.\\
-\addlinespace
-Align the claims and evidence & Clarify validation coverage, label simulated consents and carrier-match counts, and keep setup costs beside speed claims. Describe controlled release as access-rule enforcement, not anonymization.\\
-\addlinespace
-Finish presentation and provenance & Aim for roughly 20 narrative pages. Complete funding, archive identifiers and release metadata. The base campaign used v3.1.0; the use case used v3.2.0 conversion and v3.3.0 plug-ins. Confirm the final release and automated-test status before calling it complete.\\
+Default validation & Run the 113 injected faults with only the default SHACL profile. & Faults detected, types missed and runtime under normal settings.\\
+\addlinespace[7pt]
+Different input source & Run full validation on a 250,000-record genome slice from another sequencing provider. & Paired query agreement and structural-check results beyond the existing reference slice.\\
 \bottomrule
 \end{tabularx}
+\end{center}
+
+\textbf{Before submission:} complete funding, archive identifiers and release
+metadata; confirm the final release and automated-test status. The draft assigns
+v3.1.0 to the base benchmark and v3.2.0 conversion/v3.3.0 plug-ins to the use case;
+final results and version identifiers must correspond.
 
 \hd{6. Decisions for the coauthors}
-\begin{enumerate}[itemsep=8pt]
+\begin{enumerate}[itemsep=9pt]
 \item \textbf{Is the demonstrated benefit convincing?} Are shared identifiers,
 inspectable policies and checked release sufficient with simulated consents, or
-do we need an external user or data-access partner? Avoid claiming that fewer
-lines establish usability.
-\item \textbf{How much validation is enough for this paper?} Are the two targeted
-runs above sufficient with a precise scope statement, or is complete whole-genome
-validation required? The latter needs more work on the costly shape checks.
+do we need an external user or data-access partner? Rules take 72 authored lines
+in RDF versus 131 in the baseline, but three of four tested changes are similarly
+small in both. This does not establish a general usability advantage.
+\item \textbf{How much validation is enough?} Are the two targeted runs above
+sufficient with the reported scope, or is complete whole-genome validation
+required? The latter needs more work on the costly structural checks.
 \item \textbf{Do we need a measured converter comparison?} The current comparison
-with other converters is based on documentation. Decide whether to add a bounded
-comparison on one shared input, rather than imply measured superiority.
+with other converters is based on documentation. Decide whether to add one
+shared-input experiment and which outcomes it should compare.
 \item \textbf{What belongs in the main story?} Keep conversion, validation and the
-linked-data use case central; treat HDT/COTTAS as measured storage choices. Agree
-whether the policy component belongs here or warrants a separate paper, and how
-this submission relates to the companion vocabulary paper.
-\item \textbf{What can wait?} Keep federation with other graph services,
-alternative variant identifiers, whole-cohort conversion and sample-level access
-control in multi-sample files as future work unless one is essential to the
-paper's central claim. Choose which detailed tables move to the supplement.
+linked-data use case central; present HDT/COTTAS as measured storage choices.
+Agree whether the policy component belongs here or warrants a separate paper,
+and how this submission relates to the companion vocabulary paper.
+\item \textbf{What can wait?} Federation with other graph services, alternative
+variant identifiers, whole-cohort conversion and sample-level access control
+in multi-sample files are future work unless essential to the central claim.
+Choose which detailed tables move to the supplement.
 \end{enumerate}
 
 \vfill
@@ -196,6 +265,6 @@ Reading map: manuscript Sections 4.1 (fidelity), 4.2 (use case), 4.3--4.4
 (costs), and 5 (interpretation); Supplementary Sections S1--S5 (execution,
 coverage and testing issues). Experiment status follows
 \nolinkurl{tool-docs/workstream-a-implementation.md} and the archived scale-retrieval
-reports.\par}
+reports. All figures are reproduced from the current manuscript.\par}
 
 \end{document}
