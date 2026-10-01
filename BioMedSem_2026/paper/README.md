@@ -1,7 +1,42 @@
 # BioMedSem 2026 manuscript
 
-Open this directory in VS Code and run the LaTeX Workshop recipe **make current manuscript**, or build from a terminal with `make`.
+The main source is `current.tex`; `supplementary.tex` contains the supplementary
+material. The compiled main text is supplied as both `paper.pdf` and `current.pdf`
+(identical files). The supplement is `supplementary.pdf`.
 
-Build products are isolated in `.build/current/`; `current.pdf` is the exported manuscript. Use `make clean` to remove intermediates or `make distclean` to remove the PDF as well.
+## Compile the downloaded ZIP
 
-The local `template/` directory contains the official Springer Nature December 2024 `sn-jnl.cls` and the bibliography style selected by `current.tex`, so the project does not depend on a Downloads-folder copy of the template.
+1. Unzip `BioMedSem_2026-paper.zip` and open the extracted directory.
+2. Use a full TeX Live, MacTeX, or MiKTeX installation with pdfLaTeX, BibTeX and
+   `latexmk`. A minimal installation may need additional standard LaTeX packages.
+3. Run these commands in that directory, in this order:
+
+   ```sh
+   latexmk -pdf -interaction=nonstopmode -halt-on-error current.tex
+   latexmk -pdf -interaction=nonstopmode -halt-on-error supplementary.tex
+   ```
+
+The supplement reads cross-references from `current.aux`, so compile the main
+text first. These commands regenerate `current.pdf` and `supplementary.pdf`.
+To update the `paper.pdf` copy without Make, copy `current.pdf` to `paper.pdf`
+(`cp current.pdf paper.pdf` on macOS/Linux, or `copy current.pdf paper.pdf` in
+Windows Command Prompt).
+
+Alternatively, with Make installed, simply run `make`. It builds both documents
+in the correct order, refreshes all three PDF filenames, and keeps intermediates
+under `.build/current/`. Run `make manuscript` for the main text only, `make clean`
+to remove intermediates, or `make distclean` to remove the exported PDFs too.
+
+The ZIP includes all figures in `figures/`, the bibliography, and the official
+Springer Nature December 2024 class and selected bibliography style in
+`template/`. The included `.latexmkrc` supplies their search paths. No benchmark
+data, Python packages, Docker image, or neighboring repository is needed to
+compile the paper. Existing author queries are retained for the authors to resolve.
+
+## Build and package from the repository
+
+From `BioMedSem_2026/paper`, run `make` to compile or `make bundle` to compile and
+create a new `BioMedSem_2026-paper.zip`. Packaging additionally needs Python 3
+(standard library only). In the repository, figures are read from
+`../paper-assets/`; the packager copies only the figures used by the two documents.
+Build caches, editor settings, and benchmark archives are excluded from the ZIP.

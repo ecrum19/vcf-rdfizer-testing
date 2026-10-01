@@ -4,7 +4,7 @@
       "name": "make manuscript",
       "command": "make",
       "args": [
-        "%DOCFILE%.pdf"
+        "all"
       ],
       "cwd": "%DIR%",
       "env": {
@@ -14,7 +14,7 @@
   ],
   "latex-workshop.latex.recipes": [
     {
-      "name": "make current manuscript",
+      "name": "make manuscript and supplement",
       "tools": [
         "make manuscript"
       ]
