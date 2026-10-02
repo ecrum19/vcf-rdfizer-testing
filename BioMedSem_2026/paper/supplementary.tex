@@ -283,6 +283,7 @@ First, the shape layer is size-gated because \texttt{pyshacl} is in-memory, but 
 One 170{,}935{,}101-triple graph therefore fell on both sides of a single 512\,MiB threshold according only to how it was packaged: as COTTAS (390.7\,MB) it passed the gate and the run was killed at 32.2\,GB resident on a 31\,GB machine, while the same graph as gzip-framed N-Triples (756.6\,MB) or HDT (1.18\,GB) was skipped.
 The better a format compressed, the likelier it was to exhaust memory.
 The gate now counts triples, which no packaging changes.
+The same gate admitted a 58.2M-triple real-genome graph, a 277\,MB artifact, to \texttt{pyshacl} during this study's validation of \texttt{NG131FQA1I} (\main{subsec3.5}); the host ran out of memory, and that validation was rerun without shapes.
 Second, the Comunica-backed endpoints aborted with a JavaScript heap exhaustion while roughly 25\,GB of the host's memory was free, because Node does not size its heap from the machine and no ceiling was set; the ceiling is now configurable.
 Both corrections are released in v3.3.0 and neither alters conversion output; the failing runs are archived alongside the successful ones.
 
