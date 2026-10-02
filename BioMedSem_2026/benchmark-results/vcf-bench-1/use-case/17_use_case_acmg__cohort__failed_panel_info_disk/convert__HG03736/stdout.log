@@ -1,0 +1,32 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG03736/out/run_metrics/HG03736.acmg__20260928T152420
+  Detailed logs: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG03736/out/run_metrics/HG03736.acmg__20260928T152420/logs/wrapper.log
+  Progress log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG03736/out/run_metrics/HG03736.acmg__20260928T152420/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: HG03736.acmg.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample calls streamed: 10,792; FORMAT values: 10,792
+    * Streaming structured header RDF
+    * Header lines typed: 133; contigs: 24
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 730,054 values
+    * QUAL values streamed: 10,792; INFO values: 789,190; declarations: 91
+    * Triples produced: 8,673,064
+    * Compression ✅
+    * Output directory: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG03736/out/HG03736.acmg
+      - RDF aggregate: HG03736.acmg.nt
+      - N-Triples (.nt): 1.17 GB (removed after successful compression)
+      - gzip (.nt.gz): 54.77 MB
+Total triples produced (full run): 8,673,064
+Conversion process finished.
+Run time (full mode): 34.54s
+Timing log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG03736/out/run_metrics/HG03736.acmg__20260928T152420/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG03736/out/run_metrics/HG03736.acmg__20260928T152420/summary.json

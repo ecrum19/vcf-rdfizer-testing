@@ -1,0 +1,96 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg/convert__clinvar/out/run_metrics/clinvar.acmg__20260928T111334
+  Detailed logs: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg/convert__clinvar/out/run_metrics/clinvar.acmg__20260928T111334/logs/wrapper.log
+  Progress log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg/convert__clinvar/out/run_metrics/clinvar.acmg__20260928T111334/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: clinvar.acmg.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.1 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 0 calls
+    * Sample RDF streaming: 20,000 variants, 0 calls
+    * Sample RDF streaming: 30,000 variants, 0 calls
+    * Sample RDF streaming: 40,000 variants, 0 calls
+    * Sample RDF streaming: 50,000 variants, 0 calls
+    * Sample RDF streaming: 60,000 variants, 0 calls
+    * Sample RDF streaming: 70,000 variants, 0 calls
+    * Sample RDF streaming: 80,000 variants, 0 calls
+    * Sample RDF streaming: 90,000 variants, 0 calls
+    * Sample RDF streaming: 100,000 variants, 0 calls
+    * Sample RDF streaming: 110,000 variants, 0 calls
+    * Sample RDF streaming: 120,000 variants, 0 calls
+    * Sample RDF streaming: 130,000 variants, 0 calls
+    * Sample RDF streaming: 140,000 variants, 0 calls
+    * Sample RDF streaming: 150,000 variants, 0 calls
+    * Sample RDF streaming: 160,000 variants, 0 calls
+    * Sample RDF streaming: 170,000 variants, 0 calls
+    * Sample RDF streaming: 180,000 variants, 0 calls
+    * Sample RDF streaming: 190,000 variants, 0 calls
+    * Sample RDF streaming: 200,000 variants, 0 calls
+    * Sample RDF streaming: 210,000 variants, 0 calls
+    * Sample RDF streaming: 220,000 variants, 0 calls
+    * Sample RDF streaming: 230,000 variants, 0 calls
+    * Sample RDF streaming: 240,000 variants, 0 calls
+    * Sample RDF streaming: 250,000 variants, 0 calls
+    * Sample RDF streaming: 260,000 variants, 0 calls
+    * Sample RDF streaming: 270,000 variants, 0 calls
+    * Sample RDF streaming: 280,000 variants, 0 calls
+    * Sample RDF streaming: 290,000 variants, 0 calls
+    * Sample RDF streaming: 300,000 variants, 0 calls
+    * Sample RDF streaming: 310,000 variants, 0 calls
+    * Sample RDF streaming: 320,000 variants, 0 calls
+    * Sample RDF streaming: 330,000 variants, 0 calls
+    * Sample calls streamed: 0; FORMAT values: 0
+    * Streaming structured header RDF
+    * Header lines typed: 249; contigs: 195
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 138,032 values
+    * INFO RDF streaming: 20,000 variants, 277,764 values
+    * INFO RDF streaming: 30,000 variants, 416,919 values
+    * INFO RDF streaming: 40,000 variants, 556,947 values
+    * INFO RDF streaming: 50,000 variants, 696,688 values
+    * INFO RDF streaming: 60,000 variants, 835,776 values
+    * INFO RDF streaming: 70,000 variants, 975,853 values
+    * INFO RDF streaming: 80,000 variants, 1,115,496 values
+    * INFO RDF streaming: 90,000 variants, 1,257,077 values
+    * INFO RDF streaming: 100,000 variants, 1,396,088 values
+    * INFO RDF streaming: 110,000 variants, 1,535,452 values
+    * INFO RDF streaming: 120,000 variants, 1,674,711 values
+    * INFO RDF streaming: 130,000 variants, 1,813,643 values
+    * INFO RDF streaming: 140,000 variants, 1,953,096 values
+    * INFO RDF streaming: 150,000 variants, 2,092,404 values
+    * INFO RDF streaming: 160,000 variants, 2,231,298 values
+    * INFO RDF streaming: 170,000 variants, 2,370,072 values
+    * INFO RDF streaming: 180,000 variants, 2,508,797 values
+    * INFO RDF streaming: 190,000 variants, 2,648,042 values
+    * INFO RDF streaming: 200,000 variants, 2,786,677 values
+    * INFO RDF streaming: 210,000 variants, 2,927,847 values
+    * INFO RDF streaming: 220,000 variants, 3,069,186 values
+    * INFO RDF streaming: 230,000 variants, 3,207,024 values
+    * INFO RDF streaming: 240,000 variants, 3,346,217 values
+    * INFO RDF streaming: 250,000 variants, 3,485,047 values
+    * INFO RDF streaming: 260,000 variants, 3,624,616 values
+    * INFO RDF streaming: 270,000 variants, 3,764,573 values
+    * INFO RDF streaming: 280,000 variants, 3,905,372 values
+    * INFO RDF streaming: 290,000 variants, 4,039,885 values
+    * INFO RDF streaming: 300,000 variants, 4,176,995 values
+    * INFO RDF streaming: 310,000 variants, 4,316,040 values
+    * INFO RDF streaming: 320,000 variants, 4,456,648 values
+    * INFO RDF streaming: 330,000 variants, 4,595,207 values
+    * QUAL values streamed: 331,453; INFO values: 4,614,347; declarations: 32
+    * Triples produced: 33,096,749
+    * Compression ✅
+    * Output directory: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg/convert__clinvar/out/clinvar.acmg
+      - RDF aggregate: clinvar.acmg.nt
+      - N-Triples (.nt): 4.36 GB (removed after successful compression)
+      - gzip (.nt.gz): 192.33 MB
+Total triples produced (full run): 33,096,749
+Conversion process finished.
+Run time (full mode): 1m 38.3s
+Timing log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg/convert__clinvar/out/run_metrics/clinvar.acmg__20260928T111334/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg/convert__clinvar/out/run_metrics/clinvar.acmg__20260928T111334/summary.json
