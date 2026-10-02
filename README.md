@@ -59,6 +59,18 @@ python3 scripts/build_run_summary.py BioMedSem_2026/benchmark-results \
   --output BioMedSem_2026/benchmark-results/summary.json
 ```
 
+## Results site
+
+An interactive version of the evidence is published at
+<https://ecrum19.github.io/vcf-rdfizer-testing/>, built from the archive by
+`.github/workflows/pages.yml` on every push to `main`. To build and view it locally:
+
+```bash
+python3 -m unittest scripts/test_build_site_data.py   # the data must match the paper
+python3 scripts/build_site_data.py --out site/data
+python3 -m http.server 8765 --directory site
+```
+
 | Support script | Current use |
 | --- | --- |
 | `scripts/download_test_data.sh` | Downloads and normalizes the ten public VCF inputs. |
@@ -66,6 +78,7 @@ python3 scripts/build_run_summary.py BioMedSem_2026/benchmark-results \
 | `scripts/report_system_conditions.py` | Captures host/software details; called by `00_environment.sh`. |
 | `scripts/build_run_summary.py` | Integrates archived cells, provenance and validation outcomes. |
 | `scripts/combine_benchmark_metrics.py` | Extracts per-run measurements; imported by the archive summary builder. |
+| `scripts/build_site_data.py` | Builds the results site's data files from the archive (stdlib only). |
 
 ## Ubuntu setup
 
