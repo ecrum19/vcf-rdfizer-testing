@@ -22,7 +22,7 @@
 #   normalised exactly like a restricted input.
 # * `drop-info` removes every INFO field. Arm 2 uses it: the 1000 Genomes
 #   panel's ~70 INFO fields describe all 3,202 samples, not the participant,
-#   and would be ~95% of each participant's triples.
+#   and made up 93% of each participant's triples (measured).
 
 set -euo pipefail
 
