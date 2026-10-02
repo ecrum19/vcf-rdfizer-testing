@@ -1,10 +1,11 @@
 // VCF-RDFizer results site. Loads the JSON built by scripts/build_site_data.py
 // and renders every chart with Vega-Lite. Nothing here computes a reported
 // number from scratch: values come from the data files, and the build's tests
-// pin them to the paper.
+// pin them to the paper. Prose quotes them through {placeholders} filled from
+// facts.json, so no number is written into this file or the page.
 "use strict";
 
-const DATASETS = ["campaign", "fidelity", "scaling", "retrieval", "usecase"];
+const DATASETS = ["campaign", "fidelity", "scaling", "retrieval", "usecase", "facts"];
 const REPO = "https://github.com/ecrum19/vcf-rdfizer-testing";
 const D = {};
 
@@ -62,7 +63,8 @@ const secs = (s) => {
   if (s < 7200) return `${num(s / 60, 1)} min`;
   return `${num(s / 3600, 2)} h`;
 };
-const millions = (x) => `${num(x / 1e6, x >= 1e8 ? 0 : 1)}M`;
+const millions = (x) => `${num(x / 1e6, x < 1e6 ? 2 : x < 1e8 ? 1 : 0)}M`;
+const fill = (text) => text.replace(/\{(\w+)\}/g, (_, key) => D.facts[key] ?? "N/A");
 const pretty = (id) => id.replace(/^q(\d+)_/, "Q$1 ").replace(/_/g, " ");
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
@@ -80,7 +82,7 @@ function table(columns, rows) {
 const CHARTS = {
   mutationScores: {
     title: "Injected faults detected, by validation layer",
-    help: "113 targeted corruptions (wrong allele, coordinate, FILTER token, metadata, blank nodes, flipped phasing, corrupted sample index) were injected into a graph. Each bar counts how many the validation layer detected: the comparison queries alone, with the default SHACL profile, and with all three profiles.",
+    help: "{faults} targeted corruptions (wrong allele, coordinate, FILTER token, metadata, blank nodes, flipped phasing, corrupted sample index) were injected into a graph. Each bar counts how many the validation layer detected: the comparison queries alone, with the default SHACL profile, and with all three profiles.",
     rows: () => {
       const s = D.fidelity.mutation.scores;
       return [
@@ -108,9 +110,9 @@ const CHARTS = {
   },
 
   mutationClasses: {
-    title: "The ten fault classes the queries cannot see",
+    title: "The {faultClasses} fault classes the queries cannot see",
     help: "Each row is a mutation class the comparison queries miss entirely. Cells show how many of its mutations each shape profile catches. The default profile checks cardinality and datatypes, so it catches none; the full set adds value agreement and uniqueness.",
-    caption: "The full profile set self-joins the graph, so v3.1.0 runs it only on request and on inputs up to 16 MiB.",
+    caption: "The full profile set self-joins the graph, so {campaignVersion} runs it only on request and only on small inputs.",
     rows: () => D.fidelity.mutation.missedByQueries.flatMap((m) => [
       { class: m.class.replace(/_/g, " "), profile: "Default (core)", caught: m.core, mutations: m.mutations },
       { class: m.class.replace(/_/g, " "), profile: "All three profiles", caught: m.full, mutations: m.mutations },
@@ -140,10 +142,10 @@ const CHARTS = {
 
   carriers: {
     title: "Carriers each requester may see, by arm",
-    help: "Cells count carriers of a ClinVar-classified variant in an ACMG SF v3.2 gene that each requester may see under the simulated consents, and the share of the unrestricted answer. The RDF route and the bcftools route returned identical lists in every cell.",
+    help: "Cells count carriers of a ClinVar-classified variant in an {geneList} gene that each requester may see under the simulated consents, and the share of the unrestricted answer. The RDF route and the bcftools route returned identical lists in every cell.",
     rows: () => {
       const order = ["unrestricted", "clinical", "cardio", "biobank"];
-      const labels = { arm1: "Arm 1: five genomes", arm2: "Arm 2: 104-person cohort", arm2rare: "Arm 2: rare in panel", arm3: "Arm 3: whole genome" };
+      const labels = { arm1: fill("Arm 1: {arm1Genomes} genomes"), arm2: fill("Arm 2: {cohort}-person cohort"), arm2rare: "Arm 2: rare in panel", arm3: "Arm 3: whole genome" };
       const out = [];
       for (const [arm, data] of Object.entries(D.usecase.arms)) {
         const sets = [[arm, data.carriers]];
@@ -185,7 +187,7 @@ const CHARTS = {
 
   participants: {
     title: "Arm 1: carriers per participant and requester",
-    help: "How the per-file consents shape each answer. NB72462M consents to research and clinical care, NG131FQA1I to health research, HG002 to general research, HG004 withdrew, HG005 consents to clinical care only. The cohort rule keeps the 28 cancer genes for clinical care.",
+    help: "How the per-file consents shape each answer: {consents}. The cohort rule keeps the {restrictedGenes} cancer genes for clinical care.",
     rows: () => {
       const g = D.usecase.arms.arm1.grid;
       return Object.entries(g.rows).flatMap(([requester, counts]) =>
@@ -215,7 +217,7 @@ const CHARTS = {
   effort: {
     title: "Lines each change adds and removes",
     help: "Four realistic changes were applied to both routes as real edits, then both were re-run on a fixture and had to release the same records. Bars right of zero are lines added, left of zero lines removed, summed over the files each route touches.",
-    caption: "Rules written in the first place: RDF route 72 lines (policy 41, query 31), bcftools route 131 (shell 33, Python 98).",
+    caption: "Rules written in the first place, data excluded: RDF route {rdfRules}; bcftools route {baselineRules}.",
     rows: () => D.usecase.effort.scenarios.flatMap((s) => ["rdf", "baseline"].flatMap((route) => {
       const files = Object.entries(s.edits[route]);
       const added = files.reduce((a, [, e]) => a + e.added, 0);
@@ -249,7 +251,7 @@ const CHARTS = {
 
   usecaseCost: {
     title: "Cost of the RDF route by stage and arm",
-    help: "Convert and link are totals over each arm's files (genomes, ClinVar and, in arm 2, the panel). View is the slowest requester's release view. Index and query are for the unrestricted requester: the index build, then the median of three cold runs of the carriers query.",
+    help: "Convert and link are totals over each arm's files (genomes, ClinVar and, in arm 2, the panel). View is the slowest requester's release view. Index and query are for the unrestricted requester: the index build, then the median of {queryReplicates} cold runs of the carriers query.",
     rows: () => {
       const labels = { arm1: "Arm 1", arm2: "Arm 2", arm3: "Arm 3" };
       const median = (xs) => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
@@ -284,7 +286,7 @@ const CHARTS = {
 
   records: {
     title: "Growth with records: memory stays flat",
-    help: "Each line is one measure of conversion on the HG005 ladder (10k, 100k and 1M records in triplicate, then the whole 3.86M-record file), relative to its value at 10k records. Medians of the replicates.",
+    help: "Each line is one measure of conversion on the HG005 ladder ({ladder} records, {ladderReplicates} replicates each, then the whole {wholeRecords}-record file), relative to its value on the smallest input. Medians of the replicates.",
     rows: () => {
       const r = D.scaling.records;
       const measures = { triples: "Triples", wall: "Wall time", disk: "Peak disk", rss: "Peak memory (mapping)" };
@@ -294,15 +296,16 @@ const CHARTS = {
           : k === "disk" ? `${num(r.median[k][i] / 1e9, 2)} GB` : `${num(r.median[k][i] * 1024 / 1e9, 2)} GB`,
       })));
     },
-    columns: [{ key: "records", label: "Records", num: true, format: (v) => num(v) }, { key: "measure", label: "Measure" }, { key: "value", label: "Value", num: true }, { key: "growth", label: "× at 10k", num: true, format: (v) => num(v, 1) }],
+    columns: [{ key: "records", label: "Records", num: true, format: (v) => num(v) }, { key: "measure", label: "Measure" }, { key: "value", label: "Value", num: true }, { key: "growth", label: "× smallest", num: true, format: (v) => num(v, 1) }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 280,
         encoding: {
-          x: { field: "records", type: "quantitative", scale: { type: "log" }, title: "Records (HG005)", axis: { values: [1e4, 1e5, 1e6, 3856856], labelExpr: "datum.value == 3856856 ? '3.86M (whole)' : format(datum.value, '~s')" } },
-          y: { field: "growth", type: "quantitative", scale: { type: "log" }, title: "Growth relative to 10k records" },
+          x: { field: "records", type: "quantitative", scale: { type: "log" }, title: "Records (HG005)",
+               axis: { values: D.scaling.records.rungs, labelExpr: `datum.value == ${D.scaling.records.wholeFileRecords} ? '${D.facts.wholeRecords} (whole)' : format(datum.value, '~s')` } },
+          y: { field: "growth", type: "quantitative", scale: { type: "log" }, title: "Growth relative to the smallest input" },
           color: { field: "measure", type: "nominal", title: null, sort: ["Triples", "Wall time", "Peak disk", "Peak memory (mapping)"] },
-          tooltip: [{ field: "measure" }, { field: "records", format: "," }, { field: "value" }, { field: "growth", title: "× at 10k", format: ".1f" }],
+          tooltip: [{ field: "measure" }, { field: "records", format: "," }, { field: "value" }, { field: "growth", title: "× smallest", format: ".1f" }],
         },
         layer: [{ mark: "line" }, { mark: "point" }],
       };
@@ -311,7 +314,7 @@ const CHARTS = {
 
   samples: {
     title: "Two sample profiles: triples against bytes",
-    help: "The same 10,000 1000 Genomes records re-emitted against 1 to 2,504 sample columns. Switch the measure: the condensed profile's triples barely grow, but its stored bytes do, because per-sample values move into vector literals rather than disappearing.",
+    help: "The same {sampleRecords} 1000 Genomes records re-emitted against {samplesMin} to {samplesMax} sample columns. Switch the measure: the condensed profile's triples barely grow, but its stored bytes do, because per-sample values move into vector literals rather than disappearing.",
     rows: () => {
       const s = D.scaling.samples;
       const measures = { triples: "Triples", nt: "gzip N-Triples (bytes)", hdt: "HDT (bytes)" };
@@ -334,7 +337,7 @@ const CHARTS = {
           bind: { input: "select", options: ["Triples", "gzip N-Triples (bytes)", "HDT (bytes)"], name: "Measure " } }],
         transform: [{ filter: "datum.measure == measure" }],
         encoding: {
-          x: { field: "samples", type: "quantitative", scale: { type: "log" }, title: "Sample columns (10,000 records)", axis: { values: [1, 4, 16, 64, 256, 1024, 2504] } },
+          x: { field: "samples", type: "quantitative", scale: { type: "log" }, title: fill("Sample columns ({sampleRecords} records)"), axis: { values: D.scaling.samples.expanded.x } },
           y: { field: "value", type: "quantitative", scale: { type: "log" }, title: null, axis: { format: "~s" } },
           color: { field: "profile", type: "nominal", title: null,
                    scale: { domain: ["Expanded", "Condensed", "Input VCF"], range: [t.series[1], t.series[0], t.context] } },
@@ -347,11 +350,11 @@ const CHARTS = {
 
   storage: {
     title: "Peak disk by storage mode",
-    help: "Paired runs of the plain and space-optimized storage modes on the same inputs. Both produce identical triples and final artifacts; space-optimized mode only lowers the temporary disk peak, at a few percent more time.",
+    help: "Paired runs of the plain and space-optimized storage modes on the same inputs. Both produce identical triples and final artifacts; space-optimized mode only lowers the temporary disk peak, at {spaceTimeCost} more time.",
     rows: () => {
-      const names = { slice: "HG005 slice (17.1M triples)", larger: "test-larger (269M triples)" };
+      const names = { slice: "HG005 slice", larger: "test-larger" };
       return Object.entries(D.scaling.storage).flatMap(([key, modes]) => Object.entries(modes).map(([mode, m]) => ({
-        input: names[key] || key, mode: mode === "plain" ? "Plain" : "Space-optimized",
+        input: `${names[key] || key} (${millions(m.triples)} triples)`, mode: mode === "plain" ? "Plain" : "Space-optimized",
         gb: m.peakBytes / 1e9, time: secs(m.wallSeconds),
       })));
     },
@@ -374,7 +377,7 @@ const CHARTS = {
 
   representations: {
     title: "Artifact size relative to the gzip N-Triples",
-    help: "For each corpus input (first 250,000 records; HG005 whole), the size of the HDT and COTTAS artifacts built from the same graph, divided by the stored gzip N-Triples. Hover for build times.",
+    help: "For each corpus input (first {corpusRecords} records; HG005 whole), the size of the HDT and COTTAS artifacts built from the same graph, divided by the stored gzip N-Triples. Hover for build times.",
     rows: () => D.scaling.corpus.flatMap((r) => [
       { input: `${r.name} · ${millions(r.triples)}`, artifact: "COTTAS", ratio: r.cottas / r.nt, build: secs(r.cottas_s) },
       { input: `${r.name} · ${millions(r.triples)}`, artifact: "HDT", ratio: r.hdt / r.nt, build: secs(r.hdt_s) },
@@ -399,11 +402,11 @@ const CHARTS = {
 
   perQuestion: {
     title: "Per question: SPARQL (QLever) against a VCF scan (cyvcf2)",
-    help: "Each question answered on the 17.1M-triple HG005 graph (100,000 records), mean of three replicates. cyvcf2 must scan the VCF whichever question it is. QLever's times exclude its one-time 22.8 s index build; the last row compares the whole thirteen-question batch, where one parser pass answers everything.",
+    help: "Each question answered on the {sliceTriples}-triple HG005 graph ({sliceRecords} records), mean of {engineReplicates} replicates. cyvcf2 must scan the VCF whichever question it is. QLever's times exclude its one-time {qleverIndex} index build; the last row compares the whole {questions}-question batch, where one parser pass answers everything.",
     rows: () => {
       const r = D.retrieval;
       const rows = r.perQuestion.map((q) => ({ question: q.label, sparql: q.sparql, parser: q.parser, speedup: q.parser / q.sparql }));
-      rows.push({ question: "All 13, one batch", sparql: r.batch.sparql, parser: r.batch.parser, speedup: r.batch.parser / r.batch.sparql });
+      rows.push({ question: `All ${r.perQuestion.length}, one batch`, sparql: r.batch.sparql, parser: r.batch.parser, speedup: r.batch.parser / r.batch.sparql });
       return rows;
     },
     columns: [{ key: "question", label: "Question" }, { key: "sparql", label: "QLever", num: true, format: (v) => secs(v) }, { key: "parser", label: "cyvcf2", num: true, format: (v) => secs(v) },
@@ -428,7 +431,7 @@ const CHARTS = {
 
   engines: {
     title: "The engine sets the cost",
-    help: "The thirteen questions on the 0.96M-triple graph under each SPARQL engine: mean of nine runs (three artifacts in each of three replicates), with the range. All four engines agreed in every run.",
+    help: "The {questions} questions on the {fixtureTriples}-triple graph under each SPARQL engine: mean of {engineRuns} runs ({engineArtifacts} artifacts in each of {engineReplicates} replicates), with the range. All engines agreed in every run.",
     rows: () => Object.entries(D.retrieval.engines).map(([engine, e]) => ({
       engine: { qlever: "QLever", comunica: "Comunica", cottas: "COTTAS engine", hdt: "HDT engine" }[engine] || engine,
       mean: e.mean, min: e.min, max: e.max, runs: e.runs,
@@ -442,7 +445,7 @@ const CHARTS = {
           tooltip: [{ field: "engine" }, { field: "mean", format: ".1f", title: "Mean (s)" }, { field: "min", format: ".1f" }, { field: "max", format: ".1f" }],
         },
         layer: [
-          { mark: { type: "bar", color: t.series[0], height: 16 }, encoding: { x: { field: "mean", type: "quantitative", title: "Q1–Q13 total (s)" } } },
+          { mark: { type: "bar", color: t.series[0], height: 16 }, encoding: { x: { field: "mean", type: "quantitative", title: `${D.facts.qRange} total (s)` } } },
           { mark: { type: "rule", color: t.muted }, encoding: { x: { field: "min", type: "quantitative" }, x2: { field: "max" } } },
           { mark: { type: "text", align: "left", dx: 6, color: t.muted },
             encoding: { x: { field: "max", type: "quantitative" }, text: { value: { expr: "format(datum.mean, '.1f') + ' s'" } } } },
@@ -452,18 +455,19 @@ const CHARTS = {
   },
 
   costBySize: {
-    title: "QLever cost per million triples, to 657M triples",
-    help: "The thirteen questions' QLever time (sum of per-question medians) divided by the graph's size in millions of triples. The two smaller graphs ran on vcf-bench-1, the two larger on vcf-bench-3, a host of the same specification.",
-    rows: () => D.retrieval.costBySize.map((r) => ({ graph: { small: "Fixture", large: "100k records", r1000000: "1M records", whole: "Whole genome" }[r.graph] || r.graph,
+    title: "QLever cost per million triples, to {maxTriples} triples",
+    help: "The {questions} questions' QLever time (sum of per-question medians) divided by the graph's size in millions of triples. The data table lists the host each graph ran on.",
+    rows: () => D.retrieval.costBySize.map((r) => ({
+      graph: { small: "Fixture", large: "HG005 slice", whole: "Whole genome" }[r.graph] || r.graph.replace(/^r(\d+)$/, (_, n) => `${num(Number(n) / 1e6)}M records`),
       triples: r.triples, seconds: r.seconds, perMillion: r.perMillion, host: r.host })),
-    columns: [{ key: "graph", label: "Graph" }, { key: "triples", label: "Triples", num: true, format: (v) => num(v) }, { key: "seconds", label: "13 questions", num: true, format: (v) => secs(v) },
+    columns: [{ key: "graph", label: "Graph" }, { key: "triples", label: "Triples", num: true, format: (v) => num(v) }, { key: "seconds", label: "All questions", num: true, format: (v) => secs(v) },
       { key: "perMillion", label: "s per million", num: true, format: (v) => num(v, 2) }, { key: "host", label: "Host" }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 220,
         encoding: {
           x: { field: "triples", type: "quantitative", scale: { type: "log", domain: [5e5, 1.5e9] }, title: "Triples (log scale)", axis: { values: [1e6, 1e7, 1e8, 1e9], format: "~s" } },
-          y: { field: "perMillion", type: "quantitative", scale: { domain: [0, 1.4] }, title: "Seconds per million triples" },
+          y: { field: "perMillion", type: "quantitative", scale: { zero: true }, title: "Seconds per million triples" },
           tooltip: [{ field: "graph" }, { field: "triples", format: "," }, { field: "seconds", format: ".1f", title: "Seconds" }, { field: "perMillion", format: ".2f", title: "s per million" }, { field: "host" }],
         },
         layer: [
@@ -477,19 +481,18 @@ const CHARTS = {
 
   regional: {
     title: "Region-restricted questions: SPARQL against indexed VCF access",
-    help: "Median over five region questions of each question's median across twenty windows (three for the unindexed scan) and three replicates. Every arm answers the same POS-based window, and across both graphs 11,160 executions produced no failures and no disagreements. Switch the graph to compare the 0.96M-triple fixture.",
+    help: "Median over {regionalQuestions} region questions of each question's median across {regionalWindows} windows ({regionalScanWindows} for the unindexed scan) and {regionalReplicates} replicates. Every arm answers the same POS-based window, and across both graphs {regionalExecutions} executions produced {regionalFailures} failures and {regionalDisagreements} disagreements. Switch the graph to compare the smaller fixture.",
     rows: () => {
       const arms = { qlever: "QLever (SPARQL)", "cyvcf2-indexed": "cyvcf2, indexed", "bcftools-indexed": "bcftools, indexed", "cyvcf2-scan": "cyvcf2, unindexed scan" };
-      const graphs = { slice: "17.1M triples (100k records)", small: "0.96M triples (fixture)" };
-      return Object.entries(D.retrieval.regional).flatMap(([g, data]) => Object.entries(data.ms).flatMap(([arm, sizes]) =>
-        Object.entries(sizes).map(([size, ms]) => ({ graph: graphs[g] || g, arm: arms[arm] || arm, window: Number(size), ms }))));
+      return Object.values(D.retrieval.regional).flatMap((data) => Object.entries(data.ms).flatMap(([arm, sizes]) =>
+        Object.entries(sizes).map(([size, ms]) => ({ graph: `${num(data.records)} records`, arm: arms[arm] || arm, window: Number(size), ms }))));
     },
     columns: [{ key: "graph", label: "Graph" }, { key: "arm", label: "Arm" }, { key: "window", label: "Window (bp)", num: true, format: (v) => num(v) }, { key: "ms", label: "Median (ms)", num: true, format: (v) => num(v, 1) }],
     spec(t, rows) {
+      const graphs = Object.values(D.retrieval.regional).sort((a, b) => b.records - a.records).map((g) => `${num(g.records)} records`);
       return {
         data: { values: rows }, height: 300,
-        params: [{ name: "graph", value: "17.1M triples (100k records)",
-          bind: { input: "select", options: ["17.1M triples (100k records)", "0.96M triples (fixture)"], name: "Graph " } }],
+        params: [{ name: "graph", value: graphs[0], bind: { input: "select", options: graphs, name: "Graph " } }],
         transform: [{ filter: "datum.graph == graph" }],
         encoding: {
           x: { field: "window", type: "quantitative", scale: { type: "log" }, title: "Window size (bp, log)", axis: { values: [1e3, 1e5, 1e6, 1e7], format: "~s" } },
@@ -507,17 +510,19 @@ const CHARTS = {
 async function renderChart(card, big = false) {
   const id = card.dataset.chart;
   const def = CHARTS[id];
+  const title = fill(def.title);
+  const help = fill(def.help);
   const t = tokens();
   const rows = def.rows();
   if (!big) {
     card.innerHTML = `
-      <div class="chart-head"><h3>${esc(def.title)}</h3>
+      <div class="chart-head"><h3>${esc(title)}</h3>
         <div class="chart-actions">
-          <span class="metric-help" tabindex="0" role="note" aria-label="${esc(def.help)}" data-help="${esc(def.help)}">i</span>
+          <span class="metric-help" tabindex="0" role="note" aria-label="${esc(help)}" data-help="${esc(help)}">i</span>
           <button type="button" class="ghost" data-expand="${id}">Expand</button>
         </div></div>
-      <div class="chart" role="img" aria-label="${esc(def.title)}"></div>
-      ${def.caption ? `<p class="chart-caption">${esc(def.caption)}</p>` : ""}
+      <div class="chart" role="img" aria-label="${esc(title)}"></div>
+      ${def.caption ? `<p class="chart-caption">${esc(fill(def.caption))}</p>` : ""}
       <details class="data-table"><summary>Data table</summary><div class="table-wrap">${table(def.columns, rows)}</div></details>`;
   }
   const target = big ? card : card.querySelector(".chart");
@@ -547,7 +552,7 @@ function renderKpis() {
     [`${m.queries.detected} · ${m.core.detected} · ${m.full.detected}`, `of ${m.full.total} injected faults detected: queries · + default shapes · + all shapes`],
     [`${agreeing} / ${arms.length} arms`, "use case: RDF and bcftools routes identical for every requester"],
     [`${millions(largest)} triples`, "largest graph queried; QLever cost stays linear"],
-    [`≈ ${num(breakEven(defaultsForBreakEven()), 0)} questions`, "for converting a 100k-record slice to pay off (see the calculator)"],
+    [`≈ ${num(breakEven(defaultsForBreakEven()), 0)} questions`, fill("for converting the {sliceRecords}-record slice to pay off (see the calculator)")],
   ];
   document.getElementById("kpiGrid").innerHTML = kpis
     .map(([value, label]) => `<div class="kpi"><div class="value">${esc(value)}</div><div class="label">${esc(label)}</div></div>`).join("");
@@ -559,20 +564,20 @@ function renderEvidence() {
   const total = (c) => Object.values(c).reduce((a, b) => a + b, 0);
   const rows = [
     { check: "N-Triples syntax (rapper)", passed: `${v.rapper.PASS ?? 0} / ${total(v.rapper)}`, what: "The serialization parses" },
-    { check: "Paired SPARQL vs cyvcf2 (Q1–Q13)", passed: `${v.comparisons.PASS} / ${total(v.comparisons)}`, what: "Exact equality of normalized results; the rest are verified not applicable" },
+    { check: `Paired SPARQL vs cyvcf2 (${D.facts.qRange})`, passed: `${v.comparisons.PASS} / ${total(v.comparisons)}`, what: "Exact equality of normalized results; the rest are verified not applicable" },
     { check: "Cross-check invariants", passed: `${v.invariants.PASS} / ${total(v.invariants)}`, what: "E.g. transitions + transversions = biallelic SNVs" },
     { check: "Engines answering", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} with ${k}`).join(", "), what: "Agreement is a real comparison only where several engines answered" },
     { check: "Native decode and triple count", passed: `${(v.decode["hdt:pass"] ?? 0) + (v.decode["cottas:pass"] ?? 0)} pass`, what: `${v.decode["hdt:pass"] ?? 0} HDT and ${v.decode["cottas:pass"] ?? 0} COTTAS artifacts decode back to the source count` },
-    { check: "Default SHACL profile", passed: `${v.shacl.validations} runs, ${v.shacl.violations} violations`, what: `On graphs up to 0.96M triples, ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} each` },
+    { check: "Default SHACL profile", passed: `${v.shacl.validations} runs, ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples, ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} each` },
     { check: "Injected faults (queries / + core / + full)", passed: `${m.queries.detected} / ${m.core.detected} / ${m.full.detected} of ${m.full.total}`, what: "A suite that cannot fail proves nothing by passing" },
   ];
   document.getElementById("evidenceTable").innerHTML = table(
     [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "What it establishes" }], rows);
   const real = D.fidelity.realGenome;
   const why = {
-    q09_predicate_census: "30,910 phase sets from GATK's PS field, which the oracle does not yet count",
+    q09_predicate_census: fill("{phaseSets} phase sets from GATK's PS field, which the oracle does not yet count"),
     q10_class_census: "the same phase sets, as vcfc:PhaseSet resources",
-    q11_record_digest: "QLever prints a decimal QUAL canonically; with canonical QUAL the oracle's buckets match exactly",
+    q11_record_digest: fill("QLever prints a decimal QUAL canonically: {qualDiffer} digest buckets differ as written, none once trailing zeros are dropped from the {qualChanged} QUAL values that have them"),
   };
   document.getElementById("realGenomeTable").innerHTML =
     `<p class="table-meta">${num(real.triples)} triples, validated on QLever without shapes. Every field of every record was also compared directly with the VCF text: no differences.</p>` +
@@ -583,10 +588,9 @@ function renderEvidence() {
 }
 
 function renderLinking() {
-  const names = { spdi: "spdi (tier 2)", "ensembl-genes-grch38": "ensembl-genes-grch38 (tier 2)", "rsid-dbsnp": "rsid-dbsnp (tier 1)" };
   const arms = D.usecase.arms;
   const linkers = [...new Set(Object.values(arms).flatMap((a) => Object.keys(a.linking.genomes || {})))];
-  const rows = linkers.map((id) => ({ linker: names[id] || id,
+  const rows = linkers.map((id) => ({ linker: id,
     ...Object.fromEntries(Object.entries(arms).map(([arm, a]) => [arm, a.linking.genomes?.[id]])),
     clinvar: arms.arm1.linking.clinvar?.[id] }));
   const cell = (v) => (v ? `${num(v.linked)} of ${num(v.eligible)}` : "—");
@@ -594,8 +598,8 @@ function renderLinking() {
     { key: "linker", label: "Linker" },
     { key: "arm1", label: "Arm 1 genomes", num: true, format: cell }, { key: "arm2", label: "Arm 2 genomes", num: true, format: cell },
     { key: "arm3", label: "Arm 3 genome", num: true, format: cell }, { key: "clinvar", label: "ClinVar", num: true, format: cell },
-  ], rows) + `<p class="table-meta">Linked calls of eligible calls; the gene linker counts calls in an Ensembl 116 gene. The live tier (MyVariant.info) confirmed 92–93% of the PGP genomes' rsIDs in 21 batched requests.</p>`;
-  document.getElementById("usecaseSource").innerHTML = `Sources: <code>${esc(arms.arm1.source)}</code>, <code>${esc(arms.arm2.source)}</code>, <code>${esc(arms.arm3.source)}</code> and <code>benchmarks/use_case/acmg/effort.json</code>.`;
+  ], rows) + `<p class="table-meta">${esc(fill("Linked calls of eligible calls; the gene linker counts calls in a gene span from {ensembl}. The live tier (MyVariant.info) confirmed {myvariantShare} of the {myvariantGenomes} PGP genomes' rsID links in {myvariantRequests} batched requests."))}</p>`;
+  document.getElementById("usecaseSource").innerHTML = `Sources: <code>${esc(arms.arm1.source)}</code>, <code>${esc(arms.arm2.source)}</code>, <code>${esc(arms.arm3.source)}</code> and <code>benchmarks/use_case/acmg</code>.`;
 }
 
 // --------------------------------------------------------------- break-even
@@ -635,7 +639,7 @@ function renderBreakEven() {
     }
     out.innerHTML = `Converting pays off after <strong>${num(Math.ceil(n))} questions</strong>: ` +
       `${secs(v.conversion + v.index)} paid once, against ${secs(v.parser - v.sparql)} saved per question. ` +
-      `For a single batch of thirteen it ${n <= 13 ? "already" : "does not"} pay.`;
+      `For a single batch of ${D.facts.questions} it ${n <= D.retrieval.perQuestion.length ? "already" : "does not"} pay.`;
   };
   box.addEventListener("input", update);
   document.getElementById("be-reset").addEventListener("click", () => {
@@ -682,7 +686,7 @@ function renderHosts() {
     memory: `${num(Number(p.mem_total_kb) / 1e6, 1)} GB`, kernel: p.kernel, docker: p.docker }));
   document.getElementById("hostTable").innerHTML = table(
     [{ key: "host", label: "Host" }, { key: "cpu", label: "CPU" }, { key: "memory", label: "Memory", num: true }, { key: "kernel", label: "Kernel" }, { key: "docker", label: "Docker" }], rows) +
-    `<p class="table-meta">vcf-bench-3 (retrieval at scale) has the same CPU, 8 cores and 31.3 GiB, under Ubuntu 22.04.5 with kernel 5.15. Harness commit <code>${esc(D.campaign.harnessCommit)}</code>.</p>`;
+    `<p class="table-meta">Harness commit <code>${esc(D.campaign.harnessCommit)}</code>.</p>`;
 }
 
 // --------------------------------------------------------------- modal
@@ -691,7 +695,7 @@ function wireModal() {
   document.addEventListener("click", async (event) => {
     const id = event.target.closest("[data-expand]")?.dataset.expand;
     if (!id) return;
-    document.getElementById("focusModalTitle").textContent = CHARTS[id].title;
+    document.getElementById("focusModalTitle").textContent = fill(CHARTS[id].title);
     const content = document.getElementById("focusContent");
     content.innerHTML = "";
     content.dataset.chart = id;
@@ -710,9 +714,10 @@ async function main() {
   DATASETS.forEach((name, i) => { D[name] = responses[i]; });
   const meta = D.campaign.meta;
   document.getElementById("dataMeta").textContent =
-    `Campaign: VCF-RDFizer v3.1.0 (ecrum19/vcf-rdfizer:3.1.0). Site built ${meta.builtAt.replace("T", " ").replace("+00:00", " UTC")}` +
+    `Campaign: VCF-RDFizer ${D.facts.campaignVersion} (${D.facts.campaignImage}). Site built ${meta.builtAt.replace("T", " ").replace("+00:00", " UTC")}` +
     (meta.repoCommit ? ` from commit ${meta.repoCommit}.` : ".");
   if (meta.repoCommit) document.getElementById("commitLink").href = `${REPO}/tree/${meta.repoCommit}`;
+  for (const el of document.querySelectorAll("[data-fill]")) el.textContent = D.facts[el.dataset.fill] ?? "N/A";
   renderKpis();
   renderEvidence();
   renderLinking();

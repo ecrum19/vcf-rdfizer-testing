@@ -71,6 +71,11 @@ python3 scripts/build_site_data.py --out site/data
 python3 -m http.server 8765 --directory site
 ```
 
+The page types no numbers of its own: charts read the data files, and every
+number in its prose is a `{placeholder}` or `data-fill` span filled from
+`facts.json`, which the builder computes from `BioMedSem_2026/benchmark-results`
+and `benchmarks/use_case/acmg`. The tests fail if a digit is typed into the page.
+
 | Support script | Current use |
 | --- | --- |
 | `scripts/download_test_data.sh` | Downloads and normalizes the ten public VCF inputs. |

@@ -8,9 +8,11 @@ moves one of them fails here, before the site deploys, so the site and the
 paper cannot drift apart silently.
 """
 
+import re
 import sys
 import tempfile
 import unittest
+from html.parser import HTMLParser
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -25,7 +27,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
             cls.files = sorted(p.name for p in Path(td).iterdir())
 
     def test_every_dataset_is_written(self):
-        self.assertEqual(self.files, ["campaign.json", "fidelity.json", "retrieval.json",
+        self.assertEqual(self.files, ["campaign.json", "facts.json", "fidelity.json", "retrieval.json",
                                       "scaling.json", "usecase.json"])
 
     def test_campaign(self):
@@ -112,6 +114,63 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual(round(expanded["hdt"][-1] / condensed["hdt"][-1]), 69)
         cottas = [row["cottas"] / row["nt"] for row in s["corpus"]]
         self.assertEqual((round(min(cottas), 2), round(max(cottas), 2)), (0.37, 0.55))
+
+    def test_facts_quoted_in_the_prose(self):
+        facts = self.data["facts"]
+        expected = {
+            "campaignVersion": "v3.1.0", "cells": "143", "questions": "thirteen",
+            "comparisonsEqual": "984", "comparisons": "988", "faults": "113", "faultsMissed": "17",
+            "faultClasses": "ten", "realTriples": "58.2M", "phaseSets": "30,910", "qualChanged": "1,998",
+            "genes": "81", "requesters": "three", "cohort": "104", "restrictedGenes": "28",
+            "wholeGenomeAgreement": "equals", "wholeGenomeFold": "400", "wholeGenomeIndexMinutes": "45",
+            "dataEdits": "three of four", "rdfRules": "72 lines (policy.ttl 41, carriers.rq 31)",
+            "baselineRules": "131 lines (baseline.sh 33, baseline_carriers.py 98)",
+            "myvariantShare": "92–93%", "myvariantRequests": "21",
+            "rssLow": "1.0", "rssHigh": "1.7", "diskCut": "7.7–9.2", "tripleRatio": "432", "hdtRatio": "69",
+            "representationHours": "14.5", "wholeHours": "16.07", "sliceTriples": "17.1M",
+            "fixtureTriples": "0.96M", "midTriples": "171M", "maxTriples": "657M", "qleverIndex": "22.8 s",
+            "artifactSpread": "0.3%", "regionalExecutions": "11,160", "regionalFailures": "no",
+        }
+        self.assertEqual({k: facts[k] for k in expected}, expected)
+
+
+# Names that contain digits but quote no result.
+NAMES = re.compile(r"1000 Genomes|HG00\d|NG131FQA1I|NB72462M|GRCh38|cyvcf2|vcf-bench-\d|[Aa]rm[ -]\d|\b\d\d_[a-z_]+")
+
+
+class PageQuotesNoNumberOfItsOwn(unittest.TestCase):
+    """Every number in the page's prose must come from facts.json, not be typed in."""
+
+    def assert_no_digits(self, text, where):
+        self.assertIsNone(re.search(r"\d", NAMES.sub("", text)), f"{where}: {text!r}")
+
+    def test_index_html(self):
+        class Text(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.chunks, self.skip = [], 0
+
+            def handle_starttag(self, tag, attrs):
+                self.skip += tag in ("head", "script", "style")
+
+            def handle_endtag(self, tag):
+                self.skip -= tag in ("head", "script", "style")
+
+            def handle_data(self, data):
+                if not self.skip and data.strip():
+                    self.chunks.append(data.strip())
+
+        parser = Text()
+        parser.feed((build_site_data.ROOT / "site" / "index.html").read_text(encoding="utf-8"))
+        for chunk in parser.chunks:
+            self.assert_no_digits(chunk, "index.html")
+
+    def test_chart_text(self):
+        source = (build_site_data.ROOT / "site" / "assets" / "app.js").read_text(encoding="utf-8")
+        prose = re.findall(r'(?:title|help|caption): "([^"]*)"', source) + re.findall(r'fill\("([^"]*)"\)', source)
+        self.assertGreater(len(prose), 20)
+        for text in prose:
+            self.assert_no_digits(re.sub(r"\{\w+\}", "", text), "app.js")
 
 
 if __name__ == "__main__":

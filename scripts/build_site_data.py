@@ -18,6 +18,7 @@ import argparse
 import csv
 import glob
 import json
+import re
 import statistics as st
 import subprocess
 import sys
@@ -33,6 +34,7 @@ RESULTS = fd.RESULTS
 USE_CASE = RESULTS / "vcf-bench-1" / "use-case"
 USE_CASE_WGS = RESULTS / "vcf-bench-2" / "use-case"
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
+ACMG = ROOT / "benchmarks" / "use_case" / "acmg"
 REPO_URL = "https://github.com/ecrum19/vcf-rdfizer-testing"
 
 
@@ -75,6 +77,7 @@ def campaign() -> dict:
         if platform:
             hosts[host] = platform
     return {
+        "image": next(ref for ref in summary["integrity"]["image_refs"] if ref != "?"),
         "harnessCommit": summary["harness_commit"],
         "experiments": [{"experiment": name, **row} for name, row in sorted(experiments.items())],
         "cells": cells,
@@ -108,7 +111,8 @@ def validation_counts() -> dict:
         if (report / "rdf-validation.json").exists():
             rapper[load(report / "rdf-validation.json").get("status")] += 1
         if isinstance(summary.get("shacl"), dict) and "wallSeconds" in summary["shacl"]:
-            shacl.append(summary["shacl"])
+            triples = load(report / "rdf-validation.json").get("tripleCount")
+            shacl.append({**summary["shacl"], "triples": triples})
     decode = Counter()
     for host in ("vcf-bench-1", "vcf-bench-2"):
         pattern = RESULTS / host / "benchmarks_outputs" / "**" / "stages" / "compression" / "*.json"
@@ -131,6 +135,7 @@ def validation_counts() -> dict:
             "violations": sum(s.get("violationCount") or 0 for s in shacl),
             "seconds": [min(s["wallSeconds"] for s in shacl), max(s["wallSeconds"] for s in shacl)]
             if shacl else None,
+            "maxTriples": max((s["triples"] or 0 for s in shacl), default=None),
         },
         "maxValidatedTriples": max(
             (load(r / "rdf-validation.json").get("tripleCount") or 0)
@@ -178,8 +183,20 @@ def real_genome() -> dict:
     comparison = load(report / "comparison.json")
     rapper = load(report / "rdf-validation.json")
     diagnosis = (REVIEW / "diag_q11b.out").read_text(encoding="utf-8")
+    # One line per QUAL rendering: how many values it changes, and how many
+    # digest buckets then still differ from QLever's.
+    qual = {line.split("QUAL")[0].strip(): [int(n) for n in re.findall(r":\s+(\d+)", line)]
+            for line in diagnosis.splitlines() if "QUAL" in line}
+    sample, records = re.fullmatch(r"(.+)_first(\d+)", report.name).groups()
+    phase_sets = sum(row["resourceCount"] for row in comparison["queries"]["q10_class_census"]["extraRows"]
+                     if row["class"].endswith("#PhaseSet"))
     return {
+        "sample": sample, "records": int(records),
         "triples": rapper["tripleCount"],
+        "phaseSets": phase_sets,
+        "qual": {"changed": qual["trailing zeros stripped"][0],
+                 "differAsWritten": qual["as written"][1],
+                 "differStripped": qual["trailing zeros stripped"][1]},
         "queries": [{"query": q, "status": r["status"]} for q, r in sorted(comparison["queries"].items())],
         "qualDiagnosis": diagnosis.strip().splitlines(),
         "source": rel(report),
@@ -189,6 +206,15 @@ def real_genome() -> dict:
 # ---------------------------------------------------------------------------
 # Conversion cost
 # ---------------------------------------------------------------------------
+def sample_ladder_records() -> int:
+    """The sample ladder's record count, from its derived inputs' names (1000G_<n>r_s<k>)."""
+    counts = {int(m.group(1)) for c in fd.summary()["cells"]
+              if c["experiment"] == "03_sample_representation" and c["branch"] == "live"
+              for m in [re.search(r"_(\d+)r_s\d+\.vcf", " ".join(c.get("command") or []))] if m}
+    assert len(counts) == 1, counts
+    return counts.pop()
+
+
 def scaling() -> dict:
     ladder = fd.records_ladder()
     storage = {
@@ -201,9 +227,10 @@ def scaling() -> dict:
     return {
         "records": {"rungs": ladder["rungs"], "median": ladder["median"],
                     "meanWall": [st.mean(ladder["runs"][n]["wall"]) for n in ladder["rungs"]],
+                    "replicates": len(ladder["runs"][ladder["rungs"][0]]["wall"]),
                     "wholeFileRecords": fd.HG005_WHOLE_RECORDS},
         "storage": storage,
-        "samples": fd.sample_ladder(),
+        "samples": {**fd.sample_ladder(), "records": sample_ladder_records()},
         "corpus": fd.corpus_rows(),
     }
 
@@ -228,8 +255,13 @@ def regional() -> dict:
         per_arm = defaultdict(lambda: defaultdict(list))
         for (arm, size, _query), values in times.items():
             per_arm[arm][size].append(st.median(values))
-        setup = load(path.with_name("regional.json")).get("setup") or {}
+        meta = load(path.with_name("regional.json"))
+        setup = meta.get("setup") or {}
+        windows = load(path.with_name("windows.json"))
         out[graph] = {
+            "records": windows["totalRecords"], "questions": len(meta["queries"]),
+            "windowsPerSize": windows["windowsPerSize"], "scanWindowsPerSize": meta["scanWindowsPerSize"],
+            "replicates": meta["replicates"],
             "ms": {arm: {str(size): round(1000 * st.median(v), 2) for size, v in sorted(sizes.items())}
                    for arm, sizes in per_arm.items()},
             "executions": executions, "failures": failures, "disagreements": disagreements,
@@ -362,8 +394,207 @@ def usecase() -> dict:
             "queries": queries,
             "source": rel(arm),
         }
-    effort = ROOT / "benchmarks" / "use_case" / "acmg" / "effort.json"
-    return {"arms": arms, "effort": load(effort)}
+    images = {load(c / "bench.json").get("image_ref") for arm in ARMS.values()
+              for c in reported_cells(arm, "convert") if (c / "bench.json").exists()}
+    return {"arms": arms, "effort": load(ACMG / "effort.json"), "study": study(),
+            "convertImages": sorted(images - {None}), "myvariant": myvariant()}
+
+
+def study() -> dict:
+    """The question's fixed inputs: genes, participants, consents and requesters."""
+    spec = load(ACMG / "use_case.json")
+    regions = load(ACMG / "regions.json")
+    return {
+        "geneList": regions["gene_list"].split(" (")[0],
+        "genes": regions["genes"],
+        "coordinates": regions["coordinates"].split(" (")[0],
+        "participants": [{"id": p["id"], "source": p["source"]} for p in spec["participants"]],
+        "consents": spec["policy"]["consents"],
+        "requesters": spec["policy"]["requesters"],
+        "restrictedGenes": len(spec["policy"]["secondary_findings"]["genes"]),
+        "cohort": len(load(ACMG / "cohort" / "cohort.json")["participants"]),
+        "wholeGenome": spec["whole_genome"]["participant"],
+    }
+
+
+def myvariant() -> dict:
+    """The live tier: how many rsID links MyVariant.info confirmed, and at how many requests."""
+    confirmed = load(USE_CASE / "17_use_case_acmg" / "tier1_vs_tier3_myvariant.json")
+    requests = sum(linker.get("requests") or 0
+                   for path in (USE_CASE / "17_use_case_acmg").glob("link_myvariant__*/out/*.links.json")
+                   for linker in load(path).get("linkers", []))
+    return {"genomes": {g: {"rsid": c["tier1_links"], "confirmed": c["tier3_links"]} for g, c in confirmed.items()},
+            "requests": requests}
+
+
+# ---------------------------------------------------------------------------
+# Facts: every number the page's prose quotes, formatted once, here
+# ---------------------------------------------------------------------------
+WORDS = ("no one two three four five six seven eight nine ten eleven twelve thirteen "
+         "fourteen fifteen sixteen seventeen eighteen nineteen twenty").split()
+# Names of the Data Use Ontology terms the simulated consents use.
+DUO = {"DUO:0000006": "health research", "DUO:0000007": "disease-specific research",
+       "DUO:0000042": "general research", "DUO:0000043": "clinical care"}
+
+
+def words(n: int) -> str:
+    return WORDS[n] if 0 <= n < len(WORDS) else f"{n:,}"
+
+
+def millions(x: float) -> str:
+    return f"{x / 1e6:.{2 if x < 1e6 else 1 if x < 1e8 else 0}f}M"
+
+
+def short(n: int) -> str:
+    """10000 -> 10k, 1000000 -> 1M."""
+    return f"{n // 10**6}M" if n % 10**6 == 0 else f"{n // 1000}k" if n % 1000 == 0 else f"{n:,}"
+
+
+def span(values, digits: int = 1) -> str:
+    lo, hi = (f"{x:.{digits}f}" for x in (min(values), max(values)))
+    return lo if lo == hi else f"{lo}–{hi}"
+
+
+def listing(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def facts(d: dict) -> dict[str, str]:
+    campaign, fidelity, scaling, retrieval, usecase = (
+        d[k] for k in ("campaign", "fidelity", "scaling", "retrieval", "usecase"))
+    v, mutation, real = fidelity["validation"], fidelity["mutation"], fidelity["realGenome"]
+    records, samples, storage = scaling["records"], scaling["samples"], scaling["storage"]
+    arms, effort, study = usecase["arms"], usecase["effort"], usecase["study"]
+    out = {}
+
+    version = lambda image: "v" + image.rsplit(":", 1)[1]  # noqa: E731
+    out["campaignImage"] = campaign["image"]
+    out["campaignVersion"] = version(campaign["image"])
+    out["cells"] = f"{campaign['totals']['cells']:,}"
+    out["campaignHosts"] = words(len(campaign["hosts"]))
+    out["useCaseVersion"] = listing([version(i) for i in usecase["convertImages"]])
+
+    # Fidelity
+    total = sum(v["comparisons"].values())
+    out["questions"] = words(len(retrieval["perQuestion"]))
+    out["qRange"] = f"Q1–Q{len(retrieval['perQuestion'])}"
+    out["comparisonsEqual"] = f"{v['comparisons']['PASS']:,}"
+    out["comparisons"] = f"{total:,}"
+    out["comparisonsOther"] = words(total - v["comparisons"]["PASS"])
+    scores = mutation["scores"]
+    out["faults"] = f"{scores['queries']['total']:,}"
+    out["faultsMissed"] = f"{scores['queries']['total'] - scores['queries']['detected']:,}"
+    out["faultClasses"] = words(len(mutation["missedByQueries"]))
+    out["shaclMaxTriples"] = millions(v["shacl"]["maxTriples"])
+    out["realSample"] = real["sample"]
+    out["realRecords"] = f"{real['records']:,}"
+    out["realTriples"] = millions(real["triples"])
+    out["phaseSets"] = f"{real['phaseSets']:,}"
+    out["qualChanged"] = f"{real['qual']['changed']:,}"
+    out["qualDiffer"] = f"{real['qual']['differAsWritten']:,}"
+
+    # Use case
+    sources = Counter(p["source"].split()[0] for p in study["participants"])
+    out["geneList"] = study["geneList"]
+    out["genes"] = str(study["genes"])
+    out["ensembl"] = study["coordinates"]
+    out["requesters"] = words(len(study["requesters"]))
+    out["arm1Genomes"] = words(len(study["participants"]))
+    out["arm1Sources"] = listing([f"{words(n)} {name}" for name, n in sources.most_common()])
+    out["cohort"] = str(study["cohort"])
+    out["wholeGenome"] = study["wholeGenome"]
+    out["restrictedGenes"] = str(study["restrictedGenes"])
+    out["consents"] = "; ".join(
+        f"{pid} " + ("withdrew" if c.get("withdrawn") else
+                     "consents to " + listing([DUO.get(term, term) for term in c["permits"]]))
+        for pid, c in study["consents"].items())
+    # The whole genome against the same participant's arm-1 file, by linked records.
+    linked = {arm: sum(load(path)["records"] for path in
+                       (ROOT / arms[arm]["source"]).glob(f"link__{study['wholeGenome']}/out/*.links.json"))
+              for arm in ("arm1", "arm3")}
+    fold = linked["arm3"] / linked["arm1"]
+    out["wholeGenomeFold"] = f"{float(f'{fold:.2g}'):,.0f}"
+    grid = arms["arm1"]["grid"]
+    column = grid["participants"].index(study["wholeGenome"])
+    same = all(grid["rows"][r][column] == c["rdf"] for r, c in arms["arm3"]["carriers"].items())
+    out["wholeGenomeAgreement"] = "equals" if same else "differs from"
+    queries = {arm: a["queries"]["unrestricted"] for arm, a in arms.items()}
+    out["queryReplicates"] = words(len(queries["arm1"]["replicates"]["carriers"]))
+    out["queryMinutes"] = span([st.median(q["replicates"]["carriers"]) / 60 for q in queries.values()])
+    out["wholeGenomeIndexMinutes"] = f"{queries['arm3']['setup'] / 60:.0f}"
+    code_only = [s for s in effort["scenarios"]
+                 if not any(e["added"] or e["removed"] for f, e in s["edits"]["baseline"].items() if "(data)" not in f)]
+    out["dataEdits"] = f"{words(len(code_only))} of {words(len(effort['scenarios']))}"
+    for route in ("rdf", "baseline"):
+        # "of which ... (data)" lines belong to the file listed before them.
+        lines, last = {}, None
+        for name, n in effort["inventory"][route].items():
+            if name.startswith("of which"):
+                lines[last] -= n
+            elif "(data)" not in name and n:
+                lines[last := name] = n
+        out[f"{route}Rules"] = (f"{sum(lines.values())} lines ("
+                                + ", ".join(f"{f} {n}" for f, n in lines.items()) + ")")
+    mv = usecase["myvariant"]
+    out["myvariantGenomes"] = words(len(mv["genomes"]))
+    out["myvariantShare"] = span([100 * g["confirmed"] / g["rsid"] for g in mv["genomes"].values()], 0) + "%"
+    out["myvariantRequests"] = str(mv["requests"])
+
+    # Conversion
+    rss_gb = [kb * 1024 / 1e9 for kb in records["median"]["rss"]]
+    out["recordsFold"] = f"{records['rungs'][-1] / records['rungs'][0]:,.0f}"
+    out["ladder"] = listing([short(n) for n in records["rungs"][:-1]])
+    out["ladderReplicates"] = words(records["replicates"])
+    out["wholeRecords"] = f"{records['wholeFileRecords'] / 1e6:.2f}M"
+    out["rssLow"], out["rssHigh"] = f"{min(rss_gb):.1f}", f"{max(rss_gb):.1f}"
+    out["diskCut"] = span([m["plain"]["peakBytes"] / m["space-optimized"]["peakBytes"] for m in storage.values()])
+    out["spaceTimeCost"] = span([100 * (m["space-optimized"]["wallSeconds"] / m["plain"]["wallSeconds"] - 1)
+                                 for m in storage.values()], 0) + "%"
+    out["sampleRecords"] = f"{samples['records']:,}"
+    out["samplesMin"], out["samplesMax"] = (f"{n:,}" for n in (samples["expanded"]["x"][0], samples["expanded"]["x"][-1]))
+    out["tripleRatio"] = f"{samples['expanded']['triples'][-1] / samples['condensed']['triples'][-1]:.0f}"
+    out["hdtRatio"] = f"{samples['expanded']['hdt'][-1] / samples['condensed']['hdt'][-1]:.0f}"
+    sliced = {int(m.group(1)) for c in campaign["cells"] if c["experiment"] == "05_corpus_breadth"
+              for m in [re.search(r"__first(\d+)$", c["cell"])] if m}
+    out["corpusRecords"] = listing([f"{n:,}" for n in sorted(sliced)])
+    whole = max(scaling["corpus"], key=lambda r: r["triples"])
+    out["representationHours"] = f"{(whole['hdt_s'] + whole['cottas_s']) / 3600:.1f}"
+    out["wholeHours"] = f"{whole['wall_s'] / 3600:.2f}"
+
+    # Retrieval
+    by_graph = {r["graph"]: r for r in retrieval["costBySize"]}
+    engines = retrieval["engines"]
+    out["sliceRecords"] = f"{records['rungs'][1]:,}"
+    out["sliceTriples"] = millions(by_graph["large"]["triples"])
+    out["fixtureTriples"] = millions(by_graph["small"]["triples"])
+    out["midTriples"] = millions(by_graph["r1000000"]["triples"])
+    out["maxTriples"] = millions(by_graph["whole"]["triples"])
+    out["perMillion"] = span([r["perMillion"] for r in retrieval["costBySize"]], 2)
+    out["qleverIndex"] = f"{retrieval['batch']['setup']:.1f} s"
+    out["engineRuns"] = words(engines["qlever"]["runs"])
+    out["engineArtifacts"] = words(len(retrieval["artifacts"]))
+    out["engineReplicates"] = words(engines["qlever"]["runs"] // len(retrieval["artifacts"]))
+    out["engineFold"] = span([e["mean"] / engines["qlever"]["mean"] for k, e in engines.items() if k != "qlever"], 0)
+    rows = retrieval["scale"]["rows"]
+    per_artifact = defaultdict(float)
+    for r in rows:
+        if r["scale"] == "whole" and r["engine"] == "qlever":
+            per_artifact[r["artifact"]] += r["seconds"]
+    out["artifactSpread"] = f"{100 * (max(per_artifact.values()) / min(per_artifact.values()) - 1):.1f}%"
+    in_place = Counter((r["engine"], r["status"] == "PASS") for r in rows
+                       if r["scale"] == "r1000000" and r["engine"] != "qlever")
+    failed = {n for (_, ok), n in in_place.items() if not ok}
+    out["inPlaceFailed"] = listing([words(n) for n in sorted(failed)])
+    regional = retrieval["regional"]
+    first = next(iter(regional.values()))
+    out["regionalQuestions"] = words(first["questions"])
+    out["regionalWindows"] = words(first["windowsPerSize"])
+    out["regionalScanWindows"] = words(first["scanWindowsPerSize"])
+    out["regionalReplicates"] = words(first["replicates"])
+    out["regionalExecutions"] = f"{sum(g['executions'] for g in regional.values()):,}"
+    out["regionalFailures"] = words(sum(g["failures"] for g in regional.values()))
+    out["regionalDisagreements"] = words(sum(g["disagreements"] for g in regional.values()))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -384,6 +615,7 @@ def build(out: Path) -> dict[str, dict]:
         "retrieval": retrieval(),
         "usecase": usecase(),
     }
+    datasets["facts"] = facts(datasets)
     meta = {"builtAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "repoCommit": git_commit()}
     out.mkdir(parents=True, exist_ok=True)

@@ -121,6 +121,7 @@ def corpus_rows() -> list[dict]:
             "triples": d["hdt_validation_source_triples"],
             "nt": d["rdf_size_bytes"], "hdt": d["hdt_size_bytes"], "cottas": d["cottas_size_bytes"],
             "hdt_s": d["hdt_wall_seconds"], "cottas_s": d["cottas_wall_seconds"],
+            "wall_s": cell["wrapper_wall_seconds"],
         })
     return sorted(rows, key=lambda r: r["triples"])
 

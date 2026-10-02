@@ -48,9 +48,9 @@
       <details class="panel collapsible" id="fidelity" open>
         <summary>Fidelity: is the graph faithful to the VCF?</summary>
         <p class="section-intro">
-          VCF-RDFizer's validation layer asks thirteen questions of each graph in SPARQL and answers them again,
+          VCF-RDFizer's validation layer asks <span data-fill="questions"></span> questions of each graph in SPARQL and answers them again,
           independently, from the source VCF; SHACL shapes check structure no oracle observes. This section shows what
-          that layer found across the v3.1.0 campaign, how sensitive it is to injected faults, and what happened on a
+          that layer found across the <span data-fill="campaignVersion"></span> campaign, how sensitive it is to injected faults, and what happened on a
           real genome.
         </p>
         <div class="table-wrap" id="evidenceTable"></div>
@@ -58,27 +58,27 @@
           <div class="chart-card wide" data-chart="mutationScores"></div>
           <div class="chart-card wide" data-chart="mutationClasses"></div>
         </div>
-        <h3 class="subhead">A real genome: NG131FQA1I, first 250,000 records</h3>
+        <h3 class="subhead">A real genome: <span data-fill="realSample"></span>, first <span data-fill="realRecords"></span> records</h3>
         <div class="table-wrap" id="realGenomeTable"></div>
         <aside class="interpretation">
           <h3>Interpretation</h3>
           <p>
-            Wherever the paired comparison ran, the graph and the VCF agreed: 984 of 988 comparisons were exactly equal,
-            the other four were genotype questions on a file with no records, and every engine that answered agreed.
+            Wherever the paired comparison ran, the graph and the VCF agreed: <span data-fill="comparisonsEqual"></span> of <span data-fill="comparisons"></span> comparisons were exactly equal,
+            the other <span data-fill="comparisonsOther"></span> were genotype questions on a file with no records, and every engine that answered agreed.
             That establishes <em>representation equivalence</em> for the fields the questions cover, not that the
             source calls are biologically correct.
           </p>
           <p>
-            The mutation experiment is what makes that agreement meaningful: the queries alone miss 17 of 113 injected
-            faults, in ten classes they structurally cannot see (which allele a genotype calls, a record's index, a
+            The mutation experiment is what makes that agreement meaningful: the queries alone miss <span data-fill="faultsMissed"></span> of <span data-fill="faults"></span> injected
+            faults, in <span data-fill="faultClasses"></span> classes they structurally cannot see (which allele a genotype calls, a record's index, a
             header attribute's value). The <strong>default</strong> shape profile, the only one cheap enough for large
-            inputs, catches none of them; only the full profile set does, and v3.1.0 runs it only on request and up to
-            16&nbsp;MiB. On larger inputs those ten classes go undetected.
+            inputs, catches none of them; only the full profile set does, and <span data-fill="campaignVersion"></span> runs it only on request and only on
+            small inputs. On larger inputs those <span data-fill="faultClasses"></span> classes go undetected.
           </p>
           <p>
-            On a real 58.2M-triple genome every field of every record equals the VCF text, but the layer still reported
-            a mismatch, for two reasons of its own: the oracle does not yet count GATK's phase sets, and QLever prints a
-            decimal QUAL canonically (<code>30.1</code> for <code>30.10</code>). Both are validator limitations, not
+            On a real <span data-fill="realTriples"></span>-triple genome every field of every record equals the VCF text, but the layer still reported
+            a mismatch, for two reasons of its own: the oracle does not yet count GATK's phase sets (<span data-fill="phaseSets"></span> of them), and QLever prints a
+            decimal QUAL canonically, without trailing zeros (<span data-fill="qualChanged"></span> QUAL values). Both are validator limitations, not
             conversion errors, and fixes for both are being prepared for the next VCF-RDFizer release.
           </p>
           <p class="source" id="fidelitySource"></p>
@@ -89,11 +89,11 @@
       <details class="panel collapsible" id="usecase" open>
         <summary>Use case: linked, governed variant data on real genomes</summary>
         <p class="section-intro">
-          <em>Which participants carry a ClinVar-classified variant in the 81 ACMG secondary-findings genes, and what
-          may each of three requesters see?</em> Answered by two routes that share no code: an RDF route (SPDI and gene
+          <em>Which participants carry a ClinVar-classified variant in the <span data-fill="genes"></span> <span data-fill="geneList"></span> secondary-findings genes, and what
+          may each of <span data-fill="requesters"></span> requesters see?</em> Answered by two routes that share no code: an RDF route (SPDI and gene
           linkers, ODRL consent policies, one SPARQL query per requester) and a bcftools route with a hand-written consent
-          table. Consents are simulated; the genomes are real and public. Arm 1: five genomes from three sources.
-          Arm 2: 104 participants of the 1000 Genomes high-coverage set. Arm 3: HG005's whole genome.
+          table. Consents are simulated; the genomes are real and public. Arm 1: <span data-fill="arm1Genomes"></span> genomes (<span data-fill="arm1Sources"></span>).
+          Arm 2: <span data-fill="cohort"></span> participants of the 1000 Genomes high-coverage set. Arm 3: <span data-fill="wholeGenome"></span>'s whole genome.
         </p>
         <div class="chart-grid">
           <div class="chart-card wide" data-chart="carriers"></div>
@@ -107,18 +107,18 @@
           <h3>Interpretation</h3>
           <p>
             Both routes returned identical carrier lists for every requester in every arm, so the RDF route is not
-            trading correctness for anything. HG005's whole-genome answer equals its arm-1 answer key for key: a
-            400-fold larger input changed nothing.
+            trading correctness for anything. <span data-fill="wholeGenome"></span>'s whole-genome answer <span data-fill="wholeGenomeAgreement"></span> its arm-1 answer key for key, on a
+            <span data-fill="wholeGenomeFold"></span>-fold larger input.
           </p>
           <p>
-            It does not pay in lines: three of four realistic changes were data edits of similar size in a table-driven
+            It does not pay in lines: <span data-fill="dataEdits"></span> realistic changes were data edits of similar size in a table-driven
             bcftools pipeline. It pays where the conventional route has no place to put a rule. A consent or cohort rule
             becomes a statement beside the data that a query can ask about and a check can verify against the VCF text,
             and a rule on one variant's SPDI identity needs no code and holds whatever a file calls its chromosome.
           </p>
           <p>
-            The cost is up front: conversion, linking and an index before the first question (45 minutes for the whole
-            genome's index). The query itself took about three minutes at every scale, because the ClinVar side of the
+            The cost is up front: conversion, linking and an index before the first question (<span data-fill="wholeGenomeIndexMinutes"></span> minutes for the whole
+            genome's index). The query itself took <span data-fill="queryMinutes"></span> minutes at every scale, because the ClinVar side of the
             join dominates it.
           </p>
           <p class="source" id="usecaseSource"></p>
@@ -130,7 +130,7 @@
         <summary>Conversion cost: scaling, storage and representations</summary>
         <p class="section-intro">
           How the cost of conversion grows with records and samples, what the storage mode trades, and what each
-          queryable representation costs to build and store. All from the v3.1.0 campaign.
+          queryable representation costs to build and store. All from the <span data-fill="campaignVersion"></span> campaign.
         </p>
         <div class="chart-grid">
           <div class="chart-card" data-chart="records"></div>
@@ -141,20 +141,20 @@
         <aside class="interpretation">
           <h3>Interpretation</h3>
           <p>
-            Conversion is memory-bounded: across a hundredfold change in records the mapping stage's peak memory stays
-            between 1.0 and 1.7&nbsp;GB, while triples, time and disk grow in proportion. It is disk, not RAM, that
-            scales with the data, and space-optimized storage cuts the peak disk 7.7–9.2-fold for a few percent more time.
+            Conversion is memory-bounded: across a <span data-fill="recordsFold"></span>-fold change in records the mapping stage's peak memory stays
+            between <span data-fill="rssLow"></span> and <span data-fill="rssHigh"></span>&nbsp;GB, while triples, time and disk grow in proportion. It is disk, not RAM, that
+            scales with the data, and space-optimized storage cuts the peak disk <span data-fill="diskCut"></span>-fold for <span data-fill="spaceTimeCost"></span> more time.
           </p>
           <p>
             Triple counts mislead about size. The condensed sample profile stores per-sample values in vector literals,
-            so its triple count barely moves from 1 to 2,504 samples while its bytes keep growing; the expanded graph has
-            432 times the triples but only 69 times the HDT bytes. Choose the profile by what must be addressable: the
+            so its triple count barely moves from <span data-fill="samplesMin"></span> to <span data-fill="samplesMax"></span> samples while its bytes keep growing; the expanded graph has
+            <span data-fill="tripleRatio"></span> times the triples but only <span data-fill="hdtRatio"></span> times the HDT bytes. Choose the profile by what must be addressable: the
             expanded profile makes every genotype a resource that a query, a shape or a policy can reach.
           </p>
           <p>
             COTTAS is always the smallest artifact; HDT is larger than the gzip N-Triples it is built from. Under QLever
             neither is a query index: QLever builds its own, so they serve as transport and archive formats, and building
-            them took 14.5 of the whole genome's 16.07 conversion hours.
+            them took <span data-fill="representationHours"></span> of the whole genome's <span data-fill="wholeHours"></span> conversion hours.
           </p>
           <p class="source" id="conversionSource"></p>
         </aside>
@@ -164,7 +164,7 @@
       <details class="panel collapsible" id="retrieval" open>
         <summary>Retrieval cost: SPARQL against a VCF parser</summary>
         <p class="section-intro">
-          The same thirteen questions answered by SPARQL and by cyvcf2 scanning the VCF, with every answer compared
+          The same <span data-fill="questions"></span> questions answered by SPARQL and by cyvcf2 scanning the VCF, with every answer compared
           before any timing was read; engines and artifacts compared; cost at whole-genome scale; and region-restricted
           questions against a tabix-indexed VCF.
         </p>
@@ -177,7 +177,7 @@
         <div class="calculator panel-inset" id="breakEven">
           <h3>When does converting pay? A break-even calculator</h3>
           <p class="section-intro">
-            Defaults are the measured values for the 100,000-record HG005 slice. Change them to match your own setting.
+            Defaults are the measured values for the <span data-fill="sliceRecords"></span>-record HG005 slice. Change them to match your own setting.
           </p>
           <div class="controls-grid" id="breakEvenInputs"></div>
           <p class="calc-result" id="breakEvenResult" aria-live="polite"></p>
@@ -191,9 +191,10 @@
             tabix index; converting pays only once questions repeat.
           </p>
           <p>
-            The engine, not the artifact, sets query cost: the three packagings of one graph differ by under 1% under
-            QLever, while engines differ 20–40-fold, and the in-place engines do not complete the workload at 171M
-            triples. QLever's cost stays linear to 657M triples, about one second per million for the thirteen questions.
+            The engine, not the artifact, sets query cost: the <span data-fill="engineArtifacts"></span> packagings of one graph differ by <span data-fill="artifactSpread"></span> under
+            QLever at <span data-fill="maxTriples"></span> triples, while engines differ <span data-fill="engineFold"></span>-fold, and the in-place engines fail
+            <span data-fill="inPlaceFailed"></span> of the <span data-fill="questions"></span> questions at <span data-fill="midTriples"></span> triples. QLever's cost stays linear to
+            <span data-fill="maxTriples"></span> triples, <span data-fill="perMillion"></span> seconds per million for the <span data-fill="questions"></span> questions.
           </p>
           <p class="source" id="retrievalSource"></p>
         </aside>
@@ -203,7 +204,7 @@
       <details class="panel collapsible" id="explorer">
         <summary>Campaign explorer: every benchmark cell</summary>
         <p class="section-intro">
-          The 143 cells of the live v3.1.0 campaign, each linked to its archived folder (command, metrics, reports).
+          The <span data-fill="cells"></span> cells of the live <span data-fill="campaignVersion"></span> campaign, each linked to its archived folder (command, metrics, reports).
           Filters are kept in the address bar, so a shared link reopens the same view.
         </p>
         <div class="controls-grid" id="explorerControls"></div>
@@ -215,10 +216,10 @@
       <details class="panel collapsible note-panel" id="notes">
         <summary>Notes and provenance</summary>
         <ul class="notes">
-          <li>The campaign ran the published image <code>ecrum19/vcf-rdfizer:3.1.0</code> on two identically specified hosts; retrieval at 171M and 657M triples ran on a third (vcf-bench-3), with later builds of the validation runner.</li>
-          <li>The use case converts with v3.2.0 and links and governs with pre-release builds of the plug-ins released in v3.3.0; its consents are simulated and attach to no real participant's wishes.</li>
+          <li>The campaign ran the published image <code><span data-fill="campaignImage"></span></code> on <span data-fill="campaignHosts"></span> hosts (below); retrieval at <span data-fill="midTriples"></span> and <span data-fill="maxTriples"></span> triples ran on a third (vcf-bench-3), with later builds of the validation runner.</li>
+          <li>The use case converts with <span data-fill="useCaseVersion"></span> and links and governs with pre-release builds of the linking and policy plug-ins; its consents are simulated and attach to no real participant's wishes.</li>
           <li>Only reported results are shown: superseded, stalled and failed attempts stay in the archive but are left out here.</li>
-          <li>The generated RDF (about 196&nbsp;GB) is not archived; every cell records the command, commit and image digest that produced it.</li>
+          <li>The generated RDF is not archived; every cell records the command, commit and image digest that produced it.</li>
           <li>Values the archive does not hold are shown as N/A, never estimated.</li>
         </ul>
         <div class="table-wrap" id="hostTable"></div>
