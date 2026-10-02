@@ -1,0 +1,65 @@
+# Build the results site from the benchmark archive and deploy it to GitHub Pages.
+# Pull requests build and test only; pushes to main also deploy.
+name: results-site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "scripts/build_site_data.py"
+      - "scripts/test_build_site_data.py"
+      - "BioMedSem_2026/benchmark-results/**"
+      - "BioMedSem_2026/paper-assets/figures/figure_data.py"
+      - "benchmarks/use_case/acmg/effort.json"
+      - ".github/workflows/pages.yml"
+  pull_request:
+    paths:
+      - "site/**"
+      - "scripts/build_site_data.py"
+      - "scripts/test_build_site_data.py"
+      - "BioMedSem_2026/benchmark-results/**"
+      - "BioMedSem_2026/paper-assets/figures/figure_data.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Standard library only: no pip install.
+      - name: Check the data against the paper
+        run: python -m unittest scripts/test_build_site_data.py -v
+      - name: Build the data files
+        run: python scripts/build_site_data.py --out site/data
+      - name: Stamp asset URLs with the commit, so a deploy busts browser caches
+        run: sed -i "s/__BUILD__/${GITHUB_SHA::7}/g" site/index.html
+      - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
