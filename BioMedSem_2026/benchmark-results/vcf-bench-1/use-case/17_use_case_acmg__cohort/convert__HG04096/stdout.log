@@ -1,0 +1,30 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG04096/out/run_metrics/HG04096.acmg__20260928T165814
+  Detailed logs: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG04096/out/run_metrics/HG04096.acmg__20260928T165814/logs/wrapper.log
+  Progress log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG04096/out/run_metrics/HG04096.acmg__20260928T165814/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: HG04096.acmg.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 9,753; FORMAT values: 9,753
+    * Streaming structured header RDF
+    * Header lines typed: 43; contigs: 24
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 9,753; INFO values: 0; declarations: 0
+    * Triples produced: 575,127
+    * Compression ✅
+    * Output directory: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG04096/out/HG04096.acmg
+      - RDF aggregate: HG04096.acmg.nt
+      - N-Triples (.nt): 73.67 MB (removed after successful compression)
+      - gzip (.nt.gz): 2.66 MB
+Total triples produced (full run): 575,127
+Conversion process finished.
+Run time (full mode): 15.29s
+Timing log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG04096/out/run_metrics/HG04096.acmg__20260928T165814/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG04096/out/run_metrics/HG04096.acmg__20260928T165814/summary.json

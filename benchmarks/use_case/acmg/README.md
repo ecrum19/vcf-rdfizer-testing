@@ -81,7 +81,7 @@ chromosome at a time.
 
 The panel's ~90 INFO fields describe all 3,202 of its samples, not the
 participant, so each participant's file drops INFO (`derive.sh drop-info`).
-Kept, they were ~95% of every participant's triples. The frequencies the
+Kept, they were 93% of every participant's triples (92.6–92.7% measured across all 104). The frequencies the
 question can use are recorded once instead: `panel.acmg.vcf`, a sites-only file
 of the sites any participant carries, with the fields `cohort.json` names under
 `panel`. It is linked by SPDI like ClinVar, so `cohort/rare.rq` (the carriers

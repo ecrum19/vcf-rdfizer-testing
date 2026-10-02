@@ -1,0 +1,50 @@
+{
+  "request": {
+    "assignee": "https://example.org/party/cardio-consortium",
+    "purpose": "http://purl.obolibrary.org/obo/DUO_0000007"
+  },
+  "groups": {
+    "file://HG002.acmg.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://HG002.acmg.vcf>",
+      "records_released": 8608,
+      "records_withheld": 3090
+    },
+    "file://HG004.acmg.vcf": {
+      "released": false,
+      "reason": "withheld: prohibition on <file://HG004.acmg.vcf>",
+      "records_released": 0,
+      "records_withheld": 9720
+    },
+    "file://HG005.acmg.vcf": {
+      "released": false,
+      "reason": "withheld: no permission covers it for this purpose",
+      "records_released": 0,
+      "records_withheld": 9615
+    },
+    "file://NB72462M.acmg.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://NB72462M.acmg.vcf>",
+      "records_released": 7510,
+      "records_withheld": 2500
+    },
+    "file://NG131FQA1I.acmg.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://NG131FQA1I.acmg.vcf>",
+      "records_released": 7839,
+      "records_withheld": 2504
+    }
+  },
+  "records_released": 23957,
+  "records_withheld": 27429,
+  "triples_released": 4390375,
+  "triples_withheld": 4725160,
+  "reasons": {
+    "withheld: prohibition on <https://example.org/policy/acmg-use-case/cancer-predisposition>": 12547,
+    "released: permission on <file://HG002.acmg.vcf>": 8608,
+    "withheld: prohibition on <file://HG004.acmg.vcf>": 7499,
+    "withheld: no permission covers it for this purpose": 7383,
+    "released: permission on <file://NB72462M.acmg.vcf>": 7510,
+    "released: permission on <file://NG131FQA1I.acmg.vcf>": 7839
+  }
+}

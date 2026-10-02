@@ -40,6 +40,17 @@ structure cells with `--representations cottas`, because the campaign's 03
 built HDT only. It will be mirrored as
 `vcf-bench-2/benchmarks_outputs__supplement_cottas_ladder/`.
 
+## Outside the campaign
+
+Three later sets of results are kept beside the campaign's, and none of them is in
+`summary.json`:
+
+| Path | What |
+| --- | --- |
+| `vcf-bench-3/` | Retrieval at 171M and 657M triples (see its README) |
+| `vcf-bench-1/use-case/`, `vcf-bench-2/use-case/` | The ACMG use case (experiment 17): arms 1 and 2 on vcf-bench-1, arm 3 (`__wgs`) on vcf-bench-2. Small files only (comparisons, grids, timings, `bench.json`, check reports); failed attempts keep their `__failed_*` suffix |
+| `vcf-bench-2/review-runs/` | The default-profile mutation score and the paired validation of a real 250k-record genome, on v3.1.0 (see its README) |
+
 ## What is not here
 
 The generated RDF: about 196 GB of `.nt`, `.hdt` and `.cottas` under

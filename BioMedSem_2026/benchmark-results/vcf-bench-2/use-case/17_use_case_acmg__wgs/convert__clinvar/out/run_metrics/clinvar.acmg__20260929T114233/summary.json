@@ -1,0 +1,78 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260929T114233",
+  "timestamp": "2026-09-29T11:42:33",
+  "completed_at": "2026-09-29T11:44:17",
+  "mode": "full",
+  "status": "success",
+  "exit_code": 0,
+  "execution": {
+    "wall_seconds": 103.79057,
+    "wall_human": "1m 43.8s",
+    "total_triples": 33096749
+  },
+  "summary_tables": {
+    "conversion_and_compression": [
+      {
+        "run_id": "20260929T114233",
+        "timestamp": "2026-09-29T11:42:33",
+        "output_name": "clinvar.acmg",
+        "output_dir": "/data/out/clinvar.acmg",
+        "vcf_version": "",
+        "vcf_version_source": "",
+        "exit_code_java": "0",
+        "wall_seconds_java": "22.020",
+        "user_seconds_java": "95.52",
+        "sys_seconds_java": "4.33",
+        "max_rss_kb_java": "1792704",
+        "input_mapping_size_bytes": "13778",
+        "input_vcf_size_bytes": "188528509",
+        "output_dir_size_bytes": "4682864444",
+        "output_triples": "33096749",
+        "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+        "mapping_file": "/data/rules/clinvar.acmg.rules.ttl",
+        "output_path": "/data/out/clinvar.acmg/clinvar.acmg.nt",
+        "exit_code_tsv": "0",
+        "wall_seconds_tsv": "8.504900",
+        "user_seconds_tsv": "4.040000",
+        "sys_seconds_tsv": "0.380000",
+        "max_rss_kb_tsv": "7680",
+        "tsv_output_size_bytes": "197054937",
+        "tsv_output_path": "/home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__wgs/convert__clinvar/out/.intermediate/tsv/clinvar.acmg.records.tsv|/home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__wgs/convert__clinvar/out/.intermediate/tsv/clinvar.acmg.header_lines.tsv|/home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__wgs/convert__clinvar/out/.intermediate/tsv/clinvar.acmg.file_metadata.tsv",
+        "combined_rdf_size_bytes": "4682864444",
+        "compression_methods": "gzip",
+        "gzip_size_bytes": "201671472",
+        "exit_code_gzip": "0",
+        "wall_seconds_gzip": "24.264471",
+        "user_seconds_gzip": "22.370000",
+        "sys_seconds_gzip": "0.860000",
+        "max_rss_kb_gzip": "4224"
+      }
+    ],
+    "tsv": [],
+    "wrapper": [
+      {
+        "run_id": "20260929T114233",
+        "timestamp": "2026-09-29T11:42:33",
+        "mode": "full",
+        "exit_code": "0",
+        "status": "success",
+        "elapsed_seconds": "103.790570",
+        "elapsed_human": "1m 43.8s",
+        "total_triples": "33096749"
+      }
+    ]
+  },
+  "stage_reports": [
+    "stages/compression/clinvar.acmg.json",
+    "stages/compression_operations/clinvar.acmg/clinvar.acmg.nt.json",
+    "stages/conversion/clinvar.acmg.json",
+    "stages/tsv/clinvar.acmg.json"
+  ],
+  "reports": [],
+  "validation": [],
+  "logs": [
+    "logs/progress.log",
+    "logs/wrapper.log"
+  ]
+}

@@ -39,7 +39,7 @@ Image rebuilding is disabled during execution so that all cells in the tagged ru
 The per-cell manifests retain the actual commit and image identifiers used for each measurement.
 v3.1.0 bundles the VCF Core SHACL shapes from vocabulary commit \texttt{5bfd19d}.
 The regional-retrieval cells postdate v3.1.0 (they need the regional runner and \texttt{tabix}) and were produced by commit \texttt{3da1a5a}.
-The use case (\main{subsec:usecase}) converts with the v3.2.0 image and links and governs with v3.3.0's linkers and policy plug-in v0.2.0.
+The use case (\main{subsec:usecase}) converts with the v3.2.0 image and links and governs with pre-release builds of the linkers and policy plug-in, recorded per cell: an uncommitted \texttt{feature/spdi-linker} tree on v3.2.0 for arms~1 and~2, and commit \texttt{578c2be} for arm~3. v3.3.0 (commit \texttt{7ab2300}) releases them, adding two refusals that none of these runs meets: an empty selector list, and an RDF input with no VCF triples.
 
 \textbf{Pinned toolchain.}
 VCF-RDFizer v3.1.0 fixes its dependencies inside the container image: RMLStreamer 2.5.0, hdtc 1.1.0, pycottas 1.1.0, DuckDB 1.5.5, cyvcf2 0.34.0, pyshacl 0.30.1, Comunica 5.3.0 for N-Triples, \texttt{@comunica/query-sparql-hdt} 5.0.1, the COTTAS Comunica engine 0.1.0, bcftools from the base distribution, and QLever pinned by image digest.
@@ -52,6 +52,7 @@ Each complete experiment is assigned to one host and executed without concurrent
 On a shared calibration workload the two hosts produced the same graph: identical triple sets, a byte-identical COTTAS artifact and HDT index, and N-Triples and HDT files that differ only in line order and in the HDT header's \texttt{dcterms:issued} timestamp.
 Their speed differed: the conversion phase took 26\,s on \texttt{vcf-bench-1} and 37\,s on \texttt{vcf-bench-2}, and validation 156\,s and 208\,s.
 Timings are therefore compared only within a host; the calibration characterizes, rather than eliminates, variation between hosts.
+Retrieval at scale (Table~\ref{tab:scale}) ran outside the campaign, on a third host, \texttt{vcf-bench-3}: the same CPU, 8 cores and 31.3\,GiB of RAM with swap disabled, under Ubuntu 22.04.5 and kernel 5.15. It queried graphs built by the published v3.1.0 image, with the validation runner of commits \texttt{245fe1f} (N-Triples) and \texttt{5ed75c8} (HDT and COTTAS), which select the thirteen core questions.
 
 \textbf{What each cell records.}
 The harness creates a fresh output directory for each cell and records its command, host, tool commit, container image, exit status, and wall time.
@@ -62,12 +63,12 @@ The per-cell records, normalized query results, and comparison reports are archi
 
 \textbf{The campaign.}
 The campaign comprises 143 recorded cells over 96.2\,h of measured wall time (Table~\ref{tab:campaign}).
-Every cell records its own argv, host, tool commit and image digest, and the integrated record of all cells is archived with the testing repository.
+Every conversion cell records its own argv, host, tool commit and image digest, the two mutation-score cells their tool commit, and the integrated record of all cells is archived with the testing repository.
 A non-zero exit is classified by what the cell asserted: two cells were required to be refused and were (\emph{refused}), two recorded an exit status without asserting an outcome (\emph{recorded}), and three were skipped by a stated guard.
 No cell failed.
 
 \begin{table}[t]
-\caption{The benchmark campaign, grouped by the question each experiment answers. \emph{Recorded}: a non-zero exit that the cell observed without asserting an outcome; \emph{refused}: the cell required the configuration to be rejected, and it was; \emph{skipped}: a guard refusal with a stated reason. Hosts: \texttt{vcf-bench-1} (b1), \texttt{vcf-bench-2} (b2). Every cell was produced by the published v3.1.0 image. Section numbers prefixed S are in this document; the others are in the main text.}\label{tab:campaign}%
+\caption{The benchmark campaign, grouped by the question each experiment answers. \emph{Recorded}: a non-zero exit that the cell observed without asserting an outcome; \emph{refused}: the cell required the configuration to be rejected, and it was; \emph{skipped}: a guard refusal with a stated reason. Hosts: \texttt{vcf-bench-1} (b1), \texttt{vcf-bench-2} (b2). Every conversion cell was produced by the published v3.1.0 image; the two mutation-score cells ran the same commit's test harness on the host. Section numbers prefixed S are in this document; the others are in the main text.}\label{tab:campaign}%
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -137,7 +138,7 @@ Chunk conversion, merging, final indexing, validation, and packaging are timed s
 
 \textbf{Chunk sizes.}
 By default a chunk targets 512\,MiB of uncompressed N-Triples, bounded below by 128\,MiB and above by 1\,GiB (\texttt{--chunk-target-bytes}, \texttt{--chunk-min-bytes}, \texttt{--chunk-max-bytes}).
-For constrained workspaces the documented lower-peak setting is 128\,MiB target, 64\,MiB minimum and 256\,MiB maximum, trading additional chunks and merges for a lower temporary peak.
+For constrained workspaces a lower-peak setting is 128\,MiB target, 64\,MiB minimum and 256\,MiB maximum, trading additional chunks and merges for a lower temporary peak.
 Every experiment used the defaults except six cells of the memory-feasibility sweep, which used the lower-peak setting (\ref{sup:config}).
 
 \textbf{Distribution and maintenance.}
@@ -176,14 +177,14 @@ Table~\ref{tab:test-corpus} lists the ten public VCFs. Download commands and can
 \end{table}
 
 \textbf{Declared VCF versions.}
-Six single-purpose fixtures covering VCFv4.1 through VCFv4.5, plus one file with no \texttt{\#\#fileformat} declaration, all converted with exit code 0.
+Five single-purpose fixtures covering VCFv4.1 through VCFv4.5, plus one file with no \texttt{\#\#fileformat} declaration, all converted with exit code 0.
 The generated RML mapping for each version is byte-identical apart from the asserted file class (\texttt{vcfc:VCF41File} through \texttt{vcfc:VCF45File}), which locates version awareness in the typed file resource rather than in field-level rules.
 Field handling is therefore data-driven: the VCFv4.5 fixture's local-allele \texttt{FORMAT} keys (\texttt{LAA}, \texttt{LAD}) and the VCFv4.4 fixture's phase-set key (\texttt{PS}) are carried through as ordinary FORMAT entries, raising the per-record triple yield from 210 (4.4) to 252.5 (4.5) on otherwise matched two-record fixtures.
 This is preservation, not interpretation: nothing in the graph resolves a local allele index to a global allele, so VCFv4.4/4.5 support is lexical carry-through pending a dedicated local-allele semantics layer.
 The undeclared-version file also converted, via the documented fallback.
 
 \textbf{Real cohorts.}
-Nine of ten corpus files converted end to end, with HDT and COTTAS built and decode-checked for each.
+Nine of ten corpus inputs converted end to end (the first 250{,}000 records of eight files with headers retained, and \texttt{HG005\_GRCh38} whole), with HDT and COTTAS built and decode-checked for each.
 The tenth, the 2,504-sample 1000 Genomes chromosome-20 call set, was skipped by the benchmark harness rather than refused by the tool: the harness withholds any corpus file with more than 1{,}000 sample columns from the expanded arm, because the expanded representation emits one call resource per record and sample.
 Its full sample dimension was exercised instead through 10{,}000-record slices carrying all 2{,}504 samples, which converted in both representations; \main{subsec3.3} quantifies why the expanded arm cannot be run on the whole file at this disk budget.
 The tool also applies a workspace check: before converting, it estimates the expanded workspace from the record and sample counts and refuses the run when that estimate exceeds three quarters of the free space, naming the condensed representation as the alternative.
@@ -237,12 +238,12 @@ All nine cells completed; peak resident memory was 1.34--1.93\,GB in every case,
 This experiment carries one caveat that must be reported with it: the ceiling was requested through Docker memory limits but the harness could not confirm that the pinned release forwards them to its container invocations, so these cells establish that the workload is memory-light, not that it survives a genuinely enforced cap.
 
 \textbf{The cost of the INFO and header representations.}
-On the structural-variant file, structured INFO produced 96.75M triples against 89.01M for raw INFO ($+8.7\%$) and a 7.4\% larger artifact, and on the 100{,}000-record \texttt{HG005\_GRCh38} input it produced 17.10M against 12.52M ($+36.6\%$).
+On the structural-variant file, structured INFO produced 96.75M triples against 89.01M for raw INFO ($+8.7\%$), a 7.4\% larger N-Triples output and a 7.8\% larger HDT, and on the 100{,}000-record \texttt{HG005\_GRCh38} input it produced 17.10M against 12.52M ($+36.6\%$).
 Raw INFO still carries the allele layer here, because the expanded sample profile references it (\ref{sup:issues}); before that fix the raw arm omitted it and the difference looked larger than it is.
 Structured header representation costs almost nothing by comparison (17{,}098{,}746 against 17{,}094{,}293 triples, $+0.03\%$).
 
 \textbf{Cross-encoding equivalence.}
-The equivalence experiment converted one 10{,}000-record, multi-sample fixture in both sample representations and both storage modes, built HDT and COTTAS from each, and ran the full twenty-seven-query suite (the fourteen preflight checks and Q1--Q13) under all four engines against all three artifacts.
+The equivalence experiment converted one 10{,}000-line (9{,}986-record), single-sample fixture in both sample representations and both storage modes, built HDT and COTTAS from each, and ran the full twenty-seven-query suite (the fourteen preflight checks and Q1--Q13) under all four engines against all three artifacts.
 All sixteen validations passed with all four engines in agreement, on graphs of 0.96M triples (expanded) and 0.79M triples (condensed).
 The complete condensed cell took 70.4\,min end to end.
 Two further cells asserted that the tool must refuse \texttt{--hdt-strategy single} beside COTTAS and beside space-optimized storage, and it did, with exit status 2.
@@ -250,7 +251,7 @@ Two further cells asserted that the tool must refuse \texttt{--hdt-strategy sing
 \section{Defects found during testing, and their resolution}\label{sup:issues}
 
 Testing identified problems in measurement, conversion, and validation.
-Three of them were conversion defects that the validation layer itself caught; the main text summarizes them in \main{subsec3.5}.
+Three of them were defects that the record counts alone could not show: two conversion defects that the validation layer caught, and one policy-plug-in defect that the plug-in's own check caught; the main text summarizes them in \main{subsec3.5}.
 None alters a measurement reported in the main text.
 
 \textbf{Header-only input omitted its declared samples.}
@@ -273,16 +274,17 @@ Each affected row gained 10,846 triples, while the other seven outputs remained 
 Regression checks cover all four INFO/sample representation combinations and require every referenced allele to be described.
 
 \textbf{A withdrawn file's header remained in every release view.}
-During development of the policy plug-in, every record decision was correct, but a withdrawn file's header and sample set remained in every view, which the record counts alone could not show.
-The check against the VCF-text oracle caught it.
+During development of the policy plug-in, every record decision was correct, but a withdrawn file's header remained in every view, which the record counts alone could not show.
+The plug-in's own check caught it.
 That defect is why the plug-in defines what a withheld resource takes with it by an ownership rule rather than by a list of record subtrees (\main{subsec:plugins}).
 
 \textbf{Two memory guards that measured the wrong quantity.}
 Extending retrieval to 171M triples (\main{subsec3.6}) exposed two defects, neither visible at fixture scale.
 First, the shape layer is size-gated because \texttt{pyshacl} is in-memory, but the gate weighed the \emph{packaged artifact} while the cost it guards against is set by the \emph{graph}.
-One 170{,}935{,}101-triple graph therefore fell on both sides of a single 512\,MiB threshold according only to how it was packaged: as COTTAS (390.7\,MB) it passed the gate and the run was killed at 32.2\,GB resident on a 31\,GB machine, while the same graph as gzip-framed N-Triples (756.6\,MB) or HDT (1.18\,GB) was skipped.
+One 170{,}935{,}101-triple graph therefore fell on both sides of a single 512\,MiB threshold according only to how it was packaged: as COTTAS (390.7\,MB) it passed the gate and the run was killed at 30.7\,GiB resident on a 31.3\,GiB host, while the same graph as gzip-framed N-Triples (756.6\,MB) or HDT (1.18\,GB) was skipped.
 The better a format compressed, the likelier it was to exhaust memory.
 The gate now counts triples, which no packaging changes.
+In full mode the same release's gate weighs the input VCF rather than the graph, so it admitted a 58.2M-triple real-genome graph, from a 63.8\,MB input, to \texttt{pyshacl} during this study's validation of \texttt{NG131FQA1I} (\main{subsec3.5}); the host ran out of memory, and that validation was rerun without shapes.
 Second, the Comunica-backed endpoints aborted with a JavaScript heap exhaustion while roughly 25\,GB of the host's memory was free, because Node does not size its heap from the machine and no ceiling was set; the ceiling is now configurable.
 Both corrections are released in v3.3.0 and neither alters conversion output; the failing runs are archived alongside the successful ones.
 
@@ -337,7 +339,7 @@ Both panels are from the v3.1.0 run on \texttt{vcf-bench-1}.}\label{fig:scaling}
 \end{figure}
 
 \begin{table}[t]
-\caption{Retrieval at scale, on graphs built from \texttt{HG005\_GRCh38} by the published v3.1.0 image. Times are for the thirteen core questions of Table~\ref{M-tab:semantic-queries}, excluding the one-time index build, which is reported separately. Every completed question's answer was compared against cyvcf2 before its timing was read. The Comunica-backed engines do not complete the workload at this size; their totals cover the five questions they answered, and are not comparable with a thirteen-question total. The three packagings of the whole-genome graph differ by 0.3\% in query time; what differs between them is the one-time decode, reported in the last column.}\label{tab:scale}%
+\caption{Retrieval at scale, on graphs built from \texttt{HG005\_GRCh38} by the published v3.1.0 image. The two smaller graphs were queried on \texttt{vcf-bench-1}, the two larger on \texttt{vcf-bench-3} (Section~\ref{sup:repro}), so per-million costs compare across hosts of the same specification. Times are for the thirteen core questions of Table~\ref{M-tab:semantic-queries}, excluding the one-time index build, which is reported separately. Every completed question's answer was compared against cyvcf2 before its timing was read. The Comunica-backed engines do not complete the workload at this size; their totals cover the five questions they answered, and are not comparable with a thirteen-question total. The three packagings of the whole-genome graph differ by 0.3\% in query time; what differs between them is the one-time decode, reported in the last column.}\label{tab:scale}%
 \centering
 \scriptsize
 \setlength{\tabcolsep}{6pt}
@@ -347,8 +349,8 @@ Both panels are from the v3.1.0 run on \texttt{vcf-bench-1}.}\label{fig:scaling}
 \textbf{Graph} & \textbf{Triples} & \textbf{Engine} & \textbf{Time (s)} & \textbf{Outcome} \\
 \midrule
 \multicolumn{5}{@{}l}{\itshape Does SPARQL scale to a whole genome? (all thirteen questions)}\\
-Fixture          & 958{,}919       & QLever & 1.1   & 1.15\,s per million triples \\
-100\,k records   & 17{,}098{,}746  & QLever & 17.0  & 0.99\,s per million \\
+Fixture          & 958{,}919       & QLever & 1.1   & 1.13\,s per million triples \\
+100\,k records   & 17{,}098{,}746  & QLever & 17.0  & 1.00\,s per million \\
 1\,M records     & 170{,}935{,}101 & QLever & 163.3 & 0.96\,s per million \\
 Whole genome     & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\% \\
 \addlinespace
@@ -359,7 +361,7 @@ Whole genome     & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per milli
 \addlinespace
 \multicolumn{5}{@{}l}{\itshape Do the other engines get there at all? (1\,M records, 170{,}935{,}101 triples)}\\
 \quad COTTAS engine & \multicolumn{2}{r}{5 of 13 answered} & 743.1 & Native allocation failure on Q6 \\
-\quad HDT engine    & \multicolumn{2}{r}{5 of 13 answered} & 12{,}432.2 & Reached the one-hour per-query ceiling on Q5 \\
+\quad HDT engine    & \multicolumn{2}{r}{5 of 13 answered} & 12{,}432.2 & Q5 answered at the one-hour per-query ceiling (3{,}600.1\,s); Q6 failed \\
 \bottomrule
 \end{tabularx}
 \end{table}
