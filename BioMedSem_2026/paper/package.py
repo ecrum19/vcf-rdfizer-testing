@@ -13,15 +13,17 @@ def main():
     figure_dir = root / "figures"
     if not figure_dir.is_dir():
         figure_dir = root.parent / "paper-assets"
+    # The main text's name is set once, by PAPER in the Makefile.
+    paper = re.search(r"^PAPER\s*=\s*(\S+)", (root / "Makefile").read_text(encoding="utf-8"), re.M)[1]
 
     names = [
-        "current.tex", "supplementary.tex", "reference.bib",
-        "current.pdf", "paper.pdf", "supplementary.pdf",
+        f"{paper}.tex", "supplementary.tex", "reference.bib",
+        f"{paper}.pdf", "paper.pdf", "supplementary.pdf",
         "Makefile", ".latexmkrc", "README.md", "package.py",
         "template/sn-jnl.cls", "template/bst/sn-mathphys-num.bst",
     ]
     files = {name: root / name for name in names}
-    for source in ("current.tex", "supplementary.tex"):
+    for source in (f"{paper}.tex", "supplementary.tex"):
         figures = re.findall(
             r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}",
             (root / source).read_text(encoding="utf-8"),
@@ -32,7 +34,7 @@ def main():
     missing = [str(path) for path in files.values() if not path.is_file()]
     if missing:
         raise SystemExit("Run make first; missing bundle inputs:\n" + "\n".join(missing))
-    if (root / "paper.pdf").read_bytes() != (root / "current.pdf").read_bytes():
+    if (root / "paper.pdf").read_bytes() != (root / f"{paper}.pdf").read_bytes():
         raise SystemExit("paper.pdf is stale; run make first")
 
     output = root / f"{bundle_name}.zip"

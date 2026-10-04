@@ -1,5 +1,5 @@
-# Lets a direct `latexmk current.tex` (VS Code LaTeX Workshop, or a terminal)
-# find what the Makefile otherwise copies into .build/current/: the Springer
+# Lets a direct `latexmk current_revised.tex` (VS Code LaTeX Workshop, or a terminal)
+# find what the Makefile otherwise copies into .build/current_revised/: the Springer
 # class in template/, its bibliography style in template/bst/, and the figures
 # in figures/ (the ZIP) or ../paper-assets/ (the repository).
 # The trailing // makes kpathsea search subdirectories.

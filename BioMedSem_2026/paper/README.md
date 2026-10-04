@@ -1,8 +1,10 @@
 # BioMedSem 2026 manuscript
 
-The main source is `current.tex`; `supplementary.tex` contains the supplementary
-material. The compiled main text is supplied as both `paper.pdf` and `current.pdf`
-(identical files). The supplement is `supplementary.pdf`.
+The main source is `current_revised.tex` (set by `PAPER` in the `Makefile`);
+`supplementary.tex` contains the supplementary material. `current.tex` is the
+previous draft, kept for reference and no longer built. The compiled main text is
+supplied as both `paper.pdf` and `current_revised.pdf` (identical files). The
+supplement is `supplementary.pdf`.
 
 ## Compile the downloaded ZIP
 
@@ -12,19 +14,21 @@ material. The compiled main text is supplied as both `paper.pdf` and `current.pd
 3. Run these commands in that directory, in this order:
 
    ```sh
-   latexmk -pdf -interaction=nonstopmode -halt-on-error current.tex
+   latexmk -pdf -interaction=nonstopmode -halt-on-error current_revised.tex
    latexmk -pdf -interaction=nonstopmode -halt-on-error supplementary.tex
+   latexmk -pdf -interaction=nonstopmode -halt-on-error current_revised.tex
    ```
 
-The supplement reads cross-references from `current.aux`, so compile the main
-text first. These commands regenerate `current.pdf` and `supplementary.pdf`.
-To update the `paper.pdf` copy without Make, copy `current.pdf` to `paper.pdf`
-(`cp current.pdf paper.pdf` on macOS/Linux, or `copy current.pdf paper.pdf` in
-Windows Command Prompt).
+Each document reads the other's cross-references from its `.aux`, so the main
+text is compiled again after the supplement. These commands regenerate
+`current_revised.pdf` and `supplementary.pdf`. To update the `paper.pdf` copy
+without Make, copy `current_revised.pdf` to `paper.pdf` (`cp current_revised.pdf
+paper.pdf` on macOS/Linux, or `copy current_revised.pdf paper.pdf` in Windows
+Command Prompt).
 
 Alternatively, with Make installed, simply run `make`. It builds both documents
 in the correct order, refreshes all three PDF filenames, and keeps intermediates
-under `.build/current/`. Run `make manuscript` for the main text only, `make clean`
+under `.build/current_revised/`. Run `make manuscript` for the main text only, `make clean`
 to remove intermediates, or `make distclean` to remove the exported PDFs too.
 
 The ZIP includes all figures in `figures/`, the bibliography, and the official
