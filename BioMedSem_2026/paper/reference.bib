@@ -140,9 +140,10 @@ year = {2023}
 }
 
 % VCF to RDF Tools
-@article{JVarkit_2015,
+@misc{JVarkit_2015,
 author = "Pierre Lindenbaum",
 title = "{JVarkit: java-based utilities for Bioinformatics}",
+howpublished = "figshare",
 year = "2015",
 month = "5",
 url = "https://figshare.com/articles/journal\_contribution/JVarkit\_java\_based\_utilities\_for\_Bioinformatics/1425030",
@@ -391,6 +392,7 @@ Version Number: 2},
 % Methods
 % VCF data
 @misc{nist_gib_2025,
+	key = {NIST Genome in a Bottle},
 	title = {{NIST} {Genome} in a {Bottle}},
 	url = {https://www.nist.gov/programs-projects/genome-bottle},
 	urldate = {2025-11-24},
@@ -398,6 +400,7 @@ Version Number: 2},
 	year = {2025},
 }
 @misc{personal_genome_proj,
+	key = {Personal Genome Project},
 	title = {Personal {Genome} {Project}},
 	url = {https://my.pgp-hms.org/public\_genetic\_data},
 	urldate = {2025-11-24},
@@ -405,6 +408,7 @@ Version Number: 2},
 }
 % VCF Spec
 @misc{vcf_spec_2024,
+	author = {{SAM/BAM Format Specification Working Group}},
 	title = {The {Variant} {Call} {Format} {Specification}},
 	url = {https://github.com/samtools/hts-specs},
 	month = oct,
@@ -458,6 +462,7 @@ Version Number: 2},
 @inproceedings{hero-genomics_2025,
 	address = {Barcelona, Spain},
 	title = {{HERO}-{Genomics}: {Bridging} {Genomic} {Data} and {Ontological} {Modelling}},
+	booktitle = {Semantic Web Applications and Tools for Health Care and Life Sciences ({SWAT4HCLS} 2025)},
 	url = {https://www.dei.unipd.it/~silvello/papers/2025\_MCS\_SWAT4HCLS.pdf},
 	language = {en},
 	publisher = {CEUR Workshop Proceedings},
@@ -468,6 +473,7 @@ Version Number: 2},
 @inproceedings{semantic_beac_2025,
 	address = {Barcelona, Spain},
 	title = {Semantic {Beacons}: a framework to support federated querying over genomic variants and public {Knowledge} {Graphs}},
+	booktitle = {Semantic Web Applications and Tools for Health Care and Life Sciences ({SWAT4HCLS} 2025)},
 	url = {https://hal.science/hal-04908530v2/document},
 	language = {en},
 	urldate = {2025-11-24},
@@ -711,25 +717,23 @@ Version Number: 2},
   note = {Version 2.1.3 with the SSSOM alignment set; source snapshot of 22 September 2026}
 }
 
-@software{hdtc_2026,
+@misc{hdtc_2026,
   author  = {{FRINK OKN}},
   title   = {{hdtc}: {HDT} Creator},
   year    = {2026},
-  version = {1.1.0},
   url     = {https://github.com/frink-okn/hdtc},
-  note    = {Computer software, MIT License}
+  note    = {Version 1.1.0, computer software, MIT License}
 }
 
-@software{comunica_cottas_2026,
+@misc{comunica_cottas_2026,
   author  = {Crum, Elias},
   title   = {Comunica {SPARQL} {COTTAS}: a {Comunica} engine for query evaluation over {COTTAS} files},
   year    = {2026},
-  version = {0.1.0},
   url     = {https://github.com/ecrum19/comunica-feature-cottas},
-  note    = {npm package \texttt{@elias.crum/query-sparql-cottas}}
+  note    = {Version 0.1.0; npm package \texttt{@elias.crum/query-sparql-cottas}}
 }
 
-@software{hdtcpp,
+@misc{hdtcpp,
   author  = {{RDF/HDT contributors}},
   title   = {{hdt-cpp}: {HDT} {C++} Library and Tools},
   year    = {2026},
@@ -870,4 +874,48 @@ Version Number: 2},
   url    = {https://hl7.org/fhir/uv/genomics-reporting/},
   note   = {Accessed October 2026},
   year   = {2026}
+}
+
+
+% References added during the 2 October 2026 editorial revision.
+@article{toure2025forge,
+  author = {Tour{\'e}, Vasundra and Unni, Deepak and Krauss, Philip and Abdelwahed, Abdelhamid and Buchhorn, Jascha and Hinderling, Leon and Geiger, Thomas R. and {\"O}sterle, Sabine},
+  title = {The {SPHN Schema Forge} -- transform healthcare semantics from human-readable to machine-readable by leveraging semantic web technologies},
+  journal = {Journal of Biomedical Semantics}, year = {2025}, volume = {16}, pages = {9},
+  doi = {10.1186/s13326-025-00330-9}
+}
+@article{gaignard2023fairchecker,
+  author = {Gaignard, Alban and Rosnet, Thomas and de Lamotte, Fr{\'e}d{\'e}ric and Lefort, Vincent and Devignes, Marie-Dominique},
+  title = {{FAIR-Checker}: supporting digital resource findability and reuse with Knowledge Graphs and Semantic Web standards},
+  journal = {Journal of Biomedical Semantics}, year = {2023}, volume = {14}, pages = {7},
+  doi = {10.1186/s13326-023-00289-5}
+}
+@article{ansari2025etl,
+  author = {Ansari, Adeel and Conte, Marisa and Flynn, Allen and Paturkar, Avanti},
+  title = {A prototype {ETL} pipeline that uses {HL7 FHIR RDF} resources when deploying pure functions to enrich knowledge graph patient data},
+  journal = {Journal of Biomedical Semantics}, year = {2025}, volume = {16}, pages = {16},
+  doi = {10.1186/s13326-025-00335-4}
+}
+@misc{shacl2017,
+  author = {{World Wide Web Consortium}},
+  title = {Shapes Constraint Language ({SHACL})},
+  year = {2017}, howpublished = {W3C Recommendation},
+  url = {https://www.w3.org/TR/shacl/}, urldate = {2026-10-02}
+}
+
+@misc{anthropic2026claudeopus55,
+  author = {{Anthropic}},
+  title = {{Claude Opus 5.5} ({Extra}) {[Large language model]}},
+  year = {2026},
+  howpublished = {Accessed through the Claude Code desktop application},
+  url = {https://www.anthropic.com/claude},
+  note = {Used September 2026}
+}
+@misc{openai2026gpt6astra,
+  author = {{OpenAI}},
+  title = {{GPT-6 Astra} ({X-High}) {[Large language model]}},
+  year = {2026},
+  howpublished = {Accessed through the Codex desktop application},
+  url = {https://openai.com/},
+  note = {Used September 2026}
 }
