@@ -373,6 +373,36 @@ Everything is tested on vcf-bench-1 or vcf-bench-2.
     The body falls from about 39 pages to 23.
   - Waiting on SLICES (502): the C2 core-profile mutation score and the C3
     NG131FQA1I paired QLever validation.
+- **2026-10-01 (later): the two review runs**, on bench-2, v3.1.0 (`d3b34d5`),
+  under `~/vrdev-test/review-runs`.
+  - **C2 is done.**
+    - Queries only: 96/113, reproducing the archive.
+    - Default (`core`) profile: also 96/113. Its shapes detect none of the 17
+      mutations the queries miss; only the full set catches them.
+    - Paper updated (`0a873502`).
+  - **C3, first attempt:** the in-memory shapes starved bench-2 of memory
+    (98.6% used, no swap, no OOM kill), and it needed a hard reset. That is
+    v3.1.0's artifact-sized gate again: the 277 MB file passed the 512 MiB gate.
+  - **C3 rerun** with `--no-shacl` and a memory watchdog: 58,231,176 triples,
+    14.6 min, at least 25.7 GB always available.
+    - Status MISMATCH: 10/13 queries exact, rapper PASS, engines agree.
+    - Q9/Q10: 30,910 `PhaseSet` resources from GATK `PS`. The oracle's
+      documented gap (`KNOWN_UNMODELLED`), still open in v3.3.0, so not a
+      conversion error.
+    - Q11 (record digest), resolved 2026-10-02:
+      - `diag_q11.py`: the graph equals the VCF text for every field of all
+        250,000 records.
+      - `diag_q11b.py`: canonical QUAL (trailing zeros stripped) reproduces
+        QLever's 256 buckets exactly: 0 differences, against 788 as written.
+      - 1,998 records are affected. This is QLever's canonical `STR()` of
+        `xsd:decimal`, not a conversion error.
+  - Paper: `0a873502` (C2) and `b5fdbf83` (C3) on `paper/m8-tighten`, in
+    vcf-rdfizer-testing#10.
+  - Tool TODO:
+    - an oracle that models phase sets, SV events and gVCF blocks;
+    - an engine-independent Q11;
+    - streaming shape checks.
+
 
     The mapping is appended to `harness_source.txt` on bench-2.
   - Not done:

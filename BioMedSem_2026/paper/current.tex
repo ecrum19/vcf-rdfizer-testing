@@ -148,16 +148,35 @@
 
 \abstract{
 \textbf{Purpose:}
-The Variant Call Format (VCF) is the dominant standard for genomic variation, but a VCF file has no identifiers it shares with other files or with external knowledge, and no place for the rules that govern who may see its contents. The Resource Description Framework (RDF) provides both. We ask what converting VCF to RDF costs, whether the conversion is faithful, and what it lets a user do that a conventional pipeline does not.
+
+VCF is widely used, compact, and is readily parsable by a variety of tools BUT two challenges remain for its wider use in clincial contexts. 
+(1) Important information for interpretation is not represented explicitly which makes integrating VCF data with other data sources such as personal, clinical, or experimental data difficult. 
+(2) Privacy and consent information is represented at a file-level and often not in a machine-readable way.
+RDF can represent the crucial information implicit in the VCF format explicitly therefore making it easier to integrate VCF data with other data sources.
+Integrating an RDF representation with access control policy annotations can enable sub-file-level privacy controls and greater usability in clinical, research, and commercial contexts.
+The challenge is A. representing VCF in RDF faithfully, B. making the conversion reproducible, verifiable, and scalable to genomic dataset sizes, and C. making the output usable and queryable.
+
+Here we present VCF-RDFizer, a tool that converts VCF into an RDF representation.
+
+To assess the robustness, usability, and potential utility of the tool, we test (1) what converting VCF to RDF costs, (2) whether the conversion is faithful, and (3) what allows a user to do things that a conventional VCF pipeline would struggle with.
+
+
 
 \textbf{Methods:}
-VCF-RDFizer, distributed through PyPI, Conda-Forge and Docker, converts VCF into RDF in the public VCF Core vocabulary, optionally builds HDT and COTTAS representations, and ships plug-ins that link variants to shared identifiers and attach ODRL consent policies. Its validation layer compares thirteen SPARQL answers with a VCF parser's and applies SHACL shapes. We measured conversion and retrieval on a ten-file public corpus, record and sample ladders and a whole genome, and asked one clinical question of real genomes by an RDF route and by a bcftools route.
+VCF-RDFizer, distributed through PyPI, Conda-Forge and Docker, converts VCF into RDF in the public VCF Core vocabulary, optionally builds HDT and COTTAS representations, and ships plug-ins that link variants to shared identifiers and attach ODRL consent policies. 
+Its validation layer compares SPARQL query results with a VCF parser's and applies SHACL shapes. 
+We measured conversion and retrieval on a ten-file public corpus, record and sample ladders and a whole genome, and asked one clinical question of real genomes by an RDF route and by a bcftools route.
 
 \textbf{Results:}
-Asked which participants carry a ClinVar-classified variant in the 81 ACMG secondary-findings genes, and what each of three requesters may see under simulated consents, the RDF route joined genomes to ClinVar through SPDI identifiers and returned exactly the bcftools route's carriers for every requester, over five heterogeneous genomes, 104 1000 Genomes participants, and a whole genome of 662 million triples. Its rules took 72 lines against 131, and a rule on one variant needed no code. On fixtures and slices of up to 17.1M triples, 984 of 988 paired comparisons were exactly equal and 4 were not applicable, and on a real 58.2M-triple genome slice every record field equalled the VCF text; the queries detected 96 of 113 injected corruptions and the full set of shapes all 113, though the default shape profile, the only one cheap enough for large inputs, added none. The costs are real. A whole genome took 16.07\,h to convert, 14.5\,h of it building HDT and COTTAS, which the default query engine uses only as transport formats, and its outputs were 78$\times$ the downloaded file. Once its index was built, SPARQL answered single questions 2.5--2300$\times$ faster than an 11.5--12.3\,s parser scan; but the parser wins any single cold question, converting a 100,000-record slice breaks even only after about 44 questions, and tabix wins narrow regional lookups.
+Asked which participants carry a ClinVar-classified variant in the 81 ACMG secondary-findings genes, and what each of three requesters may see under simulated consents, the RDF route joined genomes to ClinVar through SPDI identifiers and returned exactly the bcftools route's carriers for every requester, over five heterogeneous genomes, 104 1000 Genomes participants, and a whole genome of 662 million triples.
+Its rules took 72 lines against 131, and a rule on one variant needed no code. 
+On fixtures and slices of up to 17.1M triples, 984 of 988 paired comparisons were exactly equal and 4 were not applicable, and on a real 58.2M-triple genome slice every record field equalled the VCF text; the queries detected 96 of 113 injected corruptions and the full set of shapes all 113, though the default shape profile, the only one cheap enough for large inputs, added none. 
+The costs are real. 
+A whole genome took 16.07\,h to convert, 14.5\,h of it building HDT and COTTAS, which the default query engine uses only as transport formats, and its outputs were 78$\times$ the downloaded file. 
+Once its index was built, SPARQL answered single questions 2.5--2300$\times$ faster than an 11.5--12.3\,s parser scan; but the parser wins any single cold question, converting a 100,000-record slice breaks even only after about 44 questions, and tabix wins narrow regional lookups.
 
 \textbf{Conclusion:}
-Converting VCF to RDF does not pay in speed or in lines of code. It pays where variant identity, external meaning and consent must be explicit, shared across files and checkable against the source, and VCF-RDFizer makes that conversion reproducible and verifiable.%
+VCF-RDFizer provides an evaluated workflow for converting VCF into an explicit semantic representation, checking selected aspects of that representation against the source, and reusing it in linked, policy-aware genomic queries, with measured operational trade-offs%
 }
 \keywords{Knowledge Representation, Genomic Variant Data, Variant Call Format, RDF, SPARQL, ODRL, HDT, COTTAS, Semantic Validation}
 
