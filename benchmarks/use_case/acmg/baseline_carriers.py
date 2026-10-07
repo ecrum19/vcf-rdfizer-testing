@@ -14,6 +14,10 @@ Output, in <out-dir>:
     rare.<requester>.tsv        with a panel file: the carriers of variants whose
                                 panel frequency is below the case's threshold
 
+With <out-dir>/records.tsv (participant, CHROM, POS, REF, ALT for every record,
+which baseline.sh writes), summary.json also counts the records each requester
+may see, so arm 4's views are compared record for record, not only on carriers.
+
 This file is the consent logic a pipeline author would write by hand. It
 reads use_case.json and nothing from the RDF route, and it encodes the DUO
 purpose hierarchy itself (DS is a kind of HMB, which is a kind of GRU), as a
@@ -34,8 +38,10 @@ import pathlib
 import sys
 
 # DUO: disease-specific research (DS) is health/medical research (HMB), which is
-# general research use (GRU). Clinical care (CC) is outside that hierarchy.
+# general research use (GRU). Clinical care (CC) is outside that hierarchy. A
+# case may add narrower purposes of its own ("purposes"), which main() adds.
 BROADER = {"DUO:0000007": "DUO:0000006", "DUO:0000006": "DUO:0000042"}
+CLINICAL = "DUO:0000043"
 COLUMNS = ["participant", "gene", "chrom", "pos", "ref", "alt", "classification", "clnsig", "gt", "restricted"]
 
 
@@ -96,14 +102,64 @@ def carriers(rows, definition: dict, genes: set[str], spans: dict) -> list[dict]
     return sorted(found, key=lambda c: (c["participant"], c["gene"], c["pos"], c["alt"]))
 
 
-def released(carrier: dict, purpose: str, policy: dict) -> bool:
+def gene_spans(genes: list[str]) -> dict[str, list[tuple[int, int]]]:
+    regions = json.loads((pathlib.Path(__file__).resolve().parent / "regions.json")
+                         .read_text(encoding="utf-8"))["regions"]
+    return restricted_spans(regions, genes)
+
+
+def released(carrier: dict, purpose: str, policy: dict, assignee: str | None = None,
+             panels: list[tuple[str, dict]] = ()) -> bool:
+    """May a requester with this purpose (and assignee) see this record?
+
+    `carrier` needs participant and restricted; arm 4's rules also read chrom,
+    pos, ref and alt. `panels` pairs each purpose panel with its genes' spans.
+    """
     consent = policy["consents"][carrier["participant"]]
     if consent.get("withdrawn"):
         return False
     if not any(within(purpose, permitted) for permitted in consent["permits"]):
         return False
     # The secondary-findings rule is about the record, not ClinVar's gene label.
-    return not carrier["restricted"] or purpose == "DUO:0000043"
+    if carrier["restricted"] and not within(purpose, CLINICAL):
+        return False
+    # Arm 4: a purpose limited to a gene panel sees nothing outside it.
+    for panel_purpose, spans in panels:
+        if within(purpose, panel_purpose) and not overlaps(carrier["chrom"], carrier["pos"], carrier["ref"], spans):
+            return False
+    # A region is coordinates on a contig. The plug-in's RegionSelector compares
+    # the contig name as the file writes it, so the two routes agree only for
+    # files written in the rule's naming style, which arm 4's genome is.
+    for region in policy.get("regions", ()):
+        if (carrier["chrom"].removeprefix("chr") == region["chrom"].removeprefix("chr")
+                and region["start"] <= carrier["pos"] <= region["end"]
+                and not any(within(purpose, p) for p in region["purposes"])):
+            return False
+    # A named variant, by identity, withheld from named requesters.
+    for variant in policy.get("variants", ()):
+        named = {policy["requesters"][who]["assignee"] for who in variant["withheld_from"]}
+        if assignee in named and (carrier["chrom"].removeprefix("chr"), carrier["pos"], carrier["ref"],
+                                  carrier["alt"]) == (variant["chrom"].removeprefix("chr"), variant["pos"],
+                                                      variant["ref"], variant["alt"]):
+            return False
+    return True
+
+
+def released_records(records_tsv: pathlib.Path, policy: dict, cancer: dict,
+                     panels: list[tuple[str, dict]]) -> dict[str, int]:
+    """Records each requester may see, over every record of every participant."""
+    counts = collections.Counter()
+    requesters = policy["requesters"]
+    with records_tsv.open(encoding="utf-8") as handle:
+        for line in handle:
+            participant, chrom, pos, ref, alt = line.rstrip("\n").split("\t")[:5]
+            record = {"participant": participant, "chrom": chrom.removeprefix("chr"),
+                      "pos": int(pos), "ref": ref, "alt": alt,
+                      "restricted": overlaps(chrom, int(pos), ref, cancer)}
+            counts["unrestricted"] += 1
+            for name, requester in requesters.items():
+                counts[name] += released(record, requester["purpose"], policy, requester["assignee"], panels)
+    return dict(counts)
 
 
 def rare_sites(panel_tsv: pathlib.Path, below: float) -> set[tuple]:
@@ -133,9 +189,11 @@ def main(argv: list[str]) -> int:
         rows = [line.rstrip("\n").split("\t")[:9] for line in handle if line.strip()]
 
     definition = case["definition"]
-    regions = json.loads((pathlib.Path(__file__).resolve().parent / "regions.json")
-                         .read_text(encoding="utf-8"))["regions"]
-    spans = restricted_spans(regions, case["policy"]["secondary_findings"]["genes"])
+    for term in case.get("purposes", ()):
+        BROADER[term["iri"]] = term["broader"]
+    policy = case["policy"]
+    spans = gene_spans(policy["secondary_findings"]["genes"])
+    panels = [(panel["purpose"], gene_spans(panel["genes"])) for panel in policy.get("purpose_panels", ())]
     everyone = carriers(rows, definition, genes, spans)
     write(out_dir / "carriers.unrestricted.tsv", everyone)
     reportable = definition["reportable_significance"]
@@ -150,8 +208,9 @@ def main(argv: list[str]) -> int:
     }
     rare = panel_tsv and rare_sites(panel_tsv[0], case["panel"]["rare"]["below"])
     visible = {"unrestricted": everyone}
-    for name, requester in case["policy"]["requesters"].items():
-        visible[name] = [c for c in everyone if released(c, requester["purpose"], case["policy"])]
+    for name, requester in policy["requesters"].items():
+        visible[name] = [c for c in everyone if released(c, requester["purpose"], policy,
+                                                         requester["assignee"], panels)]
         write(out_dir / f"carriers.{name}.tsv", visible[name])
         summary[name] = len(visible[name])
     if panel_tsv:
@@ -160,6 +219,8 @@ def main(argv: list[str]) -> int:
             rows = [c for c in rows if (c["chrom"], c["pos"], c["ref"], c["alt"]) in rare]
             write(out_dir / f"rare.{name}.tsv", rows)
             summary["rare"][name] = len(rows)
+    if (out_dir / "records.tsv").is_file():
+        summary["records"] = released_records(out_dir / "records.tsv", policy, spans, panels)
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary))
     return 0

@@ -49,6 +49,9 @@ Three later sets of results are kept beside the campaign's, and none of them is 
 | --- | --- |
 | `vcf-bench-3/` | Retrieval at 171M and 657M triples (see its README) |
 | `vcf-bench-1/use-case/`, `vcf-bench-2/use-case/` | The ACMG use case (experiment 17): arms 1 and 2 on vcf-bench-1, arm 3 (`__wgs`) on vcf-bench-2. Small files only (comparisons, grids, timings, `bench.json`, check reports); failed attempts keep their `__failed_*` suffix |
+| `vcf-bench-1/use-case/17_use_case_acmg__v3.3.1/` | Arm 1's link→compare stages again on v3.3.1, whose gene linker keys `*` records; adds the record-level comparison (see its README) |
+| `vcf-bench-3/use-case/17_use_case_acmg__layered/` | Arm 4: layered governance (participant, purpose panel, region, variant rules) for four requesters over one whole genome, v3.3.1; agrees with the baseline record for record (see its README) |
+| `vcf-bench-3/use-case/17_use_case_acmg__layered__smoke_v3.3.0/` | Arm 4 on a gene-region slice with v3.3.0: the record comparison that found the `*` linking gap |
 | `vcf-bench-2/review-runs/` | The default-profile mutation score and the paired validation of a real 250k-record genome, on v3.1.0 (see its README) |
 
 ## What is not here

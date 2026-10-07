@@ -112,6 +112,44 @@ BM_ACMG_ARM=wgs BM_ACMG_STAGES="derive convert link baseline govern query compar
   BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
 ```
 
+### Arm 4: one whole genome, layered consent, four requesters
+
+Arms 1–3 govern whole files, so arm 3's whole genome was all or nothing. Arm 4
+asks the same question of NB72462M's whole genome under rules that each target
+a different kind of selection. [`make_layered.py`](make_layered.py) writes
+`layered/case.json`; `generate.py` writes its policy and `purposes.ttl`.
+
+| Rule | Target | Withheld from |
+| --- | --- | --- |
+| Consent: clinical care and general research | the file | nobody |
+| Cancer-predisposition genes (28) | gene links (`LinkedSelector`) | research |
+| Disease-specific research sees only the 40 cardiovascular genes | the panel's complement, a selector declared in the policy | the cardiovascular consortium |
+| APOE (chr19:44,903,787–44,909,396, Ensembl 116) | `RegionSelector` | everyone but the participant's own physician |
+| DSP chr6:7,569,314 C>G (uncertain significance) | its SPDI identity | the biobank, by name |
+
+The four requesters are the participant's own physician, the clinical lab, the
+cardiovascular consortium and the biobank. Each receives a different,
+non-empty part of the genome.
+
+"Only the participant's own physician" is a purpose, declared in
+`purposes.ttl` as narrower than clinical care, not a named assignee. ODRL has
+no "everyone except", so a rule written per assignee would release APOE to any
+clinical requester it did not list. A purpose-based prohibition fails closed.
+
+The region rule binds the contig as the file writes it (`chr19`), as the
+shipped `RegionSelector` does. A file that wrote `19` would escape it. The
+variant rule targets the SPDI identity, so it has no such gap.
+
+Besides the carriers, `compare` checks each view record for record: the
+baseline counts what every requester may see over all of the genome's records
+(`baseline/records.tsv`), and each count must equal the records the view
+released.
+
+```bash
+BM_ACMG_ARM=layered BM_ACMG_STAGES="derive convert link govern query baseline compare" \
+  BM_IMAGE_VERSION=3.3.0 ./17_use_case_acmg.sh
+```
+
 ### Effort
 
 `effort.py` measures what each route asks its author to write (arm 1: rules and

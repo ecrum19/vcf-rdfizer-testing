@@ -6,12 +6,18 @@ reads the other. That is what makes their agreement a test: the baseline
 applies the consent table in Python, the RDF route applies these rules through
 vcf-rdfizer-policy, and the experiment requires identical carrier lists.
 
-Two kinds of policy:
+Two kinds of policy in every arm:
 
 * one consent per participant, attached to that participant's file;
 * one cohort rule, "cancer-predisposition genes are released only for clinical
   care", whose target is the shipped LinkedSelector over the 28 genes' Ensembl
   IRIs (from regions.json): a gene panel stated as data.
+
+Arm 4's case (layered/case.json) adds three finer kinds, each a prohibition on
+a different selection: a purpose restricted to a gene panel (a selector
+declared here, in the policy file), a genomic region (the shipped
+RegionSelector), and a named variant withheld from a named requester. Its
+narrower purpose goes into purposes.ttl, the vocabulary the plug-in is given.
 
 carriers.rq is the one SPARQL query that answers the question. It joins each
 genome's calls to ClinVar's through the shared SPDI identifier the spdi linker
@@ -21,6 +27,7 @@ their contig names agreeing.
 Usage:
     python3 generate.py [out-dir [case.json]]   # default: beside this script, use_case.json
     python3 generate.py cohort cohort/cohort.json  # arm 2
+    python3 generate.py layered layered/case.json  # arm 4, with purposes.ttl
 """
 
 from __future__ import annotations
@@ -48,8 +55,103 @@ PREAMBLE = f"""\
 """
 
 
-def duo(curie: str) -> str:
-    return "obo:DUO_" + curie.split(":")[1]
+def duo(term: str) -> str:
+    """A purpose as Turtle: a DUO CURIE as obo:DUO_..., anything else as a full IRI."""
+    return "obo:DUO_" + term.split(":")[1] if term.startswith("DUO:") else f"<{term}>"
+
+
+def purpose_rule(kind: str, target: str, operator: str, purposes: list[str], assignee: str = "odrl:All") -> str:
+    return f"""    odrl:{kind} [ odrl:target {target} ; odrl:action odrl:read ; odrl:assignee {assignee} ;
+        odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:{operator} ;
+                          odrl:rightOperand {" , ".join(duo(p) for p in purposes)} ] ]"""
+
+
+def policy_set(name: str, rules: list[str]) -> str:
+    return (f"ex:{name} a odrl:Set ; odrl:uid ex:{name} ;\n"
+            f"    odrl:profile <https://w3id.org/vcf-rdfizer/policy> ; odrl:conflict odrl:prohibit ;\n"
+            + " ;\n".join(rules) + " .\n")
+
+
+def purpose_panel(index: int, panel: dict, regions: dict[str, dict]) -> str:
+    """Requests for `purpose` see only the panel: every other record is withheld from them.
+
+    A permission on the panel alone would withhold the file and its header too,
+    and the carriers query starts from the file. So the rule is a prohibition on
+    the panel's complement, a selector declared here: records with no gene link
+    into the panel. It fails closed like the shipped LinkedSelector: a graph
+    without gene links would otherwise select every record and withhold all of
+    them silently, or, worse, be evaluated without the panel at all.
+    """
+    genes = " ".join(f"ensembl:{regions[g]['ensembl_id']}" for g in panel["genes"])
+    name = f"outside-panel-{index}"
+    return f"""
+# {len(panel["genes"])} genes; {panel["rule"]}
+ex:OutsidePanel{index} a vcfp:SelectorType ;
+    vcfp:query \"\"\"
+        PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+        PREFIX vcfl: <https://w3id.org/vcf-rdfizer/linking#>
+        PREFIX ensembl: <https://identifiers.org/ensembl:>
+        SELECT ?resource WHERE {{
+            ?resource a vcfc:VCFRecord .
+            MINUS {{ ?resource vcfc:hasCall ?call . ?call vcfl:overlapsGene ?gene .
+                    VALUES ?gene {{ {genes} }} }} }}\"\"\" ;
+    vcfp:violations \"\"\"
+        PREFIX vcfl: <https://w3id.org/vcf-rdfizer/linking#>
+        SELECT ?missing WHERE {{
+            BIND("no vcfl:overlapsGene links in the graph" AS ?missing)
+            FILTER NOT EXISTS {{ ?anything vcfl:overlapsGene ?gene }} }}\"\"\" .
+ex:{name} a odrl:Asset , vcfp:GraphSelection ; vcfp:selector [ a ex:OutsidePanel{index} ] .
+""" + policy_set(name.replace("-", "_"), [purpose_rule("prohibition", f"ex:{name}", "isAnyOf", [panel["purpose"]])])
+
+
+def region_rule(region: dict) -> str:
+    name = f"region-{region['name'].lower()}"
+    return f"""
+# {region["name"]}, {region["chrom"]}:{region["start"]}-{region["end"]} ({region["source"]}). {region["rule"]}
+ex:{name} a odrl:Asset , vcfp:GraphSelection ;
+    vcfp:selector [ a vcfp:RegionSelector ; vcfp:assembly "{region["assembly"]}" ;
+                    vcfp:chrom "{region["chrom"]}" ; vcfp:start {region["start"]} ; vcfp:end {region["end"]} ] .
+""" + policy_set(name.replace("-", "_"), [purpose_rule("prohibition", f"ex:{name}", "isNoneOf", region["purposes"])])
+
+
+def variant_rule(index: int, variant: dict, requesters: dict) -> str:
+    name = f"variant-{index}"
+    rules = [f"""    odrl:prohibition [ odrl:target ex:{name} ; odrl:action odrl:read ;
+        odrl:assignee <{requesters[who]['assignee']}> ]""" for who in variant["withheld_from"]]
+    return f"""
+# {variant["name"]}. {variant["rule"]}
+ex:{name} a odrl:Asset , vcfp:GraphSelection ;
+    vcfp:selector [ a vcfp:LinkedSelector ; vcfp:predicate vcfl:sameVariantAs ;
+                    vcfp:entities ( <{SPDI_BASE}{variant["spdi"]}> ) ] .
+""" + policy_set(name.replace("-", "_"), rules)
+
+
+#: The four DUO terms the plug-in's default vocabulary holds, with DUO's own
+#: subclass links (DUO release 2021-02-23), so a case's own vocabulary extends
+#: the default rather than replacing it with less.
+DUO_TERMS = """\
+obo:DUO_0000042 rdfs:label "general research use" ; rdfs:subClassOf obo:DUO_0000001 .
+obo:DUO_0000006 rdfs:label "health or medical or biomedical research" ; rdfs:subClassOf obo:DUO_0000042 .
+obo:DUO_0000007 rdfs:label "disease specific research" ; rdfs:subClassOf obo:DUO_0000006 .
+obo:DUO_0000043 rdfs:label "clinical care use" ; rdfs:subClassOf obo:DUO_0000017 .
+"""
+
+
+def purposes_ttl(terms: list[dict]) -> str:
+    local = "".join(f'<{t["iri"]}> rdfs:label "{t["label"]}" ; rdfs:subClassOf {duo(t["broader"])} .\n'
+                    for t in terms)
+    return f"""# GENERATED by generate.py from the case file; do not edit.
+#
+# The purpose vocabulary for this arm: the plug-in's default DUO terms, plus
+# the case's own narrower purposes. A purpose satisfies a term when it is that
+# term or a subclass of it.
+
+@prefix obo:  <http://purl.obolibrary.org/obo/> .
+@prefix DUO:  <http://purl.obolibrary.org/obo/DUO_> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+{DUO_TERMS}
+{local}"""
 
 
 def gene_panel(genes: list[str], regions: dict[str, dict]) -> str:
@@ -193,7 +295,19 @@ def main(argv: list[str] | None = None) -> int:
              gene_panel(genes, regions), cohort_rule("DUO:0000043"),
              "\n# --- Participant consents (simulated) -----------------------------------------\n"]
     parts += [consent(pid, terms) for pid, terms in policy["consents"].items()]
+    layered = (policy.get("purpose_panels"), policy.get("regions"), policy.get("variants"))
+    if any(layered):
+        for panel in policy.get("purpose_panels", []):
+            missing = [g for g in panel["genes"] if g not in regions]
+            if missing:
+                raise SystemExit(f"purpose-panel genes not in regions.json: {missing}")
+        parts.append("\n# --- Finer rules (arm 4) -------------------------------------------------------\n")
+        parts += [purpose_panel(i, panel, regions) for i, panel in enumerate(policy.get("purpose_panels", []), 1)]
+        parts += [region_rule(region) for region in policy.get("regions", [])]
+        parts += [variant_rule(i, v, policy["requesters"]) for i, v in enumerate(policy.get("variants", []), 1)]
     (out / "policy.ttl").write_text("".join(parts), encoding="utf-8")
+    if "purposes" in case:
+        (out / "purposes.ttl").write_text(purposes_ttl(case["purposes"]), encoding="utf-8")
     acmg = [g.strip() for g in (HERE / "acmg_sf_v3.2.genes.txt").read_text(encoding="utf-8").splitlines()
             if g.strip() and not g.startswith("#")]
     (out / "carriers.rq").write_text(carriers_query(case, acmg), encoding="utf-8")

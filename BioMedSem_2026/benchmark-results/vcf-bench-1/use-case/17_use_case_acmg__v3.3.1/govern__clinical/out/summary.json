@@ -1,0 +1,48 @@
+{
+  "request": {
+    "assignee": "https://example.org/party/clinical-genetics-lab",
+    "purpose": "http://purl.obolibrary.org/obo/DUO_0000043"
+  },
+  "groups": {
+    "file://HG002.acmg.vcf": {
+      "released": false,
+      "reason": "withheld: no permission covers it for this purpose",
+      "records_released": 0,
+      "records_withheld": 11698
+    },
+    "file://HG004.acmg.vcf": {
+      "released": false,
+      "reason": "withheld: prohibition on <file://HG004.acmg.vcf>",
+      "records_released": 0,
+      "records_withheld": 9720
+    },
+    "file://HG005.acmg.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://HG005.acmg.vcf>",
+      "records_released": 9615,
+      "records_withheld": 0
+    },
+    "file://NB72462M.acmg.vcf": {
+      "released": true,
+      "reason": "released: permission on <file://NB72462M.acmg.vcf>",
+      "records_released": 10010,
+      "records_withheld": 0
+    },
+    "file://NG131FQA1I.acmg.vcf": {
+      "released": false,
+      "reason": "withheld: no permission covers it for this purpose",
+      "records_released": 0,
+      "records_withheld": 10343
+    }
+  },
+  "records_released": 19625,
+  "records_withheld": 31761,
+  "triples_released": 4086057,
+  "triples_withheld": 5029559,
+  "reasons": {
+    "withheld: no permission covers it for this purpose": 22041,
+    "withheld: prohibition on <file://HG004.acmg.vcf>": 9720,
+    "released: permission on <file://HG005.acmg.vcf>": 9615,
+    "released: permission on <file://NB72462M.acmg.vcf>": 10010
+  }
+}

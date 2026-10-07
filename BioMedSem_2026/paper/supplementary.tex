@@ -1,15 +1,21 @@
-% Expanded evidence supplement, revised 2 October 2026.
+% Evidence supplement, revised 7 October 2026.
 \documentclass[11pt]{article}
 \usepackage[a4paper,margin=2.4cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{graphicx,amsmath,amssymb,booktabs,tabularx,longtable,array,xcolor}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning}
+% Capability marks (Table 1 and Supplementary Table S-tab:tools-evidence): supported, partial, not found.
+\DeclareRobustCommand{\capY}{\tikz[baseline=-0.7ex]\fill (0,0) circle[radius=0.85ex];}
+\DeclareRobustCommand{\capP}{\tikz[baseline=-0.7ex]{\fill (0,-0.85ex) arc[start angle=-90,end angle=90,radius=0.85ex] -- cycle;\draw[line width=0.6pt] (0,0) circle[radius=0.85ex];}}
+\DeclareRobustCommand{\capN}{\tikz[baseline=-0.7ex]\draw[line width=0.6pt,black!35] (0,0) circle[radius=0.85ex];}
 \usepackage[section]{placeins}
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
 \externaldocument[M-]{current_revised}
 \graphicspath{{figures/}}
+\usepackage[font=small,labelfont=bf,labelsep=period,skip=4pt]{caption}
+\captionsetup[table]{position=top}
+\newcommand{\rowsep}{\noalign{\vskip2pt{\color{black!22}\hrule height 0.4pt}\vskip2pt}}% light rule between multi-line table rows
 \renewcommand{\thesection}{S\arabic{section}}
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
@@ -18,7 +24,7 @@
 \newcommand{\authorquery}[1]{\par\smallskip\noindent\begin{minipage}{\linewidth}\color{queryorange}\textbf{[AUTHOR QUERY: #1]}\end{minipage}\par\smallskip}
 \emergencystretch=2em
 \setlength{\parskip}{3pt}
-\title{Supplementary material\\[4pt]\large VCF-RDFizer: source-checkable semantic conversion for linked, policy-aware genomic querying}
+\title{Supplementary material\\[4pt]\large VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Governable Semantic Genomic Data}
 \author{Elias Crum, Bart Buelens, Ruben Taelman, G\"okhan Ertaylan}
 \date{}
 \setcounter{topnumber}{4}
@@ -30,799 +36,893 @@
 \renewcommand{\floatpagefraction}{.7}
 \begin{document}
 \maketitle
-\noindent This supplement preserves the experiment-level evidence behind the three questions in the main text. Sections~\ref{sup:repro}--\ref{sup:inputs} identify the evaluated builds and inputs; Sections~\ref{sup:model}--\ref{sup:validation} specify the representation and checks; Section~\ref{sup:usecase} gives the linked-query protocol; and Sections~\ref{sup:measurements}--\ref{sup:issues} retain measurements, configuration coverage and defects. Successful tests, negative tests, incomplete checks and unresolved oracle failures are distinguished.
+\noindent This supplement specifies the inputs, implementation, and checks supporting the three evaluation questions in the main text.
+The linked experiment tests prerequisites for the motivating applications, not three complete clinical or governance systems.
+Completed comparisons, intended refusals, incomplete checks, and unresolved validation failures are reported separately.
 \tableofcontents
 \clearpage
-\section{Reproducibility and execution}\label{sup:repro}
 
-\textbf{Release and image.}
-The tagged benchmark configuration uses VCF-RDFizer v3.1.0 (commit \texttt{d3b34d5}) from \texttt{ecrum19/vcf-rdfizer:v3.1.0}, with resolved image digest
-\begin{center}\small\texttt{sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa}\end{center}
-\noindent
-Image rebuilding is disabled during execution so that all cells in the tagged run use the same container.
-The per-cell manifests retain the actual commit and image identifiers used for each measurement.
-v3.1.0 bundles the VCF Core SHACL shapes from vocabulary commit \texttt{5bfd19d}.
-The regional-retrieval cells postdate v3.1.0 (they need the regional runner and \texttt{tabix}) and were produced by commit \texttt{3da1a5a}.
-The use case (\main{subsec:usecase}) converts with the v3.2.0 image and links and governs with pre-release builds of the linkers and policy plug-in, recorded per cell: uncommitted \texttt{feature/spdi-linker} trees on v3.2.0 (\texttt{f266db5}) for arms~1 and~2, each identified per cell by a recorded diff or tree hash, and commit \texttt{578c2be} for arm~3. v3.3.0 (commit \texttt{7ab2300}, image \texttt{sha256:1838720d\ldots06432}) releases them, adding two refusals that none of these runs meets: an empty selector list, and an RDF input with no VCF triples.
+\section{Documented capabilities of related tools}\label{sec:tools}
+Table~\ref{tab:tools-evidence} expands Table~\ref{M-tab:tools} of the main text with the evidence behind each mark.
+Each mark records what a tool's public documentation states: its repository and manual, the cited paper, and package registries, inspected in September 2026 and re-checked against those sources in October 2026.
+A mark is not a measurement on a shared input, and an open mark means that a capability was not documented, not that it is impossible.
+Where a tool was superseded, the version that reads VCF was assessed.
+The columns are defined as follows; a partial mark applies the qualification given after each definition.
+\begin{description}\setlength{\itemsep}{1pt}
+\item[RDF model] The output uses a documented vocabulary. Partial: terms shown only by example, or a vocabulary that is no longer published.
+\item[Header + genotype] VCF header metadata is kept in the RDF together with per-sample genotype and FORMAT data. Partial: only one of the two, or both only through user-written templates.
+\item[Editable mappings] Users can change how VCF maps to RDF without changing the converter. Partial: configuration or plug-in hooks over a fixed mapping, or mappings that produce only part of the output.
+\item[CLI] Documented command-line use suitable for pipelines. Partial: library, browser, or user-interface use only.
+\item[Reproducible workflow] A documented VCF-to-RDF route that a third party can rerun. Partial: manual installation of several components, an unpublished package, an offline service, or an unmaintained runtime.
+\item[Compressed RDF] The tool writes compressed RDF itself. Partial: only through a bundled wrapper.
+\item[Public release] A versioned package, executable, or container. Partial: source code only.
+\end{description}
 
-\textbf{Pinned toolchain.}
-VCF-RDFizer v3.1.0 fixes its dependencies inside the container image: RMLStreamer 2.5.0, hdtc 1.1.0, pycottas 1.1.0, DuckDB 1.5.5, cyvcf2 0.34.0, pyshacl 0.30.1, Comunica 5.3.0 for N-Triples, \nolinkurl{@comunica/query-sparql-hdt} 5.0.1, the COTTAS Comunica engine 0.1.0, bcftools from the base distribution, and QLever pinned by image digest.
-\texttt{rdf2hdt} and \texttt{hdt2rdf} are compiled from the hdt-cpp repository at image build time, so their exact revision is fixed by the image digest rather than by a version number; the resolved image for each benchmark run is recorded with its command and metrics.
-
-\textbf{Hosts.}
-Experiments run on two physically separate, identically specified hosts (\texttt{vcf-bench-1} and \texttt{vcf-bench-2}):
-Ubuntu 24.04.4 LTS, kernel 6.8.0-85-generic, Intel Xeon Silver 4309Y at 2.80\,GHz (8 cores), 33.6\,GB RAM with swap disabled, a 210\,GB SSD, Docker 29.7.2, and Python 3.12.3.
-Each complete experiment is assigned to one host and executed without concurrent benchmark jobs, keeping comparisons within-host.
-On a shared calibration workload the two hosts produced the same graph: identical triple sets, a byte-identical COTTAS artifact and HDT index, and N-Triples and HDT files that differ only in line order and in the HDT header's \texttt{dcterms:issued} timestamp.
-Their speed differed: the conversion phase took 26\,s on \texttt{vcf-bench-1} and 37\,s on \texttt{vcf-bench-2}, and validation 156\,s and 208\,s.
-Timings are therefore compared only within a host; the calibration characterizes, rather than eliminates, variation between hosts.
-Retrieval at scale (Table~\ref{tab:scale}) ran outside the campaign, on a third host, \texttt{vcf-bench-3}: the same CPU, 8 cores and 31.3\,GiB of RAM with swap disabled, under Ubuntu 22.04.5 and kernel 5.15. It queried graphs built by the published v3.1.0 image, with the validation runner of commits \texttt{245fe1f} (N-Triples) and \texttt{5ed75c8} (HDT and COTTAS), which select the thirteen core questions.
-
-\textbf{What each cell records.}
-The harness creates a fresh output directory for each cell and records its command, host, tool commit, container image, exit status, and wall time.
-Tool reports provide stage timings, peak resident set size, triple counts, artifact sizes, and validation outcomes; workspace monitoring records transient disk use separately from final artifact size.
-Input sizes used in performance comparisons are uncompressed VCF bytes, while the corpus table reports compressed download sizes.
-Replicated comparisons report variability or confidence intervals; single-run corpus measurements describe the tested input and configuration without estimating run-to-run variation.
-The per-cell records, normalized query results and comparison reports are recorded in the testing repository; a persistent archive of the complete evaluated snapshots is not yet deposited.
-
-\textbf{The campaign.}
-The campaign comprises 143 recorded cells over 96.2\,h of measured wall time (Table~\ref{tab:campaign}).
-Every executed conversion cell records its own argv, host, tool commit and image digest, the two mutation-score cells their tool commit, and the integrated record of all cells is archived with the testing repository.
-A non-zero exit is classified by what the cell asserted: two cells were required to be refused and were (\emph{refused}), two recorded an exit status without asserting an outcome (\emph{recorded}), and three were skipped by a stated guard.
-No asserted expectation failed. This does not mean that all cells completed successfully: the status categories and denominator are retained below.
-
-\begin{table}[!htbp]
-\caption{The benchmark campaign, grouped by the question each experiment answers. \emph{Recorded}: a non-zero exit that the cell observed without asserting an outcome; \emph{refused}: the cell required the configuration to be rejected, and it was; \emph{skipped}: a guard refusal with a stated reason. Hosts: \texttt{vcf-bench-1} (b1), \texttt{vcf-bench-2} (b2). Every conversion cell was produced by the published v3.1.0 image; the two mutation-score cells ran the same commit's test harness on the host. Section numbers prefixed S are in this document; the others are in the main text.}\label{tab:campaign}%
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabularx}{\textwidth}{@{}l r >{\raggedright\arraybackslash}p{0.2\textwidth} c r >{\raggedright\arraybackslash}X@{}}
+{\footnotesize
+\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.25}%
+\newcommand{\hd}[1]{\begin{tabular}[b]{@{}c@{}}#1\end{tabular}}%
+\newcommand{\grp}[1]{\multicolumn{8}{@{}l}{\textit{#1}}\\*}%
+\newcommand{\ev}[1]{\multicolumn{8}{@{\hspace{1em}}p{\dimexpr\linewidth-1em\relax}@{}}{\raggedright\scriptsize #1}\\[3pt]}%
+\newcolumntype{M}{>{\centering\arraybackslash}p{0.098\linewidth}}%
+\setlength{\LTcapwidth}{\linewidth}%
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.314\linewidth}*{7}{M}@{}}
+\caption{Documented capabilities of VCF-to-RDF converters and related workflows, with the evidence for each mark. \capY~supported and documented; \capP~partial or limited; \capN~not found in public documentation. Sources are the cited papers and the repositories, manuals, and registries named in each note.}\label{tab:tools-evidence}\\
 \toprule
-\textbf{Experiment} & \textbf{Cells} & \textbf{Outcome} & \textbf{Host} & \textbf{Hours} & \textbf{Question answered} \\
+ & \multicolumn{3}{c}{\textbf{Representation}} & \multicolumn{4}{c}{\textbf{Operation}}\\
+\cmidrule(lr){2-4}\cmidrule(l){5-8}
+Tool or workflow & \hd{RDF\\model} & \hd{Header +\\genotype} & \hd{Editable\\mappings} & CLI & \hd{Reprod.\\workflow} & \hd{Compr.\\RDF} & \hd{Public\\release}\\
 \midrule
-\multicolumn{6}{@{}l}{\textit{Conversion, scaling and storage}} \\
-Records scaling            & 10 & all OK               & b1 & 10.99 & How cost grows with records (\S{}\ref{M-subsec3.3}) \\
-Sample representation      & 30 & 29 OK, 1 skipped & b2 & 19.69 & How the two profiles grow with samples (\S{}\ref{M-subsec3.3}) \\
-Storage mode               & 8  & all OK               & b1 & 12.87 & Peak workspace of plain vs space-optimized (\S{}\ref{M-subsec3.3}) \\
-Corpus breadth             & 10 & 9 OK, 1 skipped      & b2 & 26.90 & HDT and COTTAS on ten public inputs (\S{}\ref{M-subsec3.4}) \\
-\addlinespace
-\multicolumn{6}{@{}l}{\textit{Input and configuration coverage}} \\
-Representation axes        & 20 & all OK               & b1 & 4.82  & VCF 4.1--4.5; cost of INFO and header representations (\S{}\ref{sup:inputs}, \S{}\ref{sup:config}) \\
-Difficult inputs           & 16 & 13 OK, 2 recorded, 1 skipped & b1 & 0.10 & Eleven awkward VCFs and the demonstration linkers (\S{}\ref{sup:inputs}) \\
-Covering set               & 10 & all OK               & b1 & 0.35  & Every option value and pair (\S{}\ref{sup:config}) \\
-Modes                      & 7  & all OK               & b1 & 0.03  & Each operating mode on its own (\S{}\ref{sup:config}) \\
-Feasibility                & 9  & all OK               & b1 & 9.03  & Memory ceiling $\times$ configuration (\S{}\ref{sup:config}) \\
-\addlinespace
-\multicolumn{6}{@{}l}{\textit{Validation and retrieval}} \\
-Robustness                 & 9  & all OK               & b1 & 0.25  & Determinism, round trip, mutation score (\S{}\ref{M-subsec3.5}, \S{}\ref{sup:validation}) \\
-Equivalence                & 8  & 6 OK, 2 refused      & b2 & 6.84  & Four engines, both profiles, three artifacts (\S{}\ref{sup:config}) \\
-Query cost                 & 6  & all OK               & b1 & 4.27  & SPARQL vs cyvcf2 on identical work (\S{}\ref{M-subsec3.6}) \\
-\midrule
-\textbf{Total}             & \textbf{143} & \textbf{136 OK, 2 recorded, 2 refused, 3 skipped} & & \textbf{96.16} & \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textbf{Distribution and maintenance.}
-Each tagged VCF-RDFizer version is published across PyPI, Conda-Forge, and Docker Hub, so users can choose pip-, conda-, or container-based installation with matched versions, under the MIT License \cite{jimenez_2017_f1000}.
-The GitHub README is the primary user guide: quick-start commands, end-to-end examples, command-line option documentation, and troubleshooting notes.
-The project follows a release-oriented workflow with versioned release notes, public issue triage, and a unit-test suite that runs on Linux, macOS and Windows.
-
-
-\subsection{Experiment-to-release ledger and unresolved archive fields}
-The experiment families in Table~\ref{tab:release-ledger} must not be pooled into a single success rate or attributed to a single release. In particular, the 657.4M-triple conversion/retrieval graph and the 662.4M-triple normalized use-case graph are different artifacts.
-\begin{table}[!htbp]
-\caption{Build and assessment boundaries. A commit or image identifies executable state only if all local changes and external resources are also retained.}\label{tab:release-ledger}
-\centering\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}X@{}}
+\endfirsthead
+\multicolumn{8}{@{}l}{\scriptsize\textit{Table~\ref{tab:tools-evidence}, continued}}\\
 \toprule
-\textbf{Family} & \textbf{Recorded state} & \textbf{Assessment boundary}\\
+Tool or workflow & \hd{RDF\\model} & \hd{Header +\\genotype} & \hd{Editable\\mappings} & CLI & \hd{Reprod.\\workflow} & \hd{Compr.\\RDF} & \hd{Public\\release}\\
 \midrule
-143-cell base campaign & v3.1.0, \texttt{d3b34d5}; full image digest above & Conversion, artifacts, fixtures, 984 applicable paired comparisons and configuration tests.\\
-Regional retrieval & \texttt{3da1a5a} & Later runner with tabix; 11,160 regional executions.\\
-Large-graph retrieval & v3.1.0 graphs; runners \texttt{245fe1f}, \texttt{5ed75c8} & Separate host; thirteen summary queries without SHACL.\\
-Linked use case & v3.2.0 conversion; uncommitted pre-release trees on \texttt{f266db5} in arms 1--2; \texttt{578c2be} in arm 3 & SPDI, gene links and policy views. v3.3.0 \texttt{7ab2300} is the subsequent release, not the exact state of every run.\\
-Review follow-ups & Default-profile mutation rerun; 250,000-record NG131FQA1I check & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on vcf-bench-2; QLever, expanded profile; the NG131FQA1I rerun without shapes; v3.1.0's size gates.\\
+\endhead
 \bottomrule
-\end{tabularx}
-\end{table}
-\authorquery{Archive the uncommitted arms 1--2 source trees and record the complete v3.3.0 image digest.}
-The public vocabulary citation \cite{vcfc210} describes a separately versioned release. The shapes bundled with the base experiment are specifically commit \texttt{5bfd19d}; the two should not be silently treated as identical.
+\endlastfoot
+\grp{Dedicated VCF-to-RDF converters}
+\textbf{VCF-RDFizer} (this study) & \capY & \capY & \capP & \capY & \capY & \capY & \capY \\*
+\ev{Writes the public VCF Core vocabulary, keeping the header, records, alleles, and samples (expanded or condensed). Mappings are partial: RML maps the record backbone, nine triples per record and 5.3\% of the HG005 graph, while samples, INFO, QUAL, and the header come from emitters configured by options rather than mappings (Section~\ref{subsec:model-construction}). Pinned Docker image; HDT and COTTAS output; released on PyPI, Docker Hub, and conda-forge.}
+TogoVar VCF2RDF \cite{togovar_2022} & \capP & \capN & \capP & \capY & \capY & \capN & \capY \\*
+\ev{Rust command-line tool (\url{https://github.com/togovar/vcf2rdf}) with \texttt{generate}, \texttt{convert}, and \texttt{compress}. Its documentation calls the RDF model very simple, shown through a configuration template. TogoVar converts allele frequencies only, for privacy, so no sample or header data. A YAML configuration selects the base IRI, namespaces, and INFO keys over fixed mapping rules. \texttt{compress} writes BGZF-compressed VCF, not RDF. Docker image and release binaries.}
+JVarkit VcfToRdf \cite{JVarkit_2015} & \capP & \capP & \capN & \capY & \capY & \capN & \capY \\*
+\ev{\texttt{java -jar jvarkit.jar vcf2rdf} (documentation at \url{https://jvarkit.readthedocs.io}). A project-specific \texttt{vcf:} namespace is shown only by example. Output includes chromosomes, filters, samples, and genotypes (GT, DP, GQ, PL), but not INFO or FORMAT header descriptions, and the documented default of \texttt{-{}-hide} includes GT. The only options are \texttt{-{}-hide} and \texttt{-o}. Released as a jar and on Bioconda.}
+SPARQLing Genomics \cite{sparqling_genomics_2020,sparqling_genomics_software} & \capP & \capY & \capN & \capY & \capY & \capP & \capY \\*
+\ev{\texttt{vcf2rdf}, documented in the v0.99.11 manual. Uses FALDO, Dublin Core, PROV, and its own terms, with field predicates generated from the VCF header; the manual's namespaces are inconsistent. Every header-described field becomes triples, with per-sample calls carrying INFO and FORMAT values (only calls with an ALT allele). The mapping is fixed in code. Compression only through the \texttt{-{}-compress} option of the bundled \texttt{folder2rdf} wrapper. Release tarball, Docker image, and Guix environment; the GitHub repository was archived in 2021 when development moved to GitLab.}
+VCF2RDF (web) \cite{vcfr_2017} & \capP & \capP & \capN & \capP & \capP & \capN & \capP \\*
+\ev{JavaScript for browsers and Node.js (\url{https://github.com/ibl/VCFr}); no command line is documented. Terms are minted under \texttt{vcf2rdf.org/app/}, a host that is now offline, with no published schema. The paper describes header classes but not per-sample genotypes. Source code only; the web service is offline.}
+BioHackathon vcf2rdf \cite{katayama2019biohackathon,bioruby_vcf2rdf} & \capP & \capP & \capN & \capY & \capP & \capN & \capP \\*
+\ev{Built at BioHackathon 2013 (\url{https://github.com/fstrozzi/bioruby-vcf2rdf}), with a \texttt{vcf2rdf} executable. FALDO positions with an ad hoc allele namespace. Per-sample genotypes and allele coverage are written; header metadata is not mentioned. Turtle output. The Ruby gem the README installs is not published, so only the source is available.}
+\addlinespace[2pt]
+\grp{General genomic-format tools}
+BioInterchange \cite{baran2015gfvo,biointerchange2_software} & \capY & \capY & \capP & \capY & \capY & \capN & \capY \\*
+\ev{Assessed as BioInterchange~2 (v2.0.5, \url{https://github.com/BioInterchange/BioInterchangeC}); version~1 does not read VCF. Converts VCF~4.2 to JSON-LD in the Genomic Feature and Variation Ontology (GFVO), with one metadata object per file and per-sample genotypes on each feature. Output can be changed through Python plug-in hooks and user annotations, not mapping files. RDF serializations come from JSON-LD tools; compression was applied outside the tool. Homebrew package and installer.}
+bio-vcf \cite{bio_vcf} & \capN & \capP & \capY & \capY & \capY & \capN & \capY \\*
+\ev{\texttt{bio-vcf -{}-rdf} and ERB templates such as \texttt{vcf2rdf.erb} (\url{https://github.com/vcflib/bio-vcf}) define the output, with ad hoc prefixes rather than a documented vocabulary. Header metadata and sample data are both available to templates but are combined only by the user. Released as a Ruby gem and on Debian and Bioconda.}
+ruby-rdf/rdf-vcf \cite{ruby_rdf_vcf} & \capN & \capN & \capN & \capY & \capP & \capN & \capY \\*
+\ev{\texttt{vcf2rdf file.vcf.gz} (\url{https://github.com/ruby-rdf/rdf-vcf}), requiring JRuby~9 and a tabix index; unmaintained since its 0.1.2 gem in September 2015. The documentation names no vocabulary and does not mention header, INFO, FORMAT, or genotype handling. Uncompressed N-Triples.}
+\addlinespace[2pt]
+\grp{Knowledge-graph construction pipelines}
+VariantKG \cite{variantkg_2025} & \capP & \capY & \capN & \capP & \capP & \capN & \capP \\*
+\ev{Annotates VCF with SnpEff, converts it with SPARQLing Genomics' \texttt{vcf2rdf} (and so inherits its header and genotype coverage), then extends that vocabulary with its own ontology, including CADD scores, and links patient metadata through named graphs; no ontology file is published. Operated through a Gradio interface after manual installation of SnpEff, \texttt{vcf2rdf}, and Blazegraph. Source code only (\url{https://github.com/MU-Data-Science/GAF}).}
+AgroLD VCF2RDF \cite{larmande2025agrold} & \capP & \capN & \capN & \capN & \capN & \capN & \capP \\*
+\ev{Named in \cite{larmande2025agrold} among the AgroLD conversion pipelines (GFF2RDF, GAF2RDF, VCF2RDF) at \url{https://github.com/SouthGreenPlatform/AgroLD_ETL}. AgroLD itself is ontology-based, but no VCF vocabulary, usage, or output is documented. Source code only.}
+\addlinespace[2pt]
+\grp{Virtual semantic access}
+Semantic Beacons \cite{semantic_beac_2025} & \capP & \capN & \capY & \capN & \capP & \capN & \capP \\*
+\ev{Maps Beacon API responses, not VCF files, to RDF on the fly with RML over JSONPath, served as Triple Pattern Fragments and queried with Comunica. Its SO, FALDO, and GENO schema covers variant positions and alleles, which the authors describe as partial coverage of the Beacon specification; Beacon responses carry no header or per-sample genotypes. Implementation details are deferred to \url{https://github.com/SemanticBeacon/SemanticBeacon}.}
+\end{longtable}
+}
 
-\section{Input and version coverage}\label{sup:inputs}
-
-\textbf{The public corpus.}
-Table~\ref{tab:test-corpus} lists the ten public VCFs. Download commands and canonical filename definitions are maintained in the testing repository.
-
-\begin{table}[!htbp]
-\caption{
-  Public VCF corpus. File names are canonical \texttt{.vcf.gz} stems; later tables abbreviate the GIAB identifiers. Assembly and sample counts were verified from each file's header. Sizes are approximate compressed download sizes; the tool processes the uncompressed stream.}\label{tab:test-corpus}%
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabularx}{\textwidth}{@{}l l c r r >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{File} & \textbf{Provider} & \textbf{Assembly} & \textbf{Samples} & \textbf{MB (gz)} & \textbf{Evaluation role} \\
-\midrule
-\texttt{NG1N86S6FC}     & Sequencing.com  & GRCh38 & 1 & 379 & Consumer WGS \\
-\texttt{NG131FQA1I}     & Dante Labs      & GRCh38 & 1 & 224 & Consumer WGS \\
-\texttt{NB72462M}       & Nebula Genomics & GRCh38 & 1 & 341 & Consumer WGS \\
-\texttt{60820188475559} & PGP upload      & GRCh37 & 1 & 325 & SNP-only profile \\
-\texttt{60820188474283} & Dante Labs      & GRCh37 & 1 & 222 & Consumer WGS \\
-\texttt{0GOOR\_HG002}   & precisionFDA    & GRCh38 & 1 & 69  & GIAB Truth Challenge v2 \\
-\texttt{1000G\_phase3\_chr20} & 1000 Genomes & GRCh37 & 2{,}504 & 327  & Phased cohort \\
-\texttt{HGSVC2}               & HGSVC2       & GRCh38 & 32      & 31.5 & Multi-sample SVs \\
-\texttt{HG004\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 149  & Benchmark genome, chr1--22 \\
-\texttt{HG005\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 139  & Benchmark genome, chr1--22 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textbf{Declared VCF versions.}
-Five single-purpose fixtures covering VCFv4.1 through VCFv4.5, plus one file with no \texttt{\#\#fileformat} declaration, all converted with exit code 0.
-The generated RML mapping for each version is byte-identical apart from the asserted file class (\texttt{vcfc:VCF41File} through \texttt{vcfc:VCF45File}), which locates version awareness in the typed file resource rather than in field-level rules.
-Field handling is therefore data-driven: the VCFv4.5 fixture's local-allele \texttt{FORMAT} keys (\texttt{LAA}, \texttt{LAD}) and the VCFv4.4 fixture's phase-set key (\texttt{PS}) are carried through as ordinary FORMAT entries, raising the per-record triple yield from 210 (4.4) to 252.5 (4.5) on otherwise matched two-record fixtures.
-This is preservation, not interpretation: nothing in the graph resolves a local allele index to a global allele, so VCFv4.4/4.5 support is lexical carry-through pending a dedicated local-allele semantics layer.
-The undeclared-version file also converted, via the documented fallback.
-
-\textbf{Real cohorts.}
-Nine of ten corpus inputs converted end to end (the first 250{,}000 records of eight files with headers retained, and \texttt{HG005\_GRCh38} whole), with HDT and COTTAS built and decode-checked for each.
-The tenth, the 2,504-sample 1000 Genomes chromosome-20 call set, was skipped by the benchmark harness rather than refused by the tool: the harness withholds any corpus file with more than 1{,}000 sample columns from the expanded arm, because the expanded representation emits one call resource per record and sample.
-Its full sample dimension was exercised instead through 10{,}000-record slices carrying all 2{,}504 samples, which converted in both representations; Section~\ref{sup:measurements} quantifies why the expanded arm cannot be run on the whole file at this disk budget.
-The tool also applies a workspace check: before converting, it estimates the expanded workspace from the record and sample counts and refuses the run when that estimate exceeds three quarters of the free space, naming the condensed representation as the alternative.
-
-\textbf{Difficult inputs.}
-Eleven adversarial fixtures were run (Table~\ref{tab:awkward}; fixture files are named \texttt{awkward\_*} in the testing repository).
-Nine converted and passed validation, including CRLF line endings, symbolic alleles, breakend ALT syntax, ploidy 4 and 3 in the same file, half-calls and haploid calls, missing values in every optional field, header keys declared but never used, the three-way \texttt{PASS}/\texttt{.}/failed-filter distinction, and a header-only file with no data records.
-Two cells exited non-zero.
-One is a refusal to convert: the truncated gzip stream, rejected in 0.58\,s at the decompression stage with a clear diagnostic, which is the intended behavior.
-The sites-only file produced 245 triples and an HDT artifact, but its paired validation was not completed (Section~\ref{sup:issues}).
-
-\begin{table}[!htbp]
-\caption{Difficult-input fixtures. Outcomes are reported separately from validation. Neither a successful conversion nor an intended refusal establishes fidelity; the sites-only check is incomplete. Triple counts are for the complete graph the run produced.}\label{tab:awkward}%
-\centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.0}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.165\textwidth} >{\raggedright\arraybackslash}p{0.125\textwidth} r >{\raggedright\arraybackslash}p{0.135\textwidth} >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Fixture} & \textbf{Outcome} & \textbf{Triples} & \textbf{Validation} & \textbf{Note} \\
-\midrule
-CRLF line endings & converted & 262 & PASS & No stray \texttt{\textbackslash r} in the last field's literal \\
-Symbolic alleles & converted & 453 & PASS & \texttt{<DEL>} not treated as a base string \\
-Breakend ALT & converted & 417 & PASS & Breakend ALT syntax preserved \\
-Mixed ploidy & converted & 350 & PASS & Ploidy 4 then 3 followed the data \\
-Half and haploid calls & converted & 446 & PASS & Four genotype cases stayed distinct \\
-Missing values & converted & 321 & PASS & Missing-field fixture; missingness follows the field-specific representation \\
-FILTER variants & converted & 486 & PASS & \texttt{PASS}, \texttt{.} and a failed code are three states \\
-Declared FORMAT unused & converted & 293 & PASS & Header declaration represented although never used \\
-Zero data records & converted & 189 & PASS & Header-only input; no data records \\
-\midrule
-Sites only & converted; validation not completed & 245 & incomplete & Graph and HDT artifact produced \\
-Truncated gzip & refused at decompression & --- & not reached & Refused in 0.58\,s with a decompression diagnostic; intended \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-
-The successful sites-only frequency graph used in the linked case (Section~\ref{sup:usecase}) does not repair the malformed validation fixture. It establishes that the frequency-join workflow ran, not that a conformant sites-only input completed the full paired validation suite.
-
-\section{Representation, related tools and implementation}\label{sup:model}
-VCF-RDFizer emits RDF in the VCF Core Vocabulary (\texttt{vcfc:}, \url{https://w3id.org/vcf-core/vocab\#}) \cite{vcfc210}, a separately maintained vocabulary that models the VCF specification itself, version by version, for VCFv4.1 through VCFv4.5.
-Its terms align with established resources for genomic coordinates (FALDO \cite{faldo_2016}), variant typing (the Sequence Ontology \cite{seq_ont_2005}), genotype and sample constructs (HERO \cite{hero-genomics_2025}), and features of the GA4GH VRS schema v2.0.1 \cite{ga4gh2025VRS}, so VCF-specific structure can be connected to existing terms.
-The model preserves three information layers: file and header assertions, variant-record assertions, and sample and genotype assertions (Figure~\ref{fig2}).
-The vocabulary carries classes, properties, domains and ranges but no OWL restrictions; value and cardinality constraints are SHACL shapes, which the validation layer applies (Section~\ref{M-subsec2.4}).
-
-Sample-level data can be emitted in two profiles.
-In the \emph{expanded} profile every sample value is its own resource, which makes genotypes directly queryable.
-In the \emph{condensed} profile values are stored as sample-ordered vectors, reducing the number of RDF resources while requiring decoding for access to individual sample values.
-Both profiles keep the same file, header and record context.
-Let $V$ be the number of variant records, $S$ the number of samples, and $F$ the number of FORMAT keys per record.
-For a uniform FORMAT layout, the expanded profile adds $VS$ sample-call resources and $VSF$ FORMAT-value resources, whereas the condensed profile adds $V$ cohort matrices and $VF$ value vectors.
-Excluding the structure common to both, and assuming bounded ploidy and FORMAT-value arity, the sample-layer triple counts scale as
-\begin{equation}
-\begin{aligned}
-T_{\mathrm{expanded}}  &= \mathcal{O}(S + VSF),\\
-T_{\mathrm{condensed}} &= \mathcal{O}(S + VF).
-\end{aligned}
-\label{eq:sample-profile-scaling}
-\end{equation}
-The condensed profile removes the per-sample factor from the repeated RDF structure, but still stores all $VSF$ values inside vector literals, so its size in bytes keeps growing with $S$ even though its triple count does not (Section~\ref{M-subsec3.3}).
-
-Core entities are minted from deterministic IRI templates over the source file and record position, so identifiers are reproducible but file-scoped: observations of the same variant in two files receive different IRIs. Identity across files is added by linking (Section~\ref{M-subsec:plugins}); GA4GH VRS computed identifiers \cite{ga4gh2025VRS} could serve beside NCBI SPDI and are future work.
+\section{Representation and implementation details}\label{sec:model}
+\subsection{Model and sample profiles}\label{subsec:model-profiles}
+VCF-RDFizer uses the VCF Core vocabulary (\texttt{vcfc:}, \url{https://w3id.org/vcf-core/vocab\#}) to retain file and header assertions, variant records, and sample/genotype information~\cite{vcfc210}.
+The model aligns with FALDO, the Sequence Ontology, HERO, and features of GA4GH VRS~\cite{faldo_2016,seq_ont_2005,hero-genomics_2025,ga4gh2025VRS}.
+Its classes, properties, domains, and ranges describe the representation; SHACL supplies value and cardinality constraints rather than OWL restrictions.
+Figure~\ref{fig:vcf-core-full} shows the emitted backbone, and Table~\ref{tab:capabilities} distinguishes implemented capabilities from assessed coverage.
+The documentation-based converter comparison is now Table~\ref{M-tab:tools} of the main text.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{vcf-core-classes.pdf}
-\caption{\textbf{VCF Core Vocabulary, simplified class diagram.}
-The backbone of the model VCF-RDFizer v3.1.0 emits, drawn from the ontology bundle it ships; all class and property names carry the \textit{vcfc:} prefix, \url{https://w3id.org/vcf-core/vocab\#}.
-A \texttt{VCFFile}, typed with its version-specific subclass, links to three layers. In the \textbf{header} layer, header lines carry the INFO, FORMAT, FILTER, ALT and META definitions that values cite through \texttt{declaredBy}.
-In the \textbf{record} layer, each \texttt{VCFRecord} has ordered alleles and a \texttt{VariantCall} carrying the INFO values, whose structured items retain their record, field and allele context.
-In the \textbf{sample} layer, the call links either to per-sample \texttt{SampleCall}s, genotypes and allele calls (\emph{expanded} profile) or to one \texttt{CohortCallMatrix} of sample-ordered vectors (\emph{condensed} profile).
-Structural-variant, phasing, local-allele and value-typing classes are omitted; the full vocabulary, with worked examples, is documented at \url{https://ecrum19.github.io/vcf-core-vocabulary/}.
-} \label{fig2}
+\caption{\textbf{Simplified VCF Core model emitted by the evaluated converter.}
+All terms use the \texttt{vcfc:} prefix.
+A versioned file resource connects header declarations, records, and sample information; values retain links to their interpretation context.
+Expanded output exposes sample calls, genotypes, and allele calls, while condensed output uses sample-ordered vectors.
+Structural-variant, phasing, local-allele, and value-typing classes are omitted; the complete vocabulary is documented at \url{https://ecrum19.github.io/vcf-core-vocabulary/}.} \label{fig:vcf-core-full}
 \end{figure}
 
-
-\subsection{Documentation-based comparison and capability scope}
-The comparison records the inspected documentation rather than a shared-input benchmark. An absent mark means a capability was not found in that documentation, not that the software cannot provide it. Package channels and mapping extensibility describe practical interfaces; they are not direct measures of semantic fidelity or usability.
-
-\textbf{Related work.}
-Earlier converters include the \textit{rdf-vcf} reader and the web-based \textit{VCF2RDF}, an isomorphic mapping to RDF/JSON-LD \cite{ruby_rdf_vcf,vcfr_2017}; a 2013 BioHackathon \textit{vcf2rdf} using FALDO and tool-specific terms \cite{katayama2019biohackathon}; and JVarkit's \textit{VcfToRdf}, TOGOvar's Rust \textit{VCF2RDF} and SPARQLing Genomics' \textit{vcf2rdf} \cite{JVarkit_2015,togovar_2022,sparqling_genomics_2020,sparqling_genomics_software}.
-General tools also reach RDF: BioInterchange emits GFVO from GFF3, GVF and VCF 4.1--4.2 \cite{baran2015gfvo}, and \textit{bio-vcf} serializes through templates \cite{bio_vcf}.
-Pipelines such as VariantKG build on these converters \cite{variantkg_2025}; AgroLD names a VCF2RDF component whose code was not located in the documentation assessment \cite{larmande2025agrold}; and Semantic Beacons exposes Beacon API responses as RDF through RML without materializing a file \cite{semantic_beac_2025}.
-Table~\ref{tab:intro-tool-comparison} compares what these systems document; measuring conversion cost and fidelity against them on a shared input remains to be done.
-
-\begin{table}[!htbp]
-\caption{VCF-to-RDF converters and related semantic genomic-variation workflows, compared on the capabilities this study targets. Assessments are based on each system's publicly available documentation. This is a feature comparison, not a measured one: no other converter was run on the same input here, so the table shows what each system documents, not that one converts better or faster.}\label{tab:intro-tool-comparison}%
-\centering
-\footnotesize
-\newcommand{\cY}{$\checkmark$}%
-\newcommand{\cP}{($\checkmark$)}%
-\newcommand{\cN}{--}%
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X*{7}{c}@{}}
-\toprule
-\textbf{Tool / workflow} &
-\textbf{CLI} &
-\textbf{\shortstack{RDF\\model}} &
-\textbf{\shortstack{Reprod.\\workflow}} &
-\textbf{\shortstack{Metadata\\+ genotype}} &
-\textbf{\shortstack{Extensible\\mappings}} &
-\textbf{\shortstack{RDF\\compr.}} &
-\textbf{\shortstack{Public\\release}} \\
-\midrule
-\multicolumn{8}{@{}l}{\textit{Dedicated VCF-to-RDF converters}} \\
-\textbf{VCF-RDFizer (this study)} & \cY & \cY & \cY & \cY & \cP$^{c}$ & \cY & \cY \\
-TogoVar VCF2RDF \cite{togovar_2022} & \cY & \cP & \cY & \cP & \cP & \cN & \cY \\
-JVarkit VcfToRdf \cite{JVarkit_2015} & \cY & \cP & \cY & \cP & \cN & \cN & \cY \\
-SPARQLing Genomics \cite{sparqling_genomics_2020} & \cY & \cP & \cY & \cY & \cP & \cN & \cP \\
-VCF2RDF (web) \cite{vcfr_2017} & \cP & \cY & \cP & \cP & \cN & \cN & \cP \\
-BioHackathon vcf2rdf \cite{katayama2019biohackathon} & \cY & \cP & \cP & \cP & \cN & \cN & \cP \\
-\addlinespace
-\multicolumn{8}{@{}l}{\textit{General genomic-format tools}} \\
-BioInterchange \cite{baran2015gfvo} & \cY & \cY & \cY & \cP & \cN & \cN & \cY \\
-bio-vcf \cite{bio_vcf} & \cY & \cN & \cY & \cP & \cY & \cN & \cY \\
-ruby-rdf/rdf-vcf \cite{ruby_rdf_vcf} & \cY & \cN & \cP & \cP & \cN & \cN & \cY \\
-\addlinespace
-\multicolumn{8}{@{}l}{\textit{Knowledge-graph construction pipelines}} \\
-VariantKG$^{a}$ \cite{variantkg_2025} & \cP & \cP & \cP & \cY & \cN & \cN & \cP \\
-AgroLD VCF2RDF$^{b}$ \cite{larmande2025agrold} & \cN & \cP & \cN & \cN & \cN & \cN & \cP \\
-\addlinespace
-\multicolumn{8}{@{}l}{\textit{Virtual semantic access}} \\
-Semantic Beacons \cite{semantic_beac_2025} & \cN & \cP & \cP & \cP & \cY & \cN & \cP \\
-\bottomrule
-\end{tabularx}
-\vspace{1mm}
-\parbox{\textwidth}{\footnotesize\raggedright \cY{}~supported and documented; \cP{}~partial or limited; \cN{}~not found in public documentation.
-\textbf{CLI}: command-line use in pipelines.
-\textbf{RDF model}: documented vocabulary for the output.
-\textbf{Reprod.\ workflow}: documented, reproducible VCF-to-RDF route.
-\textbf{Metadata + genotype}: header metadata kept with genotype and sample data.
-\textbf{Extensible mappings}: rules editable without changing the converter.
-\textbf{RDF compr.}: integrated compressed RDF output.
-\textbf{Public release}: distributed package, executable or container.\\[1pt]
-$^{a}$Converts VCF through SPARQLing Genomics' vcf2rdf after SnpEff annotation, then adds its own ontology for CADD scores and patient metadata.
-$^{b}$Named in \cite{larmande2025agrold} as part of the AgroLD ETL; the assessment reflects public documentation inspected in September 2026.
-$^{c}$RML maps the record backbone, about 5\% of the triples; the content-bearing layers (samples, INFO, QUAL, header) come from the wrapper's emitters, configured by options rather than mappings (Section~\ref{M-subsec2.2}).}
-\end{table}
-\begin{table}[!htbp]
-\caption{VCF-RDFizer capability status and benchmark scope. ``Supported'' describes the release; the evaluation column states what this study measured, so that support is not mistaken for evidence. Section numbers without the S prefix are in the main text.}\label{tab:capabilities-summary}%
-\centering
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{0.96}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.2\textwidth}>{\raggedright\arraybackslash}p{0.15\textwidth}>{\raggedright\arraybackslash}p{0.15\textwidth}>{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{VCF component / capability} & \textbf{Release} & \textbf{Evaluation} & \textbf{Notes / limitations} \\
-\midrule
-Core record fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported (v3.1.0) & Validated & Q1--Q4 equal in completed comparisons; the broader suite has the follow-up failures reported in the main text (Section~\ref{M-subsec3.5}) \\
-QUAL & Supported & Q11 record digest & Typed literal for every record; a missing QUAL is \texttt{vcfc:Null} \\
-INFO & Supported; structured by default & Q11 and Q12 digests & Typed value per record and key, per-allele items for Number=A/R/G, plus the complete \texttt{infoRaw} string \\
-FORMAT and sample/genotype values & Supported & Q5--Q6 exact; Q13 digest & Half-calls, haploid calls and ploidy 4/3 survive conversion (Table~\ref{tab:awkward}); called allele, sample index and phasing require the deeper shapes for the tested mutations \\
-HEADER metadata & Supported & Census queries and shapes & Header attribute-value agreement requires the deeper shapes, not merely the default profile \\
-Multi-sample conversion & Supported & Measured, 1--2{,}504 samples & Condensed adds 5 triples per sample; expanded adds 25 per sample per record (627M triples for 10{,}000 records at 2{,}504 samples), so the whole cohort was converted in neither (Section~\ref{M-subsec3.3}) \\
-Structural and symbolic alleles & Lexically supported & HGSVC2 converted; Q2 passes on symbolic and breakend fixtures & ALT remains the source lexical field; allele-value mutations are caught only by the full shape profiles \\
-Queryable HDT, COTTAS & Supported & Measured & 118 HDT and 34 COTTAS artifacts, all decode checks passed; COTTAS smallest throughout (Section~\ref{M-subsec3.4}) \\
-Gzip/Brotli packaging & Supported & Covering set (Section~\ref{sup:config}) & Packages must be unpacked before querying; no codec comparison \\
-Policy annotations & Plug-in v0.2.0 with v3.3.0 & Real genomes, up to a whole genome & ODRL on files and declared graph selections, DUO purposes; every view checked against a VCF-side oracle; simulated consents, single-sample files; governed release, not anonymization (Section~\ref{M-subsec:usecase}) \\
-External linking & SPDI, Ensembl-gene and MyVariant linkers with v3.3.0 & Real genomes & SPDI joins eligible alleles under the stated reference/normalization assumptions; tier~3 confirmed 92--93\% of rsID rewrites (Section~\ref{sup:usecase}) \\
-\bottomrule
-\end{tabularx}
-\end{table}
-\subsection{Conversion and incremental representation construction}\label{sup:construction}
-Conversion has five stages:
-(1) each VCF is split into record, header-line and file-metadata TSV logical sources;
-(2) modular RML rule sets \cite{rml_2024}, authored in Turtle and executed by RMLStreamer \cite{rmlstreamer_2022}, map them to RDF;
-(3) emitters add the remaining fields and the samples, and every part is appended to one N-Triples aggregate;
-(4) optional gzip or Brotli packages and queryable HDT and COTTAS representations are built from the aggregate; and
-(5) every representation is validated, packaged and reported.
-Options keep these concerns separate (\texttt{--rdf-storage-mode}, \texttt{--rdf-compression}, \texttt{--representations}, \texttt{--artifact-compression}), so an \texttt{.hdt} or \texttt{.cottas} file can be kept for querying while a \texttt{.gz} or \texttt{.br} package is made for transport.
-
-RML maps the record backbone: nine triples per record, 5.3\% of the HG005 graph's triples. The content-bearing layers --- samples, structured INFO, QUAL and the header, 94.7\% of that graph --- come from the tool's emitters, configured by options, because the implemented mapping path delegates per-value datatype selection to emitters (a missing QUAL, for instance, is written \texttt{"."\textasciicircum\textasciicircum vcfc:Null}). The TSV step exists because VCF is not a native RML logical source.
-
-In \texttt{plain} storage mode the parts are appended to one uncompressed \texttt{.nt} graph; in \texttt{space-optimized} mode each part is gzip-compressed and appended as a member of one concatenated-gzip \texttt{.nt.gz} stream, which standard gzip readers expose as one N-Triples sequence. Either way each part is deleted once appended, so all parts and a full uncompressed aggregate never coexist.
-
-HDT and COTTAS are built one record-safe chunk at a time, so at most one uncompressed chunk exists while they are built. HDT parts are produced with \texttt{rdf2hdt} \cite{hdtcpp,hdt_2013}, merged pairwise with \texttt{hdtc} \cite{hdtc_2026,Diefenbach2020HDTCat} and indexed. COTTAS parts are produced with pycottas \cite{pycottas_2026} and merged in one streaming $k$-way pass with an \texttt{spo} index (v3.2.0 adds the other orders); COTTAS files are queried by a Comunica engine that evaluates SPARQL over the Parquet table with DuckDB \cite{comunica_cottas_2026}. Before the raw RDF is removed, every artifact is decoded with its native reader and its triple count compared with the source's; a mismatch fails the run. The following subsection details chunking.
-
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{vcf2rdf-v3.pdf}
-\caption{\textbf{VCF-RDFizer v3.1.0 pipeline.}
-\textbf{(1) Conversion}: the VCF is split into three TSV logical sources; RMLStreamer applies the RML rules to emit VCF Core N-Triples, and direct emitters add the row-dependent fields whose datatype is chosen per value (QUAL, ID, FILTER, alleles, structured INFO) and the samples in the \emph{expanded} or \emph{condensed} profile.
-Every part is appended to one aggregate and then deleted: a plain \texttt{.nt} file, or in space-optimized mode a concatenated-gzip \texttt{.nt.gz} stream.
-\textbf{(2) Queryable representations}: the aggregate is read incrementally and only one record-safe raw chunk exists at a time; \texttt{rdf2hdt} and pycottas each consume it before it is deleted.
-HDT parts are merged pairwise in a balanced tree with \texttt{hdtc} and indexed; COTTAS parts are merged in one streaming $k$-way pass with an \texttt{spo} index.
-\textbf{(3) Validation and packaging}: each artifact is decoded back and its triple count compared with the source; the graph is then checked against the VCF Core SHACL shapes and against thirteen questions answered both by SPARQL and by a VCF parser.
-HDT and COTTAS files are queryable as written; gzip or Brotli packages are for transport and must be unpacked before querying.
-} \label{fig1}
-\end{figure}
-\textbf{Chunked construction of HDT and COTTAS.}
-The representation stage reads the plain or gzip aggregate incrementally, respects newline-terminated N-Triples record boundaries, and materializes one raw chunk in a Docker-managed workspace.
-Each selected representation builder consumes that chunk before it is deleted and the next one is created (Figure~\ref{fig:chunks}).
-At most one uncompressed RDF chunk exists at a time; the final parts, merge intermediates, indexes and converter scratch space still require storage, but no full decompressed duplicate of the aggregate is created.
-HDT chunks are converted with \texttt{rdf2hdt} from hdt-cpp \cite{hdtcpp,hdt_2013} and merged pairwise in a balanced tree with \texttt{hdtc create} \cite{hdtc_2026}, which performs the same logical merge as HDTCat \cite{Diefenbach2020HDTCat} under a fixed memory budget and without Java; an unpaired file is carried into the next round, and each merge's scratch directory is removed as soon as that merge completes.
-The final HDT is indexed by \texttt{hdtc}, producing the sibling \texttt{.hdt.index.v1-1} index without executing a query; intermediate indexes are not retained.
-COTTAS chunks are converted with pycottas \cite{pycottas_2026} and merged in one streaming $k$-way pass rather than pairwise, so no global in-memory hash table or full-size temporary spill is built.
-In v3.1.0 the merged output carries a fixed \texttt{spo} index; v3.2.0 adds the other index orders.
-Each COTTAS operation runs in an isolated temporary working directory, so that its local DuckDB scratch database cannot be reused by a later chunk or merge.
-Chunk conversion, merging, final indexing, validation, and packaging are timed separately.
-
-\begin{figure}[!htbp]
-\centering
-\begin{tikzpicture}[
-  font=\scriptsize, >={Stealth[length=3.5pt]},
-  st/.style={draw, rounded corners=1.5pt, align=center, inner sep=2.5pt, minimum height=0.62cm, line width=0.5pt, font=\scriptsize},
-  fl/.style={->, line width=0.5pt, draw=black!75},
-]
-\node[st, minimum width=1.9cm] (agg) at (0,0) {aggregate\\\texttt{.nt} or \texttt{.nt.gz}};
-\node[st, minimum width=2.1cm] (chk) at (2.75,0) {raw chunk $i$\\record-safe, $\leq$1\,GiB};
-\node[st, minimum width=1.45cm] (h) at (5.35,0.45) {\texttt{rdf2hdt}};
-\node[st, minimum width=1.45cm] (c) at (5.35,-0.45) {pycottas};
-\node[st, minimum width=1.8cm] (hp) at (7.65,0.45) {HDT part $i$};
-\node[st, minimum width=1.8cm] (cp) at (7.65,-0.45) {COTTAS part $i$};
-\node[st, minimum width=1.9cm] (fin) at (10.55,0) {final merge, index\\{\tiny after the last chunk}\\\texttt{.hdt}, \texttt{.cottas}};
-\draw[fl] (agg) -- (chk);
-\draw[fl] (chk.east) -- ++(0.3,0) |- (h.west);
-\draw[fl] (chk.east) -- ++(0.3,0) |- (c.west);
-\draw[fl] (h) -- (hp); \draw[fl] (c) -- (cp);
-\draw[fl] (hp.east) -- ++(0.3,0) |- (fin.west);
-\draw[fl] (cp.east) -- ++(0.3,0) |- (fin.west);
-\draw[fl, dashed] (c.south) -- ++(0,-0.35) -| node[pos=0.27, below, font=\tiny]{delete chunk $i$, then read chunk $i{+}1$} (agg.south);
-\end{tikzpicture}
-\caption{One chunk at a time: each record-safe chunk is consumed by every selected builder and deleted before the next is read.}\label{fig:chunks}
-\end{figure}
-
-\textbf{Chunk sizes.}
-By default a chunk targets 512\,MiB of uncompressed N-Triples, bounded below by 128\,MiB and above by 1\,GiB (\texttt{--chunk-target-bytes}, \texttt{--chunk-min-bytes}, \texttt{--chunk-max-bytes}).
-For constrained workspaces a lower-peak setting is 128\,MiB target, 64\,MiB minimum and 256\,MiB maximum, trading additional chunks and merges for a lower temporary peak.
-Every experiment used the defaults except six cells of the memory-feasibility sweep, which used the lower-peak setting (Section~\ref{sup:config}).
-
-
-\section{Validation specification, scope and sensitivity}\label{sup:validation}
-\subsection{Queries and normalization}
-Readable output need not be faithful output. The validation layer (\texttt{--validate}) therefore asks the graph thirteen standard VCF inspection and quality-control questions \cite{vcf_intro,BCFtools,cyvcf2_2017} in SPARQL, and derives each expected answer from the source VCF with cyvcf2, using \texttt{bcftools query} for exact FILTER text (Table~\ref{tab:semantic-queries}). Fourteen graph-integrity preflight queries run first: blank nodes, empty values, untyped missing tokens, the POS datatype, the cardinality of core record properties, the sample representation, the sample and genotype inventory, and the triple count.
-
-\begin{table}[!htbp]
-\caption{The thirteen-query equivalence workload. Each SPARQL result is normalized and must equal a result derived from the source VCF by the separate parser-based path (Q4's exact FILTER text via \texttt{bcftools query}). Ti/Tv, call rate and allele frequency are derived only after their underlying counts agree. Q11--Q13 count values in up to 256 buckets keyed on the first byte of SHA-256 over the IRI and values, which detects value changes that preserve ordinary counts but is not a collision-free proof of equality. For Q9, Q10, Q12 and Q13 the expected result follows the selected INFO and sample representations.}\label{tab:semantic-queries}%
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.08}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Query} & \textbf{Result compared, fields and scope} \\
-\midrule
-\multicolumn{2}{@{}l}{\textit{Record level --- every input}} \\
-Q1\enspace Record density & Records per contig and 1-Mb window (\texttt{CHROM}, \texttt{POS}); checks coordinates and integer positions \\
-Q2\enspace Allele shapes & Records per class --- SNV, multiallelic, insertion, deletion, substitution, symbolic/breakend, no ALT (\texttt{REF}, \texttt{ALT}) \\
-Q3\enspace Ti/Tv & Transitions, transversions and biallelic SNVs; single-base A/C/G/T alleles only \\
-Q4\enspace FILTER values & Records per exact FILTER string: \texttt{PASS}, \texttt{.}\ (not applied) or failed codes, combined codes kept whole \\
-\addlinespace
-\multicolumn{2}{@{}l}{\textit{Genotype level --- inputs with sample columns and \texttt{GT}}} \\
-Q5\enspace Genotypes & Calls per sample and genotype class, including missing, haploid and other-ploidy calls; phased and unphased alike \\
-Q6\enspace Allele counts & Sites per recomputed (AC, AN) pair; single-ALT sites with complete 0/1 haploid or diploid calls \\
-\addlinespace
-\multicolumn{2}{@{}l}{\textit{Metadata and graph structure}} \\
-Q7\enspace File metadata & Exact \texttt{fileformat}, \texttt{reference} and \texttt{source} strings, with markers for absent declarations \\
-Q8\enspace Header census & \texttt{\#\#} lines per header key (INFO, FORMAT, FILTER, contig, \dots) \\
-Q9\enspace Predicate census & Triples per predicate against the counts expected from the VCF \\
-Q10\enspace Class census & Resources per \texttt{rdf:type} against the expected inventory \\
-\addlinespace
-\multicolumn{2}{@{}l}{\textit{Value preservation --- IRI-bound digests}} \\
-Q11\enspace Record digest & Records per bucket over each record's IRI, \texttt{CHROM}, \texttt{POS}, \texttt{ID}, \texttt{REF}, \texttt{ALT}, \texttt{QUAL}, \texttt{FILTER} and raw INFO \\
-Q12\enspace INFO digest & Structured INFO values per bucket, bound to record and key; empty in raw-only INFO mode \\
-Q13\enspace FORMAT digest & FORMAT values (expanded) or sample-ordered vectors (condensed) per bucket, beyond \texttt{GT} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Results must be exactly equal after normalization: strings for Q7 and integer counts elsewhere, including the digest buckets of Q11--Q13, which extend coverage to QUAL, INFO and FORMAT without guaranteeing value-by-value equality. The comparator keeps contig and sample identifiers, distinguishes \texttt{PASS} from \texttt{.}, and reports missing, extra and differing rows. Q5--Q6 apply only when the source has a \texttt{GT} field, and each input is validated only against its own graph, so inputs on different assemblies are never compared.
-
-The same SPARQL text runs under four engines: QLever \cite{qlever_2017}, the default; Comunica over N-Triples (\nolinkurl{@comunica/query-sparql-file}) \cite{Taelman2018Comunica,comunica_file_docs_2026}; Comunica over HDT (\nolinkurl{@comunica/query-sparql-hdt}) \cite{comunica_hdt_docs_2026}; and the DuckDB-backed COTTAS engine \cite{comunica_cottas_2026}. Any engine can be pointed at any artifact, and \texttt{--validation-engine all} runs all four and records whether they agree. The layer also applies the vocabulary's SHACL shapes in three profiles. The default profile checks cardinality and datatypes; the other two check uniqueness and value agreement, and are costlier (Section~\ref{M-subsec3.5}).
-
-What a passing comparison establishes is agreement of the specified summaries: a SPARQL engine and a VCF parser derive the same deterministic summaries from two representations of the same source. It does not establish that the source calls are biologically correct, normalized or concordant with a truth set.
-
-
-\subsection{Scope of the campaigns}
-The base campaign attempted validation 78 times and completed 76. It yielded 984 applicable query comparisons with no mismatches and four not-applicable genotype comparisons on the empty-input artifacts. Its paired checks ran on fixtures and slices up to 17.1M triples. The two malformed sites-only validations did not complete and are not successful comparisons.
-
-The whole HG005 graph was decode/count checked in the corpus campaign. Separately, the retrieval experiment compared all thirteen QLever query answers at 657,425,805 triples with the parser, without SHACL (Table~\ref{tab:scale}). Those comparisons are not included in the 984 denominator. The 58.2M-triple consumer-genome follow-up is another separate run; it has three summary mismatches and must not be counted as a validation pass.
-
-The default shape profile ran in 58 base validations, on graphs up to 0.96M triples, with no violations and 0.8--396.8\,s per run. Repeated conversion produced 17,098,746 triples with identical SHA-256 and no duplicate lines. A packaging round trip reproduced the digest and re-indexing left the artifact unchanged. These assess deterministic output under the tested conditions, not reproducibility of every later pre-release build.
-\begin{table}[!htbp]
-\caption{Validation evidence, grouped by the question each layer answers. Counts are pass/total, derived from archived reports. Sensitivity is measured on the defined fault set, not estimated for arbitrary faults.}\label{tab:validation-complete}%
-\centering
-\scriptsize
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.05}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.28\textwidth} r >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Check} & \textbf{Passed} & \textbf{What it establishes} \\
-\midrule
-\multicolumn{3}{@{}l}{\itshape Is the graph faithful to the source VCF?}\\
-N-Triples syntax (\texttt{rapper}) & 76/76 & The serialization parses \\
-Paired SPARQL vs cyvcf2 (Q1--Q13) & 984/984\rlap{$^{\dagger}$} & Exact equality of normalized query results \\
-Cross-check invariants & 1{,}144/1{,}144 & E.g.\ transitions $+$ transversions $=$ biallelic SNVs \\
-Cross-engine agreement & 25/25 & Four-engine validations; 51 other completions used one engine \\
-Native decode and triple count & 152/152 & 118 HDT, 34 COTTAS; source $=$ decoded \\
-\addlinespace
-\multicolumn{3}{@{}l}{\itshape Is the pipeline reproducible?}\\
-Determinism, two runs & 1/1 & Identical SHA-256; 17{,}098{,}746 triples, 0 duplicate lines \\
-Compress and decompress & 1/1 & Lossless through the packaging path \\
-Index idempotence & 1/1 & Re-indexing does not perturb the artifact \\
-\addlinespace
-\multicolumn{3}{@{}l}{\itshape Would a fault actually be noticed?}\\
-Injected faults caught, queries only & 96/113 \;(0.850) & 17 faults, spanning 10 mutation classes, are invisible to the queries \\
-\quad with the default shape profile & 96/113 \;(0.850) & Cardinality and datatypes catch none of the 17 \\
-\quad with all three shape profiles & \textbf{113/113} \;(1.000) & Uniqueness and value agreement catch all 17; both controls still pass \\
-SHACL shapes, default profile & 58/58 & Cardinality and datatype constraints, 0 violations \\
-\bottomrule
-\end{tabularx}
-\vspace{2pt}
-{\footnotesize $^{\dagger}$Four further comparisons were verified as not applicable and are excluded from the 984 applicable comparisons.}
-\end{table}
-\textbf{A real genome.} On the first 250,000 records of the \texttt{NG131FQA1I} genome, 58.2M triples and 3.4 times the largest graph validated in the campaign, ten of the thirteen comparisons were exactly equal, but the layer reported a mismatch. Direct diagnostic comparison found every record field equal to the VCF text across all 250,000 records. This narrows the cause of the observed summary failures; it is not a proof of every emitted relationship. The observed causes concern the validation layer and its normalization assumptions. The censuses (Q9, Q10) found 30,910 phase sets, emitted for GATK's \texttt{PS} field, that the oracle does not yet model; the tool documents the same gap for structural-variant events, gVCF blocks and local alleles. The record digest (Q11) differed because QLever returns a decimal in canonical form: the 1,998 records whose QUAL has trailing zeros hash differently, and recomputing the oracle's buckets with canonical QUAL reproduces QLever's exactly. A first attempt with the default shapes exhausted the host's memory (Section~\ref{sup:issues}), so this run is without them.
-
-\textbf{Sensitivity.} The mutation experiment injected 113 targeted corruptions --- wrong allele, wrong coordinate, wrong filter token, wrong file metadata, blank nodes, flipped phasing, corrupted sample index --- and the layer with all three shape profiles detected all of them. The two halves contribute differently. The comparison queries alone detect 96 (0.850). The other 17 fall into ten classes the queries structurally cannot see: allele kind and allele value are counted but never compared with REF and ALT, header attribute values and the derived contig count are counted but not read, the joins from a FORMAT value item to its allele and from a field ID to its declaring header line are counted but not checked, and record index, sample index, called allele and phasing status have no oracle. The full shape set catches every one, and both unmutated controls pass in both profiles, so the shapes are not simply rejecting conformant graphs. But the default profile, which checks cardinality and datatypes, catches none of the 17: with it alone the layer detects 96 of 113, exactly the queries' score. The two profiles that do catch them check value agreement and uniqueness, self-join the graph, and cost 33.7\,s and 73.2\,s respectively on a 2{,}000-triple graph against 1.7\,s for the default. v3.1.0 therefore applies the default automatically to inputs up to 512\,MiB, and the full set only when requested (\texttt{--shacl-profile full}) and only to inputs up to 16\,MiB, so the default configuration does not detect these additional faults in the tested set. The guards used different size measures in different modes (Section~\ref{sup:issues}); the full-profile result must not be extrapolated to larger graphs on which those profiles were not run.
-
-\textbf{Real defects.} During development, testing caught three defects that the record counts alone could not show: two in the conversion, caught by the validation layer, and one in the policy plug-in, caught by its own check. A header-only file omitted the samples its header declares, which the predicate and class censuses (Q9, Q10) detected. Expanded genotypes referenced allele resources that a raw-INFO conversion never emitted: a 1,000-record test held 1,972 such references, which the queries counted without following and the shapes reported as 5,916 violations. And in the policy plug-in, a withdrawn file's header remained in every release view although every record decision was correct; the plug-in's check caught it, and it is why withholding is defined by ownership. All three are fixed. Section~\ref{sup:issues} records these and the measurement and reporting defects testing found.
-
-\textbf{Inputs and encodings.} Every declared version from VCFv4.1 to v4.5, and an undeclared one, converted; v4.4 and v4.5 fields such as local alleles are carried, not interpreted. Nine of eleven awkward inputs converted and validated, a truncated gzip was refused with a clear diagnostic, and a sites-only fixture could not be validated because bcftools rejects it (Section~\ref{sup:inputs}). Every configuration value validated, shapes included, and all four engines agreed on both profiles, both storage modes and all three artifacts in sixteen validations (Section~\ref{sup:config}).
-
-
-\subsection{Oracle independence and interpretation limits}
-The parser and graph routes read separate representations, but not all assumptions are independent. Predicate and class expectations must encode the converter's selected profile; allele-count checks share the biological counting definition; and both routes share case definitions and preprocessing in the use case. The missing-allele defect required changes to both the emitter and its census expectation, showing how an incorrect dependency can be shared. Direct VCF-text comparison and structural constraints provide complementary checks, not an infallible oracle.
-
-The Q11--Q13 histograms use finite hash buckets and can miss changes that preserve a histogram. Counts after decoding establish count agreement, not complete RDF-term identity. A passing shape result establishes only its enabled constraints. The full 113-fault detection result applies to the constructed set with all profiles; the default configuration's observed detection remains 96/113. The default-profile follow-up is completed work, not an outstanding experiment.
-
-\section{Linked-query protocol, policies and detailed results}\label{sup:usecase}
-\subsection{Linksets and release evaluation}
-Two host-side commands extend a converted graph without changing it.
-
-\textbf{Linking.} \texttt{vcf-rdfizer-link} writes a separate N-Triples linkset, so linking never alters the converted graph or its validation. A linker is declared in Turtle at one of three tiers. \emph{Tier~1} rewrites tokens the file already holds, such as rsIDs, into IRIs, without checking them. \emph{Tier~2} joins against a reference pinned by digest and assembly. The \texttt{spdi} linker trims each ALT allele to its minimal form and emits its NCBI SPDI expression \cite{holmes2020spdi} on the RefSeq accession as an IRI, so eligible, equivalently normalized alleles can share an IRI across contig aliases such as \texttt{17} and \texttt{chr17}; \texttt{ensembl-genes-grch38} links each call to the Ensembl~116 genes its REF span overlaps, with contig aliases. \emph{Tier~3} confirms identifiers against a live service through a short Python resolver: requests are batched under a declared rate and budget, responses are cached with digests, and any failure fails the linker closed, publishing nothing. \texttt{rsid-myvariant} confirms rsIDs against MyVariant.info \cite{xin2016myvariant}. When the input is RDF, the join fields are read with SPARQL, from an endpoint or from a temporary Oxigraph store.
-
-\textbf{Policy.} \texttt{vcf-rdfizer-policy} attaches ODRL policies \cite{odrl_2018} to graphs and derives one release view per request in three generic steps, each configured in Turtle rather than code. A rule's target is a resource, or a selection computed by a declared SPARQL selector; region, variant and linked selectors ship with the tool, and others can be declared in a policy file. A profile's ownership rule states what a withheld resource takes with it: under the VCF Core profile, withholding a record withholds its call, alleles and sample calls, and withholding a file withholds its header too. The implemented ODRL profile then decides, with deny winning and anything no permission covers withheld; purposes come from any RDFS or SKOS vocabulary, by default a subset of the GA4GH Data Use Ontology (DUO) \cite{lawson2021duo}. Selector parameters are injected as an inline \texttt{VALUES} block opening the query's outer group, because SPARQL joins a trailing \texttt{VALUES} clause only after the group is evaluated: a region selector written that way selects nothing, and a prohibition on the region fails open. Version~0.2.0 evaluates against a SPARQL endpoint and streams each view from the N-Triples, byte for byte and in input order. Every view is then checked:
-\begin{itemize}
-\item its policy digest matches;
-\item nothing a binding prohibition owns is present, and nothing lacks a permission;
-\item no reference dangles, a question put to a second endpoint that serves the view;
-\item its records equal an oracle that evaluates the same policy over a graph built directly from the VCF text, so an extra record is a leak and a missing one over-withholding.
-\end{itemize}
-The plug-in provides governed release, not anonymization: a released genotype remains identifying, views keep the original IRIs, and obligations are recorded but not enforced.
-
-
-
-\subsection{Case definition and conventional comparator}
-To test linking and policy on real data, we answered one clinically recognizable question over real genomes with two downstream implementations that share preprocessing and the case definition: \emph{which participant--variant--gene matches connect an observed allele to a ClinVar classification in the 81-gene ACMG secondary-findings set, SF v3.2 \cite{miller2023acmg}, and what may each of three requesters see?}
-The RDF route converts every input with VCF-RDFizer, links each with the \texttt{spdi} and \texttt{ensembl-genes-grch38} linkers, evaluates the policies with \texttt{vcf-rdfizer-policy} against QLever \cite{qlever_2017}, and asks one SPARQL query per requester over that requester's view and ClinVar.
-The conventional route renames contigs to ClinVar's naming, annotates each genome with ClinVar's \texttt{CLNSIG}, \texttt{CLNREVSTAT} and \texttt{GENEINFO} using bcftools \cite{BCFtools}, and applies the consents in a Python script.
-Both read one case definition: the question, the ClinVar review statuses that count (one star or more), and the consents.
-A gate compares the two match sets for every requester, keyed by participant, gene, contig, position and alleles, and no timing is reported unless they are identical.
-
-The genomic data are real and public; the consents are simulated, and every output says so. Each file carries a consent stated as DUO purposes; a withdrawal is a prohibition, so deny wins. One cohort rule releases records in the list's 28 cancer-predisposition genes only for clinical care. The requesters are a clinical genetics laboratory (clinical care, CC), a cardiovascular consortium (disease-specific research, DS) and a biobank researcher (general research use, GRU).
-
-Three arms separate integration, breadth and scale. Arm~1 is five genomes from three sources: two Personal Genome Project genomes \cite{personal_genome_proj}, HG004 and HG005 from Genome in a Bottle \cite{giab_v421_2022}, and an HG002 precisionFDA submission whose contigs are named \texttt{1}, \texttt{2},~\ldots\ rather than \texttt{chr1}. Arm~2 is 104 unrelated participants of the 1000 Genomes high-coverage call set \cite{byrska2022highcoverage}, four from each of its 26 populations, with seeded simulated consents, four of them withdrawn. Arms~1 and~2 are restricted to the 81 genes' spans (7.1\,Mb, Ensembl 116) and normalized with bcftools (left-aligned, multi-allelic records split). Arm~2 drops the panel's INFO fields, which describe all 3,202 panel samples rather than the participant and made up 93\% of each participant's triples; the frequencies the question uses are recorded once, in a sites-only file. Arm~3 is HG005's whole genome through the same pipeline, so its answer must equal its arm-1 answer. ClinVar's 2026-09-13 release \cite{clinvar_vcf} is restricted to the same spans.
-
-\textbf{Effort protocol.} On arm~1 we counted the lines each route's author writes, and the lines four changes add and remove: a withdrawal, a requester with a new purpose, a cardiac panel in place of the cancer genes, and a rule on one variant. Each change was applied to both routes as a real edit. Both edited routes then had to release the same records to every requester on a fixture with records in a cancer gene, in a cardiac gene, in neither, and at HFE C282Y.
-
-
-The fixed ACMG SF v3.2 gene set is used as a recognizable research query domain. Retrieving a ClinVar classification in that set does not apply all inheritance-, gene- and variant-specific criteria for secondary-findings reporting \cite{miller2023acmg}. The demonstration also does not validate consent, authenticate requesters or prevent access outside the release evaluator. Those are separate clinical and deployment requirements.
-
-\subsection{Outputs, stage costs and applied changes}
-
-
-
-\textbf{Linking results.} The SPDI linker emitted links for eligible explicit alleles under the case's reference and normalization assumptions (Table~\ref{tab:usecase-linking}). A seven-variant ClinVar \textit{BRCA1} check found agreement with NCBI's expressions outside repeats, while repeat-region expressions differed because minimal trimming and NCBI's contextual representation use different spans. This is not a demonstration of canonical identity. The live tier confirmed 9,223 of 9,951 and 9,479 of 10,316 PGP rsID links in 21 MyVariant.info requests. All three unconfirmed rsIDs inspected had merged identifiers; the other unconfirmed cases were not established by those checks. The tier-3 Ensembl variation linker met a persistent HTTP 500 from Ensembl's REST service after three retries and published no partial linkset.
-
-\begin{table}[!htbp]
-\caption{Linking on the use case's real inputs: calls linked, summed over the arm's files. SPDI eligibility in this implementation requires explicit alleles. Symbolic alleles are excluded from that linker. Arm~1's gene count exceeds its SPDI count by 19 HG002 calls that the SPDI linker skips as ineligible but that still overlap a gene.}\label{tab:usecase-linking}%
-\centering
-\scriptsize
-\renewcommand{\arraystretch}{0.95}
-\setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.2\textwidth} r r r r >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Linker (tier)} & \textbf{Arm 1} & \textbf{Arm 2} & \textbf{Arm 3} & \textbf{ClinVar} & \textbf{Result} \\
-\midrule
-\texttt{spdi} (2) & 51{,}302 & 1{,}149{,}198 & 3{,}887{,}200 & 331{,}413 & Every eligible call; joins genomes to ClinVar across contig names; 87\,s for the whole genome \\
-\texttt{ensembl-genes-}\allowbreak\texttt{grch38} (2) & 51{,}321 & 1{,}149{,}198 & 1{,}704{,}921 & --- & Each file reloads the 108\,MB GFF3, 19 of arm~2's 22\,min of linking \\
-\texttt{rsid-dbsnp} (1) & 20{,}267 & --- & --- & --- & The PGP genomes' rsIDs, rewritten unchecked \\
-\texttt{rsid-myvariant} (3) & 18{,}702 & --- & --- & --- & 92--93\% of the tier-1 links confirmed in 21 requests; the three unconfirmed rsIDs checked had been merged \\
-\texttt{rsid-ensembl} (3) & 0 & --- & --- & --- & A persistent HTTP 500; failed closed, no partial linkset \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textbf{Answers.} The two routes returned identical requester-specific match sets and all release checks passed. P/LP-classified matches numbered zero in arms 1 and 3 and eight in arm 2. These are not clinically adjudicated reportable findings. Whole HG005 returned the same 1,496 tuples as its restricted arm-1 input. The cohort's additional AF query joins a separate 68,635-site graph (6.5M triples) through SPDI identifiers; it replaces approximately 857M triples of repeated panel-level INFO by factoring information once, not by compressing equivalent graph structure. The baseline's position-and-allele lookup agrees for every requester.
-
-\begin{table}[!htbp]
-\caption{Participant--variant--gene matches each requester may receive, identical between the RDF route and the bcftools route in every cell: all (no policy), clinical care (CC), the cardiovascular disease-specific study (DS) and the biobank's general research use (GRU). Triples are the genomes' graphs, before links. \emph{Rare}: matches to variants with panel $\mathrm{AF}<0.01$, a join across the genome, ClinVar and the panel's frequency file.}\label{tab:usecase-full}%
-\centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}l r r r r r r r@{}}
-\toprule
-\textbf{Arm} & \textbf{Files} & \textbf{Records} & \textbf{Triples} & \textbf{All} & \textbf{CC} & \textbf{DS} & \textbf{GRU} \\
-\midrule
-1: five genomes & 5 & 51{,}386 & 9.0M & 7{,}211 & 2{,}878 & 2{,}988 & 1{,}987 \\
-2: cohort & 104 & 1{,}150{,}288 & 67.8M & 173{,}102 & 63{,}529 & 92{,}870 & 48{,}207 \\
-\quad rare in the panel & & & & 4{,}154 & 1{,}621 & 2{,}198 & 1{,}144 \\
-3: whole genome & 1 & 3{,}887{,}810 & 662.4M & 1{,}496 & 1{,}496 & 0 & 0 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Cost.} Query times differ much less than graph sizes in this case (Table~\ref{tab:usecase-cost-full}): a cold-cache match query took 172--181\,s in arm~1, 176--202\,s in arm~2 and 205--209\,s over arm~3's 701M-triple index, consistent with a dominant contribution from the fixed ClinVar join, rather than evidence of generally scale-independent querying. Building the index is what scales, from about 2 minutes to 45. Governance was first bound by Python rather than QLever: in arm~2 each view took 20--27\,min to write, because every line was checked against each of 109 rules. Merging the binding rules' selections once and filtering the inputs in parallel cut that to 131--165\,s, and resolving each term's ancestors once cut it to 59--80\,s, with byte-identical views. Arm~3's clinical view, every record released, streamed in 38\,min on two workers, one per input file. Arm~3 peaked at 13.1\,GB of memory and 34\,GB of disk.
-
-\begin{table}[!htbp]
-\caption{Cost of the RDF route per arm, on 8-core, 33.6\,GB machines. Triples are those in the unrestricted query's index: the genomes, ClinVar and all links. Convert and link are totals over the arm's files. View and check are per requester: writing the view, then checking it, which for a non-empty view includes building its index. Index build and query are per requester too: three cold runs of the match query over that requester's view, ClinVar and the links, the cache cleared before each, after the index is built.}\label{tab:usecase-cost-full}%
-\centering
-\scriptsize
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{@{}l r r r r r r r@{}}
-\toprule
-\textbf{Arm} & \textbf{Triples} & \textbf{Convert} & \textbf{Link} & \textbf{View} & \textbf{Check} & \textbf{Index build} & \textbf{Query} \\
-\midrule
-1 & 42.5M & 3.3\,min & 1.4\,min & 32--39\,s & 21--37\,s & 2.2\,min & 172--181\,s \\
-2 & 110.3M & 31\,min & 22\,min & 59--80\,s & 3--5\,min & 2.4--3.3\,min & 176--202\,s \\
-3 (clinical) & 701.5M & 54\,min & 8.0\,min & 38\,min & 68\,min & 45\,min & 205--209\,s \\
-3 (empty views) & & & & 28\,min & 1\,min & 2.2\,min & $<$1\,s \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Effort.} The RDF route's rules are 72 lines, 41 of policy and 31 of query, against 131 lines of script; its linkers, selectors and profile ship with the tool (Table~\ref{tab:effort}). Three of the four changes are data edits of similar size in both routes, because the baseline was written to read its rules from a table. They differ where a change introduces a new kind of rule. Withholding one named variant except for clinical care needs three new lines of code in the baseline, and six lines of policy without modifying the RDF policy engine. Stated on the variant's SPDI identity, the rule also holds for HG002, whose file writes the contig as \texttt{6}; a selector matching the contig string would have silently missed it. All four edited routes still agreed on the fixture.
-
-\begin{table}[!htbp]
-\caption{What each route's author writes (arm~1) and the lines four changes add and remove. Blank lines, comments and docstrings are not counted. After each change both routes were re-run on a fixture and released the same records to every requester. POA is DUO's population-origins-or-ancestry purpose; it sits outside general research use, so a GRU consent does not cover it.}\label{tab:effort}%
-\centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
-\toprule
-& \textbf{RDF route} & \textbf{bcftools route} \\
-\midrule
-Rules written & 72: policy 41, query 31 & 131: shell 33, Python 98 \\
-Data written & 28 gene IRIs; the query's gene list (1 line) & consent and requester tables (100 lines); gene list (81) \\
-Linkers, selectors, profile & shipped with the tool & --- \\
-\midrule
-A participant withdraws & policy $+2/-1$ & data $+2/-1$ \\
-A requester with a new purpose (POA) & purpose vocabulary $+2$ & data $+4$ \\
-The panel becomes 40 cardiac genes & policy $+40/-28$ (gene IRIs) & data $+41/-29$ (gene symbols) \\
-One variant (HFE C282Y) clinical care only & policy $+6$, no engine change & code $+3$, data $+9/-1$ \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-
-The whole-genome arm permits every genomic record for clinical care and none for the other requesters. It does not establish selective, non-empty release at whole-genome scale or masking within one multi-sample VCF. Exact lines of code are descriptive artifacts of these implementations; no participants were observed using the software, and no usability or maintenance advantage is measured.
-
-\section{Conversion, storage and retrieval measurements}\label{sup:measurements}
-\subsection{Record and sample ladders; artifact accounting}
-\textbf{Records.} On the \texttt{HG005\_GRCh38} ladder (Figure~\ref{fig:scaling}a), triple production is approximately proportional to records (fitted exponent $+0.999$, 95\% CI $[+0.991,+1.007]$), at a constant 170.9--171.9 triples per record. Final artifact bytes scale at $+1.033$, peak workspace at $+1.025$ and end-to-end wall time at $+1.063$ (40.7\,s, 423.7\,s and 5{,}476.0\,s at 10\,k, 100\,k and 1\,M records; replicate sd $\leq 13.5$\,s). Peak resident memory of the mapping stage stays between 1.0 and 1.7\,GB across the hundredfold change: the measured mapping stage is memory-bounded over this ladder; this does not establish bounded memory for representation builders, validators or query engines. The RMLStreamer mapping stage accounts for only 12.2--41.4\,s of those runs; building the queryable representations dominates.
-
-\textbf{Samples.} Re-emitting the same 10{,}000 records against 1 to 2{,}504 samples separates the profiles as Equation~\ref{eq:sample-profile-scaling} predicts (Figure~\ref{M-fig:samples}). Both series are exactly linear: $1{,}359{,}498 + 250{,}005\,S$ triples expanded (25 per sample per record, plus 5 per sample of declarations; the fitted exponent of $+0.795$ reflects the fixed record layer at low $S$) and $1{,}439{,}498 + 5\,S$ condensed, so at 2{,}504 samples the expanded graph has 627{,}372{,}018 triples, $432\times$ the condensed one. Triple counts mislead about size. Condensed values move into vector literals, so the condensed HDT grows $5.8\times$ (10.2 to 59.2\,MB) while its triples grow 0.9\%, and the byte gap at 2{,}504 samples is $322\times$ in gzip-framed N-Triples and $69\times$ in HDT. The condensed HDT is smaller than the uncompressed VCF only from 256 samples (10.2 against 1.5\,MB at one sample; 59.2 against 101.6\,MB at 2{,}504); the expanded HDT is $40\times$ the VCF (4.10\,GB) and took 15{,}269\,s to build end to end, against 250\,s condensed. Extrapolated to the full 1{,}812{,}841-record call set, the expanded profile would need roughly 2\,TB against a 189\,GB volume, so the tool refuses such a run and names the condensed profile.
-
-
-
-
-\textbf{Storage mode.} Plain and space-optimized storage give identical triples and the same final artifacts, to within one 4\,kB filesystem block, and differ only in transient disk (Figure~\ref{fig:scaling}b). Space-optimized mode cuts peak host workspace by $9.19\times$ (2.98\,GB to 0.325\,GB) on the 100\,k-record input and by $7.68\times$ (43.40\,GB to 5.65\,GB) on \texttt{test-larger}, a 1{,}155{,}741-record, single-sample prefix of the NG131FQA1I genome, at a time cost of $+5.2\%$ and $+3.2\%$. On the replicated input the mapping stage is equivalent within a $\pm10\%$ margin fixed before the run ($+0.0\%$, 90\% bootstrap CI $[-1.9\%,+0.4\%]$).
-
-\textbf{Representations.} Across the corpus (Figure~\ref{fig:representations}), COTTAS is consistently the smallest artifact: 0.37--0.55$\times$ the stored gzip-framed N-Triples and 0.27--0.37$\times$ the HDT built from the same graph. Uncompressed HDT is \emph{larger} than the gzip-framed N-Triples it was built from, by 1.36--1.82$\times$. COTTAS takes 1.5--3.0$\times$ longer to build than HDT (31{,}230\,s against 20{,}911\,s on the whole \texttt{HG005\_GRCh38}). Peak workspace is 4.7--30.3$\times$ the uncompressed input. The whole genome, 657.4M triples, took 16.07\,h end to end, of which the mapping stage was 146.8\,s and the two representation builds 14.5\,h; the retained alternatives and HDT index (HDT 4.63\,GB, its index 4.74\,GB, COTTAS 1.50\,GB) occupy a measured 10.88\,GB output tree, $78\times$ the 139\,MB compressed download, not a minimal required RDF footprint, and the gzip-framed N-Triples alone 2.89\,GB.
-
-
-
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{fig-representations.pdf}
-\caption{\textbf{Queryable representations in the corpus experiment,} one run per completed input, ordered by graph size (triples after each label). Eight files use their first 250{,}000 records with headers retained; \texttt{HG005\_GRCh38} is processed whole. The 2{,}504-sample 1000 Genomes cell is guard-skipped in expanded mode. Dataset labels are abbreviated; full names are in Table~\ref{tab:test-corpus}.
-(a)~Artifact size relative to the stored gzip-framed N-Triples that space-optimized mode writes.
-(b)~Build time of each representation from the same graph, on a log scale. Every artifact passed the tool's native streamed decode and source-versus-decoded triple-count check.}\label{fig:representations}
-\end{figure}
-\subsection{Costs with different meanings}
-The 16.07-hour v3.1.0 corpus workflow built both HDT and COTTAS from the 657.4M-triple graph. Its 146.8-second RML mapping stage is not total VCF-to-RDF conversion: emitters and other stages are outside that number. The 53-minute v3.2.0 conversion of the normalized HG005 genome (54\,min with ClinVar) produced 662.4M genomic triples and is followed by separate linking, release, checking and indexing stages. The two timings differ in version, inputs and work performed; subtracting them does not estimate a speed-up.
-
-A gzip-framed N-Triples archive retains the RDF stream (2.89\,GB for the corpus whole genome). A QLever workflow additionally needs its own built index and loading workspace. An HDT or COTTAS archive is an alternative representation with separate construction and native access paths. Retaining both plus an HDT index explains the reported 10.88\,GB total; it is not the size required for every deployment. The 10.88\,GB is the measured output tree (10,879,410,176 bytes); the rounded components sum to 10.87\,GB.
-
-\subsection{Retrieval paths and conventional baselines}
-\textbf{Engine and physical input path.} On the 17.1M-triple graph, QLever's thirteen-question totals from N-Triples, HDT and COTTAS differ by under 1\% (17.0--17.1\,s), and no single question by more than 0.07\,s (Figure~\ref{M-fig:retrieval}c). On the 0.96M-triple graph the thirteen questions cost a mean of 1.1\,s under QLever, 23.4\,s under Comunica, 38.2\,s under the COTTAS engine and 45.1\,s under the HDT-backed engine (Figure~\ref{M-fig:retrieval}b), all four agreeing in every run.
-
-\textbf{Against a VCF parser, the answer depends on the workload.} For a \emph{single} question on the 17.1M-triple graph, cyvcf2 must scan the VCF whichever question it is, at 11.5\,s (12.3\,s for the three sample-level questions), while QLever answers in 0.005--4.62\,s once its index is built: $2.5\times$ to $2300\times$ faster (Figure~\ref{M-fig:retrieval}a). That index takes 22.8\,s, so the parser is faster for the tested individual cold-start questions. For the \emph{whole} thirteen-question batch, cyvcf2 answers everything in one 12.4\,s pass, against 17.1\,s of QLever query time plus the 22.8\,s index.
-
-
-
-
-
-\textbf{Large-graph retrieval in the tested workload.} The thirteen questions cost 1.13, 1.00, 0.96 and 0.97\,s per million triples at 0.96M, 17.1M, 171M and 657M, and the index 1.27--1.35\,s per million above the smallest graph (Table~\ref{tab:scale}; the two larger graphs were queried on a third host of the same specification). On the whole genome they took 634.6\,s after an 868.0\,s index build, replicates within 0.7\%, every answer equal to the parser's. With QLever the input artifact has little effect on the query phase (634.6, 636.3 and 636.6\,s from N-Triples, HDT and COTTAS); only the one-time decode does (179--192, 955--972 and 592--601\,s). Neither Comunica-backed engine completes the workload at 171M triples, even with a 24\,GB heap: each answers five questions, the HDT engine its fifth only at the one-hour per-query ceiling, and then both fail on the sixth, the COTTAS engine unable to allocate. On those five the COTTAS engine is $16.7\times$ faster, where at 0.96M the two were within $1.2\times$, so engine orderings at fixture scale do not predict behavior on a cohort.
-
-
-\textbf{Against indexed VCF access, the two cross over.} Across 11{,}160 regional executions the arms recorded 0 failures and 0 disagreements (Table~\ref{M-tab:regional}). On the 17.1M-triple graph QLever's cost is almost independent of window size, 9.6\,ms at 1\,kb and 11.1\,ms at 10\,Mb, under this workload and query plan. The indexed readers' cost tracks the records a window contains, growing $35.7\times$ for cyvcf2 and $7.5\times$ for bcftools over the same range. At 1\,kb they win, cyvcf2 by $2.9\times$ and bcftools by $2.2\times$; by 1\,Mb QLever has overtaken cyvcf2, and at 10\,Mb it leads both, by $10.6\times$ and $2.9\times$. QLever's index took 23.2\,s against 0.48\,s to bgzip and tabix-index the file, and the in-memory engines cost 896--1005\,ms per 1\,kb window on the smaller graph against QLever's 18.8\,ms, so they were not carried further.
-
-
-
-
-\subsection{Setup amortization is workload-specific}
-For a repeated single-question workload with a positive per-question saving,
+In expanded output, sample calls and their FORMAT values are addressable resources; condensed output stores the corresponding values in sample-ordered vectors.
+Both retain the same file, header, and record context.
+For $V$ records, $S$ samples, and $F$ FORMAT keys in a uniform layout, expanded output adds $VS$ sample calls and $VSF$ FORMAT-value resources, while condensed output adds $V$ matrices and $VF$ vectors.
+Excluding shared structure and assuming bounded ploidy and value arity, their sample-layer triple counts scale as
 \begin{equation}
-N_{\mathrm{break-even}}=\frac{\text{additional RDF setup}}{\text{VCF time per question}-\text{indexed RDF time per question}}.
+\begin{aligned}
+T_{\mathrm{expanded}} &= \mathcal{O}(S+VSF),\\
+T_{\mathrm{condensed}} &= \mathcal{O}(S+VF).
+\end{aligned}
+\label{eq:sample-profile-scaling}
 \end{equation}
-The reported 100,000-record scenario gives $(423.7+22.8)/(11.5-1.32)\simeq44$ questions. The 423.7 seconds includes HDT construction, so this is not the minimal N-Triples-plus-QLever setup. It assumes repeated scans at the measured question mix, not a single parser pass computing all answers. A single batched parser pass over the thirteen questions took 12.4\,s versus 17.1\,s for the indexed SPARQL queries before setup, changing the conclusion. No universal break-even count follows.
+Condensed output still contains all $VSF$ values inside literals, so its bytes grow with sample count even when its repeated triple structure does not.
+Deterministic IRIs identify observations by source file and record position; linking supplies cross-file identity separately.
+GA4GH VRS computed identifiers could complement the evaluated SPDI route, but were not implemented in this study~\cite{ga4gh2025VRS}.
 
-\subsection{Record-scaling figure and complete large-graph outcomes}
+\begin{table}[!htbp]
+\caption{Implemented capabilities and assessed scope. Each status gives release support, then the completed evaluation in italics; unprefixed section references are to the main text.}\label{tab:capabilities}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}\renewcommand{\tabularxcolumn}[1]{m{#1}}%
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}m{0.19\textwidth}>{\raggedright\arraybackslash}m{0.25\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Capability} & \textbf{Status} & \textbf{Notes and limits}\\
+\midrule
+Core fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported (v3.1.0)\newline\textit{Validated} & Q1--Q4 equal in completed comparisons; the broader suite has the follow-up failures reported in the main text (Section~\ref{M-subsec:results-fidelity})\\
+\rowsep
+QUAL & Supported\newline\textit{Q11 record digest} & Typed literal for every record; a missing QUAL is \texttt{vcfc:Null}\\
+\rowsep
+INFO & Supported; structured by default\newline\textit{Q11, Q12 digests} & Typed value per record and key, per-allele items for Number=A/R/G, plus the complete \texttt{infoRaw} string\\
+\rowsep
+FORMAT, sample, and genotype values & Supported\newline\textit{Q5--Q6 exact; Q13 digest} & Half-calls, haploid calls, and ploidy 4/3 survive conversion (Table~\ref{tab:difficult-inputs}); called allele, sample index, and phasing require the deeper shapes for the tested mutations\\
+\rowsep
+Header metadata & Supported\newline\textit{Census queries and shapes} & Header attribute--value agreement requires the deeper shapes, not merely the default profile\\
+\rowsep
+Multi-sample conversion & Supported\newline\textit{Measured, 1--2{,}504 samples} & Condensed adds 5 triples per sample; expanded adds 25 per sample per record (627M triples for 10{,}000 records at 2{,}504 samples), so the whole cohort was converted in neither (Section~\ref{M-subsubsec:results-samples})\\
+\rowsep
+Structural and symbolic alleles & Lexically supported\newline\textit{HGSVC2 converted; Q2 passes on symbolic and breakend fixtures} & ALT remains the source lexical field; allele-value mutations are caught only by the full shape profiles\\
+\rowsep
+Queryable HDT, COTTAS & Supported\newline\textit{Measured} & 118 HDT and 34 COTTAS artifacts, all decode checks passed; COTTAS smallest throughout (Section~\ref{M-subsubsec:results-artifacts})\\
+\rowsep
+Gzip/Brotli packaging & Supported\newline\textit{Covering set (Section~\ref{sec:config})} & Packages must be unpacked before querying; no codec comparison\\
+\rowsep
+Policy annotations & Plug-in v0.2.0 (v3.3.0)\newline\textit{Real genomes, up to a whole genome} & ODRL on files and declared graph selections, DUO purposes; every view checked against a VCF-side oracle; simulated consents, single-sample files; governed release, not anonymization (Section~\ref{M-subsec:results-workflow})\\
+\rowsep
+External linking & SPDI, Ensembl-gene, and MyVariant linkers (v3.3.0)\newline\textit{Real genomes} & SPDI joins eligible alleles under the stated reference and normalization assumptions; tier~3 confirmed 92--93\% of rsID rewrites (Section~\ref{sec:usecase})\\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-Figure~\ref{fig:scaling} and Table~\ref{tab:scale} hold measurements that \main{subsec3.3} reports in the text.
+\subsection{Conversion and incremental representation construction}\label{subsec:model-construction}
+The conversion first derives record, header-line, and file-metadata TSV logical sources, because the implemented RML path does not read VCF directly.
+Turtle-encoded RML mappings executed by RMLStreamer produce the record backbone~\cite{rml_2024,rmlstreamer_2022}.
+Direct emitters add sample structures and content requiring per-value handling, including typed INFO and FORMAT values, QUAL, and header attributes.
+RML contributes nine triples per record, 5.3\% of the HG005 graph; the emitters supply the other 94.7\%.
+For example, the implemented path delegates datatype selection to emitters so that a missing QUAL becomes \texttt{vcfc:Null} rather than a decimal.
+These figures describe this hybrid implementation, not an inherent limitation of every RML-based architecture.
+
+Each part is appended to plain N-Triples or as one member of a concatenated-gzip N-Triples stream, then deleted (main Figure~\ref{M-fig:implementation}).
+Standard gzip readers expose the members as one stream.
+Storage, RDF compression, representation construction, and artifact packaging are separate options: \texttt{-{}-rdf-storage-mode}, \texttt{-{}-rdf-compression}, \texttt{-{}-representations}, and \texttt{-{}-artifact-compression}.
+HDT and COTTAS can therefore be retained independently of additional transport packages.
+
+\paragraph{Chunking and merging.}
+Representation builders read the aggregate incrementally, respecting complete N-Triples lines and keeping at most one uncompressed chunk at a time.
+Each selected builder consumes that chunk before it is deleted.
+HDT parts are produced by \texttt{rdf2hdt} and merged pairwise in a balanced tree with \texttt{hdtc create}, using the logical merge of HDTCat under a fixed memory budget~\cite{hdtcpp,hdt_2013,hdtc_2026,Diefenbach2020HDTCat}.
+Unpaired parts continue to the next round, merge scratch space is removed after use, and only the final sibling \texttt{.hdt.index.v1-1} index is retained.
+COTTAS parts are built with pycottas and merged in one streaming $k$-way pass, avoiding a global in-memory hash table or full-size temporary spill~\cite{pycottas_2026}.
+Version 3.1.0 writes an \texttt{spo} index; v3.2.0 adds other index orders.
+Each operation uses an isolated temporary directory to avoid reusing a DuckDB scratch database.
+Parts, indexes, and builder scratch space still require disk, but a full decompressed duplicate of the aggregate is not created.
+
+Default chunk sizes are a 512\,MiB target, 128\,MiB minimum, and 1\,GiB maximum, controlled by \texttt{-{}-chunk-target-bytes}, \texttt{-{}-chunk-min-bytes}, and \texttt{-{}-chunk-max-bytes}.
+Six memory-feasibility cells instead used 128, 64, and 256\,MiB, respectively, to trade additional chunks for lower peak workspace.
+Construction, merging, final indexing, validation, and packaging are timed separately.
+Before raw RDF is removed, each artifact is decoded with its native reader and its triple count compared with the source; a mismatch fails the run.
+This checks decoding and counts, not complete RDF-term equality.
+The native COTTAS query path uses a DuckDB-backed Comunica engine over its Parquet tables~\cite{comunica_cottas_2026}.
+QLever instead decodes an input artifact and builds its own index, so its query timings do not measure native compressed-format access.
+
+\section{Validation specification, scope, and sensitivity}\label{sec:validation}
+\subsection{Queries, normalization, and engines}\label{subsec:validation-queries}
+The validation layer compares thirteen inspection queries with answers derived from the source VCF using cyvcf2 and exact FILTER text from \texttt{bcftools query}~\cite{vcf_intro,BCFtools,cyvcf2_2017}.
+Table~\ref{tab:queries} defines the fields and summaries compared.
+Fourteen preflight queries first inspect blank nodes, empty values, missing tokens, POS typing, core-property cardinality, sample representation, sample/genotype inventories, and triple counts.
+
+\begin{table}[!htbp]
+\caption{The thirteen source-comparison queries. Each normalized SPARQL result must equal its parser-derived counterpart; Q4 uses exact bcftools FILTER text. Ti/Tv, call rate, and allele frequency are derived after their counts agree. Q11--Q13 compare hash-bucket summaries; Q9, Q10, Q12, and Q13 depend on the selected representations.}\label{tab:queries}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l l >{\raggedright\arraybackslash}X@{}}
+\toprule
+ & \textbf{Query} & \textbf{Result compared, fields, and scope}\\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Record level: every input}}\\
+Q1 & Record density & Records per contig and 1-Mb window (\texttt{CHROM}, \texttt{POS}); checks coordinates and integer positions\\
+Q2 & Allele shapes & Records per class: SNV, multiallelic, insertion, deletion, substitution, symbolic/breakend, no ALT (\texttt{REF}, \texttt{ALT})\\
+Q3 & Ti/Tv & Transitions, transversions, and biallelic SNVs; single-base A/C/G/T alleles only\\
+Q4 & FILTER values & Records per exact FILTER string: \texttt{PASS}, \texttt{.}\ (not applied), or failed codes, combined codes kept whole\\
+\addlinespace[3pt]
+\multicolumn{3}{@{}l}{\textit{Genotype level: inputs with sample columns and \texttt{GT}}}\\
+Q5 & Genotypes & Calls per sample and genotype class, including missing, haploid, and other-ploidy calls; phased and unphased alike\\
+Q6 & Allele counts & Sites per recomputed (AC, AN) pair; single-ALT sites with complete 0/1 haploid or diploid calls\\
+\addlinespace[3pt]
+\multicolumn{3}{@{}l}{\textit{Metadata and graph structure}}\\
+Q7 & File metadata & Exact \texttt{fileformat}, \texttt{reference}, and \texttt{source} strings, with markers for absent declarations\\
+Q8 & Header census & \texttt{\#\#} lines per header key (INFO, FORMAT, FILTER, contig, \dots)\\
+Q9 & Predicate census & Triples per predicate against the counts expected from the VCF\\
+Q10 & Class census & Resources per \texttt{rdf:type} against the expected inventory\\
+\addlinespace[3pt]
+\multicolumn{3}{@{}l}{\textit{Value preservation: IRI-bound digests}}\\
+Q11 & Record digest & Records per bucket over each record's IRI, \texttt{CHROM}, \texttt{POS}, \texttt{ID}, \texttt{REF}, \texttt{ALT}, \texttt{QUAL}, \texttt{FILTER}, and raw INFO\\
+Q12 & INFO digest & Structured INFO values per bucket, bound to record and key; empty in raw-only INFO mode\\
+Q13 & FORMAT digest & FORMAT values (expanded) or sample-ordered vectors (condensed) per bucket, beyond \texttt{GT}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Answers must be exactly equal after normalization: strings for Q7, and integer counts for the other queries.
+Contig and sample identifiers are retained, \texttt{PASS} remains distinct from \texttt{.}, and missing, extra, or differing rows are reported.
+Q5--Q6 require sample data with \texttt{GT}; each source is compared only with its own graph, not with inputs on another assembly.
+Q11--Q13 bind values to record IRIs and count them in 256 buckets using the first byte of SHA-256.
+Changes that preserve the bucket histogram can escape detection, so these checks extend coverage without establishing value-by-value equality.
+
+The same SPARQL runs under QLever, Comunica over N-Triples, Comunica over HDT, and the DuckDB-backed COTTAS engine~\cite{qlever_2017,Taelman2018Comunica,comunica_file_docs_2026,comunica_hdt_docs_2026,comunica_cottas_2026}.
+Artifact decoding permits each engine to be assessed through different input formats; \texttt{-{}-validation-engine all} records four-engine agreement.
+The default SHACL profile checks cardinality and datatypes, and two deeper profiles check uniqueness and value agreement.
+A pass establishes the specified summaries or enabled constraints, not call accuracy, biological interpretation, or completeness of the entire graph.
+
+\subsection{Completed comparisons and follow-up diagnosis}\label{subsec:validation-comparisons}
+The base campaign attempted 78 validations and completed 76, yielding 984 equal applicable query comparisons and four not-applicable genotype comparisons on empty-input artifacts (Table~\ref{tab:validation-results}).
+The paired checks reached 17.1M triples; the two malformed sites-only validations did not complete.
+The default shapes ran in 58 validations up to 0.96M triples, with no violations and durations of 0.8--396.8\,s.
+A repeated conversion produced 17,098,746 triples with identical SHA-256 and no duplicate lines; packaging round trips preserved the digest, and re-indexing left the artifact unchanged.
+These are repeatability checks for the tested configuration, not every later build.
+
+\begin{table}[!htbp]
+\caption{Validation results by assessment layer. Counts report completed checks; fault sensitivity applies only to the defined mutation set and enabled profiles.}\label{tab:validation-results}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Check} & \textbf{Passed} & \textbf{What it establishes}\\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Is the graph faithful to the source VCF?}}\\
+N-Triples syntax (\texttt{rapper}) & 76/76 & The serialization parses\\
+Paired queries vs cyvcf2 (Q1--Q13) & 984/984\rlap{$^{\dagger}$} & Exact equality of normalized query results\\
+Cross-check invariants & 1{,}144/1{,}144 & E.g.\ transitions $+$ transversions $=$ biallelic SNVs\\
+Cross-engine agreement & 25/25 & Four-engine validations; 51 other completions used one engine\\
+Native decode and triple count & 152/152 & 118 HDT, 34 COTTAS; source $=$ decoded\\
+\addlinespace[3pt]
+\multicolumn{3}{@{}l}{\textit{Is the pipeline reproducible?}}\\
+Determinism, two runs & 1/1 & Identical SHA-256; 17{,}098{,}746 triples, 0 duplicate lines\\
+Compress and decompress & 1/1 & Lossless through the packaging path\\
+Index idempotence & 1/1 & Re-indexing does not perturb the artifact\\
+\addlinespace[3pt]
+\multicolumn{3}{@{}l}{\textit{Would a fault actually be noticed?}}\\
+Faults caught, queries only & 96/113 (0.850) & 17 faults, spanning 10 mutation classes, are invisible to the queries\\
+\quad with the default shape profile & 96/113 (0.850) & Cardinality and datatypes catch none of the 17\\
+\quad with all three shape profiles & \textbf{113/113} (1.000) & Uniqueness and value agreement catch all 17; both controls still pass\\
+SHACL shapes, default profile & 58/58 & Cardinality and datatype constraints, 0 violations\\
+\bottomrule
+\end{tabularx}
+\par\smallskip\raggedright\footnotesize $^{\dagger}$Four further comparisons were verified as not applicable and are excluded from the 984 applicable comparisons.
+\end{table}
+
+The separate whole-genome retrieval experiment compared all thirteen answers at 657,425,805 triples without SHACL (Table~\ref{tab:retrieval-scale}).
+It is not included in the 984-comparison denominator.
+The 250,000-record NG131FQA1I follow-up, at 58.2M triples, is also separate and did not pass all comparisons.
+Ten answers agreed; Q9 and Q10 differed because the oracle omitted 30,910 phase sets emitted from \texttt{PS}, and Q11 differed because 1,998 QUAL values with trailing zeros were returned in canonical decimal form by QLever.
+Direct comparison found every record field equal to the source VCF text, and canonicalizing QUAL reproduced QLever's digest buckets exactly.
+This diagnoses the observed failures but does not establish every emitted relationship or a corrected validator release.
+The successful diagnostic run excluded shapes after a first attempt exhausted host memory (Section~\ref{sec:issues}).
+
+\subsection{Fault sensitivity and oracle limitations}\label{subsec:validation-sensitivity}
+The fault set contains 113 targeted corruptions, including changed coordinates, alleles, filters, file metadata, phasing, and sample indices.
+Query comparisons detected 96; adding default shapes did not detect any of the remaining 17.
+Those 17 span ten classes: allele kind, allele value, header attribute values, derived contig count, FORMAT-item-to-allele links, field-to-header links, record index, sample index, called allele, and phasing status.
+All three shape profiles together detected the full set, while both unmutated controls passed under both sample profiles.
+The deeper profiles took 33.7 and 73.2\,s on approximately 2,000 triples, against 1.7\,s for the default profile.
+Thus their detection result is limited to the constructed fault set and small graphs, not an estimated error-detection rate for arbitrary genomic RDF.
+
+Version 3.1.0 applies the default shapes automatically up to a 512\,MiB size gate and permits all profiles when explicitly requested with \texttt{-{}-shacl-profile full}, up to 16\,MiB.
+Different modes used different size measures; the resulting failures and corrections are recorded in Section~\ref{sec:issues}.
+The completed default-profile mutation follow-up confirms 96/113 detection, rather than leaving its sensitivity as an open experiment.
+
+The graph and parser routes read separate representations but share some assumptions.
+Census expectations encode the selected representation, allele counts share a counting definition, and the linked workflow shares preprocessing and its case definition.
+The missing-allele defect required correction of both the emitter and its census expectation, illustrating a shared error (Section~\ref{sec:issues}).
+Direct text comparison and structural checks therefore complement the oracle rather than make it infallible.
+The outstanding expectations for phase sets, structural-variant events, gVCF blocks, and local-allele constructs remain explicit coverage limits.
+
+\section{Linked genomic workflow: protocol, policies, and detailed results}\label{sec:usecase}
+\subsection{Scope, linking, and policy evaluation}\label{subsec:usecase-linksets}
+The linked workflow combines source observations with external evidence and requester-specific release rules, and so tests core prerequisites of the three motivating use cases rather than implementing any of them in full (\main{subsec:eval-workflow}).
+For clinical variant interpretation and reanalysis, it tests joins between source observations and separately maintained clinical assertions and population frequencies at fixed releases; tracking interpretation changes over time and case-level reanalysis would require additional work.
+For pharmacogenomic clinical decision support, it tests the cross-resource linking that would carry source observations into an interpretation and clinical-context layer; medication orders, pharmacogenomic allele calling, and prescribing recommendations would require additional work.
+For consent-aware genomic data reuse, it evaluates proposed uses against simulated purposes, withdrawals, and selection rules; real consent adjudication and authenticated access would require additional work.
+Figure~\ref{fig:linking} traces the implemented path from VCF files to a permitted answer.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{fig-linking-framework.pdf}
+\caption{\textbf{The implemented path from VCF files to a permitted answer.}
+The diagram follows the use-case runner, policy generator, linker definitions, and SPARQL files.
+Linkers read the normalized VCFs directly, and conversion output and links are stored separately; inputs are restricted to the ACMG gene spans except in Arms~3 and~4.
+Policies are enforced when each release view is materialized: requester identity and purpose are evaluation inputs, while the SPARQL query holds the analysis filters.
+The cancer-gene policy uses Ensembl overlap links, whereas the query reports the ACMG genes named in ClinVar's annotation.}\label{fig:linking}
+\end{figure}
+
+Two plug-ins extend the VCF RDF graph without modifying the converted source representation (\main{subsec:extensions}).
+
+\paragraph{Linking.}
+\texttt{vcf-rdfizer-link} executes linkers declared in Turtle, each defining a join strategy, a reference resource, and the relationship it emits, and writes the links to a separate N-Triples linkset with a report of coverage and skipped records.
+Tier~1 rewrites existing tokens, such as rsIDs, into IRIs without confirming them.
+Tier~2 joins a digest- and assembly-pinned reference: \texttt{spdi} minimally trims explicit alleles and uses RefSeq accessions, while \texttt{ensembl-genes-grch38} links calls to Ensembl~116 genes overlapped by their REF span~\cite{holmes2020spdi}.
+Contig aliases are harmonized, but minimal trimming does not establish canonical identity in every repeat context.
+Tier~3 uses a Python resolver to confirm identifiers through a live service, with declared request rates and budgets, digest-recorded cached responses, and no published partial linkset on failure.
+The \texttt{rsid-myvariant} linker uses MyVariant.info~\cite{xin2016myvariant}.
+For RDF inputs, join fields are read through SPARQL from an endpoint or a temporary Oxigraph store.
+
+\paragraph{Policy evaluation.}
+\texttt{vcf-rdfizer-policy} evaluates ODRL rules over files or declared graph selections, including genomic regions, named variants, and gene-linked records~\cite{odrl_2018}.
+Ownership rules in its VCF Core profile define which dependent resources are removed when a file or record is withheld: a withheld record's calls, alleles, and sample calls, and a withheld file's header.
+The profile applies default-deny and deny-overrides semantics; permitted purposes are drawn from a subset of DUO by default and can use other RDFS or SKOS vocabularies~\cite{lawson2021duo}.
+Version~0.2.0 evaluates against an endpoint and materializes each release view by streaming the selected N-Triples in their original order, without rewriting them.
+Release validation requires each release view to match the policy digest, contain no prohibited or unpermitted owned resources, have no dangling references, and return the same records as an oracle derived from the source VCF text.
+The dangling-reference check queries a second endpoint serving the view.
+An extra record is an unintended release, and a missing permitted record is over-withholding.
+Released genotypes retain their source IRIs and are not anonymized; obligations are recorded but not enforced.
+
+Selector parameters are inserted as an inline \texttt{VALUES} block inside the outer query group.
+A trailing \texttt{VALUES} clause is joined after that group, which left the tested region selector empty and its prohibition ineffective.
+The placement correction is necessary for the evaluated rule behavior; it does not replace tests of each newly declared selector.
+
+\subsection{Application question, comparison workflows, and evaluation arms}\label{subsec:usecase-case}
+\paragraph{Application question.}
+The application asks which observed variants in the fixed 81-gene ACMG SF v3.2 secondary-findings set have a corresponding ClinVar classification, which participant and gene are associated with each match, and which matches may be released to each requester~\cite{miller2023acmg}.
+ClinVar variants are included when they have at least one review star, regardless of classification.
+Pathogenic and likely pathogenic (P/LP) matches are reported separately; they are not treated as reportable secondary findings, because the workflow does not evaluate the additional gene-, inheritance-, and variant-specific criteria required for clinical reporting.
+
+\paragraph{RDF and conventional comparison workflows.}
+The RDF workflow links converted genomes to ClinVar and gene resources with the SPDI and Ensembl-gene linkers, materializes a release view for each requester against QLever, and queries each view and ClinVar with SPARQL~\cite{qlever_2017}.
+The conventional workflow harmonizes contig names, annotates \texttt{CLNSIG}, \texttt{CLNREVSTAT}, and \texttt{GENEINFO} with bcftools, and evaluates the same case definition and release conditions in a separate Python implementation~\cite{BCFtools}.
+The two workflows are compared using sorted tuples defined by participant, gene, contig, position, and alleles, which must agree exactly for every requester before timings are reported.
+Counts therefore represent participant--variant--gene matches, not unique participants or independently adjudicated findings.
+Both workflows share preprocessing and the case definition; the downstream linking, policy evaluation, and query implementations are separate.
+
+\paragraph{Evaluation arms and simulated release policies.}
+Each experimental arm is a distinct dataset and policy scenario.
+Arm~1 contains five genome slices from three sources: two Personal Genome Project genomes, the HG004 and HG005 GIAB genomes, and an HG002 precisionFDA submission with unprefixed contig names~\cite{personal_genome_proj,giab_v421_2022}.
+Arm~2 contains 104 unrelated high-coverage 1000 Genomes participants, four from each of 26 populations~\cite{byrska2022highcoverage}.
+Arms~1 and~2 use normalized, split records restricted to the ACMG gene spans (7.1\,Mb of Ensembl~116 spans), with bcftools left-alignment and multiallelic splitting.
+For Arm~2, repeated panel-level INFO describing all 3,202 panel samples is removed from individual participant files, and the required population frequencies are represented once in a separate sites-only graph.
+Arm~3 processes the complete HG005 genome; its result must equal the HG005 result from the restricted Arm~1 input.
+Arm~4 processes the complete NB72462M genome (5,063,417 records), described below.
+All arms use the ClinVar release from 2026-09-13, restricted to the same gene spans~\cite{clinvar_vcf}.
+
+All consent and access conditions are simulated.
+In Arms~1--3, requesters represent clinical care (CC), disease-specific cardiovascular research (DS), and general research use (GRU).
+File-level permissions, participant withdrawals (four in the seeded cohort policies), and a restriction that limits records in 28 cancer-predisposition genes to clinical care determine the resulting release views.
+Arm~3 releases every record for CC and none for DS or GRU.
+Each participant is represented by a single-sample VCF, so no arm assesses selective masking of samples within a multi-sample VCF.
+
+Four additional rule changes test where policy configuration or execution logic changes in each workflow: a withdrawal, a new requester purpose, replacement of the cancer-gene panel with a cardiac panel, and restriction of HFE C282Y.
+After each change, both workflows must release identical records on a fixture containing cancer, cardiac, other, and HFE records.
+Line counts exclude blanks, comments, and docstrings; they describe these implementations, not usability or maintainability.
+
+\paragraph{Arm 4: fine-grained release from one genome.}
+In Arms~1--3, release views are determined mostly per file: a participant's consent releases or withholds the whole file, and only the cancer-gene restriction selects within it, so Arm~3's whole-genome release views were all or nothing.
+Arm~4 asks the same application question of the complete NB72462M genome, a consumer genome from Nebula Genomics, with policies that produce different non-empty release views from the same source genome.
+The simulated consent permits clinical care and general research use, which includes disease-specific research, and the participant's physician is a fourth requester.
+The policies combine purpose-specific gene-panel, genomic-region, and single-variant rules with the cancer-gene restriction, which still limits records in the 28 cancer-predisposition genes to clinical care through their gene links.
+The gene-panel rule limits disease-specific research to records whose REF span overlaps one of 40 cardiovascular genes.
+It prohibits the panel's complement, declared as a SPARQL selection that fails closed when gene links are absent; a permission on the panel alone would also withhold the file and header resources from which the query starts.
+The genomic-region rule releases APOE (chr19:44,903,787--44,909,396, Ensembl~116) only for care by the participant's physician, a purpose declared in the case vocabulary as narrower than clinical care.
+ODRL has no ``everyone except'' assignee, so restricting by purpose rather than by requester keeps the rule closed to any other clinical requester.
+Because a region is defined by coordinates on a named contig, the rule depends on the contig name written in the file; a file naming the contig \texttt{19} would escape a \texttt{chr19} rule.
+The single-variant rule withholds one variant of uncertain significance, DSP chr6:7,569,314 C>G, from the GRU requester by assignee; it targets the variant's SPDI identity and therefore holds however the file names chromosome~6.
+The conventional workflow applies the same rules in Python to every record of the genome, so Arm~4 compares the number of records in each release view as well as the matches.
+
+\subsection{Linking results, matches, and rule changes}\label{subsec:usecase-results}
+Table~\ref{tab:usecase-links} reports each linker separately.
+A seven-variant BRCA1 check agreed with NCBI SPDI outside repeats, while repeat-region spans differed between minimal trimming and NCBI's contextual representation.
+The live tier confirmed 9,223 of 9,951 and 9,479 of 10,316 PGP rsID rewrites in 21 requests.
+All three unconfirmed identifiers inspected had merged rsIDs; the other unconfirmed cases were not resolved by that check.
+Ensembl's live variation service returned HTTP 500 after three retries, and no partial linkset was published.
+
+\begin{table}[!htbp]
+\caption{Calls linked per linker, summed over each arm's files. SPDI eligibility requires explicit alleles; 19 further HG002 calls in Arm~1 overlap genes but are ineligible for the SPDI linker. Arms~1--3 used the pre-release linkers; Arm~4 used v3.3.1, whose gene linker also links spanning-deletion (\texttt{*}) records, which the SPDI linker skips (15,032 in Arm~4).}\label{tab:usecase-links}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}\renewcommand{\tabularxcolumn}[1]{m{#1}}%
+\setlength{\tabcolsep}{3.5pt}%
+\begin{tabularx}{\textwidth}{@{}l c r r r r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Linker} & \textbf{Tier} & \textbf{Arm 1} & \textbf{Arm 2} & \textbf{Arm 3} & \textbf{Arm 4} & \textbf{ClinVar} & \textbf{Result}\\
+\midrule
+\texttt{spdi} & 2 & 51{,}302 & 1{,}149{,}198 & 3{,}887{,}200 & 4{,}991{,}223 & 331{,}413 & Every eligible call; joins genomes to ClinVar across contig names; 87\,s for the whole genome\\
+\rowsep
+\texttt{ensembl-genes-grch38} & 2 & 51{,}321 & 1{,}149{,}198 & 1{,}704{,}921 & 2{,}063{,}627 & --- & Reloads the 108\,MB GFF3 per file: 19 of Arm~2's 22\,min\\
+\rowsep
+\texttt{rsid-dbsnp} & 1 & 20{,}267 & --- & --- & 4{,}974{,}526 & --- & PGP genomes' rsIDs, rewritten unchecked\\
+\rowsep
+\texttt{rsid-myvariant} & 3 & 18{,}702 & --- & --- & --- & --- & 92--93\% of tier-1 links confirmed in 21 requests; the three unconfirmed rsIDs checked were merged\\
+\rowsep
+\texttt{rsid-ensembl} & 3 & 0 & --- & --- & --- & --- & Persistent HTTP 500; failed closed, no partial linkset\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The RDF and conventional workflows returned identical requester-specific match sets, and every release view passed release validation (Table~\ref{tab:usecase-matches}).
+P/LP matches numbered zero in Arms~1 and~3 and eight in Arm~2.
+The complete HG005 genome returned the same 1,496 tuples as its restricted input.
+The additional cohort query joined a separate 68,635-site, 6.5M-triple frequency graph through SPDI; the conventional workflow's position-and-allele lookup agreed for every requester.
+Storing the required frequencies once avoids approximately 857M triples of repeated panel INFO, which accounted for 93\% of each participant's graph before projection.
+This is reuse of shared information, not compression of an equivalent graph.
+
+\begin{table}[!htbp]
+\caption{Requester-specific participant--variant--gene matches; the RDF and conventional workflows agree in every cell. All: no policy; Own: care by the participant's physician (Arm~4 only); CC: clinical care; DS: cardiovascular disease-specific research; GRU: general research use. Triple counts exclude links; the rare-variant row also joins panel frequencies at $\mathrm{AF}<0.01$.}\label{tab:usecase-matches}%
+\centering\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabular}{@{}l r r r r r r r r@{}}
+\toprule
+ & & & & \multicolumn{5}{c}{\textbf{Matches by requester}}\\
+\cmidrule(l){5-9}
+\textbf{Arm} & \textbf{Files} & \textbf{Records} & \textbf{Triples} & \textbf{All} & \textbf{Own} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
+\midrule
+1: five genome slices & 5 & 51{,}386 & 9.0M & 7{,}211 & --- & 2{,}878 & 2{,}988 & 1{,}987\\
+2: cohort & 104 & 1{,}150{,}288 & 67.8M & 173{,}102 & --- & 63{,}529 & 92{,}870 & 48{,}207\\
+\quad rare in the panel & & & & 4{,}154 & --- & 1{,}621 & 2{,}198 & 1{,}144\\
+3: complete HG005 & 1 & 3{,}887{,}810 & 662.4M & 1{,}496 & --- & 1{,}496 & 0 & 0\\
+4: complete NB72462M & 1 & 5{,}063{,}417 & 1{,}209.7M & 1{,}382 & 1{,}382 & 1{,}382 & 722 & 983\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In Arm~4, both workflows agreed on every match and on the number of records in each release view (Table~\ref{tab:usecase-layered}), and all four release views passed release validation.
+The DS release view retained 722 of the 1,382 unrestricted matches and the GRU release view 983; none was P/LP.
+The release views withheld the six APOE records from every requester except the participant's physician, the DSP variant from GRU, the cancer-gene records from both research purposes, and everything outside the cardiovascular panel from DS.
+
+\begin{table}[!htbp]
+\caption{Arm~4: what each rule withheld from the complete NB72462M genome (5,063,417 records), per requester. The simulated consent permits clinical care and general research use. A record withheld by several rules is counted once, under the first; for DS, APOE and the DSP variant fall outside its panel. Own: the participant's physician; other abbreviations as in Table~\ref{tab:usecase-matches}.}\label{tab:usecase-layered}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X r r r r@{}}
+\toprule
+\textbf{Rule} & \textbf{Selects records by} & \textbf{Own} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
+\midrule
+Cancer genes (28): CC only & gene links & --- & --- & 2{,}513 & 2{,}513\\
+Cardiovascular panel (40): all DS sees & complement of the panel's gene links & --- & --- & 5{,}054{,}507 & ---\\
+APOE: physician only & coordinates on \texttt{chr19} & --- & 6 & --- & 6\\
+DSP variant: not GRU & SPDI identity & --- & --- & --- & 1\\
+\midrule
+Records released & & 5{,}063{,}417 & 5{,}063{,}411 & 6{,}397 & 5{,}060{,}897\\
+Matches & & 1{,}382 & 1{,}382 & 722 & 983\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The record comparison is what exposed a linking defect.
+With VCF-RDFizer v3.3.0, Arm~4 on a 10,260-record slice of NB72462M (the gene spans, APOE, and a 100-kb control window) agreed on every match but not on released records: the GRU release view held 13 more records than the conventional workflow's, and the DS release view 17 fewer.
+All 30 were records whose ALT is the spanning-deletion allele \texttt{*}.
+The gene linker skipped them, although \texttt{*} leaves the REF span unchanged, so they carried no gene links: the cancer-gene restriction never selected the 13 in cancer genes, and the gene-panel rule withheld the 17 in cardiac genes.
+Release validation could not detect this, because it evaluates the same links.
+Release v3.3.1 links \texttt{*} records by their REF span; symbolic alleles and breakends, whose extent is END or a mate, are still skipped and counted.
+The whole-genome results above use v3.3.1, whose gene linker skipped no NB72462M record.
+In Arm~1, the same 13 records, and 11 from NG131FQA1I, had reached the research release views: 13 the GRU view and 24 the DS view.
+Rerunning Arm~1's linking and policy evaluation with v3.3.1 left every match unchanged, removed those records from the release views (16,118 to 16,105 GRU records and 23,957 to 23,933 DS records), and its released-record counts matched the conventional workflow for every requester.
+Arms~2 and~3 were unaffected: the cohort files contain no \texttt{*} records, and HG005's research release views were empty.
+
+Restricting HFE C282Y required a policy edit without changing the policy engine of the RDF workflow; the conventional workflow required a small code and data edit (Table~\ref{tab:usecase-effort}).
+The identity-targeted rule also selected HG002's record on contig \texttt{6}, which a literal \texttt{chr6} selector would miss.
+The other three rule changes were similarly sized data edits in both workflows, and all changed outputs agreed on the fixture.
+
+\begin{table}[!htbp]
+\caption{Authored content and rule changes in Arm~1, in non-blank, non-comment lines. After each change, both workflows returned the same requester-specific records. POA: DUO's population-origins-or-ancestry purpose, outside the GRU permission used here.}\label{tab:usecase-effort}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+ & \textbf{RDF workflow} & \textbf{Conventional workflow}\\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Initial authoring}}\\
+Rules written & 72: policy 41, query 31 & 131: shell 33, Python 98\\
+Data written & 28 gene IRIs; the query's gene list (1 line) & Consent and requester tables (100 lines); gene list (81)\\
+Linkers, selectors, and profile & Shipped with the tool & ---\\
+\addlinespace[3pt]
+\multicolumn{3}{@{}l}{\textit{Rule changes}}\\
+A participant withdraws & Policy $+2/-1$ & Data $+2/-1$\\
+A requester with a new purpose (POA) & Purpose vocabulary $+2$ & Data $+4$\\
+The panel becomes 40 cardiac genes & Policy $+40/-28$ (gene IRIs) & Data $+41/-29$ (gene symbols)\\
+One variant (HFE C282Y), clinical care only & Policy $+6$, no engine change & Code $+3$, data $+9/-1$\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Stage costs}\label{subsec:usecase-costs}
+Table~\ref{tab:usecase-costs} gives every stage time behind main Figure~\ref{M-fig:usecase-costs}: conversion and linking once per arm, and for each requester the release view's writing, validation, query index, and queries.
+Query times of 172--209\,s across the arms are consistent with a dominant fixed ClinVar join, not generally scale-independent retrieval.
+Arm~2 initially required 20--27\,min per release view because each line was checked against 109 rules.
+Combining the binding selections and filtering in parallel reduced this to 131--165\,s; resolving each term's ancestors once reduced it further to 59--80\,s, with byte-identical views.
+Arm~3's CC release view streamed in 38\,min on two workers, one per input file, and peaked at 13.1\,GB resident memory and 34\,GB disk.
+In Arm~4, on \texttt{vcf-bench-3}, converting NB72462M took 90\,min (1.21B triples) and linking it 23\,min; writing and validating each release view took 55--74\,min, building each full view's 1.26B-triple query index 83--84\,min, and each query 180--185\,s, or 146\,s for the 1.5M-triple DS release view.
+Available memory never fell below 17.3\,GB.
+
+\begin{table}[!htbp]
+\caption{Stage costs of the linked workflow for every arm and requester; the data behind main Figure~\ref{M-fig:usecase-costs}. Conversion and linking are paid once per arm, and both include ClinVar. Write is the policy evaluation that streams the release view. Check is release validation, measured as the interval before the next requester's evaluation, so it is not recorded for the last requester; for a non-empty view it includes building the view's own index. Index is the build of the query index, and query the median of three runs over it. Records are those in the release view; triples are the query index's, including ClinVar and links. Abbreviations as in Table~\ref{tab:usecase-matches}.}\label{tab:usecase-costs}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l r r r r r r@{}}
+\toprule
+\textbf{Requester} & \textbf{Records} & \textbf{Index triples} & \textbf{Write} & \textbf{Check} & \textbf{Index} & \textbf{Query}\\
+ & & & \textit{min} & \textit{min} & \textit{min} & \textit{s}\\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Arm 1: five genome slices}: convert 3.3\,min, link 1.4\,min}\\
+\quad All (no policy) & 51{,}386 & 42{,}543{,}708 & --- & --- & 2.2 & 175\\
+\quad CC & 19{,}625 & 37{,}514{,}190 & 0.53 & 0.47 & 2.2 & 174\\
+\quad DS & 23{,}957 & 37{,}818{,}548 & 0.65 & 0.62 & 2.2 & 172\\
+\quad GRU & 16{,}118 & 35{,}969{,}925 & 0.58 & --- & 2.2 & 181\\
+\addlinespace[3pt]
+\multicolumn{7}{@{}l}{\textit{Arm 2: cohort of 104}: convert 31.1\,min, link 22.1\,min}\\
+\quad All (no policy) & 1{,}150{,}288 & 110{,}268{,}919 & --- & --- & 3.3 & 202\\
+\quad CC & 421{,}991 & 65{,}787{,}093 & 0.98 & 2.9 & 2.5 & 181\\
+\quad DS & 685{,}928 & 81{,}878{,}619 & 1.3 & 4.9 & 3.1 & 188\\
+\quad GRU & 356{,}835 & 61{,}794{,}418 & 1.2 & --- & 2.4 & 177\\
+\addlinespace[3pt]
+\multicolumn{7}{@{}l}{\textit{Arm 3: complete HG005 genome}: convert 54.5\,min, link 8.0\,min}\\
+\quad All (no policy) & 3{,}887{,}810 & 701{,}489{,}520 & --- & --- & 45.3 & 209\\
+\quad CC & 3{,}887{,}810 & 701{,}489{,}520 & 38.3 & 68.1 & 45.8 & 207\\
+\quad DS & 0 & 33{,}428{,}173 & 28.0 & 1.0 & 2.2 & 0.06\\
+\quad GRU & 0 & 33{,}428{,}173 & 28.0 & --- & 2.2 & 0.06\\
+\addlinespace[3pt]
+\multicolumn{7}{@{}l}{\textit{Arm 4: complete NB72462M genome}: convert 92.7\,min, link 23.1\,min}\\
+\quad All (no policy) & 5{,}063{,}417 & 1{,}255{,}334{,}983 & --- & --- & 83.2 & 184\\
+\quad Own & 5{,}063{,}417 & 1{,}255{,}334{,}983 & 72.8 & 117.0 & 84.0 & 182\\
+\quad CC & 5{,}063{,}411 & 1{,}255{,}333{,}543 & 74.3 & 116.6 & 83.8 & 181\\
+\quad DS & 6{,}397 & 34{,}971{,}594 & 55.1 & 9.7 & 2.2 & 146\\
+\quad GRU & 5{,}060{,}897 & 1{,}254{,}725{,}280 & 73.4 & --- & 83.5 & 181\\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+
+
+\section{Input and version coverage}\label{sec:inputs}
+Table~\ref{tab:corpus} identifies the ten public inputs; download commands and canonical filenames are maintained in the testing repository.
+
+\begin{table}[!htbp]
+\caption{Public corpus and evaluation roles. Names are canonical \texttt{.vcf.gz} stems; assemblies and sample counts were checked against the headers. Sizes are approximate compressed downloads.}\label{tab:corpus}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l l c r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{File} & \textbf{Provider} & \textbf{Assembly} & \textbf{Samples} & \textbf{MB (gz)} & \textbf{Evaluation role}\\
+\midrule
+\texttt{NG1N86S6FC}     & Sequencing.com  & GRCh38 & 1 & 379 & Consumer WGS\\
+\texttt{NG131FQA1I}     & Dante Labs      & GRCh38 & 1 & 224 & Consumer WGS\\
+\texttt{NB72462M}       & Nebula Genomics & GRCh38 & 1 & 341 & Consumer WGS\\
+\texttt{60820188475559} & PGP upload      & GRCh37 & 1 & 325 & SNP-only profile\\
+\texttt{60820188474283} & Dante Labs      & GRCh37 & 1 & 222 & Consumer WGS\\
+\texttt{0GOOR\_HG002}   & precisionFDA    & GRCh38 & 1 & 69  & GIAB Truth Challenge v2\\
+\texttt{1000G\_phase3\_chr20} & 1000 Genomes & GRCh37 & 2{,}504 & 327  & Phased cohort\\
+\texttt{HGSVC2}               & HGSVC2       & GRCh38 & 32      & 31.5 & Multi-sample SVs\\
+\texttt{HG004\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 149  & Benchmark genome, chr1--22\\
+\texttt{HG005\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 139  & Benchmark genome, chr1--22\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Versions and corpus processing.}
+Fixtures declaring VCFv4.1--4.5, plus one with no \texttt{\#\#fileformat}, all converted.
+Their generated RML mappings differ only in the file class, from \texttt{vcfc:VCF41File} to \texttt{vcfc:VCF45File}.
+Version-specific fields are handled through the data: the two-record VCFv4.5 fixture carries \texttt{LAA} and \texttt{LAD}, and the VCFv4.4 fixture carries \texttt{PS}, yielding 252.5 and 210 triples per record, respectively.
+This demonstrates retention of those fields, not interpretation of every version-specific construct; local-to-global allele resolution is not implemented.
+The undeclared-version input uses the documented fallback.
+
+Nine corpus inputs were processed with headers retained: the first 250,000 records of eight files, and HG005 whole.
+Their HDT and COTTAS outputs passed decoding/count checks.
+The harness skipped the complete 2,504-sample 1000 Genomes input because its expanded-profile corpus guard excludes files with more than 1,000 sample columns.
+Both sample profiles were instead tested on 10,000-record slices containing all 2,504 samples.
+Separately, the tool refuses an expanded conversion when its estimated workspace exceeds three quarters of free space and suggests condensed output.
+Neither guard is evidence that the complete cohort was converted.
+
+\paragraph{Difficult inputs.}
+Nine of eleven fixtures converted and completed paired validation (Table~\ref{tab:difficult-inputs}).
+The truncated gzip was refused during decompression, while a malformed sites-only fixture produced RDF but did not complete validation.
+The separate sites-only frequency graph in the linking experiment demonstrates a working frequency join, not completion of the missing paired-validation test.
+
+\begin{table}[!htbp]
+\caption{Difficult-input fixtures. Triple counts describe the produced graph; an intended refusal is not a fidelity result.}\label{tab:difficult-inputs}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l r l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Fixture} & \textbf{Triples} & \textbf{Validation} & \textbf{Note}\\
+\midrule
+CRLF line endings & 262 & PASS & No stray \texttt{\textbackslash r} in the last field's literal\\
+Symbolic alleles & 453 & PASS & \texttt{<DEL>} not treated as a base string\\
+Breakend ALT & 417 & PASS & Breakend ALT syntax preserved\\
+Mixed ploidy & 350 & PASS & Ploidy 4 then 3 followed the data\\
+Half and haploid calls & 446 & PASS & Four genotype cases stayed distinct\\
+Missing values & 321 & PASS & Missingness follows the field-specific representation\\
+FILTER variants & 486 & PASS & \texttt{PASS}, \texttt{.}, and a failed code are three states\\
+Declared FORMAT unused & 293 & PASS & Header declaration represented although never used\\
+Zero data records & 189 & PASS & Header-only input\\
+\midrule
+Sites only & 245 & incomplete & Graph and HDT artifact produced; validation did not complete\\
+Truncated gzip & --- & refused (intended) & Refused at decompression in 0.58\,s with a diagnostic\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Reproducibility and execution}\label{sec:repro}
+\subsection{Builds and dependencies}\label{subsec:repro-builds}
+The base campaign used VCF-RDFizer v3.1.0, commit \texttt{d3b34d5}.
+The Docker image is \texttt{ecrum19/vcf-rdfizer:v3.1.0}, with digest
+\begin{center}\footnotesize\texttt{sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa}\end{center}
+Image rebuilding was disabled during execution.
+The image bundles the VCF Core SHACL shapes at vocabulary commit \texttt{5bfd19d}; this snapshot is distinct from the separately versioned vocabulary release~\cite{vcfc210}.
+
+The pinned dependencies are RMLStreamer 2.5.0, hdtc 1.1.0, pycottas 1.1.0, DuckDB 1.5.5, cyvcf2 0.34.0, pyshacl 0.30.1, Comunica 5.3.0 for N-Triples, \nolinkurl{@comunica/query-sparql-hdt} 5.0.1, the COTTAS Comunica engine 0.1.0, bcftools from the base distribution, and QLever pinned by image digest.
+The image also fixes the hdt-cpp revision used to compile \texttt{rdf2hdt} and \texttt{hdt2rdf}.
+Later experiment families are identified separately in Table~\ref{tab:builds}.
+Use-case Arms~1 and~2 ran uncommitted \texttt{feature/spdi-linker} trees on v3.2.0, identified per cell by a diff or tree hash; Arm~3 used \texttt{578c2be}.
+The subsequent v3.3.0 release adds refusals for an empty selector list and an RDF input without VCF triples, neither of which occurs in these use-case inputs.
+
+\begin{table}[!htbp]
+\caption{Builds and assessment boundaries of each experiment family. A reproducible state requires the recorded code, local changes, dependencies, and external resources.}\label{tab:builds}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}\renewcommand{\tabularxcolumn}[1]{m{#1}}%
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}m{0.2\textwidth}>{\raggedright\arraybackslash}m{0.32\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Family} & \textbf{Recorded state} & \textbf{Assessment boundary}\\
+\midrule
+143-cell base campaign & v3.1.0, \texttt{d3b34d5}; full image digest above & Conversion, artifacts, fixtures, 984 applicable paired comparisons, and configuration tests\\
+\rowsep
+Regional retrieval & \texttt{3da1a5a} & Later runner with tabix; 11{,}160 regional executions\\
+\rowsep
+Large-graph retrieval & v3.1.0 graphs; runners \texttt{245fe1f}, \texttt{5ed75c8} & Separate host; thirteen summary queries without SHACL\\
+\rowsep
+Linked use case & v3.2.0 conversion; uncommitted pre-release trees on \texttt{f266db5} in arms 1--2; \texttt{578c2be} in arm 3 & SPDI, gene links, and policy views; v3.3.0 (\texttt{7ab2300}) is the subsequent release, not the exact state of every run\\
+\rowsep
+Use-case Arm~4; Arm~1 rerun & Linking and policy evaluation from \texttt{29a81f6} (v3.3.1); images 3.3.0 (Arm~4) and 3.2.0 (Arm~1) & Record-level comparison; Arm~4 on \texttt{vcf-bench-3}, Arm~1 on \texttt{vcf-bench-1}; derive and convert reused from earlier runs\\
+\rowsep
+Review follow-ups & Default-profile mutation rerun; 250{,}000-record NG131FQA1I check & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2}; QLever, expanded profile; NG131FQA1I rerun without shapes; v3.1.0's size gates\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\authorquery{Archive the uncommitted arms 1--2 source trees and record the complete v3.3.0 image digest.}
+The 657.4M-triple conversion/retrieval graph and the 662.4M-triple normalized use-case graph are different artifacts, not alternative counts of the same graph.
+
+\subsection{Hosts, measurements, and execution status}\label{subsec:repro-hosts}
+The base experiments used two separate hosts, \texttt{vcf-bench-1} and \texttt{vcf-bench-2}, each with an Intel Xeon Silver 4309Y at 2.80\,GHz (8 cores), 33.6\,GB RAM without swap, a 210\,GB SSD, Ubuntu 24.04.4 LTS, kernel 6.8.0-85-generic, Docker 29.7.2, and Python 3.12.3.
+Each complete experiment ran on one host without concurrent benchmark jobs.
+Calibration produced identical triple sets, byte-identical COTTAS artifacts and HDT indexes, and differences only in N-Triples/HDT ordering and the HDT \texttt{dcterms:issued} timestamp.
+Conversion nevertheless took 26 versus 37\,s, and validation 156 versus 208\,s, so timings are compared within hosts.
+Large-graph retrieval ran separately on \texttt{vcf-bench-3}, with the same CPU, 8 cores, 31.3\,GiB RAM without swap, Ubuntu 22.04.5, and kernel 5.15.
+It used the v3.1.0 graphs and runners \texttt{245fe1f} for N-Triples and \texttt{5ed75c8} for HDT and COTTAS.
+
+Each cell records its command, host, commit, image, exit status, and wall time in a fresh output directory.
+Stage reports record resident memory, triple counts, artifact sizes, validation outcomes, and transient workspace separately.
+Performance denominators use uncompressed VCF bytes; Table~\ref{tab:corpus} instead reports compressed download sizes.
+Replicated comparisons describe variability, whereas single-run corpus results do not estimate run-to-run variation.
+The base campaign contains 143 cells and 96.16\,h of measured wall time (Table~\ref{tab:campaign}).
+All asserted expectations held, but not every cell completed successfully: two non-zero exits were observed without an asserted outcome, two were required refusals, and three cells were skipped.
+The two mutation-score cells record the host-side test-harness commit rather than a conversion-container execution.
+
+\begin{table}[!htbp]
+\caption{Base campaign by experiment family. Outcomes count cells: OK; Rec., recorded (a non-zero exit without an asserted outcome); Ref., refused (an expected rejection); Skip., skipped (a guard prevented execution). Hosts b1 and b2 are \texttt{vcf-bench-1} and \texttt{vcf-bench-2}; sections without an S prefix are in the main text.}\label{tab:campaign}%
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l c r r r r r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+ & & & & \multicolumn{4}{c}{\textbf{Outcome}} & \\
+\cmidrule(lr){5-8}
+\textbf{Experiment} & \textbf{Host} & \textbf{Cells} & \textbf{Hours} & \textbf{OK} & \textbf{Rec.} & \textbf{Ref.} & \textbf{Skip.} & \textbf{Question answered}\\
+\midrule
+\multicolumn{9}{@{}l}{\textit{Conversion, scaling, and storage}}\\
+Records scaling & b1 & 10 & 10.99 & 10 &  &  &  & Cost growth with records (\S\ref{M-subsubsec:results-samples})\\
+Sample representation & b2 & 30 & 19.69 & 29 &  &  & 1 & Profile growth with samples (\S\ref{M-subsubsec:results-samples})\\
+Storage mode & b1 & 8 & 12.87 & 8 &  &  &  & Peak workspace, plain vs space-optimized (\S\ref{M-subsubsec:results-artifacts})\\
+Corpus breadth & b2 & 10 & 26.90 & 9 &  &  & 1 & HDT and COTTAS on ten public inputs (\S\ref{M-subsubsec:results-artifacts})\\
+\addlinespace[3pt]
+\multicolumn{9}{@{}l}{\textit{Input and configuration coverage}}\\
+Representation axes & b1 & 20 & 4.82 & 20 &  &  &  & VCF 4.1--4.5; INFO and header costs (\S\ref{sec:inputs}, \S\ref{sec:config})\\
+Difficult inputs & b1 & 16 & 0.10 & 13 & 2 &  & 1 & Eleven awkward VCFs; demonstration linkers (\S\ref{sec:inputs})\\
+Covering set & b1 & 10 & 0.35 & 10 &  &  &  & Every option value and pair (\S\ref{sec:config})\\
+Modes & b1 & 7 & 0.03 & 7 &  &  &  & Each operating mode alone (\S\ref{sec:config})\\
+Feasibility & b1 & 9 & 9.03 & 9 &  &  &  & Memory ceiling $\times$ configuration (\S\ref{sec:config})\\
+\addlinespace[3pt]
+\multicolumn{9}{@{}l}{\textit{Validation and retrieval}}\\
+Robustness & b1 & 9 & 0.25 & 9 &  &  &  & Determinism, round trip, mutation score (\S\ref{M-subsec:results-fidelity}, \S\ref{sec:validation})\\
+Equivalence & b2 & 8 & 6.84 & 6 &  & 2 &  & Four engines, both profiles, three artifacts (\S\ref{sec:config})\\
+Query cost & b1 & 6 & 4.27 & 6 &  &  &  & SPARQL vs cyvcf2 on identical work (\S\ref{M-subsubsec:results-retrieval})\\
+\midrule
+\textbf{Total} & & \textbf{143} & \textbf{96.16} & \textbf{136} & \textbf{2} & \textbf{2} & \textbf{3} & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Commands, normalized answers, and comparison reports are maintained in the testing repository; the complete evaluated snapshots still require a persistent archive.
+Tagged releases are distributed through PyPI, Conda-Forge, and Docker Hub under the MIT License, with installation instructions, examples, release notes, and issue tracking~\cite{jimenez_2017_f1000}.
+The unit-test suite covers Linux, macOS, and Windows; the reported benchmarks used Ubuntu.
+
+\section{Defects, corrections, and remaining gaps}\label{sec:issues}
+This section retains diagnostic evidence that is not visible in the aggregate pass counts.
+Corrected outputs are used where stated; unsuccessful runs and unresolved failures have not been relabeled as passes.
+
+\paragraph{Declared samples in a header-only input.}
+The emitter learned the file identity from the first record and omitted \texttt{vcfc:SampleSet} and \texttt{vcfc:VCFSample} when there were no records.
+Q9 and Q10 detected the omission.
+Deriving the sample set from the header increased the graph from 181 to 189 triples and allowed validation to complete.
+The preflight oracle also incorrectly expected a \texttt{vcfc:sampleId}, which belongs to a per-record \texttt{vcfc:SampleCall}; it was corrected to expect no calls in an empty file.
+
+\paragraph{Allele references without allele resources.}
+Three covering-set rows combined raw INFO with expanded samples, whose genotypes referenced alleles emitted only by the structured-INFO path.
+A 1,000-record test contained 1,972 dangling references and produced 5,916 shape violations, although query counts did not follow the references.
+The emitter and census expectations were corrected to include alleles when either representation requires them.
+All ten rows then passed; the three affected rows gained 10,846 triples each, and the other seven remained byte-identical.
+Regression tests cover all four INFO/sample combinations and require every referenced allele to be described.
+
+\paragraph{Metadata retained after a file was withheld.}
+The policy plug-in initially removed the correct records but retained a withdrawn file's header in every view.
+Its own check detected the problem.
+The ownership rule now determines the dependent context removed with each withheld resource rather than treating record subtrees as the complete release boundary.
+
+\paragraph{Memory guards and query heaps.}
+The v3.1.0 shape gate used packaged bytes although \texttt{pyshacl}'s in-memory cost depends on the graph.
+The same 170,935,101-triple graph was admitted as 390.7\,MB COTTAS and killed at 30.7\,GiB resident memory on a 31.3\,GiB host, but skipped as 756.6\,MB gzip-framed N-Triples or 1.18\,GB HDT.
+In full mode, the gate instead used VCF bytes, admitting the 58.2M-triple NG131FQA1I graph from a 63.8\,MB input and exhausting memory; the diagnostic rerun excluded shapes.
+The corrected gate counts triples rather than packaging-dependent bytes.
+The Comunica-backed endpoints also exhausted the JavaScript heap while approximately 25\,GB host memory remained free; the heap ceiling is now configurable.
+Both corrections are released in v3.3.0, do not change conversion output, and leave the failing runs in the evidence record.
+
+\paragraph{COTTAS execution and timeout handling.}
+The initial pycottas/RDFLib path completed preflight and Q1--Q4 on condensed output but stalled on Q5.
+Two attempts ran for approximately 41 and 10\,h at about 190\% CPU before being stopped; a 1,800-second query limit and 14,400-second budget did not interrupt the second in-process query.
+Both runs are archived.
+The replacement DuckDB-backed Comunica path reduced Q5 to 2--5\,s and the thirteen-query workload on 0.96M triples to 38\,s, against 1,402\,s through RDFLib.
+Completed comparisons use the replacement path, with query execution placed where a timeout can terminate it.
+
+\paragraph{Shape severity and missing tokens.}
+The SHACL report parser initially treated recommendations as blocking and expected a violation format that pyshacl did not emit.
+It was corrected to classify severity and block only \texttt{sh:Violation}, rather than reject valid INFO declarations without \texttt{Source}.
+The missing-token preflight also flagged legitimate dots: \texttt{Number=.} denotes variable cardinality, and \texttt{.} can encode a missing genotype.
+Excluding \texttt{vcfc:fieldNumber} and \texttt{vcfc:genotypeString} reduced 20 rows to ten header-attribute values carrying the same Number declaration.
+A further correction excludes that attribute while retaining checks on others, but postdates v3.1.0.
+Its campaign reports therefore retain 608 checks, 599 passes, and nine flags with ten rows each; those flags do not represent malformed RDF.
+
+\paragraph{Incomplete sites-only coverage.}
+The fixture declared FORMAT without sample columns, which bcftools rejects.
+It produced 245 triples and an HDT artifact, but both paired validations ended with \texttt{EXECUTION\_FAILED}.
+This is incomplete fixture/oracle coverage, not a failed semantic comparison or a passed sites-only validation.
+A conformant fixture remains necessary.
+
+\paragraph{Legacy measurement corrections.}
+An earlier six-file benchmark under-reported partitioned compression times; commit \texttt{fb48e50} corrected timing, and affected historical durations were reconstructed from logs and timestamps.
+Its input-size column labeled \texttt{.vcf.gz} also held uncompressed bytes: NG131FQA1I contained 1,215,509,730 bytes, matching 1215.5\,MB.
+The legacy HDT reduction of 92--95\% used uncompressed N-Triples as its denominator, unlike the present 1.36--1.82 ratio against gzip-framed N-Triples.
+Those legacy tables are excluded from the current analysis rather than presented as directly comparable compression results.
+
+\paragraph{Open oracle failures.}
+Phase-set census expectations and lexical decimal handling remain unresolved validator issues in the NG131FQA1I follow-up (Section~\ref{sec:validation}).
+Diagnostic recomputation explains the failures, but a corrected validator release has not been established by these experiments.
+Extending the oracle to structural-variant events, gVCF blocks, and local-allele constructs also remains outside the completed evidence.
+These are distinct from the fixed sample, allele-resource, and ownership defects above.
+
+\section{Conversion, storage, and retrieval measurements}\label{sec:measurements}
+\subsection{Record and sample scaling}\label{subsec:measurements-scaling}
+On the HG005 record ladder, triple production had a fitted exponent of $+0.999$ (95\% CI $[+0.991,+1.007]$), at 170.9--171.9 triples per record (Figure~\ref{fig:scaling}a).
+Artifact bytes, peak workspace, and end-to-end time had exponents of $+1.033$, $+1.025$, and $+1.063$, respectively.
+At 10,000, 100,000, and one million records, end-to-end times were 40.7, 423.7, and 5,476.0\,s, with replicate standard deviation at most 13.5\,s.
+Mapping-stage resident memory remained 1.0--1.7\,GB across this hundredfold input increase.
+RMLStreamer itself took 12.2--41.4\,s; representation construction dominated total time.
+These observations describe mapping memory on this ladder, not bounded memory for every downstream component.
+
+The sample ladder holds 10,000 records and INFO fixed while varying $S$ from 1 to 2,504 (main Figure~\ref{M-fig:samples}).
+Its triple counts are exactly $1{,}359{,}498+250{,}005S$ expanded and $1{,}439{,}498+5S$ condensed, reflecting 25 repeated triples per sample per record and five declaration triples per sample in the expanded path.
+The expanded fitted exponent of $+0.795$ reflects the fixed record layer at low sample counts.
+At 2,504 samples, expanded output contains 627,372,018 triples, $432\times$ condensed output.
+The byte ratios instead are $322\times$ for gzip-framed N-Triples and $69\times$ for HDT.
+Condensed HDT grows from 10.2 to 59.2\,MB ($5.8\times$), despite only 0.9\% triple growth, because its vectors lengthen.
+It becomes smaller than uncompressed VCF from 256 samples; at one sample the sizes are 10.2 versus 1.5\,MB, and at 2,504 they are 59.2 versus 101.6\,MB.
+Expanded HDT reaches 4.10\,GB, approximately $40\times$ the VCF, with an end-to-end time of 15,269\,s against 250\,s condensed.
+Extrapolating expanded workspace to the full 1,812,841-record call set gives roughly 2\,TB against the 189\,GB volume available to that estimate, so the run is refused; this is an estimate, not a completed full-cohort measurement.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{fig-scaling.pdf}
-\caption{\textbf{Record scaling and storage mode.}
-(a)~Growth of each measure relative to the 10{,}000-record rung of the \texttt{HG005\_GRCh38} ladder (medians of three replicates; the whole file is one run). Triples, end-to-end wall time and peak disk workspace grow in proportion to the records, while the mapping stage's peak resident memory stays between 1.0 and 1.7\,GB.
-(b)~Peak disk workspace of the plain and space-optimized storage modes on two inputs, with the end-to-end time cost of space-optimized mode. Final artifacts and triple counts are identical in both modes.
-Both panels are from the v3.1.0 run on \texttt{vcf-bench-1}.}\label{fig:scaling}
+\caption{\textbf{Record scaling and workspace.}
+(a) Growth relative to 10,000 HG005 records, using medians of three replicates except the single whole-genome run.
+(b) Peak workspace and the end-to-end time cost of space-optimized storage on two inputs.
+Triple counts and final artifacts agree between storage modes; both panels use v3.1.0 on \texttt{vcf-bench-1}.}\label{fig:scaling}
 \end{figure}
 
-\begin{table}[!htbp]
-\caption{Retrieval at scale, on graphs built from \texttt{HG005\_GRCh38} by the published v3.1.0 image. The two smaller graphs were queried on \texttt{vcf-bench-1}, the two larger on \texttt{vcf-bench-3} (Section~\ref{sup:repro}), so the per-million figures are descriptive and do not remove host variation. Times are for the thirteen core questions of Table~\ref{tab:semantic-queries}, excluding the one-time index build, which is reported separately. Every completed question's answer was compared against cyvcf2 before its timing was read. The Comunica-backed engines do not complete the workload at this size; their totals cover the five questions they answered, and are not comparable with a thirteen-question total. The three input packagings differ by 0.3\% in query time after QLever indexing; their one-time decode costs differ.}\label{tab:scale}%
+\subsection{Storage mode and optional artifacts}\label{subsec:measurements-storage}
+Plain and space-optimized storage produced identical triples and final artifact sizes within one 4\,kB filesystem block.
+Space-optimized storage reduced peak workspace from 2.98 to 0.325\,GB ($9.19\times$) on 100,000 records and from 43.40 to 5.65\,GB ($7.68\times$) on the 1,155,741-record NG131FQA1I prefix \texttt{test-larger}.
+The end-to-end time costs were 5.2\% and 3.2\%, respectively (Figure~\ref{fig:scaling}b).
+On the replicated input, mapping time met a prespecified $\pm10\%$ equivalence margin: observed difference $+0.0\%$, with a 90\% bootstrap CI of $[-1.9\%,+0.4\%]$.
+
+Across the corpus, COTTAS occupied 0.37--0.55 times gzip-framed N-Triples and 0.27--0.37 times HDT, while HDT occupied 1.36--1.82 times gzip-framed N-Triples (Figure~\ref{fig:artifacts}).
+COTTAS took 1.5--3.0 times longer than HDT to build, and peak workspace ranged from 4.7 to 30.3 times the uncompressed VCF input.
+The v3.1.0 whole-genome run produced 657.4M triples in 16.07\,h, including 20,911\,s for HDT and 31,230\,s for COTTAS, approximately 14.5\,h together.
+Its 146.8-second RML stage excludes emitters and other conversion work.
+The retained HDT (4.63\,GB), HDT index (4.74\,GB), and COTTAS (1.50\,GB) formed a measured 10,879,410,176-byte output tree, or 10.88\,GB; rounded components sum to 10.87\,GB.
+This is $78\times$ the 139\,MB compressed download, but includes alternative representations and an index rather than a minimum RDF footprint.
+Gzip-framed N-Triples alone occupied 2.89\,GB.
+
+\begin{figure}[!htbp]
 \centering
-\scriptsize
-\setlength{\tabcolsep}{6pt}
-\renewcommand{\arraystretch}{1.05}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth} r l r >{\raggedright\arraybackslash}X@{}}
+\includegraphics[width=\textwidth]{fig-representations.pdf}
+\caption{\textbf{Corpus artifact sizes and construction times.}
+Eight completed inputs use 250,000 records, and HG005 is processed whole; the expanded whole-cohort cell was skipped.
+(a) Artifact bytes relative to gzip-framed N-Triples.
+(b) Construction times on a logarithmic scale.
+Each input has one run, and all produced artifacts passed decoding/count checks; full filenames are in Table~\ref{tab:corpus}.}\label{fig:artifacts}
+\end{figure}
+
+The later v3.2.0 use case produced 662.4M genomic triples in 53\,min, or 54\,min including ClinVar, before linking, release construction, checking, and indexing.
+Its inputs, version, and selected work differ from the 16.07-hour run; subtracting the times would not estimate a speed-up.
+An archive requires its selected RDF artifact, whereas a query deployment also requires its backend's index and loading workspace.
+
+\subsection{Query workloads and physical access paths}\label{subsec:measurements-queries}
+On 17.1M triples, QLever's thirteen-query totals from N-Triples, HDT, and COTTAS were 17.0--17.1\,s, differing by less than 1\%; individual queries differed by at most 0.07\,s (main Figure~\ref{M-fig:retrieval}c).
+These are queries over QLever's index, not native artifact access.
+On the separate 0.96M-triple fixture, mean totals were 1.1\,s for QLever, 23.4\,s for Comunica over N-Triples, 38.2\,s for the COTTAS engine, and 45.1\,s for the HDT-backed engine, with answer agreement in every run.
+
+For individual questions on 17.1M triples, cyvcf2 scans took 11.5\,s, or 12.3\,s for the three sample-level questions, against 0.005--4.62\,s after QLever indexing.
+The resulting $2.5$--$2300\times$ query-time ratio excludes the 22.8-second index build and conversion.
+The tested individual cold-start questions therefore favored the parser.
+One parser pass answering all thirteen questions took 12.4\,s, against 17.1\,s of indexed queries before setup.
+
+The large-graph workload took 1.13, 1.00, 0.96, and 0.97\,s per million triples at 0.96M, 17.1M, 171M, and 657M triples, respectively (Table~\ref{tab:retrieval-scale}).
+Index construction took 1.27--1.35\,s per million above the smallest graph.
+The whole-genome queries took 634.6\,s after an 868.0-second build, with replicates within 0.7\% and every answer equal to the parser's.
+Query times from the three artifacts differed by only 0.3\%, while one-time decoding costs differed substantially.
+Both native compressed Comunica paths stopped at Q6 on 171M triples despite a 24\,GB heap; their reported totals cover only five answers.
+On those five, COTTAS was $16.7\times$ faster than HDT, compared with less than $1.2\times$ on the small fixture, so small-graph rankings do not establish large-graph behavior.
+
+\begin{table}[!htbp]
+\caption{Retrieval at scale on v3.1.0 HG005 graphs. Smaller graphs ran on \texttt{vcf-bench-1} and larger ones on \texttt{vcf-bench-3}, so normalized times keep host differences. Completed answers were compared with cyvcf2; setup is reported separately.}\label{tab:retrieval-scale}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l r l r >{\raggedright\arraybackslash}X@{}}
 \toprule
-\textbf{Graph} & \textbf{Triples} & \textbf{Engine} & \textbf{Time (s)} & \textbf{Outcome} \\
+\textbf{Graph} & \textbf{Triples} & \textbf{Engine} & \textbf{Time (s)} & \textbf{Outcome}\\
 \midrule
-\multicolumn{5}{@{}l}{\itshape Does SPARQL scale to a whole genome? (all thirteen questions)}\\
-Fixture          & 958{,}919       & QLever & 1.1   & 1.13\,s per million triples \\
-100\,k records   & 17{,}098{,}746  & QLever & 17.0  & 1.00\,s per million \\
-1\,M records     & 170{,}935{,}101 & QLever & 163.3 & 0.96\,s per million \\
-Whole genome     & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\% \\
-\addlinespace
-\multicolumn{5}{@{}l}{\itshape Does the artifact matter? (whole genome, one engine, three packagings)}\\
-\quad from N-Triples & \multicolumn{2}{r}{gzip-framed} & 634.6 & Decode 179--192\,s; setup 868.0\,s \\
-\quad from HDT       & \multicolumn{2}{r}{---}         & 636.3 & Decode 955--972\,s; setup 861.8\,s \\
-\quad from COTTAS    & \multicolumn{2}{r}{---}         & 636.6 & Decode 592--601\,s; setup 868.4\,s \\
-\addlinespace
-\multicolumn{5}{@{}l}{\itshape Do the other engines get there at all? (1\,M records, 170{,}935{,}101 triples)}\\
-\quad COTTAS engine & \multicolumn{2}{r}{5 of 13 answered} & 743.1 & Native allocation failure on Q6 \\
-\quad HDT engine    & \multicolumn{2}{r}{5 of 13 answered} & 12{,}432.2 & Q5 answered at the one-hour per-query ceiling (3{,}600.1\,s); Q6 failed \\
+\multicolumn{5}{@{}l}{\textit{Does SPARQL scale to a whole genome? (all thirteen questions)}}\\
+Fixture        & 958{,}919       & QLever & 1.1   & 1.13\,s per million triples\\
+100\,k records & 17{,}098{,}746  & QLever & 17.0  & 1.00\,s per million\\
+1\,M records   & 170{,}935{,}101 & QLever & 163.3 & 0.96\,s per million\\
+Whole genome   & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\%\\
+\addlinespace[3pt]
+\multicolumn{5}{@{}l}{\textit{Does the artifact matter? (whole genome, one engine, three packagings)}}\\
+\quad from N-Triples & \multicolumn{2}{r}{gzip-framed} & 634.6 & Decode 179--192\,s; setup 868.0\,s\\
+\quad from HDT       & \multicolumn{2}{r}{---}         & 636.3 & Decode 955--972\,s; setup 861.8\,s\\
+\quad from COTTAS    & \multicolumn{2}{r}{---}         & 636.6 & Decode 592--601\,s; setup 868.4\,s\\
+\addlinespace[3pt]
+\multicolumn{5}{@{}l}{\textit{Do the other engines get there at all? (1\,M records, 170{,}935{,}101 triples)}}\\
+\quad COTTAS engine & \multicolumn{2}{r}{5 of 13 answered} & 743.1      & Native allocation failure on Q6\\
+\quad HDT engine    & \multicolumn{2}{r}{5 of 13 answered} & 12{,}432.2 & Q5 answered at the one-hour per-query ceiling (3{,}600.1\,s); Q6 failed\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+\paragraph{Indexed regional access.}
+The 11,160 regional executions produced no failures or answer disagreements (main Table~\ref{M-tab:regional}).
+On 17.1M triples, QLever took 9.6--11.1\,ms across 1\,kb--10\,Mb windows, while indexed cyvcf2 and bcftools costs grew $35.7\times$ and $7.5\times$, respectively.
+At 1\,kb, those readers were $2.9\times$ and $2.2\times$ faster; QLever overtook cyvcf2 by 1\,Mb and led both by $10.6\times$ and $2.9\times$ at 10\,Mb.
+QLever setup took 23.2\,s, against 0.48\,s for bgzip and tabix.
+In-memory engines required 896--1005\,ms per 1\,kb window on the smaller graph, against QLever's 18.8\,ms, and were not carried further.
+These comparisons use the same POS-based record selection rather than including interval-overlap records outside the requested window.
 
-\section{Configuration coverage, operating modes and memory feasibility}\label{sup:config}
+\subsection{Setup amortization}\label{subsec:measurements-setup}
+For an equivalent repeated workload with a positive per-query saving,
+\begin{equation}
+N_{\mathrm{break-even}}=\frac{\text{additional RDF setup}}{\text{VCF time per question}-\text{indexed RDF time per question}}.
+\end{equation}
+The reported 100,000-record scenario gives $(423.7+22.8)/(11.5-1.32)\simeq44$ questions.
+The 423.7-second workflow includes HDT construction, so it does not isolate minimum N-Triples-plus-QLever setup.
+It also assumes repeated parser scans at the measured question mix, not a batched pass computing all answers.
+No universal break-even count follows, and update costs for changing external evidence or policies were not measured.
 
-\textbf{Covering set.}
-A ten-row covering set exercised every value of all seven configuration axes --- sample representation, INFO representation, storage mode, RDF compression, representations, artifact compression and HDT strategy --- and all ten rows exited 0 and passed validation, including the shapes.
-Pairwise coverage is complete except for three combinations the wrapper structurally refuses (\texttt{--hdt-strategy single} beside space-optimized storage, beside COTTAS, and beside \texttt{hdt,cottas}), so the remaining gaps are specification, not omission.
-Gzip and Brotli were exercised as values of both compression axes; the campaign does not compare the two codecs' ratios or throughput.
+\section{Configuration coverage, operating modes, and memory feasibility}\label{sec:config}
+A ten-row covering set exercised every value of seven axes: sample representation, INFO representation, storage mode, RDF compression, output representations, artifact compression, and HDT strategy.
+Every row completed validation, including shapes.
+Pairwise coverage excludes only three prohibited combinations: \texttt{-{}-hdt-strategy single} with space-optimized storage, COTTAS, or \texttt{hdt,cottas}.
+Gzip and Brotli were exercised in both compression roles, but their ratios and throughput were not compared.
 
-\textbf{Operating modes.}
-Each of the tool's operating modes --- \texttt{tsv}, \texttt{compress}, \texttt{decompress}, \texttt{index} for HDT and for COTTAS, a conversion-only phase and a validation-only phase --- ran independently and exited 0, confirming that conversion and validation are separable stages rather than one monolithic command.
+The \texttt{tsv}, \texttt{compress}, \texttt{decompress}, HDT-index, COTTAS-index, conversion-only, and validation-only modes each ran independently with exit code 0.
+A feasibility sweep crossed requested 8, 16, and 31\,GB memory ceilings with three configurations on one million records.
+All nine cells completed at 1.34--1.93\,GB resident memory, but the harness could not confirm that Docker limits were forwarded to all container invocations.
+The result therefore shows low measured memory for those runs, not survival under verified enforced limits.
 
-\textbf{Memory feasibility.}
-A feasibility sweep crossed three memory ceilings (8, 16 and 31\,GB) with three configurations on a one-million-record input.
-All nine cells completed; peak resident memory was 1.34--1.93\,GB in every case, below every requested ceiling, which is consistent with the flat memory scaling in \main{subsec3.3}.
-This experiment carries one caveat that must be reported with it: the ceiling was requested through Docker memory limits but the harness could not confirm that the pinned release forwards them to its container invocations, so these cells establish that the workload is memory-light, not that it survives a genuinely enforced cap.
+Structured INFO increased the structural-variant graph from 89.01M to 96.75M triples (8.7\%), N-Triples bytes by 7.4\%, and HDT bytes by 7.8\%.
+On 100,000 HG005 records, the increase was from 12.52M to 17.10M triples (36.6\%).
+Raw INFO still retains alleles needed by expanded sample calls after the dependency correction in Section~\ref{sec:issues}.
+Structured header output added only 0.03\%: 17,098,746 versus 17,094,293 triples.
 
-\textbf{The cost of the INFO and header representations.}
-On the structural-variant file, structured INFO produced 96.75M triples against 89.01M for raw INFO ($+8.7\%$), a 7.4\% larger N-Triples output and a 7.8\% larger HDT, and on the 100{,}000-record \texttt{HG005\_GRCh38} input it produced 17.10M against 12.52M ($+36.6\%$).
-Raw INFO still carries the allele layer here, because the expanded sample profile references it (Section~\ref{sup:issues}); before that fix the raw arm omitted it and the difference looked larger than it is.
-Structured header representation costs almost nothing by comparison (17{,}098{,}746 against 17{,}094{,}293 triples, $+0.03\%$).
-
-\textbf{Cross-encoding equivalence.}
-The equivalence experiment converted one 10{,}000-line (9{,}986-record), single-sample fixture in both sample representations and both storage modes, built HDT and COTTAS from each, and ran the full twenty-seven-query suite (the fourteen preflight checks and Q1--Q13) under all four engines against all three artifacts.
-All sixteen validations passed with all four engines in agreement, on graphs of 0.96M triples (expanded) and 0.79M triples (condensed).
-The complete condensed cell took 70.4\,min end to end.
-Two further cells asserted that the tool must refuse \texttt{--hdt-strategy single} beside COTTAS and beside space-optimized storage, and it did, with exit status 2.
-
-
-\section{Defects, corrections and remaining gaps}\label{sup:issues}
-
-Testing identified problems in measurement, conversion, and validation.
-Three of them were defects that the record counts alone could not show: two conversion defects that the validation layer caught, and one policy-plug-in defect that the plug-in's own check caught; the main text summarizes them in \main{subsec3.5}.
-The corrected outputs are reflected in the reported counts. Open oracle/normalization failures and archived unsuccessful runs remain part of the evidence, rather than being relabeled as successful validation.
-
-\textbf{Header-only input omitted its declared samples.}
-A VCF with a declared sample column but no data records produced a graph without the \texttt{vcfc:SampleSet} and \texttt{vcfc:VCFSample} resources declared by its header.
-The emitters derived the file IRI from a source name learned from the first data row.
-The predicate and class censuses (Q9 and Q10) detected the missing resources.
-Emitting the sample set from the header increased the graph from 181 to 189 triples and allowed validation to complete.
-The same test exposed an incorrect oracle expectation: \texttt{preflight\_sample\_gt\_inventory} expected one \texttt{vcfc:sampleId}, although that property belongs to a per-record \texttt{vcfc:SampleCall}.
-The oracle was adjusted to expect no such calls when the file contains no records.
-
-\textbf{Allele references without corresponding resources.}
-Applying the shapes to the configuration covering set identified three failing rows, all combining raw INFO with expanded samples.
-Allele resources were emitted only for structured INFO, but expanded genotypes referenced them through \texttt{vcfc:calledAllele} regardless of the INFO setting.
-A 1,000-record test produced 1,972 such references without the corresponding allele descriptions.
-The comparison queries counted those edges without following them, whereas the shapes reported 5,916 violations.
-The emitter was changed to produce the allele layer when either representation requires it.
-The census oracle also needed the same dependency rule: its initial expectation reproduced the emitter's assumption and rejected the added triples.
-After both were updated, all ten covering-set rows passed.
-Each affected row gained 10,846 triples, while the other seven outputs remained byte-identical.
-Regression checks cover all four INFO/sample representation combinations and require every referenced allele to be described.
-
-\textbf{A withdrawn file's header remained in every release view.}
-During development of the policy plug-in, every record decision was correct, but a withdrawn file's header remained in every view, which the record counts alone could not show.
-The plug-in's own check caught it.
-That defect is why the plug-in defines what a withheld resource takes with it by an ownership rule rather than by a list of record subtrees (\main{subsec:plugins}).
-
-\textbf{Two memory guards that measured the wrong quantity.}
-Extending retrieval to 171M triples (\main{subsec3.6}) exposed two defects, neither visible at fixture scale.
-First, the shape layer is size-gated because \texttt{pyshacl} is in-memory, but the gate weighed the \emph{packaged artifact} while the cost it guards against is set by the \emph{graph}.
-One 170{,}935{,}101-triple graph therefore fell on both sides of a single 512\,MiB threshold according only to how it was packaged: as COTTAS (390.7\,MB) it passed the gate and the run was killed at 30.7\,GiB resident on a 31.3\,GiB host, while the same graph as gzip-framed N-Triples (756.6\,MB) or HDT (1.18\,GB) was skipped.
-The better a format compressed, the likelier it was to exhaust memory.
-The gate now counts triples, which no packaging changes.
-In \texttt{--mode full} the same release's gate weighs the input VCF rather than the graph, so it admitted a 58.2M-triple real-genome graph, from a 63.8\,MB input, to \texttt{pyshacl} during this study's validation of \texttt{NG131FQA1I} (\main{subsec3.5}); the host ran out of memory, and that validation was rerun without shapes.
-Second, the Comunica-backed endpoints aborted with a JavaScript heap exhaustion while roughly 25\,GB of the host's memory was free, because Node does not size its heap from the machine and no ceiling was set; the ceiling is now configurable.
-Both corrections are released in v3.3.0 and neither alters conversion output; the failing runs are archived alongside the successful ones.
-
-\textbf{COTTAS query execution and timeout enforcement.}
-The initial COTTAS query implementation used pycottas' RDFLib store.
-On the condensed representation it completed the fourteen preflight queries and Q1--Q4, then failed to complete \texttt{q05\_sample\_genotype\_counts}.
-Two attempts ran for approximately 41\,h and 10\,h at roughly 190\% CPU before being stopped.
-The second had a 1,800\,s per-query timeout and a 14,400\,s validation budget, but neither interrupted the in-process query.
-Both runs are archived.
-Replacing this path with the DuckDB-backed Comunica engine reduced Q5 to 2--5\,s and the thirteen-query workload on the 0.96M-triple comparison graph to 38\,s, against 1,402\,s through RDFLib.
-Query execution now occurs where the timeout can terminate it, and the completed cross-engine measurements use this engine.
-
-\textbf{SHACL report interpretation.}
-Integrating the vocabulary's SHACL shapes exposed two reporting errors.
-The validator treated \texttt{pyshacl}'s \texttt{conforms} flag as a blocking verdict even for recommendations, causing conformant INFO declarations without \texttt{Source} to be rejected.
-Its violation matcher also expected a report format that \texttt{pyshacl} did not emit.
-The parser was corrected to classify results by severity, with only \texttt{sh:Violation} blocking a run.
-
-\textbf{Missing-token preflight false positives.}
-The preflight reports contain 608 checks: 599 passed and nine flagged the missing-token rule, all on the 100,000-record \texttt{HG005\_GRCh38} input.
-The rule looks for bare \texttt{"."} literals that should have been typed as \texttt{vcfc:Null}.
-It first returned 20 rows there, all on \texttt{vcfc:fieldNumber} or \texttt{vcfc:genotypeString}, where a dot is legitimate: \texttt{Number=.} denotes variable cardinality, and a fully missing genotype is written \texttt{.}.
-The rule was narrowed to exclude those two predicates.
-In v3.1.0 it still returns ten rows, and they are the same case one layer over: the header declares ten INFO fields with \texttt{Number=.}, and the header-attribute layer also carries each declaration's Number attribute verbatim as a \texttt{vcfc:attributeValue} of \texttt{"."}.
-A follow-up change excludes that attribute's value as well while still reporting a bare dot on any other attribute; it postdates v3.1.0, so these nine flags (ten rows each) remain in this campaign's reports.
-None of the flags reflects malformed output.
-
-\textbf{Sites-only fixture limitation.}
-The sites-only fixture produced 245 triples and a valid HDT artifact, but its two validations ended with \texttt{EXECUTION\_FAILED}.
-The fixture declared a FORMAT column without sample columns, which \texttt{bcftools} rejects.
-This is a fixture/oracle limitation rather than evidence that the generated graph failed semantic comparison.
-No completed paired result is claimed for this input, and a conformant sites-only fixture remains necessary to establish that coverage.
-
-\textbf{Measurement and reporting in the legacy benchmark.}
-The earlier six-file, batch-oriented benchmark exposed two measurement problems.
-Partitioned compression wall times were under-reported; the timing implementation was corrected in commit \texttt{fb48e50}, and the affected historical durations were reconstructed from wrapper logs and execution timestamps.
-In addition, an input-size column labeled \texttt{.vcf.gz} actually contained the uncompressed VCF stream size: the retained \texttt{NG131FQA1I.vcf} contains 1{,}215{,}509{,}730 bytes, matching the reported 1215.5\,MB.
-The compression denominator also affected interpretation: the legacy HDT reduction of approximately 92--95\% was measured against uncompressed N-Triples, whereas in the current corpus experiment HDT is 1.36--1.82 times the size of the stored gzip-framed N-Triples.
-These use different reference artifacts and are not a like-for-like change in compression performance, so the legacy conversion and compression tables are excluded from the current analysis.
-
-
-\textbf{Review-run oracle failures remain open.}
-The 58.2M-triple NG131FQA1I follow-up exposes two classes of validator defect: omitted phase-set expectations and a lexical decimal dependency in the record digest (Section~\ref{sup:validation}). Diagnostic recomputation explains the observed failures, but a corrected validator has not yet been released. Extending that oracle to structural-variant events, gVCF blocks and local-allele constructs is also outside the completed evidence. These issues are distinct from the fixed missing-sample, allele-resource and ownership defects.
+The cross-encoding experiment used a 10,000-line, 9,986-record single-sample fixture in both sample profiles and storage modes, with N-Triples, HDT, and COTTAS artifacts.
+All sixteen validations passed the fourteen preflight checks and Q1--Q13 under all four engines, on graphs of 0.96M triples expanded and 0.79M condensed.
+The complete condensed cell took 70.4\,min.
+Two additional negative tests correctly refused single-HDT strategy with COTTAS or space-optimized storage, returning exit status 2.
 
 \bibliographystyle{unsrt}
 \bibliography{reference}

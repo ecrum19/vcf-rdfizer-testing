@@ -36,6 +36,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import baseline_carriers as B  # noqa: E402
 import make_cohort as M  # noqa: E402
+import make_layered as LAY  # noqa: E402
 import make_wgs as W  # noqa: E402
 import compare as C  # noqa: E402
 
@@ -44,6 +45,7 @@ from rdflib import Graph, Literal, Namespace, RDF, URIRef, XSD  # noqa: E402
 VCFC = Namespace("https://w3id.org/vcf-core/vocab#")
 VCFL = Namespace("https://w3id.org/vcf-rdfizer/linking#")
 CASE = json.loads((HERE / "use_case.json").read_text(encoding="utf-8"))
+LAYERED = json.loads((HERE / "layered" / "case.json").read_text(encoding="utf-8"))
 REGIONS = {r["symbol"]: r for r in json.loads((HERE / "regions.json").read_text(encoding="utf-8"))["regions"]}
 SPDI = "https://api.ncbi.nlm.nih.gov/variation/v0/spdi/"
 ASSEMBLY = "GCA_000001405.15_GRCh38_no_alt_analysis_set"
@@ -77,7 +79,7 @@ class Genome:
         self.rows = 0
 
     def record(self, chrom, pos, ref, alt, gt="0/1", status=VCFC.FiltersPassed, info=None, sample="S",
-               gene=None, decimals=None):
+               gene=None, decimals=None, spdi=None):
         self.rows += 1
         g, n = self.graph, self.rows
         record, call = URIRef(f"{self.file}#record/{n}"), URIRef(f"{self.file}#call/{n}")
@@ -88,7 +90,7 @@ class Genome:
         g.add((record, VCFC.hasCall, call))
         g.add((call, RDF.type, VCFC.VariantCall))
         g.add((call, VCFC.filterStatus, status))
-        g.add((call, VCFL.sameVariantAs, URIRef(f"{SPDI}{chrom.removeprefix('chr')}:{pos - 1}:{ref}:{alt}")))
+        g.add((call, VCFL.sameVariantAs, URIRef(SPDI + (spdi or f"{chrom.removeprefix('chr')}:{pos - 1}:{ref}:{alt}"))))
         if gene is not None:     # what the ensembl-genes-grch38 linker writes
             g.add((call, VCFL.overlapsGene, URIRef(f"https://identifiers.org/ensembl:{REGIONS[gene]['ensembl_id']}")))
         if gt is not None:
@@ -132,7 +134,9 @@ class GeneratedFilesAreCurrent(unittest.TestCase):
         for committed, case, names in ((HERE, HERE / "use_case.json", ("policy.ttl", "carriers.rq")),
                                        (HERE / "cohort", HERE / "cohort" / "cohort.json",
                                         ("policy.ttl", "carriers.rq", "rare.rq")),
-                                       (HERE / "wgs", HERE / "wgs" / "case.json", ("policy.ttl", "carriers.rq"))):
+                                       (HERE / "wgs", HERE / "wgs" / "case.json", ("policy.ttl", "carriers.rq")),
+                                       (HERE / "layered", HERE / "layered" / "case.json",
+                                        ("policy.ttl", "carriers.rq", "purposes.ttl"))):
             with tempfile.TemporaryDirectory() as work:
                 fresh = generate_into(pathlib.Path(work), case)
                 self.assertEqual(sorted(p.name for p in fresh.iterdir()), sorted(names))
@@ -151,6 +155,16 @@ class GeneratedFilesAreCurrent(unittest.TestCase):
         self.assertEqual((committed["definition"], committed["policy"]["requesters"]),
                          (CASE["definition"], CASE["policy"]["requesters"]))
         self.assertNotIn("cohort", committed)
+
+    def test_the_layered_case_is_arm_1s_question_with_finer_rules(self):
+        self.assertEqual(LAYERED, LAY.layered_case(CASE), "layered/case.json is stale; re-run make_layered.py")
+        self.assertEqual([p["id"] for p in LAYERED["participants"]], ["NB72462M"])
+        self.assertEqual(LAYERED["definition"], CASE["definition"])
+        requesters = LAYERED["policy"]["requesters"]
+        self.assertEqual({k: v for k, v in requesters.items() if k != "own_physician"}, CASE["policy"]["requesters"])
+        # The narrower purpose is declared, and the region names it.
+        self.assertEqual([t["iri"] for t in LAYERED["purposes"]], [requesters["own_physician"]["purpose"]])
+        self.assertEqual(LAYERED["policy"]["regions"][0]["purposes"], [requesters["own_physician"]["purpose"]])
 
     def test_the_cohort_carries_the_panel_definition(self):
         cohort = json.loads((HERE / "cohort" / "cohort.json").read_text(encoding="utf-8"))
@@ -389,6 +403,125 @@ class CarriersQuery(unittest.TestCase):
         self.assertEqual(self.answer(Genome("NB72462M"), clinvar), set())
 
 
+def layered_records() -> dict[str, dict]:
+    """One record per kind of rule in arm 4, as the baseline sees them."""
+    apoe = LAYERED["policy"]["regions"][0]
+    dsp = LAYERED["policy"]["variants"][0]
+    rows = {
+        "cancer": ("chr17", middle("BRCA1"), "A", "G"),
+        "cardiac": ("chr14", middle("MYH7"), "A", "G"),
+        "dsp": (dsp["chrom"], dsp["pos"], dsp["ref"], dsp["alt"]),
+        "apoe": (apoe["chrom"], (apoe["start"] + apoe["end"]) // 2, "A", "G"),
+        "elsewhere": ("chr17", 1_000_000, "C", "T"),
+    }
+    cancer = B.gene_spans(LAYERED["policy"]["secondary_findings"]["genes"])
+    return {name: {"participant": "NB72462M", "chrom": chrom.removeprefix("chr"), "pos": pos, "ref": ref,
+                   "alt": alt, "restricted": B.overlaps(chrom, pos, ref, cancer)}
+            for name, (chrom, pos, ref, alt) in rows.items()}
+
+
+#: What each arm-4 requester should see of layered_records(): four different, non-empty views.
+LAYERED_EXPECTED = {
+    "own_physician": {"cancer", "cardiac", "dsp", "apoe", "elsewhere"},
+    "clinical": {"cancer", "cardiac", "dsp", "elsewhere"},
+    "cardio": {"cardiac", "dsp"},
+    "biobank": {"cardiac", "elsewhere"},
+}
+
+
+def layered_baseline(name: str) -> set[str]:
+    for term in LAYERED["purposes"]:
+        B.BROADER[term["iri"]] = term["broader"]
+    policy, requester = LAYERED["policy"], LAYERED["policy"]["requesters"][name]
+    panels = [(panel["purpose"], B.gene_spans(panel["genes"])) for panel in policy["purpose_panels"]]
+    return {kind for kind, record in layered_records().items()
+            if B.released(record, requester["purpose"], policy, requester["assignee"], panels)}
+
+
+class LayeredBaselineRules(unittest.TestCase):
+    """Arm 4: each rule kind withholds what it should, from whom it should."""
+
+    def test_each_requester_sees_its_own_part_of_the_genome(self):
+        for name, expected in LAYERED_EXPECTED.items():
+            with self.subTest(requester=name):
+                self.assertEqual(layered_baseline(name), expected)
+
+    def test_the_narrower_purpose_is_still_clinical_care(self):
+        layered_baseline("own_physician")   # registers the case's purposes
+        own = LAYERED["policy"]["requesters"]["own_physician"]["purpose"]
+        self.assertTrue(B.within(own, "DUO:0000043"))
+        self.assertFalse(B.within("DUO:0000043", own))
+
+    def test_records_are_counted_per_requester(self):
+        layered_baseline("own_physician")
+        policy = LAYERED["policy"]
+        with tempfile.TemporaryDirectory() as work:
+            records = pathlib.Path(work, "records.tsv")
+            records.write_text("".join(f"NB72462M\tchr{r['chrom']}\t{r['pos']}\t{r['ref']}\t{r['alt']}\n"
+                                       for r in layered_records().values()), encoding="utf-8")
+            counts = B.released_records(records, policy, B.gene_spans(policy["secondary_findings"]["genes"]),
+                                        [(p["purpose"], B.gene_spans(p["genes"])) for p in policy["purpose_panels"]])
+        self.assertEqual(counts, {"unrestricted": 5, **{n: len(e) for n, e in LAYERED_EXPECTED.items()}})
+
+
+class LayeredImplementationsAgree(unittest.TestCase):
+    """Arm 4's policy through the plug-in == the baseline's rules, for every requester."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tool = tool_checkout()
+        if cls.tool is None:
+            raise unittest.SkipTest("no VCF-RDFizer checkout; set VCF_RDFIZER_SRC")
+        cls.work = pathlib.Path(tempfile.mkdtemp())
+        generate_into(cls.work, HERE / "layered" / "case.json")
+        genome = Genome("NB72462M")
+        cls.kinds = {}
+        dsp = LAYERED["policy"]["variants"][0]
+        for kind, record in layered_records().items():
+            gene = {"cancer": "BRCA1", "cardiac": "MYH7", "dsp": "DSP"}.get(kind)
+            spdi = dsp["spdi"] if kind == "dsp" else None
+            genome.record("chr" + record["chrom"], record["pos"], record["ref"], record["alt"], gene=gene, spdi=spdi)
+            cls.kinds[record["pos"]] = kind
+        cls.rdf = cls.work / "NB72462M.nt"
+        genome.graph.serialize(cls.rdf, format="nt", encoding="utf-8")
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.work, ignore_errors=True)
+
+    def evaluate(self, name: str) -> set[str]:
+        requester = LAYERED["policy"]["requesters"][name]
+        out = self.work / name
+        subprocess.run([sys.executable, str(self.tool / "vcf_rdfizer_policy.py"), "evaluate",
+                        "--rdf", str(self.rdf), "--policy", str(self.work / "policy.ttl"),
+                        "--purposes", str(self.work / "purposes.ttl"),
+                        "--assignee", requester["assignee"], "--purpose", requester["purpose"],
+                        "-o", str(out)], check=True, capture_output=True, text=True)
+        with (out / "decisions.csv").open(encoding="utf-8") as handle:
+            return {self.kinds[int(row["pos"])] for row in csv.DictReader(handle) if row["released"] == "True"}
+
+    def test_every_requester(self):
+        for name in LAYERED["policy"]["requesters"]:
+            with self.subTest(requester=name):
+                released = self.evaluate(name)
+                self.assertEqual(released, layered_baseline(name))
+                self.assertEqual(released, LAYERED_EXPECTED[name])
+
+    def test_a_graph_without_gene_links_is_refused(self):
+        """The gene-panel rules fail closed: a graph without its gene links is not evaluated."""
+        bare = Genome("NB72462M")
+        bare.record("chr14", middle("MYH7"), "A", "G")
+        rdf = self.work / "bare.nt"
+        bare.graph.serialize(rdf, format="nt", encoding="utf-8")
+        cardio = LAYERED["policy"]["requesters"]["cardio"]
+        result = subprocess.run([sys.executable, str(self.tool / "vcf_rdfizer_policy.py"), "evaluate",
+                                 "--rdf", str(rdf), "--policy", str(self.work / "policy.ttl"),
+                                 "--purposes", str(self.work / "purposes.ttl"),
+                                 "--assignee", cardio["assignee"], "--purpose", cardio["purpose"],
+                                 "-o", str(self.work / "bare-out")], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2, result.stderr)
+
+
 class Comparison(unittest.TestCase):
     def test_a_requester_not_yet_queried_is_not_counted_as_agreeing(self):
         with tempfile.TemporaryDirectory() as work:
@@ -424,6 +557,25 @@ class Comparison(unittest.TestCase):
                 self.assertTrue(json.loads((results / "comparison.json").read_text())["rare"]["unrestricted"]["agree"])
                 (results / "query" / "unrestricted" / "rare.tsv").write_text(
                     "file\tsample\tgene\tchrom\tpos\tref\talt\n", encoding="utf-8")
+                self.assertEqual(C.main([str(results), str(HERE / "use_case.json")]), 1)
+
+    def test_view_record_counts_are_compared_when_both_sides_counted(self):
+        with tempfile.TemporaryDirectory() as work:
+            results = pathlib.Path(work)
+            (results / "baseline").mkdir()
+            (results / "query" / "unrestricted").mkdir(parents=True)
+            header = "participant\tgene\tchrom\tpos\tref\talt\n"
+            (results / "baseline" / "carriers.unrestricted.tsv").write_text(header, encoding="utf-8")
+            (results / "query" / "unrestricted" / "carriers.tsv").write_text(
+                "file\tsample\tgene\tchrom\tpos\tref\talt\n", encoding="utf-8")
+            (results / "baseline" / "summary.json").write_text(json.dumps({"records": {"clinical": 4}}))
+            (results / "govern__clinical" / "out").mkdir(parents=True)
+            view = results / "govern__clinical" / "out" / "summary.json"
+            view.write_text(json.dumps({"records_released": 4, "records_withheld": 1}))
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(C.main([str(results), str(HERE / "use_case.json")]), 0)
+                self.assertTrue(json.loads((results / "comparison.json").read_text())["records"]["clinical"]["agree"])
+                view.write_text(json.dumps({"records_released": 5, "records_withheld": 0}))
                 self.assertEqual(C.main([str(results), str(HERE / "use_case.json")]), 1)
 
     def test_keys_ignore_contig_prefix_and_read_the_file_iri(self):

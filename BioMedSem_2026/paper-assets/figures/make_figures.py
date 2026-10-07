@@ -15,7 +15,10 @@ value is also stated in the text or in the archived tidy datasets.
 
 from __future__ import annotations
 
+import glob
+import re
 import statistics as st
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -31,6 +34,9 @@ from figure_data import (  # noqa: E402 - stdlib-only data layer shared with the
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE.parent
+# The validation and use-case readers live with the results site's builder.
+sys.path.insert(0, str(HERE.parents[2] / "scripts"))
+import build_site_data as site  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Style: the reference palette's light-mode roles
@@ -485,10 +491,280 @@ def fig_retrieval() -> None:
         print(f"  qlever on {t}: {st.mean(per_target[t]):.2f} setup {st.mean(setup[(t, 'qlever')]):.2f}")
 
 
+# ---------------------------------------------------------------------------
+# Figure: validation evidence, expected against observed
+# ---------------------------------------------------------------------------
+def fig_validation() -> None:
+    """What each validation layer should report on its inputs, and what it did.
+
+    Valid inputs should agree everywhere; injected faults should all be found.
+    Each bar is the expected outcome, filled to the observed one.
+    """
+    v = site.validation_counts()
+    scores = site.mutation_profiles()["scores"]
+    real = site.real_genome()
+    whole = [r for r in site.scale()["rows"]
+             if r["scale"] == "whole" and r["engine"] == "qlever" and r["artifact"] == "nt.gz"]
+    whole_triples = site.load(site.RESULTS / "vcf-bench-3" / "scale-store-manifests"
+                              / "whole.manifest.json")["triples"]
+    decoded = sum(n for k, n in v["decode"].items() if k.endswith(":pass"))
+    decode_total = sum(v["decode"].values())
+    real_equal = sum(q["status"] == "PASS" for q in real["queries"])
+    valid = [
+        ("Base campaign, paired comparisons", "fixtures and slices up to 17.1M triples",
+         v["comparisons"]["PASS"],
+         sum(n for status, n in v["comparisons"].items() if not status.startswith("NOT_APPLICABLE"))),
+        ("Native HDT/COTTAS decoding", "triple count of every artifact", decoded, decode_total),
+        ("Whole-genome retrieval", f"HG005, {millions(whole_triples)} triples",
+         sum(r["status"] == "PASS" for r in whole), len(whole)),
+        ("Consumer-genome follow-up", f"NG131FQA1I, {millions(real['triples'])} triples",
+         real_equal, len(real["queries"])),
+    ]
+    faults = [
+        ("Queries only", scores["queries"]),
+        ("Queries + default shapes", scores["core"]),
+        ("Queries + all shape profiles", scores["full"]),
+    ]
+
+    fig = plt.figure(figsize=(WIDTH_IN, 3.05))
+    gs = GridSpec(2, 1, figure=fig, height_ratios=[len(valid), len(faults)], hspace=0.75,
+                  left=0.33, right=0.86, top=0.91, bottom=0.12)
+
+    def track(ax, rows, colour_hit, label_miss):
+        style_axes(ax, "x")
+        n = len(rows)
+        for y, (name, note, hit, total) in zip(range(n - 1, -1, -1), rows):
+            ax.barh(y, 1, height=0.56, color=GRID, zorder=1)
+            ax.barh(y, hit / total, height=0.56, color=colour_hit, zorder=2)
+            miss = total - hit
+            ax.text(1.02, y, f"{hit:,} / {total:,}", transform=ax.get_yaxis_transform(),
+                    color=INK, fontsize=6.6, ha="left", va="center")
+            if miss:
+                ax.text(hit / total + 0.01, y, label_miss.format(miss), color=INK_2,
+                        fontsize=6.2, ha="left", va="center", zorder=3)
+            ax.text(-0.02, y + 0.13, name, transform=ax.get_yaxis_transform(), color=INK,
+                    fontsize=6.6, ha="right", va="center")
+            if note:
+                ax.text(-0.02, y - 0.22, note, transform=ax.get_yaxis_transform(),
+                        color=MUTED, fontsize=5.8, ha="right", va="center")
+        ax.set_yticks([])
+        ax.spines["left"].set_visible(False)
+        ax.set_xlim(0, 1)
+        ax.set_ylim(-0.6, n - 0.4)
+        ax.xaxis.set_major_locator(FixedLocator([0, 0.25, 0.5, 0.75, 1]))
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _p: f"{x:.0%}"))
+
+    ax = fig.add_subplot(gs[0])
+    track(ax, valid, BLUE, "{} differ")
+    ax.set_title("(a) Valid inputs: every answer should equal the VCF's", x=-0.47)
+    ax.set_xlabel("Equal to the source, share of expected")
+
+    ax = fig.add_subplot(gs[1])
+    track(ax, [(name, "", s["detected"], s["total"]) for name, s in faults], ORANGE, "{} missed")
+    ax.set_title(f"(b) Injected faults: all {faults[0][1]['total']} should be detected", x=-0.47)
+    ax.set_xlabel("Detected, share of injected")
+
+    fig.savefig(OUT / "fig-validation.pdf", metadata=PDF_METADATA)
+    plt.close(fig)
+    print("validation:", [(r[0], r[2], r[3]) for r in valid],
+          [(n, s["detected"], s["total"]) for n, s in faults])
+
+
+# ---------------------------------------------------------------------------
+# Figure: use-case matches per requester, both workflows
+# ---------------------------------------------------------------------------
+#: Requesters in display order; arm 4 adds care by the participant's physician.
+REQUESTERS = [("unrestricted", "All (no policy)"), ("own_physician", "Participant's physician"),
+              ("clinical", "Clinical care (CC)"), ("cardio", "Cardiovascular research (DS)"),
+              ("biobank", "General research (GRU)")]
+#: Arm 4 (layered rules on one complete genome) ran on vcf-bench-3, outside the site's arms.
+ARM4 = site.RESULTS / "vcf-bench-3" / "use-case" / "17_use_case_acmg__layered"
+
+
+def arm_genome_triples(arm: Path) -> int:
+    """Triples converted from the arm's genomes, before links (ClinVar and the panel excluded)."""
+    total = 0
+    for cell in site.reported_cells(arm, "convert"):
+        if cell.name.split("__", 1)[1] in ("clinvar", "panel"):
+            continue
+        counts = [int(m.group(1))
+                  for path in glob.glob(str(cell / "out" / "**" / "*.json"), recursive=True)
+                  for m in re.finditer(r'"total_triples":\s*"?(\d+)', Path(path).read_text())]
+        total += max(counts)
+    return total
+
+
+def carriers(comparison: dict) -> dict:
+    """The per-requester match comparisons of a comparison.json, as the site reads them."""
+    return {r: c for r, c in comparison.items() if isinstance(c, dict) and "agree" in c}
+
+
+def fig_usecase_matches() -> None:
+    """Matches each requester may see, per arm; the RDF and conventional workflows side by side."""
+    arms = site.usecase()["arms"]
+    panels = [
+        ("Arm 1: five genome slices", arms["arm1"]["carriers"], arm_genome_triples(site.ARMS["arm1"])),
+        ("Arm 2: cohort of 104", arms["arm2"]["carriers"], arm_genome_triples(site.ARMS["arm2"])),
+        ("Arm 2: cohort, panel AF < 0.01", arms["arm2"]["rare"], None),
+        ("Arm 3: HG005 genome", arms["arm3"]["carriers"], arm_genome_triples(site.ARMS["arm3"])),
+        ("Arm 4: NB72462M genome", carriers(site.load(ARM4 / "comparison.json")), arm_genome_triples(ARM4)),
+    ]
+    fig, axes = plt.subplots(3, 2, figsize=(WIDTH_IN, 4.35))
+    fig.subplots_adjust(left=0.27, right=0.95, top=0.94, bottom=0.05, wspace=0.18, hspace=0.62)
+    for i, (ax, (name, counts, triples)) in enumerate(zip(axes.flat, panels)):
+        style_axes(ax, "x")
+        rows = [(key, label) for key, label in REQUESTERS if key in counts]
+        top = max(counts[key]["rdf"] for key, _ in rows)
+        for y, (key, _label) in zip(range(len(rows) - 1, -1, -1), rows):
+            c = counts[key]
+            ax.barh(y, c["rdf"], height=0.56, color=GRAY if key == "unrestricted" else BLUE, zorder=2)
+            dot(ax, c["baseline"], y, ORANGE, size=4.6, zorder=4)
+            ax.text(c["rdf"] + top * 0.06, y, f"{c['rdf']:,}", color=INK_2, fontsize=6.3,
+                    va="center")
+        ax.set_xlim(0, top * 1.38)
+        ax.set_ylim(-0.6, len(rows) - 0.4)
+        ax.set_yticks(range(len(rows)))
+        ax.set_yticklabels([label for _, label in reversed(rows)] if i % 2 == 0 else [])
+        ax.tick_params(axis="y", length=0)
+        ax.spines["left"].set_visible(False)
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _p: f"{x:,.0f}"))
+        ax.xaxis.set_major_locator(FixedLocator([0, top / 2, top]) if top < 10 else
+                                   matplotlib.ticker.MaxNLocator(3))
+        subtitle = f", {triples_label(triples)} triples" if triples else ""
+        ax.set_title(f"({'abcde'[i]}) {name}{subtitle}", fontsize=7)
+    # The sixth cell holds the legend.
+    key_ax = axes.flat[len(panels)]
+    key_ax.axis("off")
+    handles = [plt.Rectangle((0, 0), 1, 1, color=GRAY, label="RDF workflow, no policy"),
+               plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF workflow, release view"),
+               plt.Line2D([], [], marker="o", linestyle="", color=ORANGE, markeredgecolor="white",
+                          markersize=5, label="Conventional workflow")]
+    key_ax.legend(handles=handles, loc="center left", handletextpad=0.5, labelspacing=0.9,
+                  borderaxespad=0.0)
+    fig.savefig(OUT / "fig-usecase-matches.pdf", metadata=PDF_METADATA)
+    plt.close(fig)
+    for name, counts, triples in panels:
+        print(f"usecase {name}: {triples}", {k: (counts[k]['rdf'], counts[k]['baseline']) for k, _ in REQUESTERS if k in counts})
+
+
+def millions(n: float) -> str:
+    return f"{n / 1e6:.1f}M"
+
+
+# ---------------------------------------------------------------------------
+# Figure: stage costs of the linked workflow
+# ---------------------------------------------------------------------------
+#: The four arms in order of graph size; arm 4 (layered rules) ran on vcf-bench-3.
+COST_ARMS = [
+    ("Arm 1: five genome slices", site.ARMS["arm1"]),
+    ("Arm 2: cohort of 104", site.ARMS["arm2"]),
+    ("Arm 3: complete HG005", site.ARMS["arm3"]),
+    ("Arm 4: complete NB72462M", ARM4),
+]
+STAGES = [("convert", "Convert"), ("link", "Link"),
+          ("view", "Write view"), ("check", "Check view"), ("index", "Index view"), ("query", "Query")]
+#: The requester followed to the first answer: present in every arm, and its check is recorded in each.
+FIRST_ANSWER = "clinical"
+
+
+def triples_label(n: float) -> str:
+    return f"{n / 1e9:.2f}B" if n >= 1e9 else millions(n)
+
+
+def stage_costs(arm: Path) -> dict:
+    """Seconds per stage: one value for the once-per-arm stages, one per requester otherwise.
+
+    The view is the govern cell. The harness checks a view between that cell and
+    the next requester's, so a check is the gap between consecutive govern cells;
+    the last requester's gap also holds other work and is not used. Index and
+    query are the query cell's setup and median replicate.
+    """
+    def bench(cell):
+        return site.load(cell / "bench.json")
+
+    def cells(prefix):
+        return [c for c in site.reported_cells(arm, prefix) if (c / "bench.json").exists()]
+
+    govern = sorted(cells("govern"), key=lambda c: bench(c)["started_epoch"])
+    out = {"convert": [site.wall(cells("convert"))], "link": [site.wall(cells("link"))],
+           "view": [], "check": [], "index": [], "query": [], "empty": set()}
+    for i, cell in enumerate(govern):
+        requester = cell.name.split("__", 1)[1]
+        out["view"].append((requester, bench(cell)["wrapper_wall_seconds"]))
+        if i + 1 < len(govern):
+            out["check"].append((requester, bench(govern[i + 1])["started_epoch"] - bench(cell)["ended_epoch"]))
+        summary = site.load(cell / "out" / "summary.json")
+        out.setdefault("released", {})[requester] = (summary["records_released"], summary["triples_released"])
+        if summary["records_released"] == 0:
+            out["empty"].add(requester)
+    for timing in sorted(arm.glob("query/*/timing.json")):
+        requester = timing.parent.name
+        data = site.load(timing)
+        replicates = data["replicates"]
+        replicates = replicates["carriers"] if isinstance(replicates, dict) else replicates
+        if requester == "unrestricted":
+            out["unrestricted"] = (data["setup_seconds"], st.median(replicates))
+            continue
+        out["index"].append((requester, data["setup_seconds"]))
+        out["query"].append((requester, st.median(replicates)))
+    out["triples"] = site.load(arm / "query" / "unrestricted" / "timing.json")["triples"]
+    return out
+
+
+def fig_usecase_costs() -> None:
+    """Time before the first answer, and each query, against the size of the arm's graph."""
+    arms = [(name, stage_costs(path)) for name, path in COST_ARMS]
+    sizes, setup, query = [], [], []
+    for _name, costs in arms:
+        pick = lambda key: dict(costs[key])[FIRST_ANSWER]  # noqa: E731
+        sizes.append(costs["triples"])
+        setup.append(costs["convert"][0] + costs["link"][0] + pick("view") + pick("check") + pick("index"))
+        query.append(pick("query"))
+    fig, ax = plt.subplots(figsize=(WIDTH_IN, 2.35))
+    fig.subplots_adjust(left=0.1, right=0.97, top=0.9, bottom=0.2)
+    style_axes(ax, "y")
+    ax.set_yscale("log")
+    xs = list(range(len(arms)))  # arms in order of graph size, evenly spaced
+    ax.plot(xs, setup, color=BLUE, linewidth=1.6, zorder=2, label="Before the first answer")
+    ax.plot(xs, query, color=ORANGE, linewidth=1.6, zorder=2, label="Each query")
+    for x, y in zip(xs, setup):
+        dot(ax, x, y, BLUE, size=5.5)
+        text = f"{y / 3600:.1f} h" if y >= 3600 else f"{y / 60:.0f} min"
+        ax.annotate(text, (x, y), textcoords="offset points", xytext=(0, 7), ha="center",
+                    color=INK_2, fontsize=6.5)
+    for x, y in zip(xs, query):
+        dot(ax, x, y, ORANGE, size=5.5)
+    ax.annotate(f"{min(query) / 60:.1f}--{max(query) / 60:.1f} min in every arm".replace("--", "\u2013"),
+                (1.5, st.mean(query[1:3])), textcoords="offset points", xytext=(0, -12), ha="center",
+                color=INK_2, fontsize=6.5)
+    ax.set_xticks(xs)
+    labels = []
+    for name, costs in arms:
+        what = name.split(": ")[1]
+        labels.append(f"{what[0].upper()}{what[1:]}\n{triples_label(costs['triples'])} triples")
+    ax.set_xticklabels(labels)
+    ax.tick_params(axis="x", length=0)
+    ax.set_xlim(-0.45, len(arms) - 0.55)
+    names = {60: "1 min", 600: "10 min", 3600: "1 h", 36000: "10 h"}
+    ax.yaxis.set_major_locator(FixedLocator(list(names)))
+    ax.yaxis.set_minor_locator(NullLocator())
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: names.get(v, "")))
+    ax.set_ylim(60, 15 * 3600)
+    ax.set_ylabel("Time (log scale)")
+    ax.legend(loc="upper left", handlelength=1.6, borderaxespad=0.2)
+    fig.savefig(OUT / "fig-usecase-costs.pdf", metadata=PDF_METADATA)
+    plt.close(fig)
+    for (name, _c), x, a, b in zip(arms, sizes, setup, query):
+        print(f"costs {name}: {x} triples, first answer {a / 60:.1f} min, query {b:.1f} s")
+
 if __name__ == "__main__":
     fig_scaling()
     fig_samples()
     fig_representations()
     fig_retrieval()
-    for name in ("fig-scaling", "fig-samples", "fig-representations", "fig-retrieval"):
+    fig_validation()
+    fig_usecase_matches()
+    fig_usecase_costs()
+    for name in ("fig-scaling", "fig-samples", "fig-representations", "fig-retrieval",
+                 "fig-validation", "fig-usecase-matches", "fig-usecase-costs"):
         print("wrote", OUT / f"{name}.pdf")
