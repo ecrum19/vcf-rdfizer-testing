@@ -1,185 +1,170 @@
-% Updated coauthor brief. report.md is the convenient text-editing source.
+% Coauthor brief, rewritten against the revised manuscript and supplement of 7 October 2026.
+% Figures are copies of BioMedSem_2026/paper-assets; refresh them from there after any change.
+% Build: latexmk -pdf -interaction=nonstopmode -halt-on-error report_revised.tex
 \documentclass[10pt]{article}
 \usepackage[a4paper,margin=1.9cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern,helvet}
 \renewcommand{\familydefault}{\sfdefault}
-\usepackage{amsmath,booktabs,longtable,tabularx,array,xcolor,graphicx}
-\usepackage{calc,etoolbox,titlesec,needspace,fancyhdr}
+\usepackage{amsmath,booktabs,tabularx,array,xcolor,graphicx,enumitem}
+\usepackage{etoolbox,titlesec,needspace,fancyhdr}
 \usepackage[hidelinks]{hyperref}
 \definecolor{accent}{HTML}{1F7F83}
 \setcounter{secnumdepth}{-1}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
-\renewcommand{\arraystretch}{1.12}
+\renewcommand{\arraystretch}{1.15}
 \titleformat{\section}{\large\bfseries\color{accent}}{}{0pt}{}
 \titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
 \titlespacing*{\section}{0pt}{11pt}{5pt}
 \titlespacing*{\subsection}{0pt}{8pt}{3pt}
-\AtBeginEnvironment{longtable}{\small}
-\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setlist{nosep,leftmargin=1.2em,topsep=2pt}
 \emergencystretch=2em
 \newcommand{\figcaption}[1]{{\small\raggedright #1\par}}
+\newcommand{\reading}[1]{\textbf{Reading:} #1}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small VCF-RDFizer \textbar\ Coauthor brief}
-\fancyhead[R]{\small 5 October 2026}
+\fancyhead[R]{\small 7 October 2026}
 \fancyfoot[R]{\small\thepage}
 \renewcommand{\headrulewidth}{.3pt}
 \setlength{\headheight}{14pt}
 \begin{document}
 {\LARGE\bfseries VCF-RDFizer: coauthor discussion brief}\par
-\textbf{Updated 5 October 2026 · After restructuring the main manuscript and supplement}
+\textbf{Updated 7 October 2026 · After the second revision of the manuscript and supplement}
 
-\section{1. The argument of the paper}\label{the-argument-to-agree-on}
+\section{1. The argument of the paper}
 
-\textbf{VCF-RDFizer provides a consistent route from VCF to an explicit representation that can be reused in linked, policy-aware genomic queries. Its value lies in representation of variant relationships explicetly as well as evaluation of generated representations to ensure consistency, with the cost of conversion, storage, and evaluation measured openly.}
+\textbf{VCF-RDFizer converts VCF into an explicit RDF representation that can be checked against its source, connected to external knowledge, and used in policy-aware research queries. It supports verifiable conversion and reusable, policy-aware queries; it is not a universal replacement for VCF. Its value depends on the relationships a task needs, the validation coverage achievable, and the cost of conversion and indexing.}
 
-VCF remains compact and effective. Our converter generates a RDF representation of VCF that preserves the VCF information while also providing additional semantic context and capabilities. The paper therefore does not argue that RDF makes these questions possible for the first time, that it is universally faster, or that attaching a policy makes a genome private.
+VCF remains compact and effective, and the paper does not argue that RDF makes these questions possible for the first time, that it is universally faster, or that attaching a policy makes a VCF file private.
+Three questions organize the evaluation, and the Results follow them in order:
+\begin{itemize}
+\item \textbf{RQ1:} Which aspects of VCF information are preserved and verifiable?
+\item \textbf{RQ2:} What do the explicit VCF field representations enable in a linked, policy-aware workflow?
+\item \textbf{RQ3:} Under which workloads and representation choices are the costs of conversion, evaluation, linking, and querying practical?
+\end{itemize}
 
-The revised manuscript asks three questions: \textbf{RQ1: what information is preserved and checkable? RQ2: what can the representation do in a linked, policy-aware workflow? RQ3: when are its costs practical?} Results follow that order. The vocabulary is explained through the representation decisions needed to assess the tool, not through a catalogue of classes.
+\textbf{Needed feedback:} approve the central claim and scope, agree on the presentation choices in Section~6, and confirm the remaining work before submission.
 
-The strongest connection is between the evidence types: source comparisons and structural checks make the transformation inspectable; shared identities make separately maintained information reusable; appropriate baselines and stage timings show what that reuse costs.
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.92\textwidth]{figs/vcf2rdf-v3.pdf}
+\par\medskip
+\figcaption{\textbf{Figure 1. What the tool does} (main Figure~1). (1)~A VCF is split into tabular logical sources, mapped by RML rules and direct emitters, and written as one N-Triples VCF graph. (2)~The graph is turned into HDT and COTTAS one raw chunk at a time, then merged. (3)~A native decode check confirms each artifact's triple count against the graph, and semantic validation compares thirteen SPARQL questions with the source VCF and applies SHACL shapes.}
+\end{figure}
 
-\textbf{Needed Feedback:} approve the central claim and scope, decide how to present the validation results, and agree about any remaining work necessary before submission.
+\section{2. What changed since the 5 October brief}
 
-\section{2. Validation: the new results change the interpretation}\label{validation-the-new-results-change-the-interpretation}
+\begin{itemize}
+\item \textbf{Structure.} Implementation and Evaluation each have three subsections matching RQ1--RQ3. The \emph{base campaign} is now defined where it is first used: 143 runs in 12 experiment families with the published v3.1.0 release, detailed in Supplementary Section~S5.1.
+\item \textbf{Figures instead of tables.} The validation results, the workflow matches, the stage costs, and the regional baseline are now Figures~3, 4, 5, and~8. The main text has eight figures and two tables; every exact number moved to a supplementary table.
+\item \textbf{A fourth workflow arm.} Arm~4 applies layered rules to the complete NB72462M VCF (5,063,417 records), giving four requesters four different, non-empty release views. Both workflows agreed record for record.
+\item \textbf{Release v3.3.1.} Arm~4's record-level comparison exposed a linker defect: v3.3.0 did not link spanning-deletion (\texttt{*}) records to genes, so gene-based rules could not select them. v3.3.1 links them by their REF span; rerunning Arm~1 left every match unchanged.
+\item \textbf{Consumer WGS validation run now passes.} The three mismatches on 250,000 NG131FQA1I records were validator gaps (uncounted phase sets; QUAL compared as written). With the v3.3.1 validator the same graph gives 13/13 equal answers, and the default shapes report no violations. The failure history is kept in Supplementary Section~S3.2 only.
+\item \textbf{A stated SHACL limitation.} Full shape validation does not yet scale to the graph of a complete single-sample VCF (Section~3 below).
+\item \textbf{Precise naming.} A VCF file is never called a ``genome'': the text names inputs (``the complete HG005 VCF'', ``five gene-span slices''), gives each graph size with its input, and uses All/OP/CC/DS/GRU for requesters throughout.
+\end{itemize}
 
-An \emph{oracle} is the independently derived expected answer against which the graph is checked. SHACL adds constraints on graph structure and values. Neither a query summary nor a shape profile checks everything.
+\section{3. RQ1: source comparisons and structural validation are complementary}
 
+On valid inputs every check agreed with an answer derived independently from the source VCF: all 984 applicable query comparisons of the base campaign's 76 validation runs, the decoded triple count of all 152 HDT and COTTAS artifacts, all thirteen answers on the 657.4M-triple graph of the complete HG005 VCF, and all thirteen in the consumer WGS validation run (58.2M triples). The 25 runs repeated on four SPARQL engines returned identical answers.
 
+On 113 injected faults, the queries detected 96. The default shapes detected none of the remaining 17, which change relationships no query summary inspects (which allele a genotype refers to, a sample's index, phasing, header attribute values); the two deeper profiles detected all of them.
 
-\clearpage
-\subsection{What happened in the consumer-genome follow-up?}\label{what-happened-in-the-consumer-genome-follow-up}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.9\textwidth]{figs/fig-validation.pdf}
+\par\medskip
+\figcaption{\textbf{Figure 2. Validation outcomes on valid inputs and on injected faults} (main Figure~3). Each bar spans the expected outcome and is filled to the observed one. (a)~Agreement with source-derived answers. (b)~Detection of 113 injected faults by the queries alone, with the default shapes, and with all shape profiles.}
+\end{figure}
 
-Q9 and Q10 expected inventories omitted \textbf{30,910 phase sets} emitted for GATK's \texttt{PS} field. Q11 differed on \textbf{1,998 QUAL values with trailing zeros}, because QLever returned canonical decimals. Direct comparison found the record fields equal to the original VCF text across all 250,000 records; recomputing the expected digest with canonical QUAL reproduced QLever's buckets.
+\subsection{The new limitation: shape validation at scale}
+The SHACL engine holds the graph in memory at about 2.4\,GB per million triples. The default profile's constraints are local to a record, so it now runs in record batches: 89 minutes for the 58.2M-triple graph, or about 17 hours at that rate for the 657.4M-triple graph of the complete HG005 VCF. The deeper profiles compare records with one another and must see the whole graph, so on the 31\,GB benchmark hosts they are capped at 10M triples, and their running time on large graphs is unmeasured. The fault coverage they add is therefore not yet available for complete VCFs; the paper names this as future work.
 
-These diagnostics support an oracle/normalization explanation for the three failures. They do not turn the automated run into a pass or prove every emitted relationship. The first shape-enabled attempt exhausted memory; the completed comparison omitted shapes. The evaluated release contains no fix; Section 5 gives the status of one.
+\subsection{What matters beyond pass counts}
+During development the validation found three real defects that a record count could not have shown: a header-only file omitted its declared samples; genotypes referred to allele resources a raw-INFO conversion never emitted; and withheld files left their headers in release views.
 
-\subsection{What matters beyond pass counts?}\label{what-matters-beyond-pass-counts}
+\reading{main Sections~3.1, 4.1 and 5.5; supplement Sections~S3 and~S7.}
 
-Three fixed defects give the validation design a concrete purpose: a header-only input omitted its declared samples; expanded genotypes referenced allele resources missing in raw-INFO mode; and withdrawn files left their headers in release views. Record counts alone could not show any of them. The deeper shape profiles, however, took \textbf{33.7 and 73.2 seconds on roughly 2,000 triples}, versus 1.7 seconds for the default.
+\section{4. RQ2: the same answers, with explicit and reusable relationships}
 
-\textbf{Reading:} main §§3.1 and 4.2; supplement §§S4 and S8.
+The workflow asks which observed variants in the frozen 81-gene ACMG SF v3.2 set have a ClinVar classification (at least one review star), with which participant and gene, and which matches each requester may receive. Policies are simulated. Counts are participant--variant--gene matches, not people, and the pathogenic or likely pathogenic subset (zero in Arms~1, 3 and~4; eight in Arm~2) is not a set of clinically adjudicated findings.
 
-\section{3. Linked querying: same answers, explicit reusable relationships}\label{linked-querying-same-answers-explicit-reusable-relationships}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\textwidth]{figs/fig-usecase-matches.pdf}
+\par\medskip
+\figcaption{\textbf{Figure 3. Identical match sets for every requester in every arm} (main Figure~4). Bars are the RDF workflow and dots the bcftools workflow. Arm~1: the ACMG gene-span regions of five single-sample VCFs; Arm~2: 104 1000~Genomes participants, with a separate panel-frequency graph in (c); Arm~3: the complete HG005 VCF; Arm~4: the complete NB72462M VCF. All: no policy; OP: the participant's own physician; CC: clinical care; DS: cardiovascular research; GRU: general research use.}
+\end{figure}
 
-The research question joins genomic observations to ClinVar classifications in the \textbf{frozen ACMG SF v3.2 81-gene set}, then applies simulated requester rules. Results include all admitted ClinVar classifications with at least one review star. This is not an implementation of all conditions for reporting clinical secondary findings.
+\begin{itemize}
+\item \textbf{Agreement.} Every requester-specific match set equals the conventional workflow's, and every materialized release view passed the policy and source checks. Arm~3's complete HG005 VCF reproduced its Arm~1 gene-span result (1,496 matches).
+\item \textbf{Fine-grained release (Arm~4).} OP received every record; CC all but six APOE records; GRU all but 2,520 records under the cancer-gene, APOE and single-variant rules; DS only the 6,397 records in its cardiovascular panel.
+\item \textbf{Shared information stored once.} A separate 68,635-site graph of 6.5M triples replaces about 857M triples of panel INFO repeated in each 1000~Genomes participant file (93\% of their RDF). The saving comes from factoring the input, not from RDF compression.
+\item \textbf{Rule changes.} Restricting HFE C282Y to clinical care changed only policy data in the RDF workflow, and also caught an HG002 record on contig \texttt{6} rather than \texttt{chr6}; the conventional workflow needed a code and data edit. This is a change-location demonstration, not a usability claim.
+\end{itemize}
 
-\begin{center}
-\includegraphics[width=0.95\textwidth]{figs/fig-usecase.pdf}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.9\textwidth]{figs/fig-usecase-costs.pdf}
+\par\medskip
+\figcaption{\textbf{Figure 4. Setup grows with the data; querying does not} (main Figure~5). Time before the clinical-care requester's first answer (convert and link, then write, check, and index its view) against the median query time. Sizes are the triples indexed for each arm's unrestricted query, including the 33.1M-triple ClinVar subset and all links.}
+\end{figure}
+
+For Arm~3, converting the complete HG005 VCF and ClinVar took 54\,min, linking 8\,min, and the clinical view a further 2.5\,h (68\,min of it validation), peaking at 13.1\,GB of memory and 34\,GB of disk. Queries then took 146--209\,s in every arm, dominated by the fixed ClinVar join.
+
+\subsection{Important boundaries}
+SPDI joins assume the tested reference, normalization, and eligible allele classes; contig-alias handling is demonstrated, canonical identity across every equivalent representation is not. Every participant is a single-sample VCF, so masking samples within a multi-sample VCF is untested. Consents are simulated, and deployment security and real consent validity remain separate questions.
+
+\reading{main Sections~2.3, 3.2, 4.2 and~5.4; supplement Section~S4.}
+
+\section{5. RQ3: costs depend on the workload, not on one headline number}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.95\textwidth]{figs/fig-regional.pdf}
+\par\medskip
+\figcaption{\textbf{Figure 5. Where tabular parsing is and is not stronger than RDF querying} (main Figure~8). (a)~Median time per regional query on 100,000 HG005 records, by window size (median records per window in parentheses). (b)~Every comparison as tabular time divided by QLever time; points in the shaded region are those where tabular parsing was slower. Setup is excluded: 23.2\,s for QLever's index against 0.48\,s for bgzip and tabix.}
+\end{figure}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}X@{}}
+\toprule
+\textbf{Workload or choice} & \textbf{Finding to retain}\\
+\midrule
+Single whole-file questions & QLever took 0.005--4.62\,s per question against 11.5--12.3\,s for a cyvcf2 scan, on 100,000 HG005 records (17.1M triples).\\
+All thirteen in one pass & One parser pass took 12.4\,s; QLever's queries took 17.1\,s, plus a 22.8\,s index.\\
+Repeated questions & About 44 questions to break even, including conversion with HDT (423.7\,s) and indexing. One scenario, not a tool constant.\\
+Regional lookups & Indexed readers were faster up to 100\,kb (3.3--4.8\,ms against 9.6--10.0\,ms); at 10\,Mb QLever's 11.1\,ms beat bcftools (32.7\,ms) and cyvcf2 (117.8\,ms).\\
+Sample representation & At 2,504 samples, expanded output has 432$\times$ the triples of condensed but only 69$\times$ the HDT bytes; condensed values need decoding to address one call.\\
+Optional artifacts & Converting the complete HG005 VCF with v3.1.0 took 16.07\,h, about 14.5\,h of it building HDT and COTTAS. These are optional; gzip-framed N-Triples alone occupied 2.89\,GB.\\
+Large graphs & On the complete HG005 VCF (657.4M triples), QLever answered all thirteen questions in 634.6\,s after an 868-second index; the native HDT and COTTAS paths did not complete on 171M triples.\\
+\bottomrule
+\end{tabularx}
 \end{center}
-\figcaption{\textbf{Figure 1. From genomes to permitted results.} Read left to right: three dataset setups; shared variant and gene identifiers; access rules and results. An IRI is a shared identifier, SPDI identifies a variant, DUO names permitted purposes, and ODRL expresses the rules. Counts are participant--variant--gene matches, not numbers of people.}
 
-Counts below are \textbf{participant--variant--gene matches, not numbers of people}. CC is clinical care, DS cardiovascular disease-specific research, and GRU general research.
+Keep the configurations apart: the 16.07-hour v3.1.0 conversion and the 54-minute use-case conversion differ in configuration and are not alternative measurements of the same task.
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1304}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Input
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Genomic triples before links
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-All matches
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-CC
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-DS
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-GRU
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Five genomes & 9.0M & 7,211 & 2,878 & 2,988 & 1,987 \\
-104-participant cohort & 67.8M & 173,102 & 63,529 & 92,870 & 48,207 \\
-Cohort, panel AF \textless{} 0.01 & Same genomes + frequency graph & 4,154 & 1,621 & 2,198 & 1,144 \\
-Whole HG005 & \textbf{662.4M} & 1,496 & 1,496 & 0 & 0 \\
-\end{longtable}
+\reading{main Sections~3.3, 4.3 and~5.6; supplement Sections~S8 and~S9.}
 
-Every result set equals the bcftools route's, and every release view passes the reported policy/source checks. The P/LP-classified subset has zero matches in the five-genome and whole-genome arms and eight in the cohort; these are not clinically adjudicated findings.
+\section{6. Coauthor decisions and submission work}
 
-\textbf{The frequency join is the clearest integration result.} A separate 68,635-site graph holds the required panel information once: 6.5M triples instead of approximately 857M triples of repeated panel INFO. Shared SPDI links connect genomes, ClinVar and frequencies. The reduction comes from projecting and factoring the input, not from RDF compression.
+\subsection{Essential: close before submission}
+\begin{itemize}
+\item \textbf{Release v3.3.1.} The paper attributes Arm~4's linking and the consumer WGS validation run to v3.3.1, which is not yet released: merge VCF-RDFizer PR~\#32, tag v3.3.1, publish it to PyPI, conda-forge, and Docker Hub, and update the software citations.
+\item \textbf{Persistent archive.} Deposit a persistent snapshot of the evaluated code, the uncommitted Arm~1--2 source trees, complete image digests (including v3.3.0's), the vocabulary and shapes, queries, and evidence manifests (author queries in the Declarations and Supplementary Section~S5).
+\item \textbf{Declarations.} Complete the funding statements for B.B., R.T., and G.E., and confirm the separation from the companion VCF Core vocabulary paper.
+\end{itemize}
 
-A rule restricting HFE C282Y to clinical care changes policy data without modifying the RDF policy engine. The baseline needs a small code and data edit. The other three changes are comparably small data edits in both routes. Keep this as a change-location demonstration, not a usability or line-count claim.
+\subsection{Presentation choices to confirm}
+\begin{itemize}
+\item The consumer WGS validation run is reported in the main text by its corrected-validator result alone, with the earlier failures and their diagnosis only in the supplement.
+\item Arm~4 and the v3.3.1 linker fix are minimal in the main text and detailed in Supplementary Section~S4.
+\item The SHACL scaling limit is framed as future work rather than as a weakness of the validation design.
+\end{itemize}
 
-\subsection{Important boundaries}\label{important-boundaries}
-
-SPDI joins assume the tested reference, normalization and eligible allele classes. Contig-alias handling is demonstrated; canonical identity across every equivalent representation is not. The whole-genome clinical view releases everything and the other two views nothing. It therefore does not demonstrate selective, non-empty whole-genome masking. All participants are represented as single-sample files, and all experimental consents are simulated. Deployment security, real consent validity and multi-sample masking remain separate questions.
-
-\textbf{Reading:} main §§2.3.2, 3.2 and 4.1; supplement §S5.
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=\textwidth]{figs/fig-linking-framework.pdf}
-\par\medskip
-\figcaption{\textbf{Figure 2. The implemented path from VCF files to a permitted answer.} The diagram follows the use-case runner, policy generator, linker definitions and SPARQL files. Linkers read the normalized VCFs directly; conversion and links are stored separately. Inputs cover the gene regions except for whole HG005. The cancer-gene policy uses Ensembl overlap links, while the query reports the ACMG genes named in ClinVar's annotation.}
-\end{figure}
-
-\clearpage
-\section{4. Cost: compare stages and workloads, not one headline number}\label{cost-compare-stages-and-workloads-not-one-headline-number}
-
-The updated whole-genome use case generates \textbf{662.4M genomic triples}; converting the genome and ClinVar takes \textbf{54 minutes}. Linking takes 8 minutes; the clinical view takes 38 minutes to write and 68 minutes to check; query indexing takes 45 minutes; and the post-index query takes 205--209 seconds. The query index contains \textbf{701.5M triples including ClinVar and links}. These are distinct stages; checking may build an additional index. Peak use is 13.1 GB memory and 34 GB disk.
-
-The separate v3.1.0 corpus workflow takes \textbf{16.07 hours} for a \textbf{657.4M-triple} graph, including about \textbf{14.5 hours building both HDT and COTTAS}. Its reported 10.88 GB sums retained alternatives and an HDT index relative to a 139 MB compressed download. It is not the minimum time or storage required for RDF. Do not merge these configurations or describe the 146.8-second RML stage as complete conversion.
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Workload or choice
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Finding to retain
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-One batch of thirteen questions & The parser takes 12.4 s; indexed SPARQL totals 17.1 s before setup. \\
-Repeated separate questions & The reported roughly 44-question break-even includes HDT construction and assumes repeated parser scans. It is not a tool constant or a minimal-setup estimate. \\
-Narrow regional lookup & At 1 kb, indexed cyvcf2 is 3.3 ms, bcftools 4.3 ms, QLever 9.6 ms. VCF setup is \textbf{0.48 s}, not the old brief's 0.39 s; QLever setup is 23.2 s. \\
-Broad regional lookup & At 10 Mb, QLever is 11.1 ms versus 117.8 ms and 32.7 ms for the two indexed VCF routes, for the tested questions. \\
-Sample representation & At 2,504 samples and 10,000 records, expanded/condensed is 432× in triples but 69× in HDT bytes. Condensed retains values inside vectors; individual access needs decoding. \\
-QLever from HDT/COTTAS & Those artifacts are decoded and a QLever index is built. Query timings are not native compressed-format query timings. \\
-\end{longtable}
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=0.91\textwidth]{figs/fig-retrieval.pdf}
-\par\medskip
-\figcaption{\textbf{Figure 3. Retrieval cost depends on the question and execution path} (main-text Figure 3). Answers agree before timings are compared. (a) Individual questions and the batch on 17.1M triples, mean of three replicates; conversion is excluded and QLever indexing appears only on the batch row. (b) Four engines on a different, 0.96M-triple graph, excluding setup; means and ranges over nine runs. (c) QLever on 17.1M triples loaded from three artifacts; similar times describe QLever's index, not native querying of those formats.}
-\end{figure}
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=0.83\textwidth]{figs/fig-samples.pdf}
-\par\medskip
-\figcaption{\textbf{Figure 4. Sample representation trades addressability for size} (main-text Figure 2). The same 10,000 records with one to 2,504 samples. Condensed vectors lengthen as samples are added: their HDT grows from 10.2 to 59.2\,MB, against 4.10\,GB expanded. At 2,504 samples, expanded has 432 times the triples but 69 times the HDT bytes. The $\times390$ label in (a) instead compares expanded output at the two ends of the ladder.}
-\end{figure}
-
-\subsection{What moved out of the main text?}\label{what-moved-out-of-the-main-text}
-
-The main paper now has \textbf{three figures and five tables}. Its figures explain the representation/workflow, sample-granularity trade-off and retrieval comparison. Its tables carry the representation contract, validation evidence, matched outputs, stage costs and indexed regional baseline.
-
-The supplement retains the full converter and capability matrices, detailed semantic model, chunk-construction algorithm, Q1--Q13 specification, run and input manifests, link-service results, exact line counts, complete scaling/representation results, configuration tests, failures and defect history. 
-
-\clearpage
-\section{5. Coauthor decisions and submission work}\label{coauthor-decisions-and-submission-work}
-
-\subsection{Essential: decide and close before submission}\label{essential-decide-and-close-before-submission}
-
-\textbf{Final claim and declarations.} Confirm the software/workflow positioning, the separation from the companion vocabulary paper, funding for B.B./R.T./G.E.. Author queries mark unresolved declarations.
-
-\subsection{Claim-dependent additions, not an automatic new benchmark campaign}\label{claim-dependent-additions-not-an-automatic-new-benchmark-campaign}
-
-\textbf{External relevance and converter comparison.} Would a focused clinical/data-access review of the competency question strengthen the intended contribution? Do we need a shared-input comparison with one viable converter, and which representation/validation outcomes would it test? The existing bcftools comparison is a task comparison; it is not a converter benchmark. There is no user study.
+\subsection{Claim-dependent additions, not an automatic new benchmark campaign}
+\textbf{External relevance and converter comparison.} Would a focused clinical or data-access review of the application question strengthen the contribution? Do we need a shared-input comparison with one viable converter, and which representation and validation outcomes would it test? The bcftools comparison is a task comparison, not a converter benchmark, and there is no user study.
 
 \end{document}
