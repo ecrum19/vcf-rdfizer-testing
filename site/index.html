@@ -76,10 +76,11 @@
             small inputs. On larger inputs those <span data-fill="faultClasses"></span> classes go undetected.
           </p>
           <p>
-            On a real <span data-fill="realTriples"></span>-triple genome every field of every record equals the VCF text, but the layer still reported
-            a mismatch, for two reasons of its own: the oracle does not yet count GATK's phase sets (<span data-fill="phaseSets"></span> of them), and QLever prints a
-            decimal QUAL canonically, without trailing zeros (<span data-fill="qualChanged"></span> QUAL values). Both are validator limitations, not
-            conversion errors, and fixes for both are being prepared for the next VCF-RDFizer release.
+            On a real <span data-fill="realTriples"></span>-triple genome every field of every record equals the VCF text, but the layer in <span data-fill="campaignVersion"></span> still reported
+            a mismatch, for two reasons of its own: its oracle did not count GATK's phase sets (<span data-fill="phaseSets"></span> of them), and QLever prints a
+            decimal QUAL canonically, without trailing zeros (<span data-fill="qualChanged"></span> QUAL values). Both were validator limitations, not
+            conversion errors. The corrected validator fixes both: rerun on the same graph, all thirteen answers are equal, and the default shapes, now checked in
+            record batches, report no violations.
           </p>
           <p class="source" id="fidelitySource"></p>
         </aside>

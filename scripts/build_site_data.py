@@ -175,12 +175,22 @@ def mutation_profiles() -> dict:
     }
 
 
+def review_report(run: str) -> Path:
+    """The validation report directory of one review run on NG131FQA1I's first 250,000 records."""
+    return Path(glob.glob(str(REVIEW / run / "out" / "run_metrics" / "*" / "reports" / "validation"
+                              / "NG131FQA1I_first250000"))[0])
+
+
 def real_genome() -> dict:
-    """The paired validation of NG131FQA1I's first 250,000 records (review run)."""
-    run = REVIEW / "validate__NG131FQA1I__first250000__noshacl"
-    report = Path(glob.glob(str(run / "out" / "run_metrics" / "*" / "reports" / "validation"
-                                / "NG131FQA1I_first250000"))[0])
+    """The paired validation of NG131FQA1I's first 250,000 records.
+
+    The v3.1.0 review run (no shapes) is the diagnosis; the rerun with the
+    v3.3.1 validator, default shapes batched, is the current result.
+    """
+    report = review_report("validate__NG131FQA1I__first250000__noshacl")
+    rerun = review_report("validate__NG131FQA1I__first250000__fixes_b500k")
     comparison = load(report / "comparison.json")
+    shacl = load(rerun / "shacl.json")
     rapper = load(report / "rdf-validation.json")
     diagnosis = (REVIEW / "diag_q11b.out").read_text(encoding="utf-8")
     # One line per QUAL rendering: how many values it changes, and how many
@@ -200,6 +210,15 @@ def real_genome() -> dict:
         "queries": [{"query": q, "status": r["status"]} for q, r in sorted(comparison["queries"].items())],
         "qualDiagnosis": diagnosis.strip().splitlines(),
         "source": rel(report),
+        "rerun": {
+            "triples": load(rerun / "rdf-validation.json")["tripleCount"],
+            "queries": [{"query": q, "status": r["status"]}
+                        for q, r in sorted(load(rerun / "comparison.json")["queries"].items())],
+            "shacl": {"status": shacl["status"], "violations": shacl["violationCount"],
+                      "advisories": shacl["advisoryCount"], "batches": shacl["batches"],
+                      "workers": shacl["workers"], "minutes": round(shacl["wallSeconds"] / 60)},
+            "source": rel(rerun),
+        },
     }
 
 
