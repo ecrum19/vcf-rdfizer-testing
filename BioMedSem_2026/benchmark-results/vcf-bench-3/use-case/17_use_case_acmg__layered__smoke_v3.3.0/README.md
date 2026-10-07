@@ -14,7 +14,7 @@ The v3.3.0 gene linker skipped every record whose ALT is `*` (34 here), so they
 had no gene links. The cancer-gene prohibition never matched the 13 in cancer
 genes (released to the biobank), and the cardiac-panel rule withheld the 17 in
 cardiac genes from cardio. v3.3.1 links `*` records by their REF span; see
-`../17_use_case_acmg__layered` for the whole genome on v3.3.1.
+`../17_use_case_acmg__layered` for the complete NB72462M VCF on v3.3.1.
 
 `link__NB72462M__failed_cold_reference_cache` is a first link attempt that
 failed because the Ensembl reference bundle had not been fetched on this host;

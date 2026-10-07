@@ -7,7 +7,7 @@ in Git.
 
 | Directory or file | Purpose |
 | --- | --- |
-| [`benchmarks/`](benchmarks/README.md) | Experiment runners, fixtures and analysis; includes the separate regional, whole-genome retrieval and ACMG use-case experiments. |
+| [`benchmarks/`](benchmarks/README.md) | Experiment runners, fixtures and analysis; includes the separate regional retrieval, large-graph retrieval (up to the complete HG005 VCF) and ACMG use-case experiments. |
 | [`benchmarks/RUN_PLAN.md`](benchmarks/RUN_PLAN.md) | Configuration and host allocation for the manuscript campaign. |
 | [`benchmarking_suggestions.md`](benchmarking_suggestions.md) | Design rationale behind the numbered benchmark experiments. |
 | [`plugin-tests/`](plugin-tests/README.md) | Policy, SPDI and gene-linker verification. |

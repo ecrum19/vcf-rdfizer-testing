@@ -10,8 +10,9 @@ FIGURE_DIR = $(if $(wildcard figures),figures,../paper-assets)
 # Main text: vcf2rdf-v3 (Figure 1), vcf-core-minimal (Figure 2), fig-validation, fig-usecase-matches, fig-usecase-costs, fig-samples,
 # and fig-retrieval; the rest are the supplement's.
 FIGURES = $(addprefix $(FIGURE_DIR)/,vcf2rdf-v3.pdf vcf-core-minimal.pdf fig-validation.pdf fig-usecase-matches.pdf \
-	fig-usecase-costs.pdf fig-samples.pdf fig-retrieval.pdf \
-	vcf-core-classes.pdf fig-linking-framework.pdf fig-scaling.pdf fig-representations.pdf)
+	fig-usecase-costs.pdf fig-samples.pdf fig-retrieval.pdf fig-regional.pdf \
+	vcf-core-classes.pdf fig-linking-framework.pdf fig-scaling.pdf fig-representations.pdf \
+	fig-breakeven.pdf)
 SOURCES   = $(PAPER).tex supplementary.tex reference.bib template/sn-jnl.cls \
 	template/bst/sn-mathphys-num.bst $(FIGURES) Makefile .latexmkrc
 

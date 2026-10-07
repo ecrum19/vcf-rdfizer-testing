@@ -1,4 +1,4 @@
-# Use case: ACMG secondary findings across five genomes and ClinVar
+# Use case: ACMG secondary findings across participant VCFs and ClinVar
 
 > *Which participants carry a ClinVar-classified variant in an ACMG SF v3.2
 > gene, and what may each requester see?*
@@ -13,7 +13,7 @@ exactly what consent codes govern.
 The question asks for ClinVar's *classification* rather than only its
 pathogenic variants, because the claim under test is that variant identity,
 external annotation and consent can be made declarative and checkable — not
-that five healthy genomes contain a clinical finding. They do not, and the run
+that five individuals' VCFs contain a clinical finding. They do not, and the run
 says so (see **Reportable** below).
 
 It runs through [`../../17_use_case_acmg.sh`](../../17_use_case_acmg.sh), a
@@ -26,7 +26,7 @@ Both routes read the same derived inputs and the same definitions
 
 | | RDF route | Baseline route |
 | --- | --- | --- |
-| Variant identity | The `spdi` linker gives each normalised record a global SPDI IRI (`vcfl:sameVariantAs`). Genomes and ClinVar share it whatever their contig names | Rename contigs to ClinVar's, then `bcftools annotate --pair-logic exact` |
+| Variant identity | The `spdi` linker gives each normalised record a global SPDI IRI (`vcfl:sameVariantAs`). Participant VCFs and ClinVar share it whatever their contig names | Rename contigs to ClinVar's, then `bcftools annotate --pair-logic exact` |
 | Clinical meaning | ClinVar converted with structured INFO, so `CLNSIG`, `CLNREVSTAT` and `GENEINFO` are queryable values | `bcftools annotate -c INFO/CLNSIG,...` |
 | Consent | ODRL in [`policy.ttl`](policy.ttl), applied by `vcf-rdfizer-policy`, one checked release view per requester | [`baseline_carriers.py`](baseline_carriers.py), a hand-written consent table |
 | The question | One SPARQL query, [`carriers.rq`](carriers.rq), per requester, under QLever | `bcftools view` + `query`, then the script |
@@ -94,11 +94,11 @@ BM_ACMG_ARM=cohort BM_ACMG_STAGES="fetch_cohort derive convert link baseline gov
   BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
 ```
 
-### Arm 3: one whole genome
+### Arm 3: one complete VCF
 
 `make_wgs.py` writes `wgs/case.json`: arm 1's question, participant (HG005)
 and consent, unchanged. `BM_ACMG_ARM=wgs` runs the same stages, except that
-`derive.sh` keeps the whole genome (`all` in place of the regions); ClinVar
+`derive.sh` keeps every record of HG005's VCF (`all` in place of the regions); ClinVar
 stays restricted. Only the scale changes, so HG005's carriers must equal its
 arm-1 carriers. HG005 consents to clinical care only, so two of the three
 views are empty: their evaluation still streams the whole graph, and their
@@ -112,10 +112,10 @@ BM_ACMG_ARM=wgs BM_ACMG_STAGES="derive convert link baseline govern query compar
   BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
 ```
 
-### Arm 4: one whole genome, layered consent, four requesters
+### Arm 4: one complete VCF, layered consent, four requesters
 
-Arms 1–3 govern whole files, so arm 3's whole genome was all or nothing. Arm 4
-asks the same question of NB72462M's whole genome under rules that each target
+Arms 1–3 govern whole files, so arm 3's complete HG005 VCF was all or nothing. Arm 4
+asks the same question of the complete NB72462M VCF under rules that each target
 a different kind of selection. [`make_layered.py`](make_layered.py) writes
 `layered/case.json`; `generate.py` writes its policy and `purposes.ttl`.
 
@@ -129,7 +129,7 @@ a different kind of selection. [`make_layered.py`](make_layered.py) writes
 
 The four requesters are the participant's own physician, the clinical lab, the
 cardiovascular consortium and the biobank. Each receives a different,
-non-empty part of the genome.
+non-empty part of the VCF's records.
 
 "Only the participant's own physician" is a purpose, declared in
 `purposes.ttl` as narrower than clinical care, not a named assignee. ODRL has
@@ -141,7 +141,7 @@ shipped `RegionSelector` does. A file that wrote `19` would escape it. The
 variant rule targets the SPDI identity, so it has no such gap.
 
 Besides the carriers, `compare` checks each view record for record: the
-baseline counts what every requester may see over all of the genome's records
+baseline counts what every requester may see over all of the VCF's records
 (`baseline/records.tsv`), and each count must equal the records the view
 released.
 
@@ -175,7 +175,7 @@ These are in `use_case.json`, and both routes implement them:
   filter. **In this cohort it is empty**, and that is a result rather than a
   gap: five unselected individuals, against a roughly 1–3% per-person rate of
   reportable ACMG secondary findings. It was checked against the alternative
-  explanation: where a genome does meet a pathogenic ClinVar record's position,
+  explanation: where a participant's VCF does meet a pathogenic ClinVar record's position,
   the alleles genuinely differ (an SNV against a 23-base insertion, a deletion
   against an SNV), so this is biology and not a representation mismatch.
 - **Review status:** not `no_assertion_criteria_provided` or an unclassified
@@ -183,7 +183,7 @@ These are in `use_case.json`, and both routes implement them:
 - **Gene:** a `GENEINFO` symbol that is in the ACMG list.
 - **Carrier:** the GT has a non-zero allele, and FILTER is `PASS` or missing.
 
-## The policy: simulated consents on real genomes
+## The policy: simulated consents on real VCFs
 
 The consents are **simulated**, and every output says so. Nobody consented to
 anything here.
@@ -232,7 +232,7 @@ Everything is written under `benchmarks/results/17_use_case_acmg/`:
 | --- | --- |
 | `inputs.json` | Size and SHA-256 of every downloaded input |
 | `derive__<id>/`, `convert__<id>/`, `link__<id>/` | One `bench.json` per cell (wall time, command, image digest) |
-| `govern__<requester>/` | The requester's streamed view (`out/view.nt.gz`), decisions, manifest, and `check.txt`. Evaluated and checked on QLever endpoints (the genomes with their links; the VCF-text oracle), never in memory |
+| `govern__<requester>/` | The requester's streamed view (`out/view.nt.gz`), decisions, manifest, and `check.txt`. Evaluated and checked on QLever endpoints (the participant VCFs' graphs with their links; the VCF-text oracle), never in memory |
 | `query/<requester>/` | `carriers.tsv`, `timing.json` (engine setup, then per-replicate query time) |
 | `baseline/` | `carriers.<requester>.tsv`, `summary.json` (per requester, the classification spread, and the reportable subset) |
 | `comparison.json`, `grid.tsv` | Agreement per requester, and carriers per requester and participant |

@@ -1,6 +1,6 @@
-# Arm 4: layered governance on one whole genome (VCF-RDFizer v3.3.1)
+# Arm 4: layered governance on one complete VCF (VCF-RDFizer v3.3.1)
 
-NB72462M's whole genome (5,063,417 records, 1.22B triples with links) under
+The complete NB72462M VCF (5,063,417 records after normalization, 1.22B triples with links) under
 layered, simulated consent, on vcf-bench-3, 2026-10-06/07. Linking and
 governance ran from the tool checkout at `29a81f6` (VCF-RDFizer PR #32,
 release v3.3.1); conversion and queries used image `ecrum19/vcf-rdfizer:3.3.0`.

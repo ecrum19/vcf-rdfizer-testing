@@ -154,7 +154,7 @@ GA4GH VRS computed identifiers could complement the evaluated SPDI route, but we
 \toprule
 \textbf{Capability} & \textbf{Status} & \textbf{Notes and limits}\\
 \midrule
-Core fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported (v3.1.0)\newline\textit{Validated} & Q1--Q4 equal in completed comparisons; the broader suite has the follow-up failures reported in the main text (Section~\ref{M-subsec:results-fidelity})\\
+Core fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported (v3.1.0)\newline\textit{Validated} & Q1--Q4 equal in completed comparisons and in the consumer WGS validation run (Section~\ref{subsec:validation-comparisons})\\
 \rowsep
 QUAL & Supported\newline\textit{Q11 record digest} & Typed literal for every record; a missing QUAL is \texttt{vcfc:Null}\\
 \rowsep
@@ -172,9 +172,9 @@ Queryable HDT, COTTAS & Supported\newline\textit{Measured} & 118 HDT and 34 COTT
 \rowsep
 Gzip/Brotli packaging & Supported\newline\textit{Covering set (Section~\ref{sec:config})} & Packages must be unpacked before querying; no codec comparison\\
 \rowsep
-Policy annotations & Plug-in v0.2.0 (v3.3.0)\newline\textit{Real genomes, up to a whole genome} & ODRL on files and declared graph selections, DUO purposes; every view checked against a VCF-side oracle; simulated consents, single-sample files; governed release, not anonymization (Section~\ref{M-subsec:results-workflow})\\
+Policy annotations & Plug-in v0.2.0 (v3.3.0)\newline\textit{Real VCFs, up to a complete single-sample VCF} & ODRL on files and declared graph selections, DUO purposes; every view checked against a VCF-side oracle; simulated consents, single-sample files; governed release, not anonymization (Section~\ref{M-subsec:results-workflow})\\
 \rowsep
-External linking & SPDI, Ensembl-gene, and MyVariant linkers (v3.3.0)\newline\textit{Real genomes} & SPDI joins eligible alleles under the stated reference and normalization assumptions; tier~3 confirmed 92--93\% of rsID rewrites (Section~\ref{sec:usecase})\\
+External linking & SPDI, Ensembl-gene, and MyVariant linkers (v3.3.0)\newline\textit{Real VCFs} & SPDI joins eligible alleles under the stated reference and normalization assumptions; tier~3 confirmed 92--93\% of rsID rewrites (Section~\ref{sec:usecase})\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -258,8 +258,8 @@ Artifact decoding permits each engine to be assessed through different input for
 The default SHACL profile checks cardinality and datatypes, and two deeper profiles check uniqueness and value agreement.
 A pass establishes the specified summaries or enabled constraints, not call accuracy, biological interpretation, or completeness of the entire graph.
 
-\subsection{Completed comparisons and follow-up diagnosis}\label{subsec:validation-comparisons}
-The base campaign attempted 78 validations and completed 76, yielding 984 equal applicable query comparisons and four not-applicable genotype comparisons on empty-input artifacts (Table~\ref{tab:validation-results}).
+\subsection{Completed comparisons and the consumer WGS validation run}\label{subsec:validation-comparisons}
+The base campaign (Section~\ref{subsec:repro-builds}) attempted 78 validations, in its Difficult inputs (20), Covering set (23), Equivalence (16), Query cost (18), and Modes (1) families, and completed 76, yielding 984 equal applicable query comparisons and four not-applicable genotype comparisons on empty-input artifacts (Table~\ref{tab:validation-results}).
 The paired checks reached 17.1M triples; the two malformed sites-only validations did not complete.
 The default shapes ran in 58 validations up to 0.96M triples, with no violations and durations of 0.8--396.8\,s.
 A repeated conversion produced 17,098,746 triples with identical SHA-256 and no duplicate lines; packaging round trips preserved the digest, and re-indexing left the artifact unchanged.
@@ -294,13 +294,16 @@ SHACL shapes, default profile & 58/58 & Cardinality and datatype constraints, 0 
 \par\smallskip\raggedright\footnotesize $^{\dagger}$Four further comparisons were verified as not applicable and are excluded from the 984 applicable comparisons.
 \end{table}
 
-The separate whole-genome retrieval experiment compared all thirteen answers at 657,425,805 triples without SHACL (Table~\ref{tab:retrieval-scale}).
+The separate retrieval run on the complete HG005 VCF (all 3,856,856 records) compared all thirteen answers at 657,425,805 triples without SHACL (Table~\ref{tab:retrieval-scale}).
 It is not included in the 984-comparison denominator.
-The 250,000-record NG131FQA1I follow-up, at 58.2M triples, is also separate and did not pass all comparisons.
-Ten answers agreed; Q9 and Q10 differed because the oracle omitted 30,910 phase sets emitted from \texttt{PS}, and Q11 differed because 1,998 QUAL values with trailing zeros were returned in canonical decimal form by QLever.
-Direct comparison found every record field equal to the source VCF text, and canonicalizing QUAL reproduced QLever's digest buckets exactly.
-This diagnoses the observed failures but does not establish every emitted relationship or a corrected validator release.
-The successful diagnostic run excluded shapes after a first attempt exhausted host memory (Section~\ref{sec:issues}).
+The consumer WGS validation run, on the first 250,000 records of NG131FQA1I (Table~\ref{tab:corpus}; 58,231,176 triples), is also separate and was performed twice on \texttt{vcf-bench-2}.
+With v3.1.0, a first attempt exhausted host memory under the default shapes (Section~\ref{sec:issues}), and a rerun without shapes agreed on ten of the thirteen answers.
+Q9 and Q10 differed because the oracle omitted 30,910 phase sets emitted from \texttt{PS}, and Q11 differed because 1,998 QUAL values with trailing zeros were returned in canonical decimal form by QLever.
+Direct comparison found every record field equal to the source VCF text, and canonicalizing QUAL reproduced QLever's digest buckets exactly, so all three differences lay in the validator rather than the conversion.
+The corrected validator, released in v3.3.1, counts phase sets, structural-variant events, confidence intervals, and gVCF reference blocks as the emitters write them, drops a decimal QUAL's trailing zeros on both sides of the Q11 digest, and validates shape profiles whose constraints are local to a record in batches of whole records.
+Rerun on the same graph, all thirteen answers agreed, and the default shapes reported no violations in 117 batches of about 500,000 triples, taking 89\,min with four workers while available memory stayed above 19.9\,GB.
+Their 46 warnings are VCF~4.5's recommended Source and Version attributes, absent from the file's INFO declarations.
+Measured on this graph, a batch costs about 2.4\,GB and 300\,s per million triples (1.26\,GB and 155\,s for 0.51M triples; 4.72\,GB and 607\,s for 2.0M).
 
 \subsection{Fault sensitivity and oracle limitations}\label{subsec:validation-sensitivity}
 The fault set contains 113 targeted corruptions, including changed coordinates, alleles, filters, file metadata, phasing, and sample indices.
@@ -312,13 +315,14 @@ Thus their detection result is limited to the constructed fault set and small gr
 
 Version 3.1.0 applies the default shapes automatically up to a 512\,MiB size gate and permits all profiles when explicitly requested with \texttt{-{}-shacl-profile full}, up to 16\,MiB.
 Different modes used different size measures; the resulting failures and corrections are recorded in Section~\ref{sec:issues}.
-The completed default-profile mutation follow-up confirms 96/113 detection, rather than leaving its sensitivity as an open experiment.
+The completed default-profile mutation rerun confirms 96/113 detection, rather than leaving its sensitivity as an open experiment.
+Release v3.3.1 applies the default shapes at any size, in record batches, while the deeper profiles, whose SPARQL-based constraints compare records with one another, are still validated whole: on request up to 16\,MiB of VCF and, by default, not above 10M triples.
 
 The graph and parser routes read separate representations but share some assumptions.
 Census expectations encode the selected representation, allele counts share a counting definition, and the linked workflow shares preprocessing and its case definition.
 The missing-allele defect required correction of both the emitter and its census expectation, illustrating a shared error (Section~\ref{sec:issues}).
 Direct text comparison and structural checks therefore complement the oracle rather than make it infallible.
-The outstanding expectations for phase sets, structural-variant events, gVCF blocks, and local-allele constructs remain explicit coverage limits.
+The v3.3.1 oracle adds expectations for phase sets, structural-variant events, and gVCF blocks; local-allele constructs remain an explicit coverage limit.
 
 \section{Linked genomic workflow: protocol, policies, and detailed results}\label{sec:usecase}
 \subsection{Scope, linking, and policy evaluation}\label{subsec:usecase-linksets}
@@ -335,7 +339,8 @@ Figure~\ref{fig:linking} traces the implemented path from VCF files to a permitt
 The diagram follows the use-case runner, policy generator, linker definitions, and SPARQL files.
 Linkers read the normalized VCFs directly, and conversion output and links are stored separately; inputs are restricted to the ACMG gene spans except in Arms~3 and~4.
 Policies are enforced when each release view is materialized: requester identity and purpose are evaluation inputs, while the SPARQL query holds the analysis filters.
-The cancer-gene policy uses Ensembl overlap links, whereas the query reports the ACMG genes named in ClinVar's annotation.}\label{fig:linking}
+The cancer-gene policy uses Ensembl overlap links, whereas the query reports the ACMG genes named in ClinVar's annotation.
+Requesters are clinical care (CC), disease-specific cardiovascular research (DS), general research use (GRU), and, in Arm~4, care by the participant's own physician (OP).}\label{fig:linking}
 \end{figure}
 
 Two plug-ins extend the VCF RDF graph without modifying the converted source representation (\main{subsec:extensions}).
@@ -370,7 +375,7 @@ ClinVar variants are included when they have at least one review star, regardles
 Pathogenic and likely pathogenic (P/LP) matches are reported separately; they are not treated as reportable secondary findings, because the workflow does not evaluate the additional gene-, inheritance-, and variant-specific criteria required for clinical reporting.
 
 \paragraph{RDF and conventional comparison workflows.}
-The RDF workflow links converted genomes to ClinVar and gene resources with the SPDI and Ensembl-gene linkers, materializes a release view for each requester against QLever, and queries each view and ClinVar with SPARQL~\cite{qlever_2017}.
+The RDF workflow links the converted VCFs to ClinVar and gene resources with the SPDI and Ensembl-gene linkers, materializes a release view for each requester against QLever, and queries each view and ClinVar with SPARQL~\cite{qlever_2017}.
 The conventional workflow harmonizes contig names, annotates \texttt{CLNSIG}, \texttt{CLNREVSTAT}, and \texttt{GENEINFO} with bcftools, and evaluates the same case definition and release conditions in a separate Python implementation~\cite{BCFtools}.
 The two workflows are compared using sorted tuples defined by participant, gene, contig, position, and alleles, which must agree exactly for every requester before timings are reported.
 Counts therefore represent participant--variant--gene matches, not unique participants or independently adjudicated findings.
@@ -378,12 +383,12 @@ Both workflows share preprocessing and the case definition; the downstream linki
 
 \paragraph{Evaluation arms and simulated release policies.}
 Each experimental arm is a distinct dataset and policy scenario.
-Arm~1 contains five genome slices from three sources: two Personal Genome Project genomes, the HG004 and HG005 GIAB genomes, and an HG002 precisionFDA submission with unprefixed contig names~\cite{personal_genome_proj,giab_v421_2022}.
+Arm~1 contains the ACMG gene-span regions of five single-sample VCFs from three sources: two Personal Genome Project donations (NB72462M and NG131FQA1I), the HG004 and HG005 GIAB benchmark VCFs, and an HG002 precisionFDA submission with unprefixed contig names~\cite{personal_genome_proj,giab_v421_2022}.
 Arm~2 contains 104 unrelated high-coverage 1000 Genomes participants, four from each of 26 populations~\cite{byrska2022highcoverage}.
 Arms~1 and~2 use normalized, split records restricted to the ACMG gene spans (7.1\,Mb of Ensembl~116 spans), with bcftools left-alignment and multiallelic splitting.
 For Arm~2, repeated panel-level INFO describing all 3,202 panel samples is removed from individual participant files, and the required population frequencies are represented once in a separate sites-only graph.
-Arm~3 processes the complete HG005 genome; its result must equal the HG005 result from the restricted Arm~1 input.
-Arm~4 processes the complete NB72462M genome (5,063,417 records), described below.
+Arm~3 processes the complete HG005 VCF without the region restriction (3,887,810 records after normalization); its result must equal the HG005 result from the restricted Arm~1 input.
+Arm~4 processes the complete NB72462M VCF (5,063,417 records after normalization), described below.
 All arms use the ClinVar release from 2026-09-13, restricted to the same gene spans~\cite{clinvar_vcf}.
 
 All consent and access conditions are simulated.
@@ -396,9 +401,9 @@ Four additional rule changes test where policy configuration or execution logic 
 After each change, both workflows must release identical records on a fixture containing cancer, cardiac, other, and HFE records.
 Line counts exclude blanks, comments, and docstrings; they describe these implementations, not usability or maintainability.
 
-\paragraph{Arm 4: fine-grained release from one genome.}
-In Arms~1--3, release views are determined mostly per file: a participant's consent releases or withholds the whole file, and only the cancer-gene restriction selects within it, so Arm~3's whole-genome release views were all or nothing.
-Arm~4 asks the same application question of the complete NB72462M genome, a consumer genome from Nebula Genomics, with policies that produce different non-empty release views from the same source genome.
+\paragraph{Arm 4: fine-grained release from one complete VCF.}
+In Arms~1--3, release views are determined mostly per file: a participant's consent releases or withholds the whole file, and only the cancer-gene restriction selects within it, so Arm~3's release views of the complete HG005 VCF were all or nothing.
+Arm~4 asks the same application question of the complete NB72462M VCF, a consumer WGS file from Nebula Genomics, with policies that produce different non-empty release views from the same file.
 The simulated consent permits clinical care and general research use, which includes disease-specific research, and the participant's physician is a fourth requester.
 The policies combine purpose-specific gene-panel, genomic-region, and single-variant rules with the cancer-gene restriction, which still limits records in the 28 cancer-predisposition genes to clinical care through their gene links.
 The gene-panel rule limits disease-specific research to records whose REF span overlaps one of 40 cardiovascular genes.
@@ -407,7 +412,7 @@ The genomic-region rule releases APOE (chr19:44,903,787--44,909,396, Ensembl~116
 ODRL has no ``everyone except'' assignee, so restricting by purpose rather than by requester keeps the rule closed to any other clinical requester.
 Because a region is defined by coordinates on a named contig, the rule depends on the contig name written in the file; a file naming the contig \texttt{19} would escape a \texttt{chr19} rule.
 The single-variant rule withholds one variant of uncertain significance, DSP chr6:7,569,314 C>G, from the GRU requester by assignee; it targets the variant's SPDI identity and therefore holds however the file names chromosome~6.
-The conventional workflow applies the same rules in Python to every record of the genome, so Arm~4 compares the number of records in each release view as well as the matches.
+The conventional workflow applies the same rules in Python to every record of the VCF, so Arm~4 compares the number of records in each release view as well as the matches.
 
 \subsection{Linking results, matches, and rule changes}\label{subsec:usecase-results}
 Table~\ref{tab:usecase-links} reports each linker separately.
@@ -424,11 +429,11 @@ Ensembl's live variation service returned HTTP 500 after three retries, and no p
 \toprule
 \textbf{Linker} & \textbf{Tier} & \textbf{Arm 1} & \textbf{Arm 2} & \textbf{Arm 3} & \textbf{Arm 4} & \textbf{ClinVar} & \textbf{Result}\\
 \midrule
-\texttt{spdi} & 2 & 51{,}302 & 1{,}149{,}198 & 3{,}887{,}200 & 4{,}991{,}223 & 331{,}413 & Every eligible call; joins genomes to ClinVar across contig names; 87\,s for the whole genome\\
+\texttt{spdi} & 2 & 51{,}302 & 1{,}149{,}198 & 3{,}887{,}200 & 4{,}991{,}223 & 331{,}413 & Every eligible call; joins the input VCFs to ClinVar across contig names; 87\,s for the complete HG005 VCF\\
 \rowsep
 \texttt{ensembl-genes-grch38} & 2 & 51{,}321 & 1{,}149{,}198 & 1{,}704{,}921 & 2{,}063{,}627 & --- & Reloads the 108\,MB GFF3 per file: 19 of Arm~2's 22\,min\\
 \rowsep
-\texttt{rsid-dbsnp} & 1 & 20{,}267 & --- & --- & 4{,}974{,}526 & --- & PGP genomes' rsIDs, rewritten unchecked\\
+\texttt{rsid-dbsnp} & 1 & 20{,}267 & --- & --- & 4{,}974{,}526 & --- & PGP VCFs' rsIDs, rewritten unchecked\\
 \rowsep
 \texttt{rsid-myvariant} & 3 & 18{,}702 & --- & --- & --- & --- & 92--93\% of tier-1 links confirmed in 21 requests; the three unconfirmed rsIDs checked were merged\\
 \rowsep
@@ -438,22 +443,22 @@ Ensembl's live variation service returned HTTP 500 after three retries, and no p
 \end{table}
 
 The RDF and conventional workflows returned identical requester-specific match sets, and every release view passed release validation (Table~\ref{tab:usecase-matches}).
-P/LP matches numbered zero in Arms~1 and~3 and eight in Arm~2.
-The complete HG005 genome returned the same 1,496 tuples as its restricted input.
+P/LP matches numbered zero in Arms~1, 3, and~4 and eight in Arm~2.
+The complete HG005 VCF (Arm~3) returned the same 1,496 tuples as its gene-span slice in Arm~1.
 The additional cohort query joined a separate 68,635-site, 6.5M-triple frequency graph through SPDI; the conventional workflow's position-and-allele lookup agreed for every requester.
 Storing the required frequencies once avoids approximately 857M triples of repeated panel INFO, which accounted for 93\% of each participant's graph before projection.
 This is reuse of shared information, not compression of an equivalent graph.
 
 \begin{table}[!htbp]
-\caption{Requester-specific participant--variant--gene matches; the RDF and conventional workflows agree in every cell. All: no policy; Own: care by the participant's physician (Arm~4 only); CC: clinical care; DS: cardiovascular disease-specific research; GRU: general research use. Triple counts exclude links; the rare-variant row also joins panel frequencies at $\mathrm{AF}<0.01$.}\label{tab:usecase-matches}%
+\caption{Requester-specific participant--variant--gene matches; the RDF and conventional workflows agree in every cell. All: no policy; OP: care by the participant's own physician (Arm~4 only); CC: clinical care; DS: cardiovascular disease-specific research; GRU: general research use. Triple counts exclude links; the rare-variant row also joins panel frequencies at $\mathrm{AF}<0.01$.}\label{tab:usecase-matches}%
 \centering\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
 \begin{tabular}{@{}l r r r r r r r r@{}}
 \toprule
  & & & & \multicolumn{5}{c}{\textbf{Matches by requester}}\\
 \cmidrule(l){5-9}
-\textbf{Arm} & \textbf{Files} & \textbf{Records} & \textbf{Triples} & \textbf{All} & \textbf{Own} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
+\textbf{Arm} & \textbf{Files} & \textbf{Records} & \textbf{Triples} & \textbf{All} & \textbf{OP} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
 \midrule
-1: five genome slices & 5 & 51{,}386 & 9.0M & 7{,}211 & --- & 2{,}878 & 2{,}988 & 1{,}987\\
+1: five gene-span slices & 5 & 51{,}386 & 9.0M & 7{,}211 & --- & 2{,}878 & 2{,}988 & 1{,}987\\
 2: cohort & 104 & 1{,}150{,}288 & 67.8M & 173{,}102 & --- & 63{,}529 & 92{,}870 & 48{,}207\\
 \quad rare in the panel & & & & 4{,}154 & --- & 1{,}621 & 2{,}198 & 1{,}144\\
 3: complete HG005 & 1 & 3{,}887{,}810 & 662.4M & 1{,}496 & --- & 1{,}496 & 0 & 0\\
@@ -467,11 +472,11 @@ The DS release view retained 722 of the 1,382 unrestricted matches and the GRU r
 The release views withheld the six APOE records from every requester except the participant's physician, the DSP variant from GRU, the cancer-gene records from both research purposes, and everything outside the cardiovascular panel from DS.
 
 \begin{table}[!htbp]
-\caption{Arm~4: what each rule withheld from the complete NB72462M genome (5,063,417 records), per requester. The simulated consent permits clinical care and general research use. A record withheld by several rules is counted once, under the first; for DS, APOE and the DSP variant fall outside its panel. Own: the participant's physician; other abbreviations as in Table~\ref{tab:usecase-matches}.}\label{tab:usecase-layered}%
+\caption{Arm~4: what each rule withheld from the complete NB72462M VCF (5,063,417 records after normalization), per requester. The simulated consent permits clinical care and general research use. A record withheld by several rules is counted once, under the first; for DS, APOE and the DSP variant fall outside its panel. OP: the participant's own physician; other abbreviations as in Table~\ref{tab:usecase-matches}.}\label{tab:usecase-layered}%
 \centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
 \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X r r r r@{}}
 \toprule
-\textbf{Rule} & \textbf{Selects records by} & \textbf{Own} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
+\textbf{Rule} & \textbf{Selects records by} & \textbf{OP} & \textbf{CC} & \textbf{DS} & \textbf{GRU}\\
 \midrule
 Cancer genes (28): CC only & gene links & --- & --- & 2{,}513 & 2{,}513\\
 Cardiovascular panel (40): all DS sees & complement of the panel's gene links & --- & --- & 5{,}054{,}507 & ---\\
@@ -490,7 +495,7 @@ All 30 were records whose ALT is the spanning-deletion allele \texttt{*}.
 The gene linker skipped them, although \texttt{*} leaves the REF span unchanged, so they carried no gene links: the cancer-gene restriction never selected the 13 in cancer genes, and the gene-panel rule withheld the 17 in cardiac genes.
 Release validation could not detect this, because it evaluates the same links.
 Release v3.3.1 links \texttt{*} records by their REF span; symbolic alleles and breakends, whose extent is END or a mate, are still skipped and counted.
-The whole-genome results above use v3.3.1, whose gene linker skipped no NB72462M record.
+The Arm~4 results above use v3.3.1, whose gene linker skipped no NB72462M record.
 In Arm~1, the same 13 records, and 11 from NG131FQA1I, had reached the research release views: 13 the GRU view and 24 the DS view.
 Rerunning Arm~1's linking and policy evaluation with v3.3.1 left every match unchanged, removed those records from the release views (16,118 to 16,105 GRU records and 23,957 to 23,933 DS records), and its released-record counts matched the conventional workflow for every requester.
 Arms~2 and~3 were unaffected: the cohort files contain no \texttt{*} records, and HG005's research release views were empty.
@@ -537,7 +542,7 @@ Available memory never fell below 17.3\,GB.
 \textbf{Requester} & \textbf{Records} & \textbf{Index triples} & \textbf{Write} & \textbf{Check} & \textbf{Index} & \textbf{Query}\\
  & & & \textit{min} & \textit{min} & \textit{min} & \textit{s}\\
 \midrule
-\multicolumn{7}{@{}l}{\textit{Arm 1: five genome slices}: convert 3.3\,min, link 1.4\,min}\\
+\multicolumn{7}{@{}l}{\textit{Arm 1: five gene-span slices}: convert 3.3\,min, link 1.4\,min}\\
 \quad All (no policy) & 51{,}386 & 42{,}543{,}708 & --- & --- & 2.2 & 175\\
 \quad CC & 19{,}625 & 37{,}514{,}190 & 0.53 & 0.47 & 2.2 & 174\\
 \quad DS & 23{,}957 & 37{,}818{,}548 & 0.65 & 0.62 & 2.2 & 172\\
@@ -549,15 +554,15 @@ Available memory never fell below 17.3\,GB.
 \quad DS & 685{,}928 & 81{,}878{,}619 & 1.3 & 4.9 & 3.1 & 188\\
 \quad GRU & 356{,}835 & 61{,}794{,}418 & 1.2 & --- & 2.4 & 177\\
 \addlinespace[3pt]
-\multicolumn{7}{@{}l}{\textit{Arm 3: complete HG005 genome}: convert 54.5\,min, link 8.0\,min}\\
+\multicolumn{7}{@{}l}{\textit{Arm 3: complete HG005 VCF}: convert 54.5\,min, link 8.0\,min}\\
 \quad All (no policy) & 3{,}887{,}810 & 701{,}489{,}520 & --- & --- & 45.3 & 209\\
 \quad CC & 3{,}887{,}810 & 701{,}489{,}520 & 38.3 & 68.1 & 45.8 & 207\\
 \quad DS & 0 & 33{,}428{,}173 & 28.0 & 1.0 & 2.2 & 0.06\\
 \quad GRU & 0 & 33{,}428{,}173 & 28.0 & --- & 2.2 & 0.06\\
 \addlinespace[3pt]
-\multicolumn{7}{@{}l}{\textit{Arm 4: complete NB72462M genome}: convert 92.7\,min, link 23.1\,min}\\
+\multicolumn{7}{@{}l}{\textit{Arm 4: complete NB72462M VCF}: convert 92.7\,min, link 23.1\,min}\\
 \quad All (no policy) & 5{,}063{,}417 & 1{,}255{,}334{,}983 & --- & --- & 83.2 & 184\\
-\quad Own & 5{,}063{,}417 & 1{,}255{,}334{,}983 & 72.8 & 117.0 & 84.0 & 182\\
+\quad OP & 5{,}063{,}417 & 1{,}255{,}334{,}983 & 72.8 & 117.0 & 84.0 & 182\\
 \quad CC & 5{,}063{,}411 & 1{,}255{,}333{,}543 & 74.3 & 116.6 & 83.8 & 181\\
 \quad DS & 6{,}397 & 34{,}971{,}594 & 55.1 & 9.7 & 2.2 & 146\\
 \quad GRU & 5{,}060{,}897 & 1{,}254{,}725{,}280 & 73.4 & --- & 83.5 & 181\\
@@ -567,11 +572,130 @@ Available memory never fell below 17.3\,GB.
 
 
 
+\section{Reproducibility and execution}\label{sec:repro}
+\subsection{The base campaign}\label{subsec:repro-campaign}
+The \emph{base campaign} is the set of benchmark runs that produced the main text's fidelity and scalability results: 143 runs (\emph{cells}) in 12 experiment families, all executed with the published VCF-RDFizer v3.1.0 release on two identical hosts, \texttt{vcf-bench-1} and \texttt{vcf-bench-2} (Sections~\ref{subsec:repro-builds} and~\ref{subsec:repro-hosts}).
+Each family is one script of the benchmark harness in the testing repository, numbered as below; scripts \texttt{00} and \texttt{02} only record the environment and derive the ladder inputs, and are not counted.
+Every family ran as a whole on one host, never split across hosts, with no other benchmark running, and every cell wrote its command, commit, image, exit status, and timings to a fresh output directory.
+The families, with their inputs and what each varies, are:
+\begin{description}\setlength{\itemsep}{1pt}
+\item[Records scaling (\texttt{04}).] Prefixes of HG005 with 10,000, 100,000, and one million records, three replicates each, and the complete VCF (3,856,856 records) once (10 cells); main Section~\ref{M-subsubsec:results-samples} and Figure~\ref{fig:scaling}.
+\item[Sample representation (\texttt{03}).] 10,000 records of the 1000 Genomes chromosome-20 call set at 1, 4, 16, 64, 256, 1,024, and 2,504 samples under both sample profiles (14 cells), three timing replicates at 1 and 2,504 samples in each profile (12), and four anchor cells on a single-sample and a multi-sample fixture; main Section~\ref{M-subsubsec:results-samples}.
+\item[Storage mode (\texttt{01}).] Plain against space-optimized storage on 100,000 HG005 records, three replicates each, and on a 269M-triple test file once each (8 cells); main Section~\ref{M-subsubsec:results-artifacts} and Figure~\ref{fig:scaling}f.
+\item[Corpus breadth (\texttt{05}).] HDT and COTTAS construction on the first 250,000 records of eight public inputs and on the complete HG005 VCF (10 cells); main Section~\ref{M-subsubsec:results-artifacts} and Figure~\ref{fig:artifacts}.
+\item[Representation axes (\texttt{07}).] Raw against structured INFO on 100,000 HG005 records and on HGSVC2, three replicates each; basic against structured header output; and fixtures declaring VCF 4.1 to 4.5 or no version (20 cells); Sections~\ref{sec:inputs} and~\ref{sec:config}.
+\item[Difficult inputs (\texttt{09}).] Eleven awkward fixtures, one conversion with the three demonstration linkers, and a custom-mapping cell (16 cells); Section~\ref{sec:inputs} and Table~\ref{tab:difficult-inputs}.
+\item[Covering set (\texttt{11}).] Ten configuration rows on a 1,000-line fixture that together cover every value and every pair of values of seven options, each validated with shapes (10 cells); Section~\ref{sec:config}.
+\item[Modes (\texttt{12}).] Each operating mode run on its own on the 1,000-line fixture and its artifacts: TSV, conversion, validation, compression, decompression, and HDT and COTTAS indexing (7 cells); Section~\ref{sec:config}.
+\item[Feasibility (\texttt{10}).] One million HG005 records under three configurations, each with requested memory ceilings of 8, 16, and 31\,GB (9 cells); Section~\ref{sec:config}.
+\item[Robustness (\texttt{08}).] Two identical conversions of 100,000 HG005 records, a convert--compress--decompress round trip, an index build and rebuild, and the 113-fault mutation score with the default and with all shape profiles (9 cells); main Section~\ref{M-subsec:results-fidelity} and Section~\ref{sec:validation}.
+\item[Equivalence (\texttt{06}).] The 10,000-line (9,986-record) fixture in both storage modes and both sample profiles, validated on four SPARQL engines over three RDF artifacts, two HDT strategies, and two required refusals (8 cells); Section~\ref{sec:config}.
+\item[Query cost (\texttt{13}).] The thirteen source-comparison queries against cyvcf2 on the 10,000-line fixture (0.96M triples) and on 100,000 HG005 records (17.1M triples), three replicates each (6 cells); main Section~\ref{M-subsubsec:results-retrieval} and Section~\ref{subsec:measurements-setup}.
+\end{description}
+The 78 validation runs of the base campaign come from five of these families: Difficult inputs (20), Covering set (23), Equivalence (16), Query cost (18), and Modes (1).
+
+The base campaign took 96.16\,h of measured wall time (Table~\ref{tab:campaign}).
+Every asserted expectation held, but not every cell completed successfully.
+The truncated-gzip and sites-only fixtures exited non-zero and are recorded as outcomes; the two HDT single-strategy cells with COTTAS or with space-optimized storage were required refusals; and three cells were skipped by a guard: a 2,504-sample input under the expanded profile in two families (the 1000 Genomes call set in Corpus breadth and the multi-sample anchor in Sample representation), because its sample columns exceed the volume's sample limit, and the custom-mapping cell, because no custom rules file was supplied.
+The two mutation-score cells record the host-side test-harness commit rather than a conversion-container execution.
+
+\begin{table}[!htbp]
+\caption{Base campaign by experiment family. Outcomes count cells: OK; Rec., recorded (a non-zero exit without an asserted outcome); Ref., refused (an expected rejection); Skip., skipped (a guard prevented execution). Hosts b1 and b2 are \texttt{vcf-bench-1} and \texttt{vcf-bench-2}; sections without an S prefix are in the main text.}\label{tab:campaign}%
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabularx}{\textwidth}{@{}l c r r r r r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+ & & & & \multicolumn{4}{c}{\textbf{Outcome}} & \\
+\cmidrule(lr){5-8}
+\textbf{Experiment} & \textbf{Host} & \textbf{Cells} & \textbf{Hours} & \textbf{OK} & \textbf{Rec.} & \textbf{Ref.} & \textbf{Skip.} & \textbf{Question answered}\\
+\midrule
+\multicolumn{9}{@{}l}{\textit{Conversion, scaling, and storage}}\\
+Records scaling & b1 & 10 & 10.99 & 10 &  &  &  & Cost growth with records (\S\ref{M-subsubsec:results-samples})\\
+Sample representation & b2 & 30 & 19.69 & 29 &  &  & 1 & Profile growth with samples (\S\ref{M-subsubsec:results-samples})\\
+Storage mode & b1 & 8 & 12.87 & 8 &  &  &  & Peak workspace, plain vs space-optimized (\S\ref{M-subsubsec:results-artifacts})\\
+Corpus breadth & b2 & 10 & 26.90 & 9 &  &  & 1 & HDT and COTTAS on ten public inputs (\S\ref{M-subsubsec:results-artifacts})\\
+\addlinespace[3pt]
+\multicolumn{9}{@{}l}{\textit{Input and configuration coverage}}\\
+Representation axes & b1 & 20 & 4.82 & 20 &  &  &  & VCF 4.1--4.5; INFO and header costs (\S\ref{sec:inputs}, \S\ref{sec:config})\\
+Difficult inputs & b1 & 16 & 0.10 & 13 & 2 &  & 1 & Eleven awkward VCFs; demonstration linkers (\S\ref{sec:inputs})\\
+Covering set & b1 & 10 & 0.35 & 10 &  &  &  & Every option value and pair (\S\ref{sec:config})\\
+Modes & b1 & 7 & 0.03 & 7 &  &  &  & Each operating mode alone (\S\ref{sec:config})\\
+Feasibility & b1 & 9 & 9.03 & 9 &  &  &  & Memory ceiling $\times$ configuration (\S\ref{sec:config})\\
+\addlinespace[3pt]
+\multicolumn{9}{@{}l}{\textit{Validation and retrieval}}\\
+Robustness & b1 & 9 & 0.25 & 9 &  &  &  & Determinism, round trip, mutation score (\S\ref{M-subsec:results-fidelity}, \S\ref{sec:validation})\\
+Equivalence & b2 & 8 & 6.84 & 6 &  & 2 &  & Four engines, both profiles, three artifacts (\S\ref{sec:config})\\
+Query cost & b1 & 6 & 4.27 & 6 &  &  &  & SPARQL vs cyvcf2 on identical work (\S\ref{M-subsubsec:results-retrieval})\\
+\midrule
+\textbf{Total} & & \textbf{143} & \textbf{96.16} & \textbf{136} & \textbf{2} & \textbf{2} & \textbf{3} & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Runs outside the base campaign are reported separately and are not counted in its totals (Table~\ref{tab:builds}): the linked workflow, regional retrieval with tabix, large-graph retrieval on \texttt{vcf-bench-3}, and two additional validation runs (a default-profile mutation rerun and the consumer WGS validation run on 250,000 \texttt{NG131FQA1I} records, repeated with the corrected validator).
+An earlier pre-release campaign and the host-calibration runs are archived with the results but not reported.
+
+\subsection{Builds and dependencies}\label{subsec:repro-builds}
+The base campaign used VCF-RDFizer v3.1.0, commit \texttt{d3b34d5}.
+The Docker image is \texttt{ecrum19/vcf-rdfizer:v3.1.0}, with digest
+\begin{center}\footnotesize\texttt{sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa}\end{center}
+Image rebuilding was disabled during execution.
+The image bundles the VCF Core SHACL shapes at vocabulary commit \texttt{5bfd19d}; this snapshot is distinct from the separately versioned vocabulary release~\cite{vcfc210}.
+
+The pinned dependencies are RMLStreamer 2.5.0, hdtc 1.1.0, pycottas 1.1.0, DuckDB 1.5.5, cyvcf2 0.34.0, pyshacl 0.30.1, Comunica 5.3.0 for N-Triples, \nolinkurl{@comunica/query-sparql-hdt} 5.0.1, the COTTAS Comunica engine 0.1.0, bcftools from the base distribution, and QLever pinned by image digest.
+The image also fixes the hdt-cpp revision used to compile \texttt{rdf2hdt} and \texttt{hdt2rdf}.
+Later experiment families are identified separately in Table~\ref{tab:builds}.
+Use-case Arms~1 and~2 ran uncommitted \texttt{feature/spdi-linker} trees on v3.2.0, identified per cell by a diff or tree hash; Arm~3 used \texttt{578c2be}.
+The subsequent v3.3.0 release adds refusals for an empty selector list and an RDF input without VCF triples, neither of which occurs in these use-case inputs.
+
+\begin{table}[!htbp]
+\caption{Builds and assessment boundaries of each experiment family. A reproducible state requires the recorded code, local changes, dependencies, and external resources.}\label{tab:builds}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}\renewcommand{\tabularxcolumn}[1]{m{#1}}%
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}m{0.2\textwidth}>{\raggedright\arraybackslash}m{0.32\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Family} & \textbf{Recorded state} & \textbf{Assessment boundary}\\
+\midrule
+143-cell base campaign & v3.1.0, \texttt{d3b34d5}; full image digest above & Conversion, artifacts, fixtures, 984 applicable paired comparisons, and configuration tests\\
+\rowsep
+Regional retrieval & \texttt{3da1a5a} & Later runner with tabix; 11{,}160 regional executions\\
+\rowsep
+Large-graph retrieval & v3.1.0 graphs; runners \texttt{245fe1f}, \texttt{5ed75c8} & Separate host; thirteen summary queries without SHACL\\
+\rowsep
+Linked use case & v3.2.0 conversion; uncommitted pre-release trees on \texttt{f266db5} in arms 1--2; \texttt{578c2be} in arm 3 & SPDI, gene links, and policy views; v3.3.0 (\texttt{7ab2300}) is the subsequent release, not the exact state of every run\\
+\rowsep
+Use-case Arm~4; Arm~1 rerun & Linking and policy evaluation from \texttt{29a81f6} (v3.3.1); images 3.3.0 (Arm~4) and 3.2.0 (Arm~1) & Record-level comparison; Arm~4 on \texttt{vcf-bench-3}, Arm~1 on \texttt{vcf-bench-1}; derive and convert reused from earlier runs\\
+\rowsep
+Additional validation runs & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2} & Default-profile mutation rerun; consumer WGS validation run (250{,}000 NG131FQA1I records) on QLever, expanded profile, rerun without shapes under v3.1.0's size gates\\
+\rowsep
+Consumer WGS validation rerun & Tree committed as \texttt{3994e94}, validation code as released in v3.3.1; scratch image \texttt{sha256:29c371ad\ldots5317} on \texttt{vcf-bench-2} & Same slice and graph; QLever, expanded profile; default shapes in 117 batches on four workers\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\authorquery{Archive the uncommitted arms 1--2 source trees and record the complete v3.3.0 image digest.}
+The 657.4M-triple conversion/retrieval graph and the 662.4M-triple normalized use-case graph are different artifacts, not alternative counts of the same graph.
+
+\subsection{Hosts, measurements, and execution status}\label{subsec:repro-hosts}
+The base experiments used two separate hosts, \texttt{vcf-bench-1} and \texttt{vcf-bench-2}, each with an Intel Xeon Silver 4309Y at 2.80\,GHz (8 cores), 33.6\,GB RAM without swap, a 210\,GB SSD, Ubuntu 24.04.4 LTS, kernel 6.8.0-85-generic, Docker 29.7.2, and Python 3.12.3.
+Each complete experiment ran on one host without concurrent benchmark jobs.
+Calibration produced identical triple sets, byte-identical COTTAS artifacts and HDT indexes, and differences only in N-Triples/HDT ordering and the HDT \texttt{dcterms:issued} timestamp.
+Conversion nevertheless took 26 versus 37\,s, and validation 156 versus 208\,s, so timings are compared within hosts.
+Large-graph retrieval ran separately on \texttt{vcf-bench-3}, with the same CPU, 8 cores, 31.3\,GiB RAM without swap, Ubuntu 22.04.5, and kernel 5.15.
+It used the v3.1.0 graphs and runners \texttt{245fe1f} for N-Triples and \texttt{5ed75c8} for HDT and COTTAS.
+
+Each cell records its command, host, commit, image, exit status, and wall time in a fresh output directory.
+Stage reports record resident memory, triple counts, artifact sizes, validation outcomes, and transient workspace separately.
+Performance denominators use uncompressed VCF bytes; Table~\ref{tab:corpus} instead reports compressed download sizes.
+Replicated comparisons describe variability, whereas single-run corpus results do not estimate run-to-run variation.
+
+Commands, normalized answers, and comparison reports are maintained in the testing repository; the complete evaluated snapshots still require a persistent archive.
+Tagged releases are distributed through PyPI, Conda-Forge, and Docker Hub under the MIT License, with installation instructions, examples, release notes, and issue tracking~\cite{jimenez_2017_f1000}.
+The unit-test suite covers Linux, macOS, and Windows; the reported benchmarks used Ubuntu.
+
 \section{Input and version coverage}\label{sec:inputs}
 Table~\ref{tab:corpus} identifies the ten public inputs; download commands and canonical filenames are maintained in the testing repository.
 
 \begin{table}[!htbp]
-\caption{Public corpus and evaluation roles. Names are canonical \texttt{.vcf.gz} stems; assemblies and sample counts were checked against the headers. Sizes are approximate compressed downloads.}\label{tab:corpus}%
+\caption{Public corpus and evaluation roles. Names are canonical \texttt{.vcf.gz} stems; assemblies and sample counts were checked against the headers. Sizes are approximate compressed downloads. WGS: whole-genome sequencing; each file is a VCF of variant calls, not a genome sequence.}\label{tab:corpus}%
 \centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}%
 \begin{tabularx}{\textwidth}{@{}l l c r r >{\raggedright\arraybackslash}X@{}}
 \toprule
@@ -585,8 +709,8 @@ Table~\ref{tab:corpus} identifies the ten public inputs; download commands and c
 \texttt{0GOOR\_HG002}   & precisionFDA    & GRCh38 & 1 & 69  & GIAB Truth Challenge v2\\
 \texttt{1000G\_phase3\_chr20} & 1000 Genomes & GRCh37 & 2{,}504 & 327  & Phased cohort\\
 \texttt{HGSVC2}               & HGSVC2       & GRCh38 & 32      & 31.5 & Multi-sample SVs\\
-\texttt{HG004\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 149  & Benchmark genome, chr1--22\\
-\texttt{HG005\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 139  & Benchmark genome, chr1--22\\
+\texttt{HG004\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 149  & Benchmark VCF, chr1--22\\
+\texttt{HG005\_GRCh38}        & GIAB v4.2.1  & GRCh38 & 1       & 139  & Benchmark VCF, chr1--22\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -633,97 +757,6 @@ Truncated gzip & --- & refused (intended) & Refused at decompression in 0.58\,s 
 \end{tabularx}
 \end{table}
 
-\section{Reproducibility and execution}\label{sec:repro}
-\subsection{Builds and dependencies}\label{subsec:repro-builds}
-The base campaign used VCF-RDFizer v3.1.0, commit \texttt{d3b34d5}.
-The Docker image is \texttt{ecrum19/vcf-rdfizer:v3.1.0}, with digest
-\begin{center}\footnotesize\texttt{sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa}\end{center}
-Image rebuilding was disabled during execution.
-The image bundles the VCF Core SHACL shapes at vocabulary commit \texttt{5bfd19d}; this snapshot is distinct from the separately versioned vocabulary release~\cite{vcfc210}.
-
-The pinned dependencies are RMLStreamer 2.5.0, hdtc 1.1.0, pycottas 1.1.0, DuckDB 1.5.5, cyvcf2 0.34.0, pyshacl 0.30.1, Comunica 5.3.0 for N-Triples, \nolinkurl{@comunica/query-sparql-hdt} 5.0.1, the COTTAS Comunica engine 0.1.0, bcftools from the base distribution, and QLever pinned by image digest.
-The image also fixes the hdt-cpp revision used to compile \texttt{rdf2hdt} and \texttt{hdt2rdf}.
-Later experiment families are identified separately in Table~\ref{tab:builds}.
-Use-case Arms~1 and~2 ran uncommitted \texttt{feature/spdi-linker} trees on v3.2.0, identified per cell by a diff or tree hash; Arm~3 used \texttt{578c2be}.
-The subsequent v3.3.0 release adds refusals for an empty selector list and an RDF input without VCF triples, neither of which occurs in these use-case inputs.
-
-\begin{table}[!htbp]
-\caption{Builds and assessment boundaries of each experiment family. A reproducible state requires the recorded code, local changes, dependencies, and external resources.}\label{tab:builds}%
-\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}\renewcommand{\tabularxcolumn}[1]{m{#1}}%
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}m{0.2\textwidth}>{\raggedright\arraybackslash}m{0.32\textwidth}>{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Family} & \textbf{Recorded state} & \textbf{Assessment boundary}\\
-\midrule
-143-cell base campaign & v3.1.0, \texttt{d3b34d5}; full image digest above & Conversion, artifacts, fixtures, 984 applicable paired comparisons, and configuration tests\\
-\rowsep
-Regional retrieval & \texttt{3da1a5a} & Later runner with tabix; 11{,}160 regional executions\\
-\rowsep
-Large-graph retrieval & v3.1.0 graphs; runners \texttt{245fe1f}, \texttt{5ed75c8} & Separate host; thirteen summary queries without SHACL\\
-\rowsep
-Linked use case & v3.2.0 conversion; uncommitted pre-release trees on \texttt{f266db5} in arms 1--2; \texttt{578c2be} in arm 3 & SPDI, gene links, and policy views; v3.3.0 (\texttt{7ab2300}) is the subsequent release, not the exact state of every run\\
-\rowsep
-Use-case Arm~4; Arm~1 rerun & Linking and policy evaluation from \texttt{29a81f6} (v3.3.1); images 3.3.0 (Arm~4) and 3.2.0 (Arm~1) & Record-level comparison; Arm~4 on \texttt{vcf-bench-3}, Arm~1 on \texttt{vcf-bench-1}; derive and convert reused from earlier runs\\
-\rowsep
-Review follow-ups & Default-profile mutation rerun; 250{,}000-record NG131FQA1I check & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2}; QLever, expanded profile; NG131FQA1I rerun without shapes; v3.1.0's size gates\\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\authorquery{Archive the uncommitted arms 1--2 source trees and record the complete v3.3.0 image digest.}
-The 657.4M-triple conversion/retrieval graph and the 662.4M-triple normalized use-case graph are different artifacts, not alternative counts of the same graph.
-
-\subsection{Hosts, measurements, and execution status}\label{subsec:repro-hosts}
-The base experiments used two separate hosts, \texttt{vcf-bench-1} and \texttt{vcf-bench-2}, each with an Intel Xeon Silver 4309Y at 2.80\,GHz (8 cores), 33.6\,GB RAM without swap, a 210\,GB SSD, Ubuntu 24.04.4 LTS, kernel 6.8.0-85-generic, Docker 29.7.2, and Python 3.12.3.
-Each complete experiment ran on one host without concurrent benchmark jobs.
-Calibration produced identical triple sets, byte-identical COTTAS artifacts and HDT indexes, and differences only in N-Triples/HDT ordering and the HDT \texttt{dcterms:issued} timestamp.
-Conversion nevertheless took 26 versus 37\,s, and validation 156 versus 208\,s, so timings are compared within hosts.
-Large-graph retrieval ran separately on \texttt{vcf-bench-3}, with the same CPU, 8 cores, 31.3\,GiB RAM without swap, Ubuntu 22.04.5, and kernel 5.15.
-It used the v3.1.0 graphs and runners \texttt{245fe1f} for N-Triples and \texttt{5ed75c8} for HDT and COTTAS.
-
-Each cell records its command, host, commit, image, exit status, and wall time in a fresh output directory.
-Stage reports record resident memory, triple counts, artifact sizes, validation outcomes, and transient workspace separately.
-Performance denominators use uncompressed VCF bytes; Table~\ref{tab:corpus} instead reports compressed download sizes.
-Replicated comparisons describe variability, whereas single-run corpus results do not estimate run-to-run variation.
-The base campaign contains 143 cells and 96.16\,h of measured wall time (Table~\ref{tab:campaign}).
-All asserted expectations held, but not every cell completed successfully: two non-zero exits were observed without an asserted outcome, two were required refusals, and three cells were skipped.
-The two mutation-score cells record the host-side test-harness commit rather than a conversion-container execution.
-
-\begin{table}[!htbp]
-\caption{Base campaign by experiment family. Outcomes count cells: OK; Rec., recorded (a non-zero exit without an asserted outcome); Ref., refused (an expected rejection); Skip., skipped (a guard prevented execution). Hosts b1 and b2 are \texttt{vcf-bench-1} and \texttt{vcf-bench-2}; sections without an S prefix are in the main text.}\label{tab:campaign}%
-\centering\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.1}%
-\begin{tabularx}{\textwidth}{@{}l c r r r r r r >{\raggedright\arraybackslash}X@{}}
-\toprule
- & & & & \multicolumn{4}{c}{\textbf{Outcome}} & \\
-\cmidrule(lr){5-8}
-\textbf{Experiment} & \textbf{Host} & \textbf{Cells} & \textbf{Hours} & \textbf{OK} & \textbf{Rec.} & \textbf{Ref.} & \textbf{Skip.} & \textbf{Question answered}\\
-\midrule
-\multicolumn{9}{@{}l}{\textit{Conversion, scaling, and storage}}\\
-Records scaling & b1 & 10 & 10.99 & 10 &  &  &  & Cost growth with records (\S\ref{M-subsubsec:results-samples})\\
-Sample representation & b2 & 30 & 19.69 & 29 &  &  & 1 & Profile growth with samples (\S\ref{M-subsubsec:results-samples})\\
-Storage mode & b1 & 8 & 12.87 & 8 &  &  &  & Peak workspace, plain vs space-optimized (\S\ref{M-subsubsec:results-artifacts})\\
-Corpus breadth & b2 & 10 & 26.90 & 9 &  &  & 1 & HDT and COTTAS on ten public inputs (\S\ref{M-subsubsec:results-artifacts})\\
-\addlinespace[3pt]
-\multicolumn{9}{@{}l}{\textit{Input and configuration coverage}}\\
-Representation axes & b1 & 20 & 4.82 & 20 &  &  &  & VCF 4.1--4.5; INFO and header costs (\S\ref{sec:inputs}, \S\ref{sec:config})\\
-Difficult inputs & b1 & 16 & 0.10 & 13 & 2 &  & 1 & Eleven awkward VCFs; demonstration linkers (\S\ref{sec:inputs})\\
-Covering set & b1 & 10 & 0.35 & 10 &  &  &  & Every option value and pair (\S\ref{sec:config})\\
-Modes & b1 & 7 & 0.03 & 7 &  &  &  & Each operating mode alone (\S\ref{sec:config})\\
-Feasibility & b1 & 9 & 9.03 & 9 &  &  &  & Memory ceiling $\times$ configuration (\S\ref{sec:config})\\
-\addlinespace[3pt]
-\multicolumn{9}{@{}l}{\textit{Validation and retrieval}}\\
-Robustness & b1 & 9 & 0.25 & 9 &  &  &  & Determinism, round trip, mutation score (\S\ref{M-subsec:results-fidelity}, \S\ref{sec:validation})\\
-Equivalence & b2 & 8 & 6.84 & 6 &  & 2 &  & Four engines, both profiles, three artifacts (\S\ref{sec:config})\\
-Query cost & b1 & 6 & 4.27 & 6 &  &  &  & SPARQL vs cyvcf2 on identical work (\S\ref{M-subsubsec:results-retrieval})\\
-\midrule
-\textbf{Total} & & \textbf{143} & \textbf{96.16} & \textbf{136} & \textbf{2} & \textbf{2} & \textbf{3} & \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Commands, normalized answers, and comparison reports are maintained in the testing repository; the complete evaluated snapshots still require a persistent archive.
-Tagged releases are distributed through PyPI, Conda-Forge, and Docker Hub under the MIT License, with installation instructions, examples, release notes, and issue tracking~\cite{jimenez_2017_f1000}.
-The unit-test suite covers Linux, macOS, and Windows; the reported benchmarks used Ubuntu.
-
 \section{Defects, corrections, and remaining gaps}\label{sec:issues}
 This section retains diagnostic evidence that is not visible in the aggregate pass counts.
 Corrected outputs are used where stated; unsuccessful runs and unresolved failures have not been relabeled as passes.
@@ -753,6 +786,7 @@ In full mode, the gate instead used VCF bytes, admitting the 58.2M-triple NG131F
 The corrected gate counts triples rather than packaging-dependent bytes.
 The Comunica-backed endpoints also exhausted the JavaScript heap while approximately 25\,GB host memory remained free; the heap ceiling is now configurable.
 Both corrections are released in v3.3.0, do not change conversion output, and leave the failing runs in the evidence record.
+Release v3.3.1 lowers the whole-graph limit from 50M to 10M triples, about 24\,GB at the measured 2.4\,GB per million triples, and validates record-local shapes in batches whose memory follows the batch rather than the graph; with it, the NG131FQA1I graph passed the default shapes (Section~\ref{subsec:validation-comparisons}).
 
 \paragraph{COTTAS execution and timeout handling.}
 The initial pycottas/RDFLib path completed preflight and Q1--Q4 on condensed output but stalled on Q5.
@@ -767,7 +801,7 @@ It was corrected to classify severity and block only \texttt{sh:Violation}, rath
 The missing-token preflight also flagged legitimate dots: \texttt{Number=.} denotes variable cardinality, and \texttt{.} can encode a missing genotype.
 Excluding \texttt{vcfc:fieldNumber} and \texttt{vcfc:genotypeString} reduced 20 rows to ten header-attribute values carrying the same Number declaration.
 A further correction excludes that attribute while retaining checks on others, but postdates v3.1.0.
-Its campaign reports therefore retain 608 checks, 599 passes, and nine flags with ten rows each; those flags do not represent malformed RDF.
+Its reports in the base campaign therefore retain 608 checks, 599 passes, and nine flags with ten rows each; those flags do not represent malformed RDF.
 
 \paragraph{Incomplete sites-only coverage.}
 The fixture declared FORMAT without sample columns, which bcftools rejects.
@@ -781,10 +815,10 @@ Its input-size column labeled \texttt{.vcf.gz} also held uncompressed bytes: NG1
 The legacy HDT reduction of 92--95\% used uncompressed N-Triples as its denominator, unlike the present 1.36--1.82 ratio against gzip-framed N-Triples.
 Those legacy tables are excluded from the current analysis rather than presented as directly comparable compression results.
 
-\paragraph{Open oracle failures.}
-Phase-set census expectations and lexical decimal handling remain unresolved validator issues in the NG131FQA1I follow-up (Section~\ref{sec:validation}).
-Diagnostic recomputation explains the failures, but a corrected validator release has not been established by these experiments.
-Extending the oracle to structural-variant events, gVCF blocks, and local-allele constructs also remains outside the completed evidence.
+\paragraph{Oracle failures on a consumer WGS VCF.}
+The v3.1.0 oracle did not count phase sets and compared QUAL as written, so the consumer WGS validation run first reported three mismatches on a graph whose record fields equal the VCF text (Section~\ref{subsec:validation-comparisons}).
+Release v3.3.1 corrects both and adds census expectations, checked against the emitters by unit tests, for structural-variant events, confidence intervals, and gVCF reference blocks; rerun with it, the same graph passed all thirteen comparisons.
+Local-allele constructs remain outside the oracle.
 These are distinct from the fixed sample, allele-resource, and ownership defects above.
 
 \section{Conversion, storage, and retrieval measurements}\label{sec:measurements}
@@ -793,7 +827,7 @@ On the HG005 record ladder, triple production had a fitted exponent of $+0.999$ 
 Artifact bytes, peak workspace, and end-to-end time had exponents of $+1.033$, $+1.025$, and $+1.063$, respectively.
 At 10,000, 100,000, and one million records, end-to-end times were 40.7, 423.7, and 5,476.0\,s, with replicate standard deviation at most 13.5\,s.
 Mapping-stage resident memory remained 1.0--1.7\,GB across this hundredfold input increase.
-RMLStreamer itself took 12.2--41.4\,s; representation construction dominated total time.
+RMLStreamer itself took 12.2--41.4\,s; HDT construction dominated total time, rising from 38\% of it at 10,000 records to 82\% for the complete VCF (Figure~\ref{fig:scaling}e).
 These observations describe mapping memory on this ladder, not bounded memory for every downstream component.
 
 The sample ladder holds 10,000 records and INFO fixed while varying $S$ from 1 to 2,504 (main Figure~\ref{M-fig:samples}).
@@ -809,21 +843,22 @@ Extrapolating expanded workspace to the full 1,812,841-record call set gives rou
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{fig-scaling.pdf}
-\caption{\textbf{Record scaling and workspace.}
-(a) Growth relative to 10,000 HG005 records, using medians of three replicates except the single whole-genome run.
-(b) Peak workspace and the end-to-end time cost of space-optimized storage on two inputs.
-Triple counts and final artifacts agree between storage modes; both panels use v3.1.0 on \texttt{vcf-bench-1}.}\label{fig:scaling}
+\caption{\textbf{The record ladder: conversion scales linearly with records, while mapping memory does not grow.}
+(a)--(d) Triples, end-to-end time, peak disk, and peak RMLStreamer memory for 10,000, 100,000, and one million HG005 records (medians of three replicates; light dots are the replicates) and the complete VCF of 3,856,856 records (one run), on log scales except (d); each exponent is a least-squares fit over all runs.
+(e) Share of end-to-end time by stage, with the total at right: RML mapping is the RMLStreamer stage; HDT construction covers chunk streaming, chunk builds, merging, and indexing; other is the remainder, including TSV conversion and the direct emitters.
+(f) Peak disk of plain and space-optimized storage on two inputs; triple counts and final artifacts agree between the modes.
+All runs use v3.1.0 on \texttt{vcf-bench-1}.}\label{fig:scaling}
 \end{figure}
 
 \subsection{Storage mode and optional artifacts}\label{subsec:measurements-storage}
 Plain and space-optimized storage produced identical triples and final artifact sizes within one 4\,kB filesystem block.
 Space-optimized storage reduced peak workspace from 2.98 to 0.325\,GB ($9.19\times$) on 100,000 records and from 43.40 to 5.65\,GB ($7.68\times$) on the 1,155,741-record NG131FQA1I prefix \texttt{test-larger}.
-The end-to-end time costs were 5.2\% and 3.2\%, respectively (Figure~\ref{fig:scaling}b).
+The end-to-end time costs were 5.2\% and 3.2\%, respectively (Figure~\ref{fig:scaling}f).
 On the replicated input, mapping time met a prespecified $\pm10\%$ equivalence margin: observed difference $+0.0\%$, with a 90\% bootstrap CI of $[-1.9\%,+0.4\%]$.
 
 Across the corpus, COTTAS occupied 0.37--0.55 times gzip-framed N-Triples and 0.27--0.37 times HDT, while HDT occupied 1.36--1.82 times gzip-framed N-Triples (Figure~\ref{fig:artifacts}).
 COTTAS took 1.5--3.0 times longer than HDT to build, and peak workspace ranged from 4.7 to 30.3 times the uncompressed VCF input.
-The v3.1.0 whole-genome run produced 657.4M triples in 16.07\,h, including 20,911\,s for HDT and 31,230\,s for COTTAS, approximately 14.5\,h together.
+The v3.1.0 run on the complete HG005 VCF produced 657.4M triples in 16.07\,h, including 20,911\,s for HDT and 31,230\,s for COTTAS, approximately 14.5\,h together.
 Its 146.8-second RML stage excludes emitters and other conversion work.
 The retained HDT (4.63\,GB), HDT index (4.74\,GB), and COTTAS (1.50\,GB) formed a measured 10,879,410,176-byte output tree, or 10.88\,GB; rounded components sum to 10.87\,GB.
 This is $78\times$ the 139\,MB compressed download, but includes alternative representations and an index rather than a minimum RDF footprint.
@@ -855,7 +890,7 @@ One parser pass answering all thirteen questions took 12.4\,s, against 17.1\,s o
 
 The large-graph workload took 1.13, 1.00, 0.96, and 0.97\,s per million triples at 0.96M, 17.1M, 171M, and 657M triples, respectively (Table~\ref{tab:retrieval-scale}).
 Index construction took 1.27--1.35\,s per million above the smallest graph.
-The whole-genome queries took 634.6\,s after an 868.0-second build, with replicates within 0.7\% and every answer equal to the parser's.
+On the complete HG005 VCF, the queries took 634.6\,s after an 868.0-second build, with replicates within 0.7\% and every answer equal to the parser's.
 Query times from the three artifacts differed by only 0.3\%, while one-time decoding costs differed substantially.
 Both native compressed Comunica paths stopped at Q6 on 171M triples despite a 24\,GB heap; their reported totals cover only five answers.
 On those five, COTTAS was $16.7\times$ faster than HDT, compared with less than $1.2\times$ on the small fixture, so small-graph rankings do not establish large-graph behavior.
@@ -867,13 +902,13 @@ On those five, COTTAS was $16.7\times$ faster than HDT, compared with less than 
 \toprule
 \textbf{Graph} & \textbf{Triples} & \textbf{Engine} & \textbf{Time (s)} & \textbf{Outcome}\\
 \midrule
-\multicolumn{5}{@{}l}{\textit{Does SPARQL scale to a whole genome? (all thirteen questions)}}\\
+\multicolumn{5}{@{}l}{\textit{Does SPARQL scale to a complete VCF? (all thirteen questions)}}\\
 Fixture        & 958{,}919       & QLever & 1.1   & 1.13\,s per million triples\\
 100\,k records & 17{,}098{,}746  & QLever & 17.0  & 1.00\,s per million\\
 1\,M records   & 170{,}935{,}101 & QLever & 163.3 & 0.96\,s per million\\
-Whole genome   & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\%\\
+3.86\,M records, complete & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million; setup 868.0\,s; replicates within 0.7\%\\
 \addlinespace[3pt]
-\multicolumn{5}{@{}l}{\textit{Does the artifact matter? (whole genome, one engine, three packagings)}}\\
+\multicolumn{5}{@{}l}{\textit{Does the artifact matter? (complete VCF, one engine, three packagings)}}\\
 \quad from N-Triples & \multicolumn{2}{r}{gzip-framed} & 634.6 & Decode 179--192\,s; setup 868.0\,s\\
 \quad from HDT       & \multicolumn{2}{r}{---}         & 636.3 & Decode 955--972\,s; setup 861.8\,s\\
 \quad from COTTAS    & \multicolumn{2}{r}{---}         & 636.6 & Decode 592--601\,s; setup 868.4\,s\\
@@ -886,12 +921,29 @@ Whole genome   & 657{,}425{,}805 & QLever & \textbf{634.6} & 0.97\,s per million
 \end{table}
 
 \paragraph{Indexed regional access.}
-The 11,160 regional executions produced no failures or answer disagreements (main Table~\ref{M-tab:regional}).
+The 11,160 regional executions produced no failures or answer disagreements (main Figure~\ref{M-fig:regional}; Table~\ref{tab:regional}).
 On 17.1M triples, QLever took 9.6--11.1\,ms across 1\,kb--10\,Mb windows, while indexed cyvcf2 and bcftools costs grew $35.7\times$ and $7.5\times$, respectively.
 At 1\,kb, those readers were $2.9\times$ and $2.2\times$ faster; QLever overtook cyvcf2 by 1\,Mb and led both by $10.6\times$ and $2.9\times$ at 10\,Mb.
 QLever setup took 23.2\,s, against 0.48\,s for bgzip and tabix.
 In-memory engines required 896--1005\,ms per 1\,kb window on the smaller graph, against QLever's 18.8\,ms, and were not carried further.
 These comparisons use the same POS-based record selection rather than including interval-overlap records outside the requested window.
+
+\begin{table}[!htbp]
+\caption{Regional retrieval on the 17.1M-triple graph of 100,000 HG005 records, excluding setup; the data behind main Figure~\ref{M-fig:regional}a. Entries are medians in milliseconds over five questions' window medians and three repetitions. Indexed paths use twenty windows per size; the unindexed scan uses three. All paths use the same POS-based selection; the bottom row gives the median records per window.}\label{tab:regional}%
+\centering\footnotesize\setlength{\tabcolsep}{7pt}\renewcommand{\arraystretch}{1.1}%
+\begin{tabular}{@{}l r r r r@{}}
+\toprule
+\textbf{Execution path} & \textbf{1 kb} & \textbf{100 kb} & \textbf{1 Mb} & \textbf{10 Mb}\\
+\midrule
+QLever (RDF) & 9.6 & 10.0 & 9.6 & 11.1\\
+bcftools + tabix & 4.3 & 4.8 & 7.5 & 32.7\\
+cyvcf2 + tabix & 3.3 & 4.8 & 14.9 & 117.8\\
+cyvcf2, no index & 635.2 & 638.0 & 632.0 & 649.9\\
+\addlinespace[3pt]
+\textit{Records per window} & \textit{2} & \textit{143} & \textit{1{,}262} & \textit{13{,}143}\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Setup amortization}\label{subsec:measurements-setup}
 For an equivalent repeated workload with a positive per-query saving,
@@ -902,6 +954,17 @@ The reported 100,000-record scenario gives $(423.7+22.8)/(11.5-1.32)\simeq44$ qu
 The 423.7-second workflow includes HDT construction, so it does not isolate minimum N-Triples-plus-QLever setup.
 It also assumes repeated parser scans at the measured question mix, not a batched pass computing all answers.
 No universal break-even count follows, and update costs for changing external evidence or policies were not measured.
+Figure~\ref{fig:breakeven} shows the cumulative costs behind this estimate; repeating a single question breaks even after 39 (the metadata and census questions) to 64 (Q12, the INFO digest) repetitions.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{fig-breakeven.pdf}
+\caption{\textbf{When converting pays off.}
+(a) Cumulative time for repeated, separate questions on the 100,000-record HG005 slice (17.1M triples): a cyvcf2 scan for each question (median 11.6\,s) against a one-time setup of conversion with HDT (423.7\,s) and QLever indexing (22.8\,s), followed by 1.32\,s per indexed question (mean over Q1--Q13).
+The lines cross at 44 questions.
+(b) The break-even when a single question is repeated, from that question's own scan and query times; the dashed line marks the 44 questions of panel (a).
+Setup includes HDT construction, which querying through QLever does not need, and a single batched parser pass answering all thirteen questions (12.4\,s) would favour the parser.}\label{fig:breakeven}
+\end{figure}
 
 \section{Configuration coverage, operating modes, and memory feasibility}\label{sec:config}
 A ten-row covering set exercised every value of seven axes: sample representation, INFO representation, storage mode, RDF compression, output representations, artifact compression, and HDT strategy.

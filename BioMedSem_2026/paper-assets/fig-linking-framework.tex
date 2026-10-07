@@ -45,7 +45,7 @@
 
 \node[box=4.55cm,data] (inputs) at (0,.35) {
   \textbf{VCF inputs (four arms)}\\[2pt]
-  \textbf{1: Five genome slices:} NB72462M,\\
+  \textbf{1: Five gene-span slices:} NB72462M,\\
   NG131FQA1I, 0GOOR\_HG002,\\
   HG004\_GRCh38, HG005\_GRCh38\\
   (all \codefont{.vcf.gz})\\
@@ -70,11 +70,11 @@
 \node[box=6.0cm] (graphs) at (10.0,.35) {
   \textbf{RDF graphs + their link triples}\\[3pt]
   \textbf{Shared variant identity:}\\
-  genome call $\longrightarrow$ SPDI $\longleftarrow$ ClinVar call\\
+  participant call $\longrightarrow$ SPDI $\longleftarrow$ ClinVar call\\
   frequency-panel call $\longrightarrow$ the same SPDI\\
   \textit{Edges: \codefont{vcfl:sameVariantAs}}\\[5pt]
   \textbf{Gene links for policy selection:}\\
-  genome call $\longrightarrow$ Ensembl gene identifier\\
+  participant call $\longrightarrow$ Ensembl gene identifier\\
   \textit{Edge: \codefont{vcfl:overlapsGene}}\\[3pt]
   Shared identifiers let queries join the files.
 };
@@ -107,8 +107,7 @@
   \codefont{-{}-assignee}: requester identifier\\
   \codefont{-{}-purpose}: DUO purpose term\\[3pt]
   CC, DS, and GRU requesters,\\
-  plus the participant's physician\\
-  in Arm 4.
+  plus OP in Arm 4.
 };
 
 \draw[flow] (graphs.south) -- ++(0,.4) -| (enforce.north);
