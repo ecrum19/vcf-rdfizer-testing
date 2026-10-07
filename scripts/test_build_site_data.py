@@ -62,6 +62,15 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         statuses = {q["query"][:3]: q["status"] for q in real["queries"]}
         self.assertEqual(sorted(k for k, s in statuses.items() if s != "PASS"), ["q09", "q10", "q11"])
 
+    def test_real_genome_rerun(self):
+        """The v3.3.1 validator's rerun on the same graph: every answer equal, shapes clean."""
+        real = self.data["fidelity"]["realGenome"]
+        rerun = real["rerun"]
+        self.assertEqual(rerun["triples"], real["triples"])
+        self.assertEqual(len(rerun["queries"]), 13)
+        self.assertEqual({q["status"] for q in rerun["queries"]}, {"PASS"})
+        self.assertEqual((rerun["shacl"]["status"], rerun["shacl"]["violations"]), ("PASS", 0))
+
     def test_use_case_carriers(self):
         arms = self.data["usecase"]["arms"]
         expected = {

@@ -1,0 +1,189 @@
+{
+  "question": "Which participants carry a ClinVar-classified variant in an ACMG SF v3.2 gene, and what may each requester see?",
+  "reference": {
+    "name": "GCA_000001405.15_GRCh38_no_alt_analysis_set",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+    "fai_url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai",
+    "bytes": 872949833,
+    "note": "The reference the GIAB v4.2.1 benchmark files declare (human_GRCh38_no_alt_analysis_set). UCSC contig names (chr1...)."
+  },
+  "clinvar": {
+    "release": "2026-09-13",
+    "url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2026/clinvar_20260913.vcf.gz",
+    "md5_url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2026/clinvar_20260913.vcf.gz.md5",
+    "bytes": 193709143,
+    "license": "Public domain (NCBI); https://www.ncbi.nlm.nih.gov/home/about/policies/"
+  },
+  "participants": [
+    {
+      "id": "NB72462M",
+      "input": "NB72462M.vcf.gz",
+      "source": "PGP huF7A4DE (Nebula Genomics, GATK)",
+      "rsids": true
+    }
+  ],
+  "definition": {
+    "classification_rule": "Any record ClinVar has classified. The first '|'-separated term of CLNSIG is reported as the classification, so 'Pathogenic|risk_factor' counts as Pathogenic and 'Conflicting_classifications_of_pathogenicity' as itself.",
+    "reportable_significance": [
+      "Pathogenic",
+      "Likely_pathogenic",
+      "Pathogenic/Likely_pathogenic"
+    ],
+    "reportable_note": "Counted and reported separately. In this cohort no carrier met it: five unselected individuals, against a ~1-3% per-person rate of reportable ACMG secondary findings. The empty subset is a result, not a filter failure.",
+    "excluded_review_status": [
+      "no_assertion_criteria_provided",
+      "no_classification_provided",
+      "no_classification_for_the_individual_variant"
+    ],
+    "gene_rule": "At least one GENEINFO symbol is an ACMG SF v3.2 gene. The gene reported is that symbol, not the region the variant falls in.",
+    "genotype_rule": "The participant's GT contains a non-zero allele index (multi-allelic records are split first, so that index is the ALT).",
+    "filter_rule": "FILTER is PASS or missing.",
+    "identity_rule": "Same CHROM (after contig-name harmonisation), POS, REF and ALT, after bcftools norm against the reference."
+  },
+  "policy": {
+    "note": "Consents are SIMULATED and stated as such in every output. The genomes are real; nobody consented to anything here.",
+    "consents": {
+      "NB72462M": {
+        "permits": [
+          "DUO:0000043",
+          "DUO:0000042"
+        ]
+      }
+    },
+    "secondary_findings": {
+      "rule": "A record whose REF extent [POS, POS+len(REF)-1] overlaps a cancer-predisposition gene span (regions.json) is released only for clinical care (DUO:0000043), whatever gene ClinVar reports.",
+      "genes": [
+        "APC",
+        "BMPR1A",
+        "BRCA1",
+        "BRCA2",
+        "MAX",
+        "MEN1",
+        "MLH1",
+        "MSH2",
+        "MSH6",
+        "MUTYH",
+        "NF2",
+        "PALB2",
+        "PMS2",
+        "PTEN",
+        "RB1",
+        "RET",
+        "SDHAF2",
+        "SDHB",
+        "SDHC",
+        "SDHD",
+        "SMAD4",
+        "STK11",
+        "TMEM127",
+        "TP53",
+        "TSC1",
+        "TSC2",
+        "VHL",
+        "WT1"
+      ],
+      "source": "ACMG SF v3.2 Table 1, 'Cancer phenotypes' (28 genes)"
+    },
+    "purpose_panels": [
+      {
+        "purpose": "DUO:0000007",
+        "genes": [
+          "ACTA2",
+          "ACTC1",
+          "APOB",
+          "BAG3",
+          "CALM1",
+          "CALM2",
+          "CALM3",
+          "CASQ2",
+          "COL3A1",
+          "DES",
+          "DSC2",
+          "DSG2",
+          "DSP",
+          "FBN1",
+          "FLNC",
+          "KCNH2",
+          "KCNQ1",
+          "LDLR",
+          "LMNA",
+          "MYBPC3",
+          "MYH11",
+          "MYH7",
+          "MYL2",
+          "MYL3",
+          "PCSK9",
+          "PKP2",
+          "PRKAG2",
+          "RBM20",
+          "RYR2",
+          "SCN5A",
+          "SMAD3",
+          "TGFBR1",
+          "TGFBR2",
+          "TMEM43",
+          "TNNC1",
+          "TNNI3",
+          "TNNT2",
+          "TPM1",
+          "TRDN",
+          "TTN"
+        ],
+        "rule": "Disease-specific research receives only records whose REF extent overlaps one of these genes; everything else in the file is withheld from it."
+      }
+    ],
+    "regions": [
+      {
+        "name": "APOE",
+        "chrom": "chr19",
+        "start": 44903787,
+        "end": 44909396,
+        "assembly": "GCA_000001405.15_GRCh38_no_alt_analysis_set",
+        "purposes": [
+          "https://example.org/purpose/own-physician-care"
+        ],
+        "source": "Ensembl release 116, ENSG00000130203, gene span",
+        "rule": "Records whose POS lies in the span are released only for care by the participant's own physician. The region is coordinates on a named contig, so it binds the contig name as the file writes it."
+      }
+    ],
+    "variants": [
+      {
+        "name": "DSP chr6:7569314 C>G, uncertain significance",
+        "chrom": "chr6",
+        "pos": 7569314,
+        "ref": "C",
+        "alt": "G",
+        "spdi": "NC_000006.12:7569313:C:G",
+        "withheld_from": [
+          "biobank"
+        ],
+        "rule": "Withheld from the biobank by name, whatever its purpose; the target is the variant's SPDI identity, so it holds whatever the file calls chromosome 6."
+      }
+    ],
+    "requesters": {
+      "own_physician": {
+        "assignee": "https://example.org/party/participant-physician",
+        "purpose": "https://example.org/purpose/own-physician-care"
+      },
+      "clinical": {
+        "assignee": "https://example.org/party/clinical-genetics-lab",
+        "purpose": "DUO:0000043"
+      },
+      "cardio": {
+        "assignee": "https://example.org/party/cardio-consortium",
+        "purpose": "DUO:0000007"
+      },
+      "biobank": {
+        "assignee": "https://example.org/party/biobank-researcher",
+        "purpose": "DUO:0000042"
+      }
+    }
+  },
+  "purposes": [
+    {
+      "iri": "https://example.org/purpose/own-physician-care",
+      "broader": "DUO:0000043",
+      "label": "clinical care by the participant's own physician"
+    }
+  ]
+}

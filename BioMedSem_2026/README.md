@@ -5,8 +5,8 @@
 - [`paper-assets/`](paper-assets/): figures used by those documents and their
   TikZ/Python sources.
 - [`benchmark-results/`](benchmark-results/README.md): recorded measurements,
-  provenance and validation evidence. The whole-genome retrieval extension is
-  documented under [`vcf-bench-3`](benchmark-results/vcf-bench-3/README.md).
+  provenance and validation evidence. The large-graph retrieval extension, up to the
+  complete HG005 VCF, is documented under [`vcf-bench-3`](benchmark-results/vcf-bench-3/README.md).
 
 Build both documents from the repository root:
 

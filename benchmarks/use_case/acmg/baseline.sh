@@ -16,6 +16,8 @@
 #      (baseline_carriers.py)
 #   6. with a panel (arm 2), also list the carriers of variants the panel
 #      calls rare, looking each one's frequency up by CHROM, POS, REF and ALT
+#   7. list every record, as written, so the rules can also count what each
+#      requester's view holds (arm 4 compares views record for record)
 #
 # It reads the derived inputs and use_case.json, never the RDF or the policy,
 # so its agreement with the RDF route is evidence rather than an echo.
@@ -32,8 +34,11 @@ trap 'rm -rf "$work"' EXIT
 for c in $(seq 1 22) X Y; do printf 'chr%s\t%s\n' "$c" "$c"; done > "$work/chr_to_plain"
 
 : > "$out_dir/genotypes.tsv"
+: > "$out_dir/records.tsv"
 for id in "$@"; do
   genome="$derived/$id.acmg.vcf.gz"
+  # Step 7, before step 1 renames anything: a region rule binds the contig as written.
+  bcftools query -f "$id\t%CHROM\t%POS\t%REF\t%ALT\n" "$genome" >> "$out_dir/records.tsv"
   # Step 1: ClinVar names contigs 1..22, X; rename only a file that differs.
   #
   # `|| true` because `head -1` closes the pipe and bcftools then dies of
@@ -67,6 +72,6 @@ if [[ -s "$derived/panel.acmg.vcf.gz" ]]; then
   panel=("$out_dir/panel.tsv")
 fi
 
-# Steps 5 and 6.
+# Steps 5-7.
 python3 "$here/baseline_carriers.py" "$case_json" "$here/acmg_sf_v3.2.genes.txt" \
   "$out_dir/genotypes.tsv" "$out_dir" "${panel[@]}"

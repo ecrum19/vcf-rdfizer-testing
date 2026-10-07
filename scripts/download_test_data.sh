@@ -2,7 +2,10 @@
 set -euo pipefail
 
 # Download location (can be overridden): DATA_DIR=... bash scripts/download_test_data.sh
+# ONLY limits the run to the named datasets (canonical names, space-separated):
+#   ONLY="NB72462M.vcf.gz" bash scripts/download_test_data.sh
 DATA_DIR="${DATA_DIR:-vcf_data}"
+ONLY="${ONLY:-}"
 mkdir -p "$DATA_DIR"
 
 ts() { date +"%Y-%m-%d %H:%M:%S"; }
@@ -144,6 +147,9 @@ i=0
 for entry in "${DATASETS[@]}"; do
   i=$((i + 1))
   IFS='|' read -r canonical_name source_name profile size label mode target postprocess archive_member <<< "$entry"
+  if [[ -n "$ONLY" && " $ONLY " != *" $canonical_name "* ]]; then
+    continue
+  fi
 
   log "[$i/${#DATASETS[@]}] Dataset: $canonical_name"
   log "    Provider/label : $label"

@@ -41,16 +41,22 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 CASE_DIR="$BM_ROOT/use_case/acmg"
 # Which arm: arm1, the five heterogeneous genomes (use_case.json); cohort,
 # arm 2's 1000 Genomes participants (cohort/cohort.json, from make_cohort.py);
-# or wgs, arm 3: one arm-1 participant's whole genome (wgs/case.json, from
-# make_wgs.py). Each arm has its own results and derived inputs; they share the
-# downloads.
+# wgs, arm 3: one arm-1 participant's whole genome (wgs/case.json, from
+# make_wgs.py); or layered, arm 4: one whole genome under layered consent, four
+# requesters (layered/case.json, from make_layered.py). Each arm has its own
+# results and derived inputs; they share the downloads.
 ARM="${BM_ACMG_ARM:-arm1}"
 case "$ARM" in
   arm1)   CASE_JSON="$CASE_DIR/use_case.json"; POLICY="$CASE_DIR/policy.ttl"; SUFFIX="" ;;
   cohort) CASE_JSON="$CASE_DIR/cohort/cohort.json"; POLICY="$CASE_DIR/cohort/policy.ttl"; SUFFIX="__cohort" ;;
   wgs)    CASE_JSON="$CASE_DIR/wgs/case.json"; POLICY="$CASE_DIR/wgs/policy.ttl"; SUFFIX="__wgs" ;;
-  *)      bm_die "unknown BM_ACMG_ARM: $ARM (expected arm1, cohort or wgs)" ;;
+  layered) CASE_JSON="$CASE_DIR/layered/case.json"; POLICY="$CASE_DIR/layered/policy.ttl"; SUFFIX="__layered" ;;
+  *)      bm_die "unknown BM_ACMG_ARM: $ARM (expected arm1, cohort, wgs or layered)" ;;
 esac
+# Arms 3 and 4 convert a whole genome.
+WHOLE_GENOME=0; [[ "$ARM" == wgs || "$ARM" == layered ]] && WHOLE_GENOME=1
+# A case with purposes of its own ships their vocabulary beside its policy.
+PURPOSES=(); [[ -s "${POLICY%/*}/purposes.ttl" ]] && PURPOSES=(--purposes "${POLICY%/*}/purposes.ttl")
 EXPERIMENT="17_use_case_acmg$SUFFIX"
 STAGES="${BM_ACMG_STAGES:-derive convert link govern query baseline compare}"
 REPLICATES="${BM_REPS:-3}"
@@ -59,6 +65,10 @@ DERIVED="${BM_ACMG_DERIVED:-$BM_DERIVED/acmg$SUFFIX}"   # derived inputs
 # Where the participants' VCFs are: the corpus for arm 1, fetch_cohort's output for arm 2.
 INPUTS="$BM_VCF_DATA"; [[ "$ARM" == cohort ]] && INPUTS="$DATA/cohort"
 EXP_DIR="$BM_RESULTS/$EXPERIMENT"
+# How long an endpoint may take to index before the run stops. A whole genome
+# with its links takes well over an hour: NB72462M (1.22B triples) took 83 min
+# on vcf-bench-3.
+SERVE_TIMEOUT="${BM_ACMG_SERVE_TIMEOUT:-14400}"
 REFERENCE="$DATA/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
 
 case_field() { python3 -c 'import json,sys; d=json.load(open(sys.argv[1]))
@@ -94,7 +104,7 @@ have_cell() { [[ -d "$EXP_DIR/$1" ]]; }
 # arms need little.
 need_space() {
   local gb="$1" what="$2" free
-  [[ "$ARM" == wgs ]] || gb=3
+  (( WHOLE_GENOME )) || gb=3
   mkdir -p "$EXP_DIR"
   free="$(df --output=avail -BG "$EXP_DIR" | tail -1 | tr -dc 0-9)"
   (( free >= gb )) || bm_die "$what needs ~$gb GB free; $free GB left"
@@ -178,8 +188,8 @@ stage_derive() {
   local id input drop="" regions=/case/acmg_sf_v3.2.GRCh38.bed
   # Arm 2's INFO is the panel's, not the participant's (derive.sh).
   [[ "$ARM" == cohort ]] && drop=drop-info
-  # Arm 3 keeps the whole genome; ClinVar, below, stays restricted either way.
-  [[ "$ARM" == wgs ]] && regions=all
+  # Arms 3 and 4 keep the whole genome; ClinVar, below, stays restricted either way.
+  (( WHOLE_GENOME )) && regions=all
   for id in $(participant_ids); do
     skip_done "derive__$id" && continue
     input="$(participant_input "$id")"
@@ -286,7 +296,10 @@ serve() {
       unserve "$name"
       bm_die "the $name endpoint exited while indexing (its last log lines are above)"
     fi
-    (( (waited += 5) < 3600 )) || bm_die "the $name endpoint was not ready after an hour"
+    if (( (waited += 5) >= SERVE_TIMEOUT )); then
+      unserve "$name"   # or it keeps indexing beside the next run
+      bm_die "the $name endpoint was not ready after ${SERVE_TIMEOUT}s (BM_ACMG_SERVE_TIMEOUT)"
+    fi
     sleep 5
   done
   bm_step "$name endpoint ready on :$port after ~${waited}s"
@@ -330,7 +343,7 @@ stage_govern() {
     out="$EXP_DIR/govern__$requester/out"
     bm_run_raw "$EXPERIMENT" "govern__$requester" -- \
       "${PYTHON:-python3}" "$(dirname -- "$BM_TOOL")/vcf_rdfizer_policy.py" evaluate \
-        --endpoint http://127.0.0.1:7201/ --rdf "${source[@]}" --policy "$POLICY" \
+        --endpoint http://127.0.0.1:7201/ --rdf "${source[@]}" --policy "$POLICY" "${PURPOSES[@]}" \
         --assignee "$(requester_field "$requester" assignee)" \
         --purpose "$(requester_field "$requester" purpose)" -o "$out"
     bm_expect_ok
@@ -342,7 +355,7 @@ stage_govern() {
       view=(--view-endpoint http://127.0.0.1:7203/)
     fi
     policy_cli check --endpoint http://127.0.0.1:7201/ --oracle-endpoint http://127.0.0.1:7202/ \
-      "${view[@]}" --view "$out" --rdf "${source[@]}" --policy "$POLICY" \
+      "${view[@]}" --view "$out" --rdf "${source[@]}" --policy "$POLICY" "${PURPOSES[@]}" \
       > "$EXP_DIR/govern__$requester/check.txt" 2>&1 \
       || { unserve source; unserve oracle; unserve view
            bm_die "the $requester view failed its check; see $EXP_DIR/govern__$requester/check.txt"; }

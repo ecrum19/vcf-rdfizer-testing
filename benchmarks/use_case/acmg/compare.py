@@ -8,7 +8,10 @@ Reads <results-dir>/baseline/carriers.<requester>.tsv and
 <results-dir>/comparison.json and grid.tsv (carriers released per requester and
 participant). A requester whose RDF query has not run yet is listed as not
 run, never counted as agreeing. Where both routes also wrote rare.tsv (arm 2's
-panel), those lists are compared too, under "rare". Exits 1 unless at least one
+panel), those lists are compared too, under "rare". Where the baseline counted
+every record (summary.json "records") and a requester's view was governed, the
+records each view released are compared with the baseline's count, under
+"records": arm 4's views differ by region and variant, not only in carriers. Exits 1 unless at least one
 requester ran and every comparison made agrees: a disagreement is a bug in one route, and no timing
 or line count from the experiment is reportable until it is explained.
 """
@@ -68,16 +71,30 @@ def main(argv: list[str]) -> int:
         for entry in comparison["rare"].values():
             entry.pop("keys")
 
+    counted = json.loads((results / "baseline" / "summary.json").read_text(encoding="utf-8")).get("records") \
+        if (results / "baseline" / "summary.json").is_file() else None
+    governed = [n for n in case["policy"]["requesters"]
+                if (results / f"govern__{n}" / "out" / "summary.json").is_file()]
+    if counted and governed:
+        comparison["records"] = {}
+        for n in governed:
+            view = json.loads((results / f"govern__{n}" / "out" / "summary.json").read_text(encoding="utf-8"))
+            comparison["records"][n] = {"baseline": counted[n], "rdf": view["records_released"],
+                                        "withheld": view["records_withheld"],
+                                        "agree": counted[n] == view["records_released"]}
     (results / "comparison.json").write_text(json.dumps(comparison, indent=2) + "\n", encoding="utf-8")
     with (results / "grid.tsv").open("w", encoding="utf-8") as handle:
         handle.write("\t".join(["requester", *participants]) + "\n")
         handle.writelines("\t".join(row) + "\n" for row in grid)
     agree = bool(ran) and all(comparison[n]["agree"] for n in ran) \
-        and all(c["agree"] for c in comparison.get("rare", {}).values())
+        and all(c["agree"] for c in comparison.get("rare", {}).values()) \
+        and all(c["agree"] for c in comparison.get("records", {}).values())
     print(("AGREE" if agree else "DISAGREE") + ": " +
           ", ".join(f"{n} {comparison[n]['rdf']}/{comparison[n]['baseline']}" for n in ran) +
           ("; rare: " + ", ".join(f"{n} {c['rdf']}/{c['baseline']}" for n, c in comparison["rare"].items())
            if rare else "") +
+          ("; records: " + ", ".join(f"{n} {c['rdf']}/{c['baseline']}" for n, c in comparison["records"].items())
+           if "records" in comparison else "") +
           (f"; not run: {', '.join(comparison['not_run'])}" if comparison["not_run"] else ""))
     return 0 if agree else 1
 
