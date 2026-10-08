@@ -144,7 +144,7 @@ def main() -> int:
         return "–" if value is None else format(value, spec)
 
     lines = ["# Experiment 18 summary", "",
-             "| Converter | Input | Wall (s, median) | Peak RSS (GB) | Same output every replicate "
+             "| Converter | Input | Wall (s, median) | Peak RSS (GB) | Byte-identical replicates "
              "| Triples | Triples/record | N-Triples.gz ÷ VCF.gz | QLever index (s) | riot warnings | "
              + " | ".join(q[:3].upper() for q in QUESTIONS) + " |",
              "|" + "---|" * (10 + len(QUESTIONS))]

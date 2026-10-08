@@ -1,0 +1,24 @@
+PREFIX gvo: <http://genome-variation.org/resource#>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# TogoVar vcf2rdf v1.0.0-beta.12, run with --no-normalize so gvo:pos/ref/alt keep the VCF values.
+# It writes one node per ALT allele and no node for the record, so records are regrouped on
+# (reference, POS, REF, ID), all of which every allele node carries.
+SELECT (COUNT(?record) AS ?biallelicSnvCount) (SUM(?isTransition) AS ?transitionCount)
+       (SUM(1 - ?isTransition) AS ?transversionCount)
+WHERE {
+  {
+    SELECT ?record (SAMPLE(UCASE(STR(?refLiteral))) AS ?ref)
+           (GROUP_CONCAT(UCASE(STR(?altLiteral)); separator=",") AS ?alt)
+    WHERE {
+    ?allele gvo:pos ?pos ; gvo:ref ?refLiteral ; dct:identifier ?id ;
+            faldo:location/(faldo:reference|faldo:begin/faldo:reference) ?seq .
+    BIND(CONCAT(STR(?seq), "|", STR(?pos), "|", STR(?refLiteral), "|", STR(?id)) AS ?record)
+      ?allele gvo:alt ?altLiteral .
+    }
+    GROUP BY ?record
+  }
+  FILTER(REGEX(?ref, "^[ACGT]$") && REGEX(?alt, "^[ACGT]$") && ?ref != ?alt)
+  BIND(IF(CONCAT(?ref, ?alt) IN ("AG", "GA", "CT", "TC"), 1, 0) AS ?isTransition)
+}

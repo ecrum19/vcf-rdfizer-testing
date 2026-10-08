@@ -1,0 +1,28 @@
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# g:annotations is an ordered list of the FILTER codes; PASS is the empty list (rdf:nil) and "."
+# writes nothing. Up to four codes are read.
+SELECT ?filterStatus ?filterLexical (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a gc:Feature .
+  OPTIONAL {
+    ?record g:annotations ?list .
+    OPTIONAL { ?list rdf:first ?f1 }
+    OPTIONAL { ?list rdf:rest/rdf:first ?f2 }
+    OPTIONAL { ?list rdf:rest/rdf:rest/rdf:first ?f3 }
+    OPTIONAL { ?list rdf:rest/rdf:rest/rdf:rest/rdf:first ?f4 }
+  }
+  BIND(IF(!BOUND(?list), ".", IF(?list = rdf:nil, "PASS",
+       CONCAT(STR(?f1), IF(BOUND(?f2), CONCAT(";", STR(?f2)), ""),
+              IF(BOUND(?f3), CONCAT(";", STR(?f3)), ""), IF(BOUND(?f4), CONCAT(";", STR(?f4)), ""))))
+       AS ?filterLexical)
+  BIND(IF(?filterLexical = "PASS", "PASS", IF(?filterLexical = ".", "NOT_APPLIED", "FAILED")) AS ?filterStatus)
+}
+GROUP BY ?filterStatus ?filterLexical
+ORDER BY ?filterStatus ?filterLexical

@@ -1,0 +1,13 @@
+PREFIX vcf: <http://github.com/lindenb/jvarkit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# JVarkit vcf2rdf (commit fc2356a3), run with --hide '' so ALT, FILTER and GT are written.
+# Its classes are written as IRIs with the scheme "vcf" (<vcf:Variant>), not as prefixed names,
+# so they are matched literally. A record is <urn:variant/CHROM:POS:REF>.
+SELECT ?chrom ?windowIndex (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a <vcf:Variant> ; vcf:chrom ?chromIri ; vcf:position ?pos .
+  BIND(STRAFTER(STR(?chromIri), "urn:chrom/") AS ?chrom)
+  BIND(xsd:integer(FLOOR((xsd:integer(?pos) - 1) / 1000000)) AS ?windowIndex)
+}
+GROUP BY ?chrom ?windowIndex
+ORDER BY ?chrom ?windowIndex

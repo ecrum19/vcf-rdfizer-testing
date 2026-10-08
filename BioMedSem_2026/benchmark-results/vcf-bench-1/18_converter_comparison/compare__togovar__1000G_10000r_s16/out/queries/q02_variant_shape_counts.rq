@@ -1,0 +1,30 @@
+PREFIX gvo: <http://genome-variation.org/resource#>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# TogoVar vcf2rdf v1.0.0-beta.12, run with --no-normalize so gvo:pos/ref/alt keep the VCF values.
+# It writes one node per ALT allele and no node for the record, so records are regrouped on
+# (reference, POS, REF, ID), all of which every allele node carries.
+SELECT ?variantClass (COUNT(?record) AS ?recordCount)
+WHERE {
+  {
+    SELECT ?record (SAMPLE(UCASE(STR(?refLiteral))) AS ?ref)
+           (GROUP_CONCAT(UCASE(STR(?altLiteral)); separator=",") AS ?alt)
+    WHERE {
+    ?allele gvo:pos ?pos ; gvo:ref ?refLiteral ; dct:identifier ?id ;
+            faldo:location/(faldo:reference|faldo:begin/faldo:reference) ?seq .
+    BIND(CONCAT(STR(?seq), "|", STR(?pos), "|", STR(?refLiteral), "|", STR(?id)) AS ?record)
+      ?allele gvo:alt ?altLiteral .
+    }
+    GROUP BY ?record
+  }
+  BIND(IF(?alt = ".", "NO_ALT", IF(CONTAINS(?alt, ","), "MULTIALLELIC",
+    IF(?alt = "*" || CONTAINS(?alt, "[") || CONTAINS(?alt, "]") ||
+       (STRSTARTS(?alt, "<") && STRENDS(?alt, ">")), "SYMBOLIC_OR_BREAKEND",
+    IF(!REGEX(?ref, "^[ACGTN]+$") || !REGEX(?alt, "^[ACGTN]+$"), "OTHER",
+    IF(STRLEN(?ref) = 1 && STRLEN(?alt) = 1, "SNV",
+    IF(STRLEN(?ref) = STRLEN(?alt), "MNV_OR_EQUAL_LENGTH_SUBSTITUTION",
+    IF(STRLEN(?ref) < STRLEN(?alt), "INSERTION_SHAPE", "DELETION_SHAPE"))))))) AS ?variantClass)
+}
+GROUP BY ?variantClass
+ORDER BY ?variantClass

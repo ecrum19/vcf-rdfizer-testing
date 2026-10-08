@@ -1,0 +1,26 @@
+PREFIX sg: <https://sparqling-genomics.org/0.99.11/>
+PREFIX vc: <sg://0.99.11/vcf2rdf/>
+PREFIX v: <sg://0.99.11/vcf2rdf/variant/>
+PREFIX gt: <sg://0.99.11/vcf2rdf/format/GT/>
+PREFIX hdr: <sg://0.99.11/vcf2rdf/header/>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# SPARQLing Genomics vcf2rdf 0.99.11, default options. It writes one vc:VariantCall per record and
+# sample, and only for calls with a non-reference allele; there is no record node. Call IRIs are
+# origin://<md5>@<k> with k = record index x samples + sample index (doc/command-line-tools.tex),
+# so records are regrouped on floor(k / samples). Only the first ALT allele is written.
+# INFO, FORMAT, FILTER, contig and ALT definitions are typed items; a simple ##key=value line is
+# hdr:<key> hdr:<key> "value". A structured line with any other key loses that key.
+SELECT ?headerKey (COUNT(DISTINCT ?item) AS ?lineCount)
+WHERE {
+  { ?item a vc:InfoItem BIND("INFO" AS ?headerKey) }
+  UNION { ?item a vc:FormatItem BIND("FORMAT" AS ?headerKey) }
+  UNION { ?item a vc:FilterItem BIND("FILTER" AS ?headerKey) }
+  UNION { ?item a vc:ContigItem BIND("contig" AS ?headerKey) }
+  UNION { ?item a vc:AltItem BIND("ALT" AS ?headerKey) }
+  UNION { ?headerItem a vc:HeaderItem ; ?predicate ?item FILTER(?predicate = ?headerItem)
+          BIND(STRAFTER(STR(?headerItem), "sg://0.99.11/vcf2rdf/header/") AS ?headerKey) }
+}
+GROUP BY ?headerKey
+ORDER BY ?headerKey

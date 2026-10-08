@@ -1,0 +1,153 @@
+{
+  "tool": "vcf-rdfizer",
+  "vcf": {
+    "path": "/home/ubuntu/vrdev-test/conv/run-e3743590/work/inputs/1000G_10000r_s16.vcf.gz",
+    "sha256": "073c22b59c3c8f0ccd9991d8c5e66c4f60775b85628a1079dd39b246fc0d261b",
+    "records": 10000,
+    "samples": 16
+  },
+  "graph": {
+    "path": "/home/ubuntu/vrdev-test/conv/run-e3743590/results/18_converter_comparison/normalise__vcf-rdfizer__1000G_10000r_s16/out/graph.nt.gz",
+    "sha256": "8be966229203a92458f205b891c4dfb3e2ea23e819ead810f8034fe7eb5f34c8",
+    "triples": 5359578,
+    "triplesPerRecord": 535.9578
+  },
+  "oracleSeconds": 2.4780769562348723,
+  "engine": {
+    "engine": "qlever",
+    "setupSeconds": 7.551144213881344,
+    "version": "/opt/qlever/bin/qlever-server: error while loading shared libraries: libjemalloc.so.2: cannot open shared object file: No such file or directory",
+    "mode": "on-disk index served over HTTP",
+    "indexDirectory": "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/vcf-rdfizer-1000G_10000r_s16/qlever-index",
+    "indexBuildSeconds": 7.024878651369363,
+    "memoryLimitGb": 8,
+    "port": 7019,
+    "commands": {
+      "index": [
+        "/opt/qlever/bin/qlever-index",
+        "-i",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/vcf-rdfizer-1000G_10000r_s16/qlever-index/vcf-rdfizer",
+        "-f",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/vcf-rdfizer-1000G_10000r_s16/graph.nt",
+        "-F",
+        "nt",
+        "-m",
+        "8G"
+      ],
+      "server": [
+        "/opt/qlever/bin/qlever-server",
+        "-i",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/vcf-rdfizer-1000G_10000r_s16/qlever-index/vcf-rdfizer",
+        "-p",
+        "7019",
+        "-m",
+        "8G",
+        "-s",
+        "3600s"
+      ]
+    },
+    "buildStatus": "QLever binaries linked cleanly at image build time."
+  },
+  "questions": {
+    "q01_record_density_1mb": {
+      "query": "q01_record_density_1mb.rq",
+      "querySha256": "607552962c541485fbed637bc1bad4090dcd794c804659fb06840faefab8a7d4",
+      "renderedSha256": "607552962c541485fbed637bc1bad4090dcd794c804659fb06840faefab8a7d4",
+      "wallSeconds": 0.01554159726947546,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    },
+    "q02_variant_shape_counts": {
+      "query": "q02_variant_shape_counts.rq",
+      "querySha256": "b9c4b6b6c5877bcb4c29f8a3a231c1a10192b50fa4584b6154c30257585a6876",
+      "renderedSha256": "b9c4b6b6c5877bcb4c29f8a3a231c1a10192b50fa4584b6154c30257585a6876",
+      "wallSeconds": 0.055355340242385864,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    },
+    "q03_titv": {
+      "query": "q03_titv.rq",
+      "querySha256": "050d6711efeb58976ede62808758832eff27bade02566d673a7748e69b0f6845",
+      "renderedSha256": "050d6711efeb58976ede62808758832eff27bade02566d673a7748e69b0f6845",
+      "wallSeconds": 0.017911877017468214,
+      "status": "PASS",
+      "expected": {
+        "biallelicSnvCount": 9536,
+        "transitionCount": 6677,
+        "transversionCount": 2859
+      },
+      "actual": {
+        "biallelicSnvCount": 9536,
+        "transitionCount": 6677,
+        "transversionCount": 2859
+      }
+    },
+    "q04_filter_distribution": {
+      "query": "q04_filter_distribution.rq",
+      "querySha256": "c75f096a6ffa82618437712a24af9c63d57dee684617b7303a847bf101e9bec4",
+      "renderedSha256": "c75f096a6ffa82618437712a24af9c63d57dee684617b7303a847bf101e9bec4",
+      "wallSeconds": 0.027795840054750443,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    },
+    "q05_sample_genotype_counts": {
+      "query": "q05_sample_genotype_counts.rq",
+      "querySha256": "bef9416d6453000ce5474c09f7ede6faf623154129a55fc8c1b1285f849ead10",
+      "renderedSha256": "bef9416d6453000ce5474c09f7ede6faf623154129a55fc8c1b1285f849ead10",
+      "wallSeconds": 2.5926483548246324,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    },
+    "q06_ac_an_distribution": {
+      "query": "q06_ac_an_distribution.rq",
+      "querySha256": "2afb2bbfc3e03b40e4aedaf8d87675bf66cb2487f33f48247aaa1cfc38ea29fa",
+      "renderedSha256": "2afb2bbfc3e03b40e4aedaf8d87675bf66cb2487f33f48247aaa1cfc38ea29fa",
+      "wallSeconds": 0.7295734533108771,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    },
+    "q07_file_metadata": {
+      "query": "q07_file_metadata.rq",
+      "querySha256": "c65dfe54790fdd85b489f3828c68d0090fb6c5f5ba920f8342c3b0fc1029c403",
+      "renderedSha256": "c65dfe54790fdd85b489f3828c68d0090fb6c5f5ba920f8342c3b0fc1029c403",
+      "wallSeconds": 0.012149041052907705,
+      "status": "PASS",
+      "expected": {
+        "fileFormat": "VCFv4.1",
+        "referenceGenome": "ftp://ftp.1000genomes.ebi.ac.uk//vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz",
+        "sourceSoftware": "1000GenomesPhase3Pipeline"
+      },
+      "actual": {
+        "fileFormat": "VCFv4.1",
+        "referenceGenome": "ftp://ftp.1000genomes.ebi.ac.uk//vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz",
+        "sourceSoftware": "1000GenomesPhase3Pipeline"
+      }
+    },
+    "q08_header_line_census": {
+      "query": "q08_header_line_census.rq",
+      "querySha256": "d6a7bed6f8162f985f4ddd54074f2690f20267e9cb9a07cba0d63a2cb4a7b095",
+      "renderedSha256": "d6a7bed6f8162f985f4ddd54074f2690f20267e9cb9a07cba0d63a2cb4a7b095",
+      "wallSeconds": 0.005117273889482021,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    }
+  }
+}

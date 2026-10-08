@@ -1,0 +1,306 @@
+2026-10-08 17:16:17.901 - INFO: [1mQLever server bfd5741, compiled on Thu Sep  3 17:32:42 UTC 2026 using git hash bfd5741[22m
+2026-10-08 17:16:17.901 - INFO: Cleanup of previous index directories after each rebuild enabled (--rebuild-keep-previous-index-dirs original-and-most-recent)
+2026-10-08 17:16:17.902 - INFO: The git hash used to build this index was "bfd5741"
+2026-10-08 17:16:17.902 - INFO: Reading vocabulary from file /home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/biointerchange-HG005_GRCh38_r100000/qlever-index/vcf-rdfizer.vocabulary.words ...
+2026-10-08 17:16:17.902 - WARN: io_uring is compiled in but unavailable at runtime (io_uring_queue_init failed in IoUringManager. In file "/qlever/src/util/IoUringManager.cpp" at line 69); falling back to synchronous pread for vocabulary lookups
+2026-10-08 17:16:17.902 - INFO: Done, number of words: 30,840
+2026-10-08 17:16:17.902 - INFO: Number of words in internal vocabulary (these are also part of the external vocabulary): 35
+2026-10-08 17:16:17.902 - INFO: Registered PSO permutation: #relations = 1, #blocks = 49, #triples = 1,501,610
+2026-10-08 17:16:17.902 - INFO: Registered PSO permutation: #relations = 53, #blocks = 182, #triples = 4,559,438
+2026-10-08 17:16:17.902 - INFO: Registered POS permutation: #relations = 1, #blocks = 49, #triples = 1,501,610
+2026-10-08 17:16:17.902 - INFO: Registered POS permutation: #relations = 53, #blocks = 182, #triples = 4,559,438
+2026-10-08 17:16:17.902 - INFO: Registered OPS permutation: #relations = 1,534,531, #blocks = 148, #triples = 4,559,438
+2026-10-08 17:16:17.903 - INFO: Registered OSP permutation: #relations = 1,534,531, #blocks = 148, #triples = 4,559,438
+2026-10-08 17:16:17.903 - INFO: Registered SPO permutation: #relations = 1,501,610, #blocks = 98, #triples = 4,559,438
+2026-10-08 17:16:17.903 - INFO: Registered SOP permutation: #relations = 1,501,610, #blocks = 98, #triples = 4,559,438
+2026-10-08 17:16:17.903 - INFO: Reading patterns from file /home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/biointerchange-HG005_GRCh38_r100000/qlever-index/vcf-rdfizer.index.patterns ...
+2026-10-08 17:16:17.903 - INFO: Sorting random result tables to estimate the sorting performance of this machine ...
+2026-10-08 17:16:17.917 - INFO: Initializing server ...
+2026-10-08 17:16:17.917 - INFO: Access token for restricted API calls is ""
+2026-10-08 17:16:17.917 - INFO: The server is ready, listening for requests on port 7019 ...
+2026-10-08 17:16:18.417 - INFO: 
+2026-10-08 17:16:18.417 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:18.419 - INFO: Processing the following SPARQL query:
+SELECT * WHERE { ?s ?p ?o } LIMIT 1
+2026-10-08 17:16:18.419 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:18.420 - INFO: Query planning done in 2 ms
+2026-10-08 17:16:18.420 - INFO: Result has unknown size (not computed yet)
+2026-10-08 17:16:18.421 - INFO: Done processing query and sending result, total time was 3 ms
+2026-10-08 17:16:18.422 - INFO: 
+2026-10-08 17:16:18.422 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:18.425 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+SELECT ?chrom ?windowIndex (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a gc:Feature ; g:locus ?locus .
+  ?locus g:landmark ?landmark ; g:start ?pos .
+  BIND(STR(?landmark) AS ?chrom)
+  BIND(xsd:integer(FLOOR((xsd:integer(?pos) - 1) / 1000000)) AS ?windowIndex)
+}
+GROUP BY ?chrom ?windowIndex
+ORDER BY ?chrom ?windowIndex
+
+2026-10-08 17:16:18.425 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:18.426 - INFO: Query planning done in 4 ms
+2026-10-08 17:16:18.631 - INFO: Result has size 78 x 3
+2026-10-08 17:16:18.632 - INFO: Done processing query and sending result, total time was 209 ms
+2026-10-08 17:16:18.634 - INFO: 
+2026-10-08 17:16:18.634 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:18.638 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# The shape needs only whether there is a first ALT, whether there is a second, and the first's
+# sequence; "" is the "*" allele.
+SELECT ?variantClass (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a gc:Feature ; g:reference/g:sequence ?refLiteral .
+  OPTIONAL { ?record g:variants/g:alleleB/g:sequence ?firstAlt }
+  OPTIONAL { ?record g:variants/g:alleleC ?secondAlt }
+  BIND(UCASE(STR(?refLiteral)) AS ?ref)
+  BIND(IF(!BOUND(?firstAlt), ".", IF(BOUND(?secondAlt), ",",
+       IF(STR(?firstAlt) = "", "*", UCASE(STR(?firstAlt))))) AS ?alt)
+  BIND(IF(?alt = ".", "NO_ALT", IF(CONTAINS(?alt, ","), "MULTIALLELIC",
+    IF(?alt = "*" || CONTAINS(?alt, "[") || CONTAINS(?alt, "]") ||
+       (STRSTARTS(?alt, "<") && STRENDS(?alt, ">")), "SYMBOLIC_OR_BREAKEND",
+    IF(!REGEX(?ref, "^[ACGTN]+$") || !REGEX(?alt, "^[ACGTN]+$"), "OTHER",
+    IF(STRLEN(?ref) = 1 && STRLEN(?alt) = 1, "SNV",
+    IF(STRLEN(?ref) = STRLEN(?alt), "MNV_OR_EQUAL_LENGTH_SUBSTITUTION",
+    IF(STRLEN(?ref) < STRLEN(?alt), "INSERTION_SHAPE", "DELETION_SHAPE"))))))) AS ?variantClass)
+}
+GROUP BY ?variantClass
+ORDER BY ?variantClass
+
+2026-10-08 17:16:18.638 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:18.640 - INFO: Query planning done in 5 ms
+2026-10-08 17:16:20.419 - INFO: Result has size 4 x 2
+2026-10-08 17:16:20.420 - INFO: Done processing query and sending result, total time was 1,786 ms
+2026-10-08 17:16:20.421 - INFO: 
+2026-10-08 17:16:20.421 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:20.423 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+SELECT (COUNT(DISTINCT ?record) AS ?biallelicSnvCount)
+  (SUM(IF((?ref = "A" && ?alt = "G") || (?ref = "G" && ?alt = "A") || (?ref = "C" && ?alt = "T") || (?ref = "T" && ?alt = "C"), 1, 0)) AS ?transitionCount)
+  (SUM(IF((?ref = "A" && ?alt = "G") || (?ref = "G" && ?alt = "A") || (?ref = "C" && ?alt = "T") || (?ref = "T" && ?alt = "C"), 0, 1)) AS ?transversionCount)
+WHERE {
+  ?record a gc:Feature ; g:reference/g:sequence ?refLiteral ; g:variants/g:alleleB/g:sequence ?altLiteral .
+  OPTIONAL { ?record g:variants/g:alleleC ?secondAlt }
+  FILTER(!BOUND(?secondAlt))
+  BIND(UCASE(STR(?refLiteral)) AS ?ref)
+  BIND(UCASE(STR(?altLiteral)) AS ?alt)
+  FILTER(REGEX(?ref, "^[ACGT]$") && REGEX(?alt, "^[ACGT]$") && ?ref != ?alt)
+}
+
+2026-10-08 17:16:20.423 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:20.426 - INFO: Query planning done in 4 ms
+2026-10-08 17:16:20.856 - INFO: Result has size 1 x 3
+2026-10-08 17:16:20.856 - INFO: Done processing query and sending result, total time was 435 ms
+2026-10-08 17:16:20.858 - INFO: 
+2026-10-08 17:16:20.858 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:20.860 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# g:annotations is an ordered list of the FILTER codes; PASS is the empty list (rdf:nil) and "."
+# writes nothing. Up to four codes are read.
+SELECT ?filterStatus ?filterLexical (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+  ?record a gc:Feature .
+  OPTIONAL {
+    ?record g:annotations ?list .
+    OPTIONAL { ?list rdf:first ?f1 }
+    OPTIONAL { ?list rdf:rest/rdf:first ?f2 }
+    OPTIONAL { ?list rdf:rest/rdf:rest/rdf:first ?f3 }
+    OPTIONAL { ?list rdf:rest/rdf:rest/rdf:rest/rdf:first ?f4 }
+  }
+  BIND(IF(!BOUND(?list), ".", IF(?list = rdf:nil, "PASS",
+       CONCAT(STR(?f1), IF(BOUND(?f2), CONCAT(";", STR(?f2)), ""),
+              IF(BOUND(?f3), CONCAT(";", STR(?f3)), ""), IF(BOUND(?f4), CONCAT(";", STR(?f4)), ""))))
+       AS ?filterLexical)
+  BIND(IF(?filterLexical = "PASS", "PASS", IF(?filterLexical = ".", "NOT_APPLIED", "FAILED")) AS ?filterStatus)
+}
+GROUP BY ?filterStatus ?filterLexical
+ORDER BY ?filterStatus ?filterLexical
+
+2026-10-08 17:16:20.860 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:20.862 - INFO: Query planning done in 3 ms
+2026-10-08 17:16:21.177 - INFO: Result has size 1 x 3
+2026-10-08 17:16:21.178 - INFO: Done processing query and sending result, total time was 319 ms
+2026-10-08 17:16:21.178 - INFO: 
+2026-10-08 17:16:21.178 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:21.181 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# g:alleles spells a call with letters (A = REF, B = first ALT, ...). A missing allele is
+# written as REF, so MISSING cannot be told from HOM_REF or HET.
+SELECT ?sampleId ?genotypeClass (COUNT(DISTINCT ?call) AS ?callCount)
+WHERE {
+  ?record a gc:Feature ; g:samples/rdf:rest*/rdf:first ?call .
+  ?call g:id ?sampleIdLiteral .
+  OPTIONAL { ?call g:genotype/g:alleles ?allelesLiteral }
+  BIND(STR(?sampleIdLiteral) AS ?sampleId)
+  BIND(COALESCE(STR(?allelesLiteral), "") AS ?alleles)
+  BIND(IF(!BOUND(?allelesLiteral), "NO_GT_FIELD",
+    IF(STRLEN(?alleles) = 1, IF(?alleles = "A", "HAPLOID_REF", "HAPLOID_ALT"),
+    IF(STRLEN(?alleles) = 2,
+       IF(SUBSTR(?alleles, 1, 1) = SUBSTR(?alleles, 2, 1),
+          IF(SUBSTR(?alleles, 1, 1) = "A", "HOM_REF", "HOM_ALT"), "HET"),
+       "OTHER_PLOIDY"))) AS ?genotypeClass)
+}
+GROUP BY ?sampleId ?genotypeClass
+ORDER BY ?sampleId ?genotypeClass
+
+2026-10-08 17:16:21.181 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:21.183 - INFO: Query planning done in 4 ms
+2026-10-08 17:16:23.231 - INFO: Result has size 2 x 3
+2026-10-08 17:16:23.231 - INFO: Done processing query and sending result, total time was 2,052 ms
+2026-10-08 17:16:23.232 - INFO: 
+2026-10-08 17:16:23.233 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:23.234 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+SELECT ?an ?ac (COUNT(DISTINCT ?record) AS ?siteCount)
+WHERE {
+  {
+    SELECT ?record (SUM(?callAn) AS ?an) (SUM(?callAc) AS ?ac)
+    WHERE {
+      {
+        SELECT DISTINCT ?record ?call ?alleles
+        WHERE {
+          ?record a gc:Feature ; g:variants/g:alleleB ?firstAlt ; g:samples/rdf:rest*/rdf:first ?call .
+          OPTIONAL { ?record g:variants/g:alleleC ?secondAlt }
+          FILTER(!BOUND(?secondAlt))
+          OPTIONAL { ?call g:genotype/g:alleles ?allelesLiteral }
+          BIND(COALESCE(STR(?allelesLiteral), "") AS ?alleles)
+        }
+      }
+      BIND(IF(REGEX(?alleles, "^[AB]$"), 1, IF(REGEX(?alleles, "^[AB][AB]$"), 2, 0)) AS ?callAn)
+      BIND(IF(?alleles = "B" || ?alleles = "AB" || ?alleles = "BA", 1, IF(?alleles = "BB", 2, 0)) AS ?callAc)
+    }
+    GROUP BY ?record
+  }
+  FILTER(?an > 0)
+}
+GROUP BY ?an ?ac
+ORDER BY ?an ?ac
+
+2026-10-08 17:16:23.234 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:23.238 - INFO: Query planning done in 5 ms
+2026-10-08 17:16:24.265 - INFO: Result has size 2 x 3
+2026-10-08 17:16:24.266 - INFO: Done processing query and sending result, total time was 1,033 ms
+2026-10-08 17:16:24.267 - INFO: 
+2026-10-08 17:16:24.267 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:24.268 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# ##fileformat is stored without its "VCFv" prefix (vcf.c:503-509); the port restores it.
+# Independent OPTIONALs give exactly one row, with "(absent)" for a value the graph does not hold,
+# including when the header document itself is missing.
+SELECT (COALESCE(?ff, "(absent)") AS ?fileFormat)
+       (COALESCE(?rg, "(absent)") AS ?referenceGenome)
+       (COALESCE(?ss, "(absent)") AS ?sourceSoftware)
+WHERE {
+  OPTIONAL { ?m1 a gc:Meta ; g:vcfVersion ?version
+             BIND(IF(STRSTARTS(STR(?version), "VCFv"), STR(?version), CONCAT("VCFv", STR(?version))) AS ?ff) }
+  OPTIONAL { ?m2 a gc:Meta ; g:referenceFASTA ?reference BIND(STR(?reference) AS ?rg) }
+  OPTIONAL { ?m3 a gc:Meta ; g:source ?source BIND(STR(?source) AS ?ss) }
+}
+
+2026-10-08 17:16:24.268 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:24.269 - INFO: Query planning done in 1 ms
+2026-10-08 17:16:24.274 - INFO: Result has unknown size (not computed yet)
+2026-10-08 17:16:24.275 - INFO: Done processing query and sending result, total time was 7 ms
+2026-10-08 17:16:24.276 - INFO: 
+2026-10-08 17:16:24.276 - INFO: Request received via POST, content type "application/x-www-form-urlencoded"
+2026-10-08 17:16:24.285 - INFO: Processing the following SPARQL query:
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# Simple lines are properties of gc:Meta; FILTER, FORMAT and contig definitions are members of
+# a bag each; INFO and ALT share one bag (g:alleleFormat) and are told apart by whether the
+# definition has a g:type; unknown keys are under g:userDefined.
+SELECT ?headerKey (COUNT(DISTINCT ?item) AS ?lineCount)
+WHERE {
+  ?meta a gc:Meta .
+  {
+    VALUES (?property ?headerKey) {
+      (g:vcfVersion "fileformat") (g:fileDate "fileDate") (g:referenceFASTA "reference")
+      (g:source "source") (g:breakpointFASTA "assembly") (gu:phasing "phasing")
+    }
+    ?meta ?property ?item .
+  } UNION {
+    VALUES (?property ?headerKey) {
+      (g:annotationFormat "FILTER") (g:genotypeFormat "FORMAT") (g:contig "contig")
+      (gu:sample "SAMPLE") (gu:pedigree "PEDIGREE")
+    }
+    ?meta ?property ?bag . ?bag ?item ?definition .
+  } UNION {
+    ?meta g:alleleFormat ?bag . ?bag ?item ?definition . ?definition g:type ?type .
+    BIND("INFO" AS ?headerKey)
+  } UNION {
+    ?meta g:alleleFormat ?bag . ?bag ?item ?definition .
+    FILTER NOT EXISTS { ?definition g:type ?type }
+    BIND("ALT" AS ?headerKey)
+  } UNION {
+    ?meta g:userDefined ?userDefined . ?userDefined ?property ?item .
+    BIND(STRAFTER(STR(?property), "#unknownProperty-") AS ?headerKey)
+  }
+}
+GROUP BY ?headerKey
+ORDER BY ?headerKey
+
+2026-10-08 17:16:24.285 - INFO: Requested media types of the result are: "application/sparql-results+json"
+2026-10-08 17:16:24.288 - INFO: Query planning done in 12 ms
+2026-10-08 17:16:24.293 - INFO: Number of tuples in VALUES clause: 6
+2026-10-08 17:16:24.293 - INFO: Number of entries in local vocabulary per column: 6, 6
+2026-10-08 17:16:24.303 - INFO: Number of tuples in VALUES clause: 5
+2026-10-08 17:16:24.303 - INFO: Number of entries in local vocabulary per column: 5, 5
+2026-10-08 17:16:26.329 - INFO: Result has size 0 x 2
+2026-10-08 17:16:26.331 - INFO: Done processing query and sending result, total time was 2,054 ms

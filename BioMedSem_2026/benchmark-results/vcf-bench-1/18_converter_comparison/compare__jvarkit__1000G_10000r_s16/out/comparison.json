@@ -1,0 +1,298 @@
+{
+  "tool": "jvarkit",
+  "vcf": {
+    "path": "/home/ubuntu/vrdev-test/conv/run-e3743590/work/inputs/1000G_10000r_s16.vcf.gz",
+    "sha256": "073c22b59c3c8f0ccd9991d8c5e66c4f60775b85628a1079dd39b246fc0d261b",
+    "records": 10000,
+    "samples": 16
+  },
+  "graph": {
+    "path": "/home/ubuntu/vrdev-test/conv/run-e3743590/results/18_converter_comparison/normalise__jvarkit__1000G_10000r_s16/out/graph.nt.gz",
+    "sha256": "00514f159f65a53a17771b400492370cce5ff476e21d33e5d8387ec9a3f550f1",
+    "triples": 1020454,
+    "triplesPerRecord": 102.0454
+  },
+  "oracleSeconds": 2.5069709047675133,
+  "engine": {
+    "engine": "qlever",
+    "setupSeconds": 1.410743657965213,
+    "version": "/opt/qlever/bin/qlever-server: error while loading shared libraries: libjemalloc.so.2: cannot open shared object file: No such file or directory",
+    "mode": "on-disk index served over HTTP",
+    "indexDirectory": "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/jvarkit-1000G_10000r_s16/qlever-index",
+    "indexBuildSeconds": 1.3822333230637014,
+    "memoryLimitGb": 8,
+    "port": 7019,
+    "commands": {
+      "index": [
+        "/opt/qlever/bin/qlever-index",
+        "-i",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/jvarkit-1000G_10000r_s16/qlever-index/vcf-rdfizer",
+        "-f",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/jvarkit-1000G_10000r_s16/graph.nt",
+        "-F",
+        "nt",
+        "-m",
+        "8G"
+      ],
+      "server": [
+        "/opt/qlever/bin/qlever-server",
+        "-i",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/jvarkit-1000G_10000r_s16/qlever-index/vcf-rdfizer",
+        "-p",
+        "7019",
+        "-m",
+        "8G",
+        "-s",
+        "3600s"
+      ]
+    },
+    "buildStatus": "QLever binaries linked cleanly at image build time."
+  },
+  "questions": {
+    "q01_record_density_1mb": {
+      "query": "q01_record_density_1mb.rq",
+      "querySha256": "721d0ba15fb073a1c11c0e9ed5c13c08386e17c34f88e969c8f1ca08024e64df",
+      "renderedSha256": "721d0ba15fb073a1c11c0e9ed5c13c08386e17c34f88e969c8f1ca08024e64df",
+      "wallSeconds": 0.03231218317523599,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 1,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "chrom": "20",
+              "windowIndex": 0,
+              "recordCount": 10000
+            },
+            "actual": {
+              "chrom": "20",
+              "windowIndex": 0,
+              "recordCount": 9995
+            }
+          }
+        ]
+      }
+    },
+    "q02_variant_shape_counts": {
+      "query": "q02_variant_shape_counts.rq",
+      "querySha256": "34269ff150c3bc7ed7d1b65558b74fc91f382a8a102b1651be3f989f60606618",
+      "renderedSha256": "34269ff150c3bc7ed7d1b65558b74fc91f382a8a102b1651be3f989f60606618",
+      "wallSeconds": 0.06890914589166641,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 3,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "variantClass": "INSERTION_SHAPE",
+              "recordCount": 136
+            },
+            "actual": {
+              "variantClass": "INSERTION_SHAPE",
+              "recordCount": 130
+            }
+          },
+          {
+            "expected": {
+              "variantClass": "MULTIALLELIC",
+              "recordCount": 70
+            },
+            "actual": {
+              "variantClass": "MULTIALLELIC",
+              "recordCount": 75
+            }
+          },
+          {
+            "expected": {
+              "variantClass": "SNV",
+              "recordCount": 9536
+            },
+            "actual": {
+              "variantClass": "SNV",
+              "recordCount": 9532
+            }
+          }
+        ]
+      }
+    },
+    "q03_titv": {
+      "query": "q03_titv.rq",
+      "querySha256": "a843466d70c7e5d394850ef5640fab5eb991b7c0ed8c412137c6d8b93612c85f",
+      "renderedSha256": "a843466d70c7e5d394850ef5640fab5eb991b7c0ed8c412137c6d8b93612c85f",
+      "wallSeconds": 0.39543903432786465,
+      "status": "MISMATCH",
+      "expected": {
+        "biallelicSnvCount": 9536,
+        "transitionCount": 6677,
+        "transversionCount": 2859
+      },
+      "actual": {
+        "biallelicSnvCount": 9532,
+        "transitionCount": 6675,
+        "transversionCount": 2857
+      }
+    },
+    "q04_filter_distribution": {
+      "query": "q04_filter_distribution.rq",
+      "querySha256": "53279f15d2a5a4fe4c6f884bc44aba49c77829756f4ebdb0aa55455bfd8102c4",
+      "renderedSha256": "53279f15d2a5a4fe4c6f884bc44aba49c77829756f4ebdb0aa55455bfd8102c4",
+      "wallSeconds": 0.015365577302873135,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 1,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "filterStatus": "PASS",
+              "filterLexical": "PASS",
+              "recordCount": 10000
+            },
+            "actual": {
+              "filterStatus": "PASS",
+              "filterLexical": "PASS",
+              "recordCount": 9995
+            }
+          }
+        ]
+      }
+    },
+    "q05_sample_genotype_counts": {
+      "query": "q05_sample_genotype_counts.rq",
+      "querySha256": "eed77ab8cb50507e23ccf541bcc549cb6c5f47778f0b5d908a0671d94a66d5d7",
+      "renderedSha256": "eed77ab8cb50507e23ccf541bcc549cb6c5f47778f0b5d908a0671d94a66d5d7",
+      "wallSeconds": 0.37111466424539685,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 17,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "sampleId": "HG00096",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9299
+            },
+            "actual": {
+              "sampleId": "HG00096",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9296
+            }
+          },
+          {
+            "expected": {
+              "sampleId": "HG00097",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9390
+            },
+            "actual": {
+              "sampleId": "HG00097",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9387
+            }
+          },
+          {
+            "expected": {
+              "sampleId": "HG00099",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9451
+            },
+            "actual": {
+              "sampleId": "HG00099",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9448
+            }
+          },
+          {
+            "expected": {
+              "sampleId": "HG00100",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9441
+            },
+            "actual": {
+              "sampleId": "HG00100",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9438
+            }
+          },
+          {
+            "expected": {
+              "sampleId": "HG00101",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9396
+            },
+            "actual": {
+              "sampleId": "HG00101",
+              "genotypeClass": "HOM_REF",
+              "callCount": 9393
+            }
+          }
+        ]
+      }
+    },
+    "q06_ac_an_distribution": {
+      "query": "q06_ac_an_distribution.rq",
+      "querySha256": "90aca73c13ba320e36e0bb86177fee25fd1bbb50439b6aa11d5fd363b15c918d",
+      "renderedSha256": "90aca73c13ba320e36e0bb86177fee25fd1bbb50439b6aa11d5fd363b15c918d",
+      "wallSeconds": 0.1208183541893959,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 3,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "an": 32,
+              "ac": 0,
+              "siteCount": 8564
+            },
+            "actual": {
+              "an": 32,
+              "ac": 0,
+              "siteCount": 8557
+            }
+          },
+          {
+            "expected": {
+              "an": 32,
+              "ac": 2,
+              "siteCount": 138
+            },
+            "actual": {
+              "an": 32,
+              "ac": 2,
+              "siteCount": 137
+            }
+          },
+          {
+            "expected": {
+              "an": 32,
+              "ac": 19,
+              "siteCount": 19
+            },
+            "actual": {
+              "an": 32,
+              "ac": 19,
+              "siteCount": 17
+            }
+          }
+        ]
+      }
+    },
+    "q07_file_metadata": {
+      "status": "NOT_REPRESENTED",
+      "reason": "JVarkit writes no ##fileformat, ##reference or ##source value: its header output is the input file IRI, the contigs, the FILTER definitions and the samples only (VcfToRdf.java:441-495 at fc2356a3)."
+    },
+    "q08_header_line_census": {
+      "status": "NOT_REPRESENTED",
+      "reason": "JVarkit writes only ##contig (as vcf:Chromosome) and ##FILTER definitions; INFO, FORMAT, fileformat, source and every other meta-information line are absent (VcfToRdf.java:448-469 at fc2356a3), so the per-key line counts cannot be recovered."
+    }
+  }
+}
