@@ -297,71 +297,44 @@ def fig_scaling() -> None:
 # ---------------------------------------------------------------------------
 # Figure: when converting pays off (supplement)
 # ---------------------------------------------------------------------------
-def fig_breakeven() -> None:
-    """Cumulative time for repeated separate questions, VCF scans against the converted, indexed graph."""
-    r = retrieval()
-    ladder = records_ladder()
-    conversion = st.mean(ladder["runs"][100000]["wall"])      # the 100,000-record slice, HDT included
-    index = r["ql_setup"]
-    parser = {q: st.median(v) for q, v in r["oracle_q"].items()}
-    sparql = {q: st.mean(v) for q, v in r["engine_q"].items()}
-    scan = st.median(parser.values())
-    query = st.mean(sparql.values())
+def breakeven() -> dict:
+    """Setup, per-question parse and query times, and the break-even, on 100,000 HG005 records.
+
+    Everything comes from the N-Triples-only rerun: conversion to the gzip-framed N-Triples
+    that QLever indexes, QLever indexing, and the query-cost validation on them. The base
+    campaign's conversions also built HDT; that setup is kept only for comparison.
+    """
+    rerun = nt_only_rerun()
+    parser = {q: st.median(v) for q, v in rerun["parser"].items()}
+    sparql = {q: st.mean(v) for q, v in rerun["sparql"].items()}
+    conversion, index = st.mean(rerun["conversion"]), st.mean(rerun["index"])
     setup = conversion + index
-    n_star = setup / (scan - query)
+    scan, query = st.median(parser.values()), st.mean(sparql.values())
+    # Base campaign, for comparison: the record ladder's conversion with HDT, the query-cost index.
+    campaign = retrieval()
+    with_hdt = st.mean(float(row["wrapper_wall_seconds"]) for row in tidy(B1_LADDER)
+                       if row["cell"].startswith("r100000__")) + campaign["ql_setup"]
+    c_scan = st.median(st.median(v) for v in campaign["oracle_q"].values())
+    c_query = st.mean(st.mean(v) for v in campaign["engine_q"].values())
+    return {"conversion": conversion, "conversion_runs": rerun["conversion"], "index": index,
+            "setup": setup, "scan": scan, "query": query, "n_star": setup / (scan - query),
+            "per_question": {q: setup / (parser[q] - sparql[q]) for q, _ in QUERIES},
+            "setup_with_hdt": with_hdt, "n_star_with_hdt": with_hdt / (c_scan - c_query)}
 
-    fig = plt.figure(figsize=(SUPP_WIDTH_IN, 2.7))
-    gl = GridSpec(1, 1, figure=fig, left=0.075, right=0.55, top=0.86, bottom=0.17)
-    gr = GridSpec(1, 1, figure=fig, left=0.75, right=0.97, top=0.86, bottom=0.17)
 
-    # (a) cumulative time -----------------------------------------------------
-    ax = fig.add_subplot(gl[0, 0])
-    style_axes(ax, "y")
-    n_max = 80
-    xs = [0, n_max]
-    ax.fill_between([0, n_star], 0, 2000, color=GRAY, alpha=0.08, zorder=0, linewidth=0)
-    ax.plot(xs, [x * scan / 60 for x in xs], color=GRAY, linewidth=1.8, zorder=2)
-    ax.plot(xs, [(setup + x * query) / 60 for x in xs], color=BLUE, linewidth=1.8, zorder=2)
-    dot(ax, n_star, n_star * scan / 60, INK, size=5.5, zorder=4)
-    ax.annotate(f"Break-even: {n_star:.0f} questions\n({n_star * scan / 60:.1f} min either way)",
-                (n_star, n_star * scan / 60), textcoords="offset points", xytext=(8, -26),
-                color=INK, fontsize=6.6, ha="left")
-    ax.text(66, 66 * scan / 60 + 0.5, f"VCF scan: {scan:.1f} s per question", color=INK_2,
-            fontsize=6.3, va="bottom", ha="right", rotation=0)
-    ax.text(1.5, (setup + 1.5 * query) / 60 + 0.7,
-            f"RDF: {setup / 60:.1f} min setup,\nthen {query:.2f} s per question",
-            color=INK_2, fontsize=6.3, va="bottom", ha="left")
-    ax.text(n_star / 2, 15.2, "VCF scan\ncheaper", color=MUTED, fontsize=6.3, ha="center", va="top")
-    ax.text((n_star + n_max) / 2, 15.2, "RDF cheaper", color=MUTED, fontsize=6.3, ha="center", va="top")
-    ax.set_xlim(0, n_max)
-    ax.set_ylim(0, 16)
-    ax.set_xlabel("Separate questions asked")
-    ax.set_ylabel("Cumulative time (min)")
-    ax.set_title("(a) The graph pays for itself after repeated questions")
+#: Gzipped VCF inputs, measured on the hosts; the run records hold uncompressed sizes only.
+VCF_INPUT_SIZES = site.RESULTS / "vcf-input-sizes.json"
 
-    # (b) per question ------------------------------------------------------------
-    ax = fig.add_subplot(gr[0, 0])
-    style_axes(ax, "x")
-    names = dict(QUERIES)
-    qids = [q for q, _ in QUERIES]
-    ns = [setup / (parser[q] - sparql[q]) for q in qids]
-    for y, (q, n) in zip(range(len(qids) - 1, -1, -1), zip(qids, ns)):
-        ax.barh(y, n, height=0.62, color=BLUE, zorder=2)
-        ax.text(2, y, f"{n:.0f}", va="center", ha="left", color="white", fontsize=6, zorder=4)
-    ax.axvline(n_star, color=INK, linewidth=0.8, linestyle=(0, (2, 2)), zorder=3)
-    ax.text(n_star + 1.5, len(qids) - 0.35, f"all: {n_star:.0f}", color=INK_2, fontsize=6, va="bottom")
-    ax.set_yticks(range(len(qids)))
-    ax.set_yticklabels([names[q] for q in reversed(qids)], fontsize=6.2)
-    ax.tick_params(axis="y", length=0)
-    ax.spines["left"].set_visible(False)
-    ax.set_xlim(0, 80)
-    ax.set_xlabel("Questions to break even")
-    ax.set_title("(b) Repeating one question", x=-0.15)
 
-    fig.savefig(OUT / "fig-breakeven.pdf", metadata=PDF_METADATA)
-    plt.close(fig)
-    print(f"break-even: conversion {conversion:.1f} s + index {index:.1f} s; scan {scan:.2f} s, "
-          f"query {query:.3f} s -> {n_star:.1f} questions; per question {min(ns):.0f}-{max(ns):.0f}")
+def ingest_sizes() -> list[tuple[str, int, int]]:
+    """(label, gzipped VCF bytes, gzip-framed N-Triples bytes that QLever ingested)."""
+    vcf = site.load(VCF_INPUT_SIZES)["files"]
+    slice_nt = st.median(int(row["combined_rdf_size_bytes"]) for row in tidy(B1 / "13_query_cost" / "tidy.csv")
+                         if row["cell"].startswith("large"))
+    whole_nt = site.load(site.RESULTS / "vcf-bench-3" / "scale-store-manifests"
+                         / "whole.manifest.json")["artifacts"]["nt.gz"]["bytes"]
+    return [("100,000\nHG005 records", vcf["HG005_GRCh38_r100000.vcf.gz"]["bytes"], slice_nt),
+            ("Complete\nHG005 VCF", vcf["HG005_GRCh38.vcf.gz"]["bytes"], whole_nt)]
 
 
 # ---------------------------------------------------------------------------
@@ -417,6 +390,10 @@ def fig_samples() -> None:
     has_cottas = "cottas" in c and "cottas" in e
     vcf = [v / 1e6 for v in c["vcf"]]
     ax.plot(s_x, vcf, color=GRAY, linewidth=1.2, solid_capstyle="round", zorder=1)
+    # The gzipped inputs, measured on the host: the run records hold uncompressed sizes only.
+    gz = site.load(VCF_INPUT_SIZES)["files"]
+    vcf_gz = [gz[f"1000G_10000r_s{n}.vcf.gz"]["bytes"] / 1e6 for n in s_x]
+    ax.plot(s_x, vcf_gz, color=GRAY, linewidth=1.2, linestyle=(0, (3, 2)), solid_capstyle="round", zorder=1)
     for series, color in ((e, ORANGE), (c, BLUE)):
         hdt = [v / 1e6 for v in series["hdt"]]
         nt = [v / 1e6 for v in series["nt"]]
@@ -434,8 +411,8 @@ def fig_samples() -> None:
                 ax.plot(x, y, "s", markersize=4.2, color=color, markeredgecolor="white",
                         markeredgewidth=0.8, zorder=3)
     sample_axis(ax)
-    ax.set_ylim(0.8, 12000)
-    ax.yaxis.set_major_locator(FixedLocator([1, 10, 100, 1000, 10000]))
+    ax.set_ylim(0.1, 2.5e5)
+    ax.yaxis.set_major_locator(FixedLocator([0.1, 1, 10, 100, 1000, 10000]))
     ax.yaxis.set_minor_locator(NullLocator())
     ax.yaxis.set_major_formatter(FuncFormatter(
         lambda v, _: f"{v / 1000:g} GB" if v >= 1000 else f"{v:g} MB"))
@@ -445,12 +422,14 @@ def fig_samples() -> None:
                    label="HDT"),
         plt.Line2D([], [], color=INK_2, linewidth=0.9, marker="o", markersize=4,
                    markerfacecolor="white", markeredgecolor=INK_2, label="gzip-framed N-Triples"),
-        plt.Line2D([], [], color=GRAY, linewidth=1.2, label="Source VCF (uncompressed)"),
+        plt.Line2D([], [], color=GRAY, linewidth=1.2, label="Source VCF"),
+        plt.Line2D([], [], color=GRAY, linewidth=1.2, linestyle=(0, (3, 2)), label="Source VCF, gzip"),
     ]
     if has_cottas:
         handles.insert(1, plt.Line2D([], [], color=INK_2, linewidth=1.2, marker="s",
                                      markersize=4, label="COTTAS"))
-    ax.legend(handles=handles, loc="upper left", handlelength=1.8, borderaxespad=0.2)
+    ax.legend(handles=handles, loc="upper left", handlelength=1.8, borderaxespad=0.2, ncol=2,
+              columnspacing=0.8, fontsize=5.9)
     ax.text(64, e["hdt"][3] / 1e6 * 2.2, "Expanded profile", color=INK_2, fontsize=6.5, ha="right",
             va="bottom")
     ax.text(4, c["nt"][1] / 1e6 * 0.62, "Condensed profile", color=INK_2, fontsize=6.5, ha="center",
@@ -612,7 +591,7 @@ def fig_retrieval() -> None:
     handles = [plt.Line2D([], [], marker="o", linestyle="", color=BLUE, markersize=5,
                           label="Indexed SPARQL (QLever)"),
                plt.Line2D([], [], marker="o", linestyle="", color=GRAY, markersize=5,
-                          label="VCF scan (cyvcf2)")]
+                          label="VCF parsing (cyvcf2)")]
     ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(-0.005, 1.0), ncol=2,
               handletextpad=0.3, columnspacing=1.2, borderaxespad=0.2)
     ax.set_title("(a) Time per question on 100,000 HG005 records (17.1M triples)")
@@ -677,7 +656,7 @@ def fig_retrieval() -> None:
 REGIONAL_PATHS = [("qlever", "QLever (RDF)", BLUE, "o", "-"),
                   ("bcftools-indexed", "bcftools + tabix", ORANGE, "s", "-"),
                   ("cyvcf2-indexed", "cyvcf2 + tabix", AQUA, "D", "-"),
-                  ("cyvcf2-scan", "cyvcf2, no index", GRAY, "^", "--")]
+                  ("cyvcf2-scan", "cyvcf2, full parse", GRAY, "^", "--")]
 REGIONAL_SIZES = [1_000, 100_000, 1_000_000, 10_000_000]
 
 
@@ -693,21 +672,92 @@ def regional_window_records() -> dict[int, float]:
     return {size: st.median(counts) for size, counts in per_size.items()}
 
 
+def regional_axis(ax, ticks: bool = True) -> None:
+    """Log window-size axis with the four sizes as ticks."""
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.xaxis.set_major_locator(FixedLocator(REGIONAL_SIZES))
+    ax.xaxis.set_minor_locator(NullLocator())
+    ax.set_xticklabels(["1 kb", "100 kb", "1 Mb", "10 Mb"] if ticks else [])
+    ax.yaxis.set_minor_locator(NullLocator())
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:,.0f}" if v >= 1 else f"{v:g}"))
+
+
+def path_legend(fig, paths, y=1.0, ncol=4, x=0.53) -> None:
+    handles = [plt.Line2D([], [], color=color, linestyle=style, marker=marker, markersize=4,
+                          markeredgecolor="white", label=label)
+               for _arm, label, color, marker, style in paths]
+    fig.legend(handles=handles, loc="upper center", ncol=ncol, bbox_to_anchor=(x, y),
+               frameon=False, fontsize=6.3, handlelength=2.2, columnspacing=1.4)
+
+
 def fig_regional() -> None:
-    """Regional queries by window size, and every RDF/tabular comparison as one ratio scale."""
+    """Setup and break-even, ingested file sizes, regional queries, and every comparison as a ratio."""
     slice_ = site.regional()["slice"]
     ms = {arm: {int(size): v for size, v in sizes.items()} for arm, sizes in slice_["ms"].items()}
     records = regional_window_records()
     data = retrieval()
     per_question = [st.mean(data["oracle_q"][q]) / st.mean(data["engine_q"][q]) for q, _ in QUERIES]
     batch = data["parser_batch"] / data["ql_batch"]
+    b = breakeven()
+    sizes = ingest_sizes()
 
-    fig = plt.figure(figsize=(WIDTH_IN, 2.75))
-    gs = GridSpec(1, 2, figure=fig, width_ratios=[1.0, 1.0], wspace=0.62,
-                  left=0.1, right=0.975, top=0.83, bottom=0.2)
+    fig = plt.figure(figsize=(WIDTH_IN, 5.0))
+    top = GridSpec(1, 2, figure=fig, width_ratios=[1.0, 1.0], wspace=0.42,
+                   left=0.1, right=0.975, top=0.875, bottom=0.6)
+    low = GridSpec(1, 2, figure=fig, width_ratios=[1.0, 1.0], wspace=0.62,
+                   left=0.1, right=0.975, top=0.44, bottom=0.085)
 
-    # (a) regional time by window size --------------------------------------
-    ax = fig.add_subplot(gs[0, 0])
+    # (a) repeated whole-file questions, setup included ------------------------
+    ax = fig.add_subplot(top[0, 0])
+    style_axes(ax, "y")
+    n_max, n_star = 30, b["n_star"]
+    top_min = n_max * b["scan"] / 60 * 1.12
+    ax.axvspan(n_star, n_max, color=BLUE_LIGHT, alpha=0.18, lw=0, zorder=0)
+    ax.plot([0, n_max], [0, n_max * b["scan"] / 60], color=GRAY, linestyle="--", linewidth=1.5, zorder=2)
+    ax.plot([0, n_max], [b["setup"] / 60, (b["setup"] + n_max * b["query"]) / 60], color=BLUE,
+            linewidth=1.5, zorder=2)
+    dot(ax, n_star, n_star * b["scan"] / 60, INK, size=5, zorder=4)
+    ax.annotate(f"{n_star:.0f} questions", (n_star, n_star * b["scan"] / 60), textcoords="offset points",
+                xytext=(6, -10), color=INK, fontsize=6.2, ha="left")
+    ax.text(0.6, b["setup"] / 60 + 0.95, f"Convert + index {b['setup'] / 60:.1f} min,\nthen {b['query']:.2f} s each",
+            color=INK_2, fontsize=5.9, va="bottom", ha="left")
+    ax.text(n_max - 0.5, n_max * b["scan"] / 60 * 0.62, f"Full parse\n{b['scan']:.1f} s each", color=INK_2,
+            fontsize=5.9, va="top", ha="right")
+    ax.text((n_star + n_max) / 2, top_min * 0.97, "RDF cheaper", color=INK_2, fontsize=5.9, ha="center", va="top")
+    ax.set_xlim(0, n_max)
+    ax.set_ylim(0, top_min)
+    ax.set_xlabel("Separate whole-file questions")
+    ax.set_ylabel("Cumulative time (min)")
+    ax.set_title("(a) Repeated questions, setup included")
+
+    # (b) what QLever ingests against the gzipped VCF ------------------------
+    ax = fig.add_subplot(top[0, 1])
+    style_axes(ax, "y")
+    fmt = lambda v: f"{v / 1e9:.2f} GB" if v >= 1e9 else f"{v / 1e6:.1f} MB"  # noqa: E731
+    for x, (label, vcf_bytes, nt_bytes) in enumerate(sizes):
+        for dx, value, color in ((-0.19, vcf_bytes, GRAY), (0.19, nt_bytes, BLUE)):
+            ax.bar(x + dx, value / 1e6, width=0.34, color=color, zorder=2)
+            ax.text(x + dx, value / 1e6 * 1.18, fmt(value), color=INK_2, fontsize=5.7, ha="center", va="bottom")
+        ax.text(x, nt_bytes / 1e6 * 5.2, f"{nt_bytes / vcf_bytes:.1f}×", color=INK, fontsize=6.6,
+                ha="center", va="bottom", fontweight="bold")
+    ax.set_yscale("log")
+    ax.set_ylim(0.6, 3e5)
+    ax.yaxis.set_major_locator(FixedLocator([1, 10, 100, 1000, 10000]))
+    ax.yaxis.set_minor_locator(NullLocator())
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v / 1000:g} GB" if v >= 1000 else f"{v:g} MB"))
+    ax.set_xticks(range(len(sizes)))
+    ax.set_xticklabels([label for label, *_ in sizes], fontsize=6.2)
+    ax.set_xlim(-0.6, len(sizes) - 0.4)
+    ax.tick_params(axis="x", length=0)
+    ax.set_ylabel("Size, gzip-compressed")
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF"),
+                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="N-Triples for QLever")],
+              loc="upper left", fontsize=5.9, handlelength=1.0, borderaxespad=0.3, frameon=False)
+    ax.set_title("(b) Gzipped VCF and N-Triples sizes")
+
+    # (c) regional time by window size --------------------------------------
+    ax = fig.add_subplot(low[0, 0])
     style_axes(ax, "y")
     ax.axvspan(10_000_000 / 2.2, 10_000_000 * 2.2, color=BLUE_LIGHT, alpha=0.18, lw=0, zorder=0)
     ax.text(10_000_000, 2.1, "QLever\nfastest", color=INK_2, fontsize=5.8, ha="center", va="bottom")
@@ -719,33 +769,28 @@ def fig_regional() -> None:
         end = ys[-1]
         ax.annotate(f"{end:,.1f}" if end < 100 else f"{end:,.0f}", (REGIONAL_SIZES[-1], end),
                     xytext=(9, 0), textcoords="offset points", color=INK_2, fontsize=5.8, va="center")
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.set_xlim(400, 3.2e7)
-    ax.set_ylim(1.8, 2500)
-    ax.xaxis.set_major_locator(FixedLocator(REGIONAL_SIZES))
-    ax.xaxis.set_minor_locator(NullLocator())
+    regional_axis(ax, ticks=False)
     ax.set_xticklabels([f"{name}\n({int(records[s] + 0.5):,})" for s, name in
                         zip(REGIONAL_SIZES, ["1 kb", "100 kb", "1 Mb", "10 Mb"])], fontsize=6)
+    ax.set_xlim(400, 3.2e7)
+    ax.set_ylim(1.8, 2500)
     ax.yaxis.set_major_locator(FixedLocator([3, 10, 30, 100, 300, 1000]))
-    ax.yaxis.set_minor_locator(NullLocator())
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:,.0f}"))
     ax.set_xlabel("Window size (median records per window)")
     ax.set_ylabel("Median time per query (ms)")
-    ax.set_title("(a) Regional queries by window size")
+    ax.set_title("(c) Regional queries by window size")
 
-    # (b) every comparison as tabular time / RDF time ------------------------
-    ax = fig.add_subplot(gs[0, 1])
+    # (d) every comparison as VCF parsing time / RDF time, setup excluded ------
+    ax = fig.add_subplot(low[0, 1])
     style_axes(ax, "x")
     rows = [f"{name} windows" for name in ["1 kb", "100 kb", "1 Mb", "10 Mb"]] + [
         "Whole file,\nper question", "Whole file,\none-pass batch"]
     ys = list(range(len(rows) - 1, -1, -1))
     ax.axvspan(1, 6000, color=BLUE_LIGHT, alpha=0.18, lw=0, zorder=0)
     ax.axvline(1, color=AXIS, linewidth=0.8, zorder=1)
-    ax.text(0.8, len(rows) - 0.3, "Tabular\nfaster", color=INK_2, fontsize=5.8, ha="right", va="bottom")
-    ax.text(1.35, len(rows) - 0.3, "RDF querying faster", color=INK_2, fontsize=5.8, ha="left", va="bottom")
+    ax.text(0.8, len(rows) - 0.3, "VCF parsing\nfaster", color=INK_2, fontsize=5.8, ha="right", va="bottom")
+    ax.text(1.3, len(rows) - 0.3, "RDF querying\nfaster", color=INK_2, fontsize=5.8, ha="left", va="bottom")
     # The two indexed readers sit just above and below their row, so equal ratios stay visible.
-    offset = {"bcftools-indexed": 0.14, "cyvcf2-indexed": -0.14, "cyvcf2-scan": 0.0}
+    offset = {"bcftools-indexed": 0.15, "cyvcf2-indexed": -0.15, "cyvcf2-scan": 0.0}
     for y, size in zip(ys, REGIONAL_SIZES):
         for arm, _label, color, marker, _style in REGIONAL_PATHS[1:]:
             ax.plot(ms[arm][size] / ms["qlever"][size], y + offset[arm], marker, color=color, markersize=4,
@@ -769,19 +814,112 @@ def fig_regional() -> None:
     ax.set_yticklabels(rows, fontsize=6.2)
     ax.tick_params(axis="y", length=0)
     ax.spines["left"].set_visible(False)
-    ax.set_ylim(-0.6, len(rows) + 0.35)
-    ax.set_xlabel("Tabular time ÷ QLever time")
-    ax.set_title("(b) Tabular time relative to QLever", loc="left", x=-0.42)
+    ax.set_ylim(-0.6, len(rows) + 0.75)
+    ax.set_xlabel("VCF parsing time ÷ QLever time")
+    ax.set_title("(d) Parsing relative to querying, no setup", loc="left", x=-0.42)
 
-    handles = [plt.Line2D([], [], color=color, linestyle=style, marker=marker, markersize=4,
-                          markeredgecolor="white", label=label)
-               for _arm, label, color, marker, style in REGIONAL_PATHS]
-    fig.legend(handles=handles, loc="upper center", ncol=4, bbox_to_anchor=(0.53, 1.0),
-               frameon=False, fontsize=6.3, handlelength=2.2, columnspacing=1.4)
+    path_legend(fig, REGIONAL_PATHS)
     fig.savefig(OUT / "fig-regional.pdf", metadata=PDF_METADATA)
     plt.close(fig)
     print("regional ms:", {a: ms[a] for a, *_ in REGIONAL_PATHS}, "records/window:", records)
+    print(f"  N-Triples conversion {b['conversion']:.1f} s (runs {[round(x, 1) for x in b['conversion_runs']]}) + index "
+          f"{b['index']:.1f} s = {b['setup']:.1f} s; break-even {b['n_star']:.1f} "
+          f"(with HDT: {b['setup_with_hdt']:.1f} s, {b['n_star_with_hdt']:.1f}); scan {b['scan']:.2f} s, query {b['query']:.3f} s")
+    print("  sizes:", [(l.replace(chr(10), ' '), v, n, round(n / v, 1)) for l, v, n in sizes])
     print(f"  whole file per question {min(per_question):.1f}-{max(per_question):.0f}x; batch {batch:.2f}x")
+
+
+#: The five regional questions, as the supplement names them.
+REGIONAL_QUESTIONS = [("r01_region_record_count", "Record count"),
+                      ("r02_region_variant_shape_counts", "Variant shapes"),
+                      ("r03_region_titv", "Ti/Tv"),
+                      ("r04_region_filter_distribution", "FILTER values"),
+                      ("r05_region_sample_genotype_counts", "Sample genotypes")]
+#: The three Comunica engines run only on the fixture; one light-blue family, told apart by marker.
+COMUNICA_PATHS = [("comunica", "Comunica, N-Triples", BLUE_LIGHT, "v", "-"),
+                  ("hdt", "Comunica, HDT", BLUE_LIGHT, "<", "-"),
+                  ("cottas", "Comunica, COTTAS", BLUE_LIGHT, ">", "-")]
+
+
+def fig_retrieval_detail() -> None:
+    """Supplementary detail: each regional question, the fixture's seven paths, and per-question break-even."""
+    base = site.RESULTS / "vcf-bench-1" / "benchmarks_outputs" / "14_regional_access"
+    summary = site.load(base / "slice" / "out" / "regional.json")["summary"]
+    fixture = {arm: {int(s): v for s, v in sizes.items()}
+               for arm, sizes in site.regional()["small"]["ms"].items()}
+    b = breakeven()
+
+    fig = plt.figure(figsize=(SUPP_WIDTH_IN, 5.0))
+    top = GridSpec(1, 5, figure=fig, wspace=0.12, left=0.075, right=0.985, top=0.79, bottom=0.6)
+    low_l = GridSpec(1, 1, figure=fig, left=0.075, right=0.5, top=0.4, bottom=0.08)
+    low_r = GridSpec(1, 1, figure=fig, left=0.735, right=0.965, top=0.4, bottom=0.08)
+
+    # (a) each regional question on the 100,000-record slice ----------------
+    axes = [fig.add_subplot(top[0, i]) for i in range(5)]
+    for i, (ax, (qid, name)) in enumerate(zip(axes, REGIONAL_QUESTIONS)):
+        style_axes(ax, "y")
+        for arm, _label, color, marker, style in REGIONAL_PATHS:
+            ys = [1000 * summary[arm][qid][str(s)]["medianSeconds"] for s in REGIONAL_SIZES]
+            ax.plot(REGIONAL_SIZES, ys, color=color, linestyle=style, linewidth=1.2, zorder=2)
+            ax.plot(REGIONAL_SIZES, ys, marker, color=color, markersize=3.2, markeredgecolor="white",
+                    markeredgewidth=0.5, zorder=3)
+        regional_axis(ax)
+        ax.set_xlim(400, 3.2e7)
+        ax.set_ylim(1.8, 2500)
+        ax.yaxis.set_major_locator(FixedLocator([3, 10, 30, 100, 300, 1000]))
+        ax.set_xticklabels(["1k", "100k", "1M", "10M"], fontsize=5.8)
+        if i:
+            ax.set_yticklabels([])
+        else:
+            ax.set_ylabel("Median time per query (ms)")
+        ax.set_title(name, fontsize=6.6, loc="center")
+    fig.text(0.075, 0.855, "(a) Each regional question on 100,000 HG005 records (17.1M triples)",
+             fontsize=7.5, ha="left", va="bottom")
+    fig.text(0.53, 0.555, "Window size (bp)", fontsize=6.6, ha="center", va="top", color=INK)
+
+    # (b) the 10,000-line fixture, all seven paths ---------------------------
+    ax = fig.add_subplot(low_l[0, 0])
+    style_axes(ax, "y")
+    for arm, _label, color, marker, style in REGIONAL_PATHS + COMUNICA_PATHS:
+        ys = [fixture[arm][s] for s in REGIONAL_SIZES]
+        ax.plot(REGIONAL_SIZES, ys, color=color, linestyle=style, linewidth=1.2, zorder=2)
+        ax.plot(REGIONAL_SIZES, ys, marker, color=color, markersize=3.4, markeredgecolor="white",
+                markeredgewidth=0.5, zorder=3)
+    regional_axis(ax)
+    ax.set_xlim(400, 3.2e7)
+    ax.set_ylim(0.3, 3000)
+    ax.yaxis.set_major_locator(FixedLocator([1, 10, 100, 1000]))
+    ax.text(10_000_000 * 1.25, fixture["comunica"][10_000_000], "Comunica\nengines", color=INK_2,
+            fontsize=5.8, va="center", ha="left")
+    ax.set_xlabel("Window size")
+    ax.set_ylabel("Median time per query (ms)")
+    ax.set_title("(b) All paths on the 10,000-line fixture (0.96M triples)")
+
+    # (c) break-even per repeated question ----------------------------------
+    ax = fig.add_subplot(low_r[0, 0])
+    style_axes(ax, "x")
+    names = dict(QUERIES)
+    qids = [q for q, _ in QUERIES]
+    for y, q in zip(range(len(qids) - 1, -1, -1), qids):
+        n = b["per_question"][q]
+        ax.barh(y, n, height=0.62, color=BLUE, zorder=2)
+        ax.text(0.5, y, f"{n:.0f}", va="center", ha="left", color="white", fontsize=5.8, zorder=4)
+    ax.axvline(b["n_star"], color=INK, linewidth=0.8, linestyle=(0, (2, 2)), zorder=3)
+    ax.text(b["n_star"] + 0.4, len(qids) - 0.35, f"all: {b['n_star']:.0f}", color=INK_2, fontsize=5.8,
+            va="bottom")
+    ax.set_yticks(range(len(qids)))
+    ax.set_yticklabels([names[q] for q in reversed(qids)], fontsize=6.0)
+    ax.tick_params(axis="y", length=0)
+    ax.spines["left"].set_visible(False)
+    ax.set_xlim(0, 20)
+    ax.set_xlabel("Questions to break even")
+    ax.set_title("(c) Break-even per repeated question", loc="left", x=-0.62)
+
+    path_legend(fig, REGIONAL_PATHS + COMUNICA_PATHS, y=0.995, ncol=4)
+    fig.savefig(OUT / "fig-retrieval-detail.pdf", metadata=PDF_METADATA)
+    plt.close(fig)
+    print("retrieval detail: per-question break-even",
+          {q[:3]: round(n) for q, n in b["per_question"].items()})
 
 
 # ---------------------------------------------------------------------------
@@ -1069,7 +1207,7 @@ if __name__ == "__main__":
     fig_validation()
     fig_usecase_matches()
     fig_usecase_costs()
-    fig_breakeven()
+    fig_retrieval_detail()
     for name in ("fig-scaling", "fig-samples", "fig-representations", "fig-retrieval", "fig-regional",
-                 "fig-validation", "fig-usecase-matches", "fig-usecase-costs", "fig-breakeven"):
+                 "fig-validation", "fig-usecase-matches", "fig-usecase-costs", "fig-retrieval-detail"):
         print("wrote", OUT / f"{name}.pdf")
