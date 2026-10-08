@@ -20,7 +20,8 @@ BM_RESULTS="$(cd -- "$BM_RESULTS" && pwd -P)"
 CONV_UID="$(id -u)"
 CONV_GID="$(id -g)"
 CONV_DOCKER_GID="$(stat -c %g /var/run/docker.sock)"
-CONV_REPO_COMMIT="$(git -C "$CONV_REPO" rev-parse HEAD 2>/dev/null || echo unknown)"
+# A `git archive` export has no .git, so the commit can be given instead.
+CONV_REPO_COMMIT="${CONV_REPO_COMMIT:-$(git -C "$CONV_REPO" rev-parse HEAD 2>/dev/null || echo unknown)}"
 export CONV_REPO CONV_DATA CONV_WORK BM_RESULTS CONV_UID CONV_GID CONV_DOCKER_GID CONV_REPO_COMMIT
 
 compose=(docker compose -f "$CONV/compose.yaml" --env-file "$CONV/pins.env")
