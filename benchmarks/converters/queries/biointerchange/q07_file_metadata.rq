@@ -7,13 +7,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 # header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
 # written as "".
 # ##fileformat is stored without its "VCFv" prefix (vcf.c:503-509); the port restores it.
+# Independent OPTIONALs give exactly one row, with "(absent)" for a value the graph does not hold,
+# including when the header document itself is missing.
 SELECT (COALESCE(?ff, "(absent)") AS ?fileFormat)
        (COALESCE(?rg, "(absent)") AS ?referenceGenome)
        (COALESCE(?ss, "(absent)") AS ?sourceSoftware)
 WHERE {
-  ?meta a gc:Meta .
-  OPTIONAL { ?meta g:vcfVersion ?version
+  OPTIONAL { ?m1 a gc:Meta ; g:vcfVersion ?version
              BIND(IF(STRSTARTS(STR(?version), "VCFv"), STR(?version), CONCAT("VCFv", STR(?version))) AS ?ff) }
-  OPTIONAL { ?meta g:referenceFASTA ?reference BIND(STR(?reference) AS ?rg) }
-  OPTIONAL { ?meta g:source ?source BIND(STR(?source) AS ?ss) }
+  OPTIONAL { ?m2 a gc:Meta ; g:referenceFASTA ?reference BIND(STR(?reference) AS ?rg) }
+  OPTIONAL { ?m3 a gc:Meta ; g:source ?source BIND(STR(?source) AS ?ss) }
 }

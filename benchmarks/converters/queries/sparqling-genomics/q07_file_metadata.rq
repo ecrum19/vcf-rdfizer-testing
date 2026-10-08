@@ -10,12 +10,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 # sample, and only for calls with a non-reference allele; there is no record node. Call IRIs are
 # origin://<md5>@<k> with k = record index x samples + sample index (doc/command-line-tools.tex),
 # so records are regrouped on floor(k / samples). Only the first ALT allele is written.
-# A simple ##key=value line becomes hdr:<key> hdr:<key> "value".
-SELECT (COALESCE(SAMPLE(?ff), "(absent)") AS ?fileFormat)
-       (COALESCE(SAMPLE(?rg), "(absent)") AS ?referenceGenome)
-       (COALESCE(SAMPLE(?ss), "(absent)") AS ?sourceSoftware)
+# A simple ##key=value line becomes hdr:<key> hdr:<key> "value". Independent OPTIONALs give exactly
+# one row, with "(absent)" for a key the graph does not hold.
+SELECT (COALESCE(?ff, "(absent)") AS ?fileFormat)
+       (COALESCE(?rg, "(absent)") AS ?referenceGenome)
+       (COALESCE(?ss, "(absent)") AS ?sourceSoftware)
 WHERE {
-  { hdr:fileformat hdr:fileformat ?ffLiteral BIND(STR(?ffLiteral) AS ?ff) }
-  UNION { hdr:reference hdr:reference ?rgLiteral BIND(STR(?rgLiteral) AS ?rg) }
-  UNION { hdr:source hdr:source ?ssLiteral BIND(STR(?ssLiteral) AS ?ss) }
+  OPTIONAL { hdr:fileformat hdr:fileformat ?ffLiteral BIND(STR(?ffLiteral) AS ?ff) }
+  OPTIONAL { hdr:reference hdr:reference ?rgLiteral BIND(STR(?rgLiteral) AS ?rg) }
+  OPTIONAL { hdr:source hdr:source ?ssLiteral BIND(STR(?ssLiteral) AS ?ss) }
 }
