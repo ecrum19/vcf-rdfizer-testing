@@ -14,11 +14,11 @@ ARG CONV_BI_COMMIT
 ARG CONV_BI_BOTTLE_SHA256
 ARG CONV_BI_CONTEXT_SHA256
 ARG CONV_UID=1000
+# bullseye main only: the snapshot archive does not serve bullseye's security pool (404), and the
+# container runs offline.
 RUN set -eux; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*; \
-    printf '%s\n' \
-      "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/${CONV_DEBIAN_SNAPSHOT} bullseye main" \
-      "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/${CONV_DEBIAN_SNAPSHOT} bullseye-security main" \
+    echo "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/${CONV_DEBIAN_SNAPSHOT} bullseye main" \
       > /etc/apt/sources.list; \
     apt-get update; \
     apt-get install -y --no-install-recommends libpython3.9 libssl1.1 python3 python3-pyld patchelf curl ca-certificates; \

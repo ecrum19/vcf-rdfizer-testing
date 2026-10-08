@@ -2,6 +2,7 @@
 # Dockerfile builds an older commit from another branch.
 #
 # Pinned by commit, not by tag: the v2026.04.30 tag was moved after its release was published.
+# The bcfparser sources are a git submodule, fetched at the commit the pinned revision records.
 # The Gradle wrapper does not pin its distribution, so its SHA-256 is added here. The build
 # fetches its ~45 library jars from Maven Central at fixed versions but checks no checksums, so
 # the SHA-256 of every jar it used is recorded in /opt/jvarkit/build-sha256.txt. The jar embeds a
@@ -25,6 +26,8 @@ RUN set -eux; \
     git fetch -q --depth 1 origin "${CONV_JVARKIT_COMMIT}"; \
     git checkout -q --detach FETCH_HEAD; \
     test "$(git rev-parse HEAD)" = "${CONV_JVARKIT_COMMIT}"; \
+    git submodule update --init --recursive; \
+    git submodule status --recursive > submodules.txt; \
     echo "distributionSha256Sum=${CONV_GRADLE_SHA256}" >> gradle/wrapper/gradle-wrapper.properties; \
     ./gradlew --no-daemon -q -Djvarkit.generate.doc=false jvarkit; \
     { sha256sum dist/jvarkit.jar; \
@@ -41,5 +44,5 @@ RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends openjdk-21-jre-headless; \
     rm -rf /var/lib/apt/lists/*
-COPY --from=build /src/dist/jvarkit.jar /src/build-sha256.txt /opt/jvarkit/
+COPY --from=build /src/dist/jvarkit.jar /src/build-sha256.txt /src/submodules.txt /opt/jvarkit/
 RUN echo "${CONV_JVARKIT_COMMIT}" > /opt/jvarkit/COMMIT
