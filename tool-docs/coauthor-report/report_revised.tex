@@ -1,4 +1,4 @@
-% Coauthor brief, rewritten against the revised manuscript and supplement of 7 October 2026.
+% Coauthor brief, rewritten against the revised manuscript and supplement of 8 October 2026.
 % Figures are copies of BioMedSem_2026/paper-assets; refresh them from there after any change.
 % Build: latexmk -pdf -interaction=nonstopmode -halt-on-error report_revised.tex
 \documentclass[10pt]{article}
@@ -25,13 +25,13 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small VCF-RDFizer \textbar\ Coauthor brief}
-\fancyhead[R]{\small 7 October 2026}
+\fancyhead[R]{\small 8 October 2026}
 \fancyfoot[R]{\small\thepage}
 \renewcommand{\headrulewidth}{.3pt}
 \setlength{\headheight}{14pt}
 \begin{document}
 {\LARGE\bfseries VCF-RDFizer: coauthor discussion brief}\par
-\textbf{Updated 7 October 2026 · After the second revision of the manuscript and supplement}
+\textbf{Updated 8 October 2026 · After the second revision of the manuscript and supplement}
 
 \section{1. The argument of the paper}
 
@@ -58,12 +58,14 @@ Three questions organize the evaluation, and the Results follow them in order:
 
 \begin{itemize}
 \item \textbf{Structure.} Implementation and Evaluation each have three subsections matching RQ1--RQ3. The \emph{base campaign} is now defined where it is first used: 143 runs in 12 experiment families with the published v3.1.0 release, detailed in Supplementary Section~S5.1.
-\item \textbf{Figures instead of tables.} The validation results, the workflow matches, the stage costs, and the regional baseline are now Figures~3, 4, 5, and~8. The main text has eight figures and two tables; every exact number moved to a supplementary table.
+\item \textbf{Figures instead of tables.} The validation results, the workflow matches, the stage costs, and the retrieval comparison are now Figures~3, 4, 5, and~8. The main text has eight figures and two tables; every exact number moved to a supplementary table.
+\item \textbf{One figure for the cost of querying.} Figure~8 combines four views of the same 100,000 HG005 records: the setup break-even, the size of what QLever ingests, regional queries by window size, and every VCF-parsing-versus-RDF-querying comparison as one ratio. Supplementary Figure~S5 adds each regional question, the Comunica engines, and the break-even per question.
+\item \textbf{Setup counted for what QLever needs.} The break-even now counts conversion to the gzip-framed N-Triples that QLever indexes, not HDT, which QLever does not use: about 2\,min of setup and 11 questions, instead of 7.4\,min and 44. The N-Triples are 21--25$\times$ the size of the gzipped VCF, and Figure~6 now shows the gzipped source VCF beside the uncompressed one.
 \item \textbf{A fourth workflow arm.} Arm~4 applies layered rules to the complete NB72462M VCF (5,063,417 records), giving four requesters four different, non-empty release views. Both workflows agreed record for record.
 \item \textbf{Release v3.3.1.} Arm~4's record-level comparison exposed a linker defect: v3.3.0 did not link spanning-deletion (\texttt{*}) records to genes, so gene-based rules could not select them. v3.3.1 links them by their REF span; rerunning Arm~1 left every match unchanged.
 \item \textbf{Consumer WGS validation run now passes.} The three mismatches on 250,000 NG131FQA1I records were validator gaps (uncounted phase sets; QUAL compared as written). With the v3.3.1 validator the same graph gives 13/13 equal answers, and the default shapes report no violations. The failure history is kept in Supplementary Section~S3.2 only.
 \item \textbf{A stated SHACL limitation.} Full shape validation does not yet scale to the graph of a complete single-sample VCF (Section~3 below).
-\item \textbf{Precise naming.} A VCF file is never called a ``genome'': the text names inputs (``the complete HG005 VCF'', ``five gene-span slices''), gives each graph size with its input, and uses All/OP/CC/DS/GRU for requesters throughout.
+\item \textbf{Precise naming.} A VCF file is never called a ``genome'': the text names inputs (``the complete HG005 VCF'', ``five gene-span slices''), gives each graph size with its input, and uses All/OP/CC/DS/GRU for requesters throughout. The VCF side is described as \emph{VCF parsing} for whole-file reads and \emph{region queries on a tabix-indexed VCF} for indexed reads, the terms of the cyvcf2, tabix, and bcftools papers, rather than ``VCF access''.
 \end{itemize}
 
 \section{3. RQ1: source comparisons and structural validation are complementary}
@@ -121,11 +123,13 @@ SPDI joins assume the tested reference, normalization, and eligible allele class
 
 \section{5. RQ3: costs depend on the workload, not on one headline number}
 
+Neither route is uniformly cheaper. VCF parsing wins one-pass analyses and small regions on a tabix-indexed VCF; RDF querying wins large regions, whole-file questions asked one at a time, and, once its setup of about two minutes is paid, repeated questions. The graph route costs storage as well as time: the N-Triples QLever indexes are 21--25$\times$ the gzipped VCF. The sample representation decides how much graph there is, and triple counts alone overstate that difference.
+
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{figs/fig-regional.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 5. Where tabular parsing is and is not stronger than RDF querying} (main Figure~8). (a)~Median time per regional query on 100,000 HG005 records, by window size (median records per window in parentheses). (b)~Every comparison as tabular time divided by QLever time; points in the shaded region are those where tabular parsing was slower. Setup is excluded: 23.2\,s for QLever's index against 0.48\,s for bgzip and tabix.}
+\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~8). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Gzip-compressed sizes of the VCF and of the N-Triples QLever indexes, also for the complete HG005 VCF. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
 \end{figure}
 
 \begin{center}\small
@@ -133,16 +137,24 @@ SPDI joins assume the tested reference, normalization, and eligible allele class
 \toprule
 \textbf{Workload or choice} & \textbf{Finding to retain}\\
 \midrule
-Single whole-file questions & QLever took 0.005--4.62\,s per question against 11.5--12.3\,s for a cyvcf2 scan, on 100,000 HG005 records (17.1M triples).\\
-All thirteen in one pass & One parser pass took 12.4\,s; QLever's queries took 17.1\,s, plus a 22.8\,s index.\\
-Repeated questions & About 44 questions to break even, including conversion with HDT (423.7\,s) and indexing. One scenario, not a tool constant.\\
-Regional lookups & Indexed readers were faster up to 100\,kb (3.3--4.8\,ms against 9.6--10.0\,ms); at 10\,Mb QLever's 11.1\,ms beat bcftools (32.7\,ms) and cyvcf2 (117.8\,ms).\\
+Single whole-file questions & QLever took 0.005--4.62\,s per question against 11.5--12.3\,s for a full cyvcf2 parse, on 100,000 HG005 records (17.1M triples).\\
+All thirteen in one pass & One parsing pass took 12.4\,s; QLever's queries took 17.1\,s, plus a 22.8\,s index.\\
+Repeated questions & About 11 questions to break even, measured in a three-replicate rerun: 95.7\,s to convert to gzip-framed N-Triples (HDT is not needed by QLever) and 25.0\,s to index. One scenario, not a tool constant; with the base campaign's HDT it was 44.\\
+Storage & The gzip-framed N-Triples QLever indexes are 24.7$\times$ the gzipped VCF for 100,000 records and 20.7$\times$ for the complete HG005 VCF (2.89\,GB against 139.3\,MB).\\
+Regional lookups & Tabix-indexed region queries were faster up to 100\,kb (3.3--4.8\,ms against 9.6--10.0\,ms); at 10\,Mb QLever's 11.1\,ms beat bcftools (32.7\,ms) and cyvcf2 (117.8\,ms).\\
 Sample representation & At 2,504 samples, expanded output has 432$\times$ the triples of condensed but only 69$\times$ the HDT bytes; condensed values need decoding to address one call.\\
 Optional artifacts & Converting the complete HG005 VCF with v3.1.0 took 16.07\,h, about 14.5\,h of it building HDT and COTTAS. These are optional; gzip-framed N-Triples alone occupied 2.89\,GB.\\
 Large graphs & On the complete HG005 VCF (657.4M triples), QLever answered all thirteen questions in 634.6\,s after an 868-second index; the native HDT and COTTAS paths did not complete on 171M triples.\\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/fig-samples.pdf}
+\par\medskip
+\figcaption{\textbf{Figure 6. Sample representation trades addressability for size} (main Figure~6). 10,000 records of the 1000~Genomes chromosome-20 VCF with one to 2,504 of its samples. (a)~Expanded triples grow 390$\times$ across the ladder, condensed ones 0.9\%. (b)~Stored size of HDT and gzip-framed N-Triples for each profile, beside the source VCF uncompressed and gzip-compressed. (c)~At 2,504 samples, expanded output has 432$\times$ the triples of condensed but 69$\times$ the HDT bytes.}
+\end{figure}
 
 Keep the configurations apart: the 16.07-hour v3.1.0 conversion and the 54-minute use-case conversion differ in configuration and are not alternative measurements of the same task.
 
@@ -152,8 +164,7 @@ Keep the configurations apart: the 16.07-hour v3.1.0 conversion and the 54-minut
 
 \subsection{Essential: close before submission}
 \begin{itemize}
-\item \textbf{Release v3.3.1.} The paper attributes Arm~4's linking and the consumer WGS validation run to v3.3.1, which is not yet released: merge VCF-RDFizer PR~\#32, tag v3.3.1, publish it to PyPI, conda-forge, and Docker Hub, and update the software citations.
-\item \textbf{Persistent archive.} Deposit a persistent snapshot of the evaluated code, the uncommitted Arm~1--2 source trees, complete image digests (including v3.3.0's), the vocabulary and shapes, queries, and evidence manifests (author queries in the Declarations and Supplementary Section~S5).
+\item \textbf{Persistent archive.} Should deposit code / results into Zenodo before submission.
 \item \textbf{Declarations.} Complete the funding statements for B.B., R.T., and G.E., and confirm the separation from the companion VCF Core vocabulary paper.
 \end{itemize}
 
@@ -162,6 +173,7 @@ Keep the configurations apart: the 16.07-hour v3.1.0 conversion and the 54-minut
 \item The consumer WGS validation run is reported in the main text by its corrected-validator result alone, with the earlier failures and their diagnosis only in the supplement.
 \item Arm~4 and the v3.3.1 linker fix are minimal in the main text and detailed in Supplementary Section~S4.
 \item The SHACL scaling limit is framed as future work rather than as a weakness of the validation design.
+\item The break-even is computed for the N-Triples QLever indexes, with HDT and COTTAS treated as optional artifacts, and Table~3 is replaced by Figure~8 with its medians in Supplementary Table~S15.
 \end{itemize}
 
 \subsection{Claim-dependent additions, not an automatic new benchmark campaign}
