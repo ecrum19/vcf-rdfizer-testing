@@ -69,6 +69,8 @@ services:
       CONV_DOCKER_GID: ${CONV_DOCKER_GID}
       BM_RESULTS: ${BM_RESULTS}
       BM_REPS: ${BM_REPS:-3}
+      # 1 only for a development run: accept an artifact whose pin is still empty.
+      CONV_ALLOW_UNPINNED: ${CONV_ALLOW_UNPINNED:-0}
     working_dir: ${CONV_REPO}
     entrypoint: ["bash", "${CONV_REPO}/benchmarks/18_converter_comparison.sh"]
 
