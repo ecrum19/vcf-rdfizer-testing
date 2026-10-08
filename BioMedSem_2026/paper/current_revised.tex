@@ -50,7 +50,7 @@ We evaluate VCF-RDFizer using public genomic datasets, source-based validation, 
 The results show that VCF data can be converted into an explicit RDF representation while retaining the information needed to check the transformed data against its source.
 Complementary query- and constraint-based validation expose different classes of transformation errors, demonstrating the value of validating both data content and graph structure.
 The resulting RDF representations also support queries that combine genomic observations with external variant knowledge, population information, and requester-specific policies while reproducing the results of an equivalent conventional VCF workflow.
-These capabilities come with additional conversion and indexing costs: selected repeated queries benefited from an existing graph index, whereas native VCF processing remained advantageous for the tested one-pass analyses and narrow indexed lookups.
+These capabilities come with additional conversion and indexing costs: selected repeated queries benefited from an existing graph index, whereas direct VCF parsing remained advantageous for the tested one-pass analyses and for small region queries on a tabix-indexed VCF.
 
 \textbf{Conclusions:}
 VCF-RDFizer supports verifiable conversion and reusable, policy-aware research queries; it is not a universal replacement for VCF.
@@ -329,7 +329,7 @@ The \emph{sample ladder} holds 10,000 cohort records and their INFO content fixe
 For each ladder, we measure stage timings, resident memory, transient workspace, and retained artifact sizes separately.
 Measurements on the complete HG005 VCF and on the whole corpus are reported as single runs rather than replicated estimates.
 
-Retrieval experiments compare individual questions, the complete thirteen-question workload, and five regional queries against both scanned and tabix-indexed VCF access.
+Retrieval experiments compare individual questions, the complete thirteen-question workload, and five regional queries in QLever against parsing the VCF with cyvcf2 or bcftools, either in full or through region queries on a tabix index.
 Regional queries use windows from 1\,kb to 10\,Mb, with twenty windows per size and three replicates.
 All execution routes apply the same POS-based record-selection rule so that timings are compared only after equivalent results are established.
 Indexing and other setup costs are reported separately from query execution.
@@ -465,29 +465,35 @@ The complete 2,504-sample chromosome-20 VCF was not converted under either profi
   \textbf{Sample representation trades addressability for size.}
   The same 10,000 records of the 1000 Genomes chromosome-20 VCF are converted with one to 2,504 of its samples, under each sample profile.
   (a) Expanded resources grow with sample calls; condensed vectors keep triple counts nearly constant.
-  (b) Both profiles grow in stored size; the uncompressed source VCF is shown for reference.
+  (b) Both profiles grow in stored size; the source VCF is shown uncompressed and gzip-compressed for reference.
   (c) At 2,504 samples the expanded-to-condensed ratio depends on the measure.
   The 390$\times$ and +0.9\% annotations in (a) instead compare each profile's triple count at the two ends of the ladder.
   Medians are shown where replicated.
   }\label{fig:samples}
 \end{figure}
 
-\subsubsection{Optional artifacts should not be counted as mandatory conversion}\label{subsubsec:results-artifacts}
-Space-optimized storage reduced transient workspace by $9.19\times$ on 100,000 HG005 records at a 5.2\% time cost, without changing the triples.
-In the corpus, COTTAS occupied 0.37--0.55 times the gzip-framed N-Triples and 0.27--0.37 times HDT, but took 1.5--3.0 times longer than HDT to build.
-These are measured format and implementation choices, not an intrinsic requirement of semantic conversion.
+% TODO: Made it to here editing
 
-Converting the complete HG005 VCF with v3.1.0 took 16.07\,h including both optional builds: 20,911\,s for HDT and 31,230\,s for COTTAS, approximately 14.5\,h together.
-Retaining HDT, its index, and COTTAS used a reported 10.88\,GB; gzip-framed N-Triples alone occupied 2.89\,GB.
-These are alternative artifact choices, not a single minimum storage footprint.
-They must not be conflated with the later, differently configured 54-minute use-case conversion (with ClinVar).
-Supplementary Section~\ref{S-sec:measurements} retains per-input sizes, build times, and workspace measurements.
+\subsubsection{Separating core conversion from optional artifact construction}\label{subsubsec:results-artifacts}
+Space-optimized processing reduced transient workspace by $9.19\times$ for 100,000 HG005 records, with a 5.2\% increase in runtime and no change to the generated triples.
+Across the corpus, COTTAS required 0.37--0.55 times the storage of gzip-framed N-Triples and 0.27--0.37 times that of HDT, but required 1.5--3.0 times longer than HDT to build.
+These differences reflect optional storage formats and their implementations rather than costs inherent to semantic conversion.
+
+For the complete HG005 VCF, conversion required 16.07\,h when both optional indexed formats were also generated.
+HDT construction accounted for 20,911\,s and COTTAS construction for 31,230\,s, together contributing approximately 14.5\,h of the total runtime.
+Retaining HDT, its index, and COTTAS required 10.88\,GB, whereas the gzip-framed N-Triples artifact alone required 2.89\,GB.
+These values therefore represent alternative retained artifacts rather than a minimum storage requirement.
+The 16.07-hour measurement is also distinct from the later 54-minute use-case conversion, which used a different configuration and included ClinVar processing.
+Supplementary Section~\ref{S-sec:measurements} reports the per-input artifact sizes, build times, and workspace measurements.
 
 \subsubsection{Indexed retrieval benefits some questions, not every workflow}\label{subsubsec:results-retrieval}
-For individual questions on the 17.1M-triple graph of 100,000 HG005 records, indexed QLever took 0.005--4.62\,s against cyvcf2 scans of 11.5--12.3\,s (Figure~\ref{fig:retrieval}).
-Yet QLever first needed a 22.8-second index, in addition to conversion.
-For the complete thirteen-question batch, one parser pass took 12.4\,s, compared with 17.1\,s of QLever queries before setup.
-Thus the tested single cold questions and one-pass summaries favored the parser; selected repeated questions favored the existing graph index.
+On the 17.1-million-triple graph generated from 100,000 HG005 records, individual indexed QLever queries took 0.005--4.62\,s, compared with 11.5--12.3\,s for full cyvcf2 parses of the VCF (Figure~\ref{fig:retrieval}).
+The QLever speed advantage applies only after the RDF graph has been converted and indexed; QLever indexing alone required 22.8\,s.
+For the complete thirteen-question workload, cyvcf2 answered all questions in a single 12.4\,s parsing pass, whereas the thirteen QLever queries required 17.1\,s even before setup costs were included.
+Parsing the VCF was therefore faster for a cold, one-off workload and for questions that could be combined into a single pass, while the existing QLever index was faster for selected queries executed repeatedly.
+In a separate three-replicate rerun that converted the records only to the gzip-framed N-Triples that QLever indexes, without the optional HDT, conversion took 95.7\,s and QLever indexing 25.0\,s, so setup required approximately 2.0\,min.
+Under the tested workload, this initial cost was recovered after approximately 11 separately executed queries (Figure~\ref{fig:regional}a).
+The gzip-framed N-Triples were 24.7 times the size of the gzipped VCF for these records, and 20.7 times for the complete HG005 VCF (Figure~\ref{fig:regional}b).
 
 \begin{figure}[!htbp]
 \centering
@@ -496,30 +502,36 @@ Thus the tested single cold questions and one-pass summaries favored the parser;
   \textbf{Retrieval cost depends on the question and execution path.}
   Answers agree before timings are compared.
   (a) Individual questions and the batch on the 17.1M-triple graph of 100,000 HG005 records, mean of three replicates; conversion is excluded and QLever indexing appears only on the batch row.
-  Speed-up is the scan time divided by the SPARQL time.
+  Speed-up is the cyvcf2 parsing time divided by the SPARQL query time.
   (b) Four engines on the 0.96M-triple graph of the 10,000-line fixture, excluding setup; means and ranges over nine runs. Comunica queries N-Triples and HDT directly and COTTAS through its DuckDB-backed engine.
   (c) QLever on the 100,000-record graph loaded from three artifacts.
   Similar times in (c) describe QLever's index, not native querying of those formats.
   }\label{fig:retrieval}
 \end{figure}
 
-Regional retrieval provides the stronger indexed-VCF baseline (Figure~\ref{fig:regional}a).
-Across the 100,000-record HG005 graph and the 10,000-line fixture, 11,160 executions had no failures or answer disagreements.
-Indexed VCF was faster at 1\,kb; QLever was faster for the tested 10\,Mb windows.
-Its observed cost was nearly flat across these windows, whereas indexed-reader costs increased with the records processed.
-Setup remained unequal: 23.2\,s for QLever versus 0.48\,s for bgzip and tabix.
-Placing these regional results beside the whole-file questions (Figure~\ref{fig:regional}b) shows where tabular parsing was slower than RDF querying: every unindexed regional scan, the 10-Mb windows with either indexed reader, the 1-Mb windows with cyvcf2, and each whole-file question asked on its own. It remained faster for windows up to 100\,kb, for bcftools at 1\,Mb, and for the one-pass batch of all thirteen questions.
+Regional retrieval provides a stronger comparison, against region queries on a tabix-indexed VCF (Figure~\ref{fig:regional}c).
+Across the 100,000-record HG005 graph and the 10,000-line fixture, 11,160 query executions completed without failures or answer disagreements.
+For 1\,kb windows, tabix-indexed region queries with bcftools and cyvcf2 were faster than QLever.
+For the tested 10\,Mb windows, QLever was faster.
+QLever query time remained nearly constant across window sizes, whereas tabix-indexed region queries became slower as more records were parsed.
+Setup costs differed substantially: QLever indexing required 23.2\,s, compared with 0.48\,s for bgzip and tabix.
+
+Combining the regional and whole-file experiments clarifies when each approach was faster (Figure~\ref{fig:regional}d).
+RDF querying outperformed VCF parsing for every region query that parsed the unindexed VCF, for 10\,Mb windows queried through the tabix index with either tool, for 1\,Mb windows with cyvcf2, and for whole-file questions executed individually.
+VCF parsing remained faster for tabix-indexed region queries up to 100\,kb, for 1\,Mb windows queried with bcftools, and for the single parsing pass that answered all thirteen whole-file questions.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{fig-regional.pdf}
 \caption{
-  \textbf{Indexed tabular readers are fastest for small regions; RDF querying is faster for 10-Mb regions and for whole-file questions asked one at a time.}
-  Both panels use the 17.1M-triple graph of 100,000 HG005 records and the same records as a bgzip-compressed VCF; setup is excluded, and every answer agreed before timing.
-  (a) Median time per regional query over five questions, twenty windows per size (three for the unindexed scan), and three replicates; parentheses give the median records per window.
-  (b) The same comparisons as the ratio of tabular to QLever time, beside the thirteen whole-file questions and their one-pass batch from Figure~\ref{fig:retrieval}a; points in the shaded region are comparisons in which tabular parsing was slower.
-  Setup took 23.2\,s for QLever's index against 0.48\,s for bgzip and tabix, and counting QLever's 22.8-second index lowers the batch ratio from 0.7$\times$ to 0.3$\times$.
-  Supplementary Table~\ref{S-tab:regional} lists the medians.
+  \textbf{Tabix-indexed VCF parsing is faster for small regions, and a single parsing pass for batched questions, while QLever is faster for large regions and, after a two-minute setup, for repeated queries.}
+All panels use 100,000 HG005 records, represented as a 17.1-million-triple graph for QLever and as VCF for bcftools and cyvcf2, and (b) adds the complete HG005 VCF; all compared answers agreed.
+(a) Cumulative time for separately executed whole-file questions, including 2.0\,min to convert the records to gzip-framed N-Triples and build the QLever index, measured in a three-replicate rerun; the cumulative times cross after 11 questions.
+(b) Gzip-compressed size of the VCF and of the N-Triples that QLever indexes.
+(c) Median regional-query time across five questions, twenty windows per size (three when parsing the unindexed VCF), and three replicates; parentheses report the median records per window.
+(d) Ratio of VCF parsing time to QLever query time for the regional and whole-file comparisons, excluding setup; values above one indicate faster QLever execution.
+Regional indexing required 23.2\,s for QLever and 0.48\,s for bgzip and tabix.
+Supplementary Figure~\ref{S-fig:retrieval-detail} provides per-query results and break-even estimates, and Supplementary Table~\ref{S-tab:regional} reports the regional medians.
   }\label{fig:regional}
 \end{figure}
 
@@ -531,55 +543,56 @@ Supplementary Table~\ref{S-tab:retrieval-scale} reports both the completions and
 
 \section{Discussion}\label{sec:discussion}
 \subsection{A first step toward reusable genomic information}\label{subsec:disc-first-step}
-The three motivating use cases require more than a different serialization of VCF.
-They require trustworthy links between observations, external evidence, clinical context, and the conditions governing use.
-VCF-RDFizer provides an evaluated starting point for those links: a representation that retains source context, validates selected aspects of that context, and supports a bounded integration and release workflow.
-It does not implement all three applications, and their potential benefits should not be read as measured outcomes of this study.
+The three motivating use cases---clinical variant interpretation and reanalysis, pharmacogenomic clinical decision support, and consent-aware genomic data reuse---require more than converting VCF into another serialization.
+Each use case depends on explicit links between genomic observations and information maintained outside the source file, including external evidence, clinical context, and conditions governing data use.
+VCF-RDFizer provides an evaluated representation layer for expressing those links by preserving source context, validating the generated semantic representation, and demonstrating how integration with external resources and policy-aware release could work.
+The present study does not implement any of the three applications in full.
+The reported results therefore evaluate a reusable representation and workflow foundation rather than the clinical effectiveness, operational utility, or security of the applications that could be built on top of it.
 
-The successful bcftools comparator makes this distinction important.
-The integration task is not exclusive to RDF.
-What the semantic route adds is a common representation in which the relationships supporting the task can be stated, inspected, and reused.
-The separate frequency graph avoids repeating shared information in each participant's graph, and the identity-targeted policy expresses a new selection without changing the policy engine.
-These results support reuse in the tested workflow, not a general reduction in development effort or evidence that conventional pipelines cannot provide the same functions.
-The following applications describe where that foundation could lead and what would have to be added.
+The agreement with the bcftools workflow also shows that the evaluated integration task is not unique to RDF.
+The difference is representational: the RDF workflow expresses observations, external resources, shared identifiers, and policies within a common graph model that can be queried and extended without modifying the source representation.
+In the evaluated workflow, this allowed population frequencies to be stored once in a shared graph and a variant-specific release rule to be changed without modifying the policy engine.
+These results demonstrate reuse of information and rules within the tested setting, but do not establish a general reduction in implementation effort or imply that conventional pipelines cannot provide equivalent functionality.
+The following sections consider how this representation could support clinical reanalysis, pharmacogenomic decision support, and consent-aware reuse, and what additional components each application would require.
 
 \subsection{Clinical interpretation and reanalysis: keeping observations separate from changing evidence}\label{subsec:disc-reanalysis}
-For the first use case, RDF could make the dependencies of an interpretation easier to inspect.
-A source observation could remain linked to the evidence assertions used at a particular time, while later assertions are added with their own provenance rather than overwriting the earlier interpretation.
-A query could then identify observations connected to a changed clinical assertion or frequency estimate and nominate them for review.
-This would address part of the reevaluation problem described in clinical guidance: recognizing when new knowledge or clinical information may affect a previous conclusion~\cite{richards2015standards,deignan2019reevaluation}.
-It would not remove the need for clinical interpretation, nor recover a variant absent from the original call set.
+For clinical variant interpretation and reanalysis, RDF could make the evidence supporting an interpretation more explicit and easier to inspect.
+A genomic observation could remain linked to the evidence used at a specific time, while later assertions are added with separate provenance rather than replacing the earlier interpretation.
+Queries could then identify observations affected by a revised clinical assertion or population-frequency estimate and flag the corresponding cases for review.
+Such a workflow could support the reevaluation process described in clinical guidance, where new knowledge or clinical information may alter a previous conclusion~\cite{richards2015standards,deignan2019reevaluation}.
+RDF-based reanalysis would not replace clinical interpretation or recover variants absent from the original call set.
 
-Our ClinVar and frequency joins demonstrate the static relationships needed by such a workflow, not a longitudinal reanalysis service.
-Implementing that service would first require an explicit contract for reference assemblies, allele normalization, and unresolved matches.
-Minimally trimmed SPDI expressions are not necessarily NCBI's contextual or canonical alleles in repeat regions~\cite{holmes2020spdi}.
-A biologically equivalent allele assigned a different identifier can therefore miss both an evidence join and an identity-targeted policy.
-Normalization would need to be assessed on representative allele classes, with ambiguous or unmatched observations retained as explicit outcomes rather than silently treated as absent evidence.
+The ClinVar and population-frequency joins evaluated here demonstrate the static relationships required for such a workflow, but not longitudinal reanalysis.
+A practical implementation would first require explicit rules for reference assemblies, allele normalization, and unresolved matches.
+The minimally trimmed SPDI expressions used by VCF-RDFizer do not necessarily correspond to NCBI contextual or canonical alleles in repetitive regions~\cite{holmes2020spdi}.
+Biologically equivalent alleles can therefore receive different identifiers and fail to join with relevant evidence or identity-targeted policies.
+A reanalysis system would need normalization validated across representative allele classes and explicit handling of ambiguous or unmatched observations.
 
-The external evidence would also need to be versioned at the assertion level, retaining the submitter, disease context, review status, supporting evidence, and dates needed to distinguish a new assertion from a replacement or conflicting interpretation.
-Patient phenotypes, family information, and prior reports would need compatible representations and reliable links to the correct sample and observation.
-A change-detection process could then identify affected observations, refresh the relevant queries or indexes, and route candidate changes for clinical review.
-Evaluation should compare those candidates with conventional reannotation and expert-reviewed outcomes, including missed updates and unnecessary reviews.
-The clinical value reported for reanalysis in other studies motivates this work, but cannot be inferred from the present equality of static query results~\cite{hiatt2018systematic}.
+Longitudinal reanalysis would also require versioned evidence at the assertion level, including submitter, disease context, review status, supporting evidence, and relevant dates.
+Patient phenotypes, family information, and previous reports would require compatible representations linked to the correct sample and genomic observation.
+A change-detection process could then identify observations affected by updated evidence, refresh relevant queries or indexes, and route candidate changes for clinical review.
+Evaluation should compare flagged cases with conventional reannotation and expert-reviewed outcomes, including both missed updates and unnecessary reviews.
+Previous studies demonstrate the potential clinical value of genomic reanalysis, but that benefit cannot be inferred from the static query agreement measured in the present study~\cite{hiatt2018systematic}.
 
 \subsection{Pharmacogenomic decision support: connecting the genomic observation to the clinical question}\label{subsec:disc-pgx}
-For the second use case, RDF could provide a shared representation of the path from a genomic observation to an interpreted pharmacogenomic result, a medication order, and the guidance relevant to that order.
-Keeping these as separate, linked resources could make it possible to inspect which observation and guideline version support a recommendation, or to reuse an existing interpretation when a new medication is prescribed.
-Such a representation would address an integration concern identified in pharmacogenomic decision-support literature, rather than replace the clinical systems or interpretation tools already used~\cite{wake2022pgx,johnson2024genetically}.
+For pharmacogenomic clinical decision support, RDF could represent the path from a genomic observation to an interpreted pharmacogenomic result, a medication order, and the guidance relevant to prescribing.
+Separate linked resources could preserve which genomic observation, interpretation, and guideline version support a recommendation and could allow a previously derived interpretation to be reused when prescribing context changes.
+Such a model addresses an integration challenge identified in pharmacogenomic decision-support research without replacing established clinical systems or interpretation tools~\cite{wake2022pgx,johnson2024genetically}.
 
-This application has not been implemented or evaluated here.
-A gene overlap or a ClinVar match does not establish a pharmacogenomic diplotype, metabolizer phenotype, or treatment recommendation.
-The first implementation step would be to connect the represented calls to a validated pharmacogenomic interpretation pipeline, such as a suitably configured PharmCAT workflow, and retain its assumptions, evidence, and unresolved results~\cite{pharmcat}.
-The input must provide the coverage, phasing, and relevant variant information required by that interpretation; the absence of a record must not automatically be treated as a reference genotype or a negative finding.
-Additional calling or interpretation methods would be needed wherever those requirements are not met.
-RDF could record these outputs and their provenance, but would not itself perform the necessary biological inference.
+The present study does not implement pharmacogenomic interpretation.
+Gene overlap and ClinVar classification are insufficient to infer a pharmacogenomic diplotype, metabolizer phenotype, or treatment recommendation.
+A practical implementation would first connect represented variant calls to a validated pharmacogenomic interpretation pipeline, such as an appropriately configured PharmCAT workflow, while retaining the pipeline assumptions, supporting evidence, and unresolved results~\cite{pharmcat}.
+The genomic input would also need adequate coverage, phasing, and representation of clinically relevant variants.
+Missing VCF records cannot automatically be interpreted as reference genotypes or negative findings.
+Additional calling or interpretation methods would therefore be required when the source data do not satisfy the requirements of the pharmacogenomic model.
+RDF could preserve the resulting interpretations and provenance, but the biological inference would remain the responsibility of the interpretation pipeline.
 
-The next step would link the interpreted result to the correct patient, medication, indication, and other clinical context through agreed identifiers and exchange models, including FHIR Genomics where appropriate~\cite{fhir_genomics_ig}.
-Guidelines would need versioned, computable rules and explicit handling of missing information and conflicting recommendations.
-The CYP2C19--clopidogrel example illustrates why this matters: a genotype-derived phenotype alone is not the complete prescribing context~\cite{lee2022clopidogrel}.
-A clinical rule engine and EHR integration would then have to deliver the result at the appropriate point in care.
-Before use, the complete path would require validation with pharmacogenomic experts, assessment of recommendations against the source guidance, and testing of the clinical workflow and user interaction~\cite{wake2022pgx}.
-The present study contributes only the checked genomic representation and a demonstration of cross-resource linking on which such work could build.
+Clinical deployment would then require reliable links between the interpreted pharmacogenomic result, patient, medication, indication, and other relevant clinical context using agreed identifiers and exchange models, including FHIR Genomics where appropriate~\cite{fhir_genomics_ig}.
+Computable prescribing guidance would require explicit versioning, rule representation, and handling of missing or conflicting information.
+The CYP2C19--clopidogrel example illustrates the need for that additional context because genotype-derived phenotype alone does not determine the prescribing recommendation~\cite{lee2022clopidogrel}.
+A clinical rule engine and EHR integration would then be needed to deliver the recommendation at the appropriate point in care.
+Evaluation would require expert validation of pharmacogenomic interpretations, comparison of generated recommendations with the source guidance, and assessment of the resulting clinical workflow and user interaction~\cite{wake2022pgx}.
+The present study contributes a validated genomic representation and an evaluated demonstration of cross-resource linking that could support such a workflow.
 
 \subsection{Consent-aware reuse: connecting explicit policies to an enforced release process}\label{subsec:disc-consent}
 For the third use case, RDF could make the association between a genomic resource, its governing policy, and the purpose of a request directly inspectable.
@@ -602,48 +615,64 @@ The plug-in is a first step toward inspectable release decisions, not anonymizat
 Obligations are recorded but not enforced in the evaluated implementation.
 
 \subsection{Validation needs to test both the graph and its oracle}\label{subsec:disc-validation}
-The application possibilities above depend on the representation being dependable enough to reuse.
-The strongest validation result is therefore not simply a high pass count, but the distinction between what source comparisons detect, what structural constraints detect, and what the current implementations cannot yet assess at scale.
-Neither the query comparisons nor the default shapes detected all injected faults; only the costlier deeper profiles detected the complete constructed fault set.
-Their coverage cannot be assumed for routine large-file validation.
-The default profile's clean result on 58 ordinary validations establishes conformance to those constraints, not the same fault sensitivity.
+For consent-aware genomic data reuse, RDF could make the relationship between a genomic resource, the policy governing access, and the purpose of a request directly inspectable.
+Policies could target identified files, participant records, or declared subsets without requiring a separate source copy for every permitted use.
+The evaluated policy plug-in demonstrates part of this model: requester-specific release views matched the conventional workflow, and ownership validation identified dependent context that also required removal.
+Across the evaluated scenarios, release decisions varied by participant, purpose, gene panel, genomic region, and individual variant.
+Arm~4 produced four distinct, non-empty release views from the same complete VCF.
+The current evaluation does not test selective masking within a multi-sample VCF, and region-based rules still depend on the contig labels present in each source file.
 
-The three defects found during development demonstrate why relationships matter: declared samples, referenced alleles, and withheld-file metadata can be wrong even when record counts are correct.
+Operational deployment would first require explicit mapping from consent terms and institutional conditions to a defined policy profile.
+DUO and the GA4GH Machine Readable Consent Guidance provide machine-readable terminology for describing permitted uses, but machine-readable representation alone does not determine whether a specific request is ethically or legally authorized~\cite{lawson2021duo,ga4gh_mrcg,rehm2021ga4gh}.
+A production profile would therefore need agreed semantics for purposes, permissions, prohibitions, conflict resolution, and resource ownership, together with procedures for conditions that cannot be evaluated automatically.
+The default-deny and deny-overrides semantics used in VCF-RDFizer are implementation choices rather than properties guaranteed by RDF or ODRL~\cite{odrl_2018}.
 
-Complete shape validation does not yet scale to the graph of a complete single-sample VCF.
-The SHACL engine holds the graph it validates in memory, at about 2.4\,GB per million triples on these graphs.
-Because each default-profile constraint concerns a single record and the file-level resources it references, that profile can be validated in record batches; on the 58.2M-triple graph of the consumer WGS validation run this took 89 minutes with four parallel workers, and at the same rate the 657.4M-triple graph of the complete HG005 VCF would take about 17 hours.
-The deeper profiles compare records with one another through SPARQL-based constraints, such as unique record indices, so each graph must be validated in one piece; on the 31\,GB benchmark hosts the validator therefore caps them by default at 10M triples (about 24\,GB), far below that graph, and their running time on large graphs has not been measured.
-Future work should investigate validation that does not hold the whole graph in memory, for example by evaluating cross-record constraints as queries over the index already built for retrieval.
-Until then, the 984 applicable comparisons of the base campaign, the separate summary agreement on the complete HG005 VCF, and the 58.2M-triple consumer WGS validation run remain distinct claims.
-None establishes exhaustive semantic equivalence or the biological correctness of the original calls.
+Policy evaluation would also need to operate within an authenticated and enforced access-control architecture.
+The enforcement boundary would need to protect source graphs, indexes, caches, exported views, and query interfaces, rather than only the policy evaluator~\cite{xacml3_2013,rehm2021ga4gh}.
+Policy versions, access decisions, and released views would require auditable records.
+Withdrawals and policy changes would require reevaluation of future access, while previously exported copies could not be revoked solely by updating the local policy state.
+Evaluation would also need to cover equivalent variant representations, dependent resources, multi-sample data, and information that could still be inferred from permitted outputs.
+
+Security, privacy, and regulatory compliance therefore remain distinct from source-fidelity and policy-evaluation tests.
+The evaluated plug-in demonstrates inspectable, requester-specific release decisions under simulated rules, but does not provide anonymization, regulatory assurance, or protection against access outside the enforcement boundary.
+The current implementation records obligations but does not enforce them.
 
 \subsection{Representation and workload determine the deployment choice}\label{subsec:disc-deployment}
-Expanded and condensed output exchange directly addressable structure for compact vectors.
-That affects queries, validation, and policy targeting as well as storage.
-Condensed sample-level checking needs vector-aware logic, and withholding an individual value would require rewriting its vector; the implemented release demonstration does neither.
-Triple counts alone are consequently an inadequate measure of the cost or capability of a genotype representation.
+Semantic representation introduces computational and storage costs, and the appropriate representation depends on the intended workload.
+The expanded sample profile preserves individual sample calls as directly addressable RDF resources, whereas the condensed profile reduces graph size by encoding sample values in vectors.
+The condensed representation therefore lowers storage costs at the expense of direct querying, validation, and policy targeting of individual sample values.
+For example, sample-level validation requires vector-aware logic, and withholding a single value would require modifying the corresponding vector.
+Triple count alone consequently does not capture the practical cost or functionality of either representation.
 
-For the tested one-pass analyses and narrow indexed lookups, native VCF access avoids setup that the RDF route cannot recover within that task.
-Repeated, linked, or policy-aware questions may justify a graph index, but this depends on the workload rather than following from the choice of RDF.
-Gzip-framed N-Triples and an appropriate index are sufficient for the demonstrated QLever path; HDT and COTTAS should be built only when their separate storage or access properties are required.
-The 44-question break-even point is one scenario, not a tool constant: it includes a 423.7-second conversion workflow with HDT plus 22.8\,s of indexing, divided by about 10.2\,s saved per separate question.
-It assumes the measured question mix and repeated parser scans.
-A batched parser pass changes the comparison, and the minimal RDF-only setup was not isolated by that estimate (Supplementary Section~\ref{S-sec:measurements}).
-Applications with changing evidence or policies would also need to measure the cost of updating their links, indexes, and release views; those update workloads were not benchmarked here.
+Parsing the VCF directly remains preferable for many one-pass analyses and small region queries on a tabix-indexed VCF because no semantic conversion or graph indexing is required.
+The additional RDF setup becomes more defensible when the same data support repeated queries, links to external knowledge, or policy-dependent access.
+For example, a clinical reanalysis system could retain a converted genome while repeatedly querying updated evidence, rather than reconstructing the required relationships for every reanalysis cycle.
+The present experiments demonstrate the potential for such reuse, but do not measure a longitudinal reanalysis workload.
+
+The measured 11-query break-even point illustrates this trade-off rather than defining a general threshold (Figure~\ref{fig:regional}a).
+The estimate includes 95.7\,s to convert the records to gzip-framed N-Triples plus 25.0\,s for QLever indexing, offset by approximately 10.9\,s saved for each separately executed question.
+The estimate therefore depends on the tested query mix and on a full parse of the VCF for every individual question, and a single parsing pass that answers all questions changes the comparison (Supplementary Section~\ref{S-sec:measurements}).
+The graph route also needs more storage: the gzip-framed N-Triples that QLever indexes were 21--25 times the size of the gzipped VCF (Figure~\ref{fig:regional}b).
+Optional formats such as HDT and COTTAS should likewise be generated only when their storage or access properties are required; gzip-framed N-Triples with an appropriate index was sufficient for the evaluated QLever workflow.
+Applications based on changing evidence or access policies would additionally incur costs for refreshing links, indexes, or release views, which were not benchmarked here.
 
 \subsection{Scope and next steps}\label{subsec:disc-scope}
-The evidence supports a software and workflow contribution, not clinical deployment, measured usability, or superiority over other RDF converters.
-The converter comparison is documentation-based, and the task comparison uses bcftools.
-Sample scaling holds INFO fixed, the whole multi-sample cohort was not converted, and full-shape validation was limited to small inputs.
-The linking experiment uses single-sample files and simulated policies, and its results must remain tied to the releases and inputs that produced them.
+The present results support VCF-RDFizer as a software and workflow contribution rather than evidence of clinical deployment, measured usability, or superiority over other RDF converters.
+The converter comparison is based on published documentation, while the workflow comparison uses bcftools as the conventional reference.
+The sample-scaling experiment holds INFO content fixed, the complete multi-sample cohort was not converted, and the most comprehensive SHACL profiles were evaluated only on small inputs.
+The linking and policy experiments use single-sample files and simulated access rules, so all reported outcomes remain specific to the tested datasets, software versions, reference releases, and policy configurations.
 
-The next steps can therefore be staged rather than treated as one general claim of clinical readiness.
-First, the remaining oracle coverage gaps, conformant sites-only coverage, and identity-normalization boundaries should be addressed within the converter and its validation.
-Second, application-specific pilots should evaluate versioned evidence updates, interpreted pharmacogenomic results linked to clinical context, or selective release under reviewed policies, with the appropriate domain experts.
-Finally, a deployed service would require the clinical, governance, and security assessments appropriate to its intended use.
-A shared-input comparison with another converter would strengthen comparative claims, while GA4GH VRS identifiers, federated queries, and multi-sample policy evaluation remain possible extensions rather than demonstrated capabilities.
-VCF-RDFizer supplies a testable starting point for this progression: not the complete applications, but genomic information that can be checked, linked, and reused while their remaining requirements are made explicit.
+Future work can therefore proceed in stages.
+The first priority is to strengthen the representation and validation layer by closing remaining oracle-coverage gaps, extending conformant sites-only support, and defining clearer boundaries for variant normalization and shared identity.
+The second stage is application-specific evaluation.
+Clinical reanalysis would require versioned evidence updates and change detection; pharmacogenomic decision support would require validated interpretation linked to clinical context; and consent-aware reuse would require selective release under reviewed policy models.
+Each application should be evaluated with the relevant domain experts and against application-specific reference workflows.
+
+A later deployment stage would require the clinical, governance, privacy, and security assessments appropriate to the intended environment.
+Comparative claims could also be strengthened through shared-input evaluation against other VCF-to-RDF converters.
+GA4GH VRS identifiers, federated querying, and policy evaluation over multi-sample data remain promising extensions but are not demonstrated by the present study.
+
+VCF-RDFizer therefore provides a testable foundation for this progression: a genomic representation that can be validated against its source, linked to external information, and reused across workflows while the additional requirements of each application remain explicit.
 
 \Needspace{9\baselineskip}
 \section{Conclusions}\label{sec:conclusions}
@@ -662,7 +691,7 @@ This is a first step toward evidence-aware reanalysis, pharmacogenomic decision 
 \textbf{Any restrictions to use by non-academics:} none.
 Docker supplies the pinned benchmark environment; requirements for other installations are documented with each release.
 v3.1.0 produced the base benchmark, v3.2.0 converted the use-case inputs, v3.3.0 releases the linking and policy extensions evaluated in pre-release builds, and v3.3.1 provided the linking for Arm~4 and the validator for the consumer WGS validation run.
-The release ledger distinguishes those builds rather than attributing every result to one version.
+The release ledger distinguishes those builds rather than attributing every result to one version, although v3.3.1 should be able to reproduce all data generated in this study.
 
 \section*{Declarations}
 \subsection*{Ethics approval and consent to participate}

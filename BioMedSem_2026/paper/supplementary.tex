@@ -631,7 +631,7 @@ Query cost & b1 & 6 & 4.27 & 6 &  &  &  & SPARQL vs cyvcf2 on identical work (\S
 \end{tabularx}
 \end{table}
 
-Runs outside the base campaign are reported separately and are not counted in its totals (Table~\ref{tab:builds}): the linked workflow, regional retrieval with tabix, large-graph retrieval on \texttt{vcf-bench-3}, and two additional validation runs (a default-profile mutation rerun and the consumer WGS validation run on 250,000 \texttt{NG131FQA1I} records, repeated with the corrected validator).
+Runs outside the base campaign are reported separately and are not counted in its totals (Table~\ref{tab:builds}): the linked workflow, regional retrieval with tabix, large-graph retrieval on \texttt{vcf-bench-3}, and two additional validation runs (a default-profile mutation rerun and the consumer WGS validation run on 250,000 \texttt{NG131FQA1I} records, repeated with the corrected validator), and an N-Triples-only rerun of the 100,000-record query-cost workload.
 An earlier pre-release campaign and the host-calibration runs are archived with the results but not reported.
 
 \subsection{Builds and dependencies}\label{subsec:repro-builds}
@@ -667,6 +667,8 @@ Use-case Arm~4; Arm~1 rerun & Linking and policy evaluation from \texttt{29a81f6
 Additional validation runs & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2} & Default-profile mutation rerun; consumer WGS validation run (250{,}000 NG131FQA1I records) on QLever, expanded profile, rerun without shapes under v3.1.0's size gates\\
 \rowsep
 Consumer WGS validation rerun & Tree committed as \texttt{3994e94}, validation code as released in v3.3.1; scratch image \texttt{sha256:29c371ad\ldots5317} on \texttt{vcf-bench-2} & Same slice and graph; QLever, expanded profile; default shapes in 117 batches on four workers\\
+\rowsep
+N-Triples-only rerun & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2} & 100,000 HG005 records; conversion to gzip-framed N-Triples only, then the query-cost validation on QLever without SHACL; three replicates each\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -883,10 +885,10 @@ On 17.1M triples, QLever's thirteen-query totals from N-Triples, HDT, and COTTAS
 These are queries over QLever's index, not native artifact access.
 On the separate 0.96M-triple fixture, mean totals were 1.1\,s for QLever, 23.4\,s for Comunica over N-Triples, 38.2\,s for the COTTAS engine, and 45.1\,s for the HDT-backed engine, with answer agreement in every run.
 
-For individual questions on 17.1M triples, cyvcf2 scans took 11.5\,s, or 12.3\,s for the three sample-level questions, against 0.005--4.62\,s after QLever indexing.
+For individual questions on 17.1M triples, full cyvcf2 parses took 11.5\,s, or 12.3\,s for the three sample-level questions, against 0.005--4.62\,s after QLever indexing.
 The resulting $2.5$--$2300\times$ query-time ratio excludes the 22.8-second index build and conversion.
 The tested individual cold-start questions therefore favored the parser.
-One parser pass answering all thirteen questions took 12.4\,s, against 17.1\,s of indexed queries before setup.
+One parsing pass answering all thirteen questions took 12.4\,s, against 17.1\,s of indexed queries before setup.
 
 The large-graph workload took 1.13, 1.00, 0.96, and 0.97\,s per million triples at 0.96M, 17.1M, 171M, and 657M triples, respectively (Table~\ref{tab:retrieval-scale}).
 Index construction took 1.27--1.35\,s per million above the smallest graph.
@@ -922,14 +924,25 @@ Fixture        & 958{,}919       & QLever & 1.1   & 1.13\,s per million triples\
 
 \paragraph{Indexed regional access.}
 The 11,160 regional executions produced no failures or answer disagreements (main Figure~\ref{M-fig:regional}; Table~\ref{tab:regional}).
-On 17.1M triples, QLever took 9.6--11.1\,ms across 1\,kb--10\,Mb windows, while indexed cyvcf2 and bcftools costs grew $35.7\times$ and $7.5\times$, respectively.
-At 1\,kb, those readers were $2.9\times$ and $2.2\times$ faster; QLever overtook cyvcf2 by 1\,Mb and led both by $10.6\times$ and $2.9\times$ at 10\,Mb.
+On 17.1M triples, QLever took 9.6--11.1\,ms across 1\,kb--10\,Mb windows, while tabix-indexed region queries with cyvcf2 and bcftools took $35.7\times$ and $7.5\times$ longer on 10\,Mb windows than on 1\,kb windows.
+At 1\,kb, those region queries were $2.9\times$ and $2.2\times$ faster; QLever overtook cyvcf2 by 1\,Mb and led both by $10.6\times$ and $2.9\times$ at 10\,Mb.
 QLever setup took 23.2\,s, against 0.48\,s for bgzip and tabix.
-In-memory engines required 896--1005\,ms per 1\,kb window on the smaller graph, against QLever's 18.8\,ms, and were not carried further.
+Figure~\ref{fig:retrieval-detail}a separates the five questions: QLever's time depended on the question (2.6--16.2\,ms) but hardly on the window size, and for the record count it was faster than tabix-indexed region queries with either tool at every window size.
+In-memory engines required 896--1005\,ms per 1\,kb window on the smaller graph, against QLever's 18.8\,ms, and were not carried further (Figure~\ref{fig:retrieval-detail}b).
 These comparisons use the same POS-based record selection rather than including interval-overlap records outside the requested window.
 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{fig-retrieval-detail.pdf}
+\caption{\textbf{Regional and repeated-question retrieval in detail}; the data behind main Figure~\ref{M-fig:regional}.
+(a) Each of the five regional questions on 100,000 HG005 records (17.1M triples), median time per query by window size; main Figure~\ref{M-fig:regional}c shows their median.
+(b) All seven execution paths on the 10,000-line fixture (0.96M triples), including Comunica over N-Triples, HDT, and COTTAS, which were not carried to the larger graph.
+(c) The break-even when a single whole-file question is repeated, from that question's own cyvcf2 parsing and QLever query times in the N-Triples-only rerun; the dashed line marks the 11 questions of main Figure~\ref{M-fig:regional}a.
+Setup is excluded in (a) and (b) and included in (c); it comprises conversion to the gzip-framed N-Triples that QLever indexes, and QLever indexing.}\label{fig:retrieval-detail}
+\end{figure}
+
 \begin{table}[!htbp]
-\caption{Regional retrieval on the 17.1M-triple graph of 100,000 HG005 records, excluding setup; the data behind main Figure~\ref{M-fig:regional}a. Entries are medians in milliseconds over five questions' window medians and three repetitions. Indexed paths use twenty windows per size; the unindexed scan uses three. All paths use the same POS-based selection; the bottom row gives the median records per window.}\label{tab:regional}%
+\caption{Regional retrieval on the 17.1M-triple graph of 100,000 HG005 records, excluding setup; the data behind main Figure~\ref{M-fig:regional}c. Entries are medians in milliseconds over five questions' window medians and three repetitions. Tabix-indexed region queries use twenty windows per size; full parses of the unindexed VCF use three. All paths use the same POS-based selection; the bottom row gives the median records per window.}\label{tab:regional}%
 \centering\footnotesize\setlength{\tabcolsep}{7pt}\renewcommand{\arraystretch}{1.1}%
 \begin{tabular}{@{}l r r r r@{}}
 \toprule
@@ -938,7 +951,7 @@ These comparisons use the same POS-based record selection rather than including 
 QLever (RDF) & 9.6 & 10.0 & 9.6 & 11.1\\
 bcftools + tabix & 4.3 & 4.8 & 7.5 & 32.7\\
 cyvcf2 + tabix & 3.3 & 4.8 & 14.9 & 117.8\\
-cyvcf2, no index & 635.2 & 638.0 & 632.0 & 649.9\\
+cyvcf2, full parse & 635.2 & 638.0 & 632.0 & 649.9\\
 \addlinespace[3pt]
 \textit{Records per window} & \textit{2} & \textit{143} & \textit{1{,}262} & \textit{13{,}143}\\
 \bottomrule
@@ -950,21 +963,15 @@ For an equivalent repeated workload with a positive per-query saving,
 \begin{equation}
 N_{\mathrm{break-even}}=\frac{\text{additional RDF setup}}{\text{VCF time per question}-\text{indexed RDF time per question}}.
 \end{equation}
-The reported 100,000-record scenario gives $(423.7+22.8)/(11.5-1.32)\simeq44$ questions.
-The 423.7-second workflow includes HDT construction, so it does not isolate minimum N-Triples-plus-QLever setup.
-It also assumes repeated parser scans at the measured question mix, not a batched pass computing all answers.
+A three-replicate rerun on \texttt{vcf-bench-2} measured this scenario directly with the base campaign's release, image, and 100,000-record input.
+It converted the records only to the gzip-framed N-Triples that QLever indexes (95.1--96.6\,s, mean 95.7\,s), then repeated the query-cost validation on them: QLever indexing took 25.0\,s, a full cyvcf2 parse a median 12.28\,s per question, and a QLever query a mean 1.43\,s, with all thirteen answers equal in every replicate.
+These give $(95.7+25.0)/(12.28-1.43)\simeq11$ questions.
+The base campaign's conversions also built HDT, which querying through QLever does not need; with it, the setup was 446.5\,s and the break-even 44 questions.
+The estimate also assumes a full parse of the VCF for every question at the measured question mix, not a single parsing pass computing all answers.
 No universal break-even count follows, and update costs for changing external evidence or policies were not measured.
-Figure~\ref{fig:breakeven} shows the cumulative costs behind this estimate; repeating a single question breaks even after 39 (the metadata and census questions) to 64 (Q12, the INFO digest) repetitions.
+Main Figure~\ref{M-fig:regional}a shows the cumulative costs behind this estimate; repeating a single question breaks even after 10 (seven of the thirteen questions) to 17 (Q12, the INFO digest) repetitions (Figure~\ref{fig:retrieval-detail}c).
+For storage, the gzip-framed N-Triples were 75.8\,MB against a 3.1\,MB gzipped VCF for these records, and 2.89\,GB against 139.3\,MB for the complete HG005 VCF (main Figure~\ref{M-fig:regional}b); the gzipped VCF sizes were measured on the benchmark hosts because the run records hold uncompressed input sizes.
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{fig-breakeven.pdf}
-\caption{\textbf{When converting pays off.}
-(a) Cumulative time for repeated, separate questions on the 100,000-record HG005 slice (17.1M triples): a cyvcf2 scan for each question (median 11.6\,s) against a one-time setup of conversion with HDT (423.7\,s) and QLever indexing (22.8\,s), followed by 1.32\,s per indexed question (mean over Q1--Q13).
-The lines cross at 44 questions.
-(b) The break-even when a single question is repeated, from that question's own scan and query times; the dashed line marks the 44 questions of panel (a).
-Setup includes HDT construction, which querying through QLever does not need, and a single batched parser pass answering all thirteen questions (12.4\,s) would favour the parser.}\label{fig:breakeven}
-\end{figure}
 
 \section{Configuration coverage, operating modes, and memory feasibility}\label{sec:config}
 A ten-row covering set exercised every value of seven axes: sample representation, INFO representation, storage mode, RDF compression, output representations, artifact compression, and HDT strategy.
