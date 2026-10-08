@@ -281,22 +281,6 @@ A fault-injection experiment tests 113 deliberate corruptions with queries alone
 Separate large-graph retrieval runs compare the same thirteen answers, without SHACL, on graphs converted from one million HG005 records and from the complete HG005 VCF.
 The specification, exclusions, and oracle dependencies are in Supplementary Section~\ref{S-sec:validation}.
 
-\subsection{VCF-to-RDF converter comparison}\label{subsec:eval_converters}
-A shared-input experiment directly compares the VCF-to-RDF capabilities summarized from documentation in Table~\ref{tab:tools}.
-The evaluation includes the four other converters with currently executable releases: the dedicated command-line converters from JVarkit, TogoVar, and SPARQLing Genomics, each named \texttt{vcf2rdf}, and BioInterchange, which remains available through a community-maintained Homebrew package.
-Each converter processes the same two inputs: the 100,000-record HG005 slice and the 16-sample rung of the sample ladder, comprising 10,000 records from the 1000 Genomes chromosome-20 call set.
-For each tool, we use the available options that produce the most complete RDF representation.
-
-Semantic coverage is assessed with content questions Q1--Q8, translated to each converter's vocabulary and evaluated using the same source-derived oracle, QLever version, normalization procedure, and comparison rules used for VCF-RDFizer.
-A question is reported as \emph{not represented} when the generated graph does not contain the information required to answer it.
-Questions Q9--Q13 are excluded from the cross-converter comparison because they refer specifically to VCF Core terms or VCF-RDFizer record identifiers and therefore have no equivalent in the other vocabularies.
-
-Conversion time, peak memory, and output size are measured using the same procedure as for VCF-RDFizer.
-Each measurement uses three replicates, and every converter runs in a pinned container to control the software environment.%
-\footnote{The ported queries, the comparison script, and the Docker Compose definition of every converter are in \href{https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/benchmarks/converters}{\texttt{benchmarks/converters/}} of the \texttt{vcf-rdfizer-testing} repository, and the archived run is in \href{https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/BioMedSem_2026/benchmark-results/vcf-bench-1/18_converter_comparison}{\texttt{benchmark-results/vcf-bench-1/18\_converter\_comparison/}}. 
-The whole comparison reruns with one command, \texttt{benchmarks/converters/run.sh}, on any host with Docker; we encourage readers to reproduce it and to add converters.}
-Supplementary Section~\ref{S-sec:converters} provides the tool versions, invocation details, vocabulary-specific query mappings, and complete protocol.
-
 \subsection{Linked genomic workflow}\label{subsec:eval-workflow}
 \paragraph{Scope.}
 The three use cases introduced in Section~\ref{sec:background} share a common requirement: genomic observations should remain traceable to their source while being linked to information maintained elsewhere.
@@ -354,6 +338,22 @@ Regional queries use windows from 1\,kb to 10\,Mb, with twenty windows per size 
 All execution routes apply the same POS-based record-selection rule so that timings are compared only after equivalent results are established.
 Indexing and other setup costs are reported separately from query execution.
 
+\paragraph{VCF-to-RDF converter comparison.}
+A shared-input experiment directly compares the VCF-to-RDF capabilities summarized from documentation in Table~\ref{tab:tools}.
+The evaluation includes the four other converters with currently executable releases: the dedicated command-line converters from JVarkit, TogoVar, and SPARQLing Genomics, each named \texttt{vcf2rdf}, and BioInterchange, which remains available through a community-maintained Homebrew package.
+Each converter processes the same two inputs: the 100,000-record HG005 slice and the 16-sample rung of the sample ladder, comprising 10,000 records from the 1000 Genomes chromosome-20 call set.
+For each tool, we use the available options that produce the most complete RDF representation.
+
+Semantic coverage is assessed with content questions Q1--Q8, translated to each converter's vocabulary and evaluated using the same source-derived oracle, QLever version, normalization procedure, and comparison rules used for VCF-RDFizer.
+A question is reported as \emph{not represented} when the generated graph does not contain the information required to answer it.
+Questions Q9--Q13 are excluded from the cross-converter comparison because they refer specifically to VCF Core terms or VCF-RDFizer record identifiers and therefore have no equivalent in the other vocabularies.
+
+Conversion time, peak memory, and output size are measured using the same procedure as for VCF-RDFizer.
+Each measurement uses three replicates, and every converter runs in a pinned container to control the software environment.%
+\footnote{The ported queries, the comparison script, and the Docker Compose definition of every converter are in \href{https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/benchmarks/converters}{\texttt{benchmarks/converters/}} of the \texttt{vcf-rdfizer-testing} repository, and the archived run is in \href{https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/BioMedSem_2026/benchmark-results/vcf-bench-1/18_converter_comparison}{\texttt{benchmark-results/vcf-bench-1/18\_converter\_comparison/}}. 
+The whole comparison reruns with one command, \texttt{benchmarks/converters/run.sh}, on any host with Docker; we encourage readers to reproduce it and to add converters.}
+Supplementary Section~\ref{S-sec:converters} provides the tool versions, invocation details, vocabulary-specific query mappings, and complete protocol.
+
 All benchmarks ran on three dedicated hosts with the same 8-core Intel Xeon Silver 4309Y processor and 33.6\,GB of RAM without swap: two identical hosts ran the base campaign and Arms~1--3 of the linked workflow, and a third ran the large-graph retrieval runs and Arm~4.
 Each experiment ran alone on its host inside a pinned Docker image, and timings are compared only within a host.
 Supplementary Section~\ref{S-sec:repro} lists the experiment families of the base campaign and the separate runs, with their software versions, hosts, exclusions, and archival status.
@@ -404,35 +404,6 @@ The predicate and class censuses (Q9 and Q10) showed that a header-only file omi
 A record count alone would have shown none of them.
 Version fixtures (VCFv4.1--4.5, and an undeclared version) converted, and nine of eleven difficult inputs converted and validated; a truncated gzip was refused, while a malformed sites-only fixture left that paired-coverage test incomplete.
 Supplementary Sections~\ref{S-sec:inputs}, \ref{S-sec:validation}, and~\ref{S-sec:issues} retain these outcomes, repeatability validation, and unresolved oracle limitations.
-
-\textbf{VCF-to-RDF converter comparison.}
-On the shared inputs, VCF-RDFizer was the only converter whose output matched the source-derived oracle for all eight content questions (Figure~\ref{fig:converters}).
-The differences observed for the other converters reflected information absent from, or transformed within, their RDF outputs rather than differences in query execution.
-
-JVarkit identifies records using chromosome, position, and reference allele.
-In the 1000 Genomes input, five pairs of VCF records share those values and were therefore merged, altering both record and genotype counts.
-SPARQLing Genomics emits a call only when an alternate allele is present.
-Its cohort graph consequently represented 1,401 of the 10,000 source records and omitted homozygous-reference calls.
-For the single-sample HG005 slice, where every record contains an alternate allele, SPARQLing Genomics matched the oracle for Q1--Q7.
-TogoVar is designed primarily to publish allele-frequency information and does not represent sample-level or header content; symbolic and spanning-deletion alleles were also omitted.
-BioInterchange matched all eight questions on the cohort input, but the generated header document for the HG005 slice was invalid JSON, preventing recovery of the information required for Q7 and Q8.
-
-The reduced semantic coverage of the other converters was accompanied by lower output size and faster conversion.
-For HG005, the other graphs contained 14--203 triples per record, compared with 171 triples per record for VCF-RDFizer; for the 16-sample input, VCF-RDFizer produced 536 triples per record.
-The other converters processed each input in 0.1--6.3\,s, whereas VCF-RDFizer required 31--92\,s.
-The VCF-RDFizer measurements include container startup for each processing stage.
-Supplementary Section~\ref{S-sec:converters} reports the complete per-tool results and execution details.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{fig-converters.pdf}
-\caption{\textbf{Only VCF-RDFizer's graphs answered every content question as the oracle did on both shared inputs.}
-Each cell is one of the validator's content questions Q1--Q8, ported to the converter's vocabulary, answered from its graph, and compared with the answer computed directly from the VCF: \checkmark\ answers as the oracle does, $\times$ answers differently, and -- the information is not in the graph.
-Q1--Q4 summarize the records (density, variant shape, Ti/Tv, and FILTER), Q5--Q6 the genotypes, and Q7--Q8 the header.
-(a) The first 100,000 records of the HG005 benchmark VCF, one sample.
-(b) The first 10,000 records and 16 samples of the 1000 Genomes chromosome-20 call set.
-Supplementary Section~\ref{S-sec:converters} gives the cause of each difference and the conversion costs.}\label{fig:converters}
-\end{figure}
 
 \subsection{RQ2: Shared identifiers enabled reusable joins and verified, requester-specific views}\label{subsec:results-workflow}
 Across all four arms, the RDF and bcftools workflows returned identical requester-specific match sets (Figure~\ref{fig:usecase-matches}).
@@ -494,6 +465,35 @@ Supplementary Table~\ref{S-tab:usecase-costs} gives every stage for every reques
 \end{figure}
 
 \subsection{RQ3: Representation and workload determine the practical costs}\label{subsec:results-costs}
+\textbf{VCF-to-RDF converter comparison.}
+On the shared inputs, VCF-RDFizer was the only converter whose output matched the source-derived oracle for all eight content questions (Figure~\ref{fig:converters}).
+The differences observed for the other converters reflected information absent from, or transformed within, their RDF outputs rather than differences in query execution.
+
+JVarkit identifies records using chromosome, position, and reference allele.
+In the 1000 Genomes input, five pairs of VCF records share those values and were therefore merged, altering both record and genotype counts.
+SPARQLing Genomics emits a call only when an alternate allele is present.
+Its cohort graph consequently represented 1,401 of the 10,000 source records and omitted homozygous-reference calls.
+For the single-sample HG005 slice, where every record contains an alternate allele, SPARQLing Genomics matched the oracle for Q1--Q7.
+TogoVar is designed primarily to publish allele-frequency information and does not represent sample-level or header content; symbolic and spanning-deletion alleles were also omitted.
+BioInterchange matched all eight questions on the cohort input, but the generated header document for the HG005 slice was invalid JSON, preventing recovery of the information required for Q7 and Q8.
+
+The reduced semantic coverage of the other converters was accompanied by lower output size and faster conversion.
+For HG005, the other graphs contained 14--203 triples per record, compared with 171 triples per record for VCF-RDFizer; for the 16-sample input, VCF-RDFizer produced 536 triples per record.
+The other converters processed each input in 0.1--6.3\,s, whereas VCF-RDFizer required 31--92\,s.
+The VCF-RDFizer measurements include container startup for each processing stage.
+Supplementary Section~\ref{S-sec:converters} reports the complete per-tool results and execution details.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{fig-converters.pdf}
+\caption{\textbf{Only VCF-RDFizer's graphs answered every content question as the oracle did on both shared inputs.}
+Each cell is one of the validator's content questions Q1--Q8, ported to the converter's vocabulary, answered from its graph, and compared with the answer computed directly from the VCF: \checkmark\ answers as the oracle does, $\times$ answers differently, and -- the information is not in the graph.
+Q1--Q4 summarize the records (density, variant shape, Ti/Tv, and FILTER), Q5--Q6 the genotypes, and Q7--Q8 the header.
+(a) The first 100,000 records of the HG005 benchmark VCF, one sample.
+(b) The first 10,000 records and 16 samples of the 1000 Genomes chromosome-20 call set.
+Supplementary Section~\ref{S-sec:converters} gives the cause of each difference and the conversion costs.}\label{fig:converters}
+\end{figure}
+
 \subsubsection{Sample granularity determines the amount of graph}\label{subsubsec:results-samples}
 % TODO: investigate why 170 triples per record...
 The record ladder showed approximately linear growth in RDF output, producing 170.5--171.9 triples per VCF record.
