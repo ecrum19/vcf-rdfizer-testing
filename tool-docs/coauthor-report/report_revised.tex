@@ -6,7 +6,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern,helvet}
 \renewcommand{\familydefault}{\sfdefault}
-\usepackage{amsmath,booktabs,tabularx,array,xcolor,graphicx,enumitem}
+\usepackage{amsmath,amssymb,booktabs,tabularx,array,xcolor,graphicx,enumitem}
 \usepackage{etoolbox,titlesec,needspace,fancyhdr}
 \usepackage[hidelinks]{hyperref}
 \definecolor{accent}{HTML}{1F7F83}
@@ -57,13 +57,16 @@ Three questions organize the evaluation, and the Results follow them in order:
 \section{2. What changed since the 5 October brief}
 
 \begin{itemize}
-\item \textbf{Structure.} Implementation and Evaluation each have three subsections matching RQ1--RQ3. The \emph{base campaign} is now defined where it is first used: 143 runs in 12 experiment families with the published v3.1.0 release, detailed in Supplementary Section~S5.1.
-\item \textbf{Figures instead of tables.} The validation results, the workflow matches, the stage costs, and the retrieval comparison are now Figures~3, 4, 5, and~8. The main text has eight figures and two tables; every exact number moved to a supplementary table.
-\item \textbf{One figure for the cost of querying.} Figure~8 combines four views of the same 100,000 HG005 records: the setup break-even, the size of what QLever ingests, regional queries by window size, and every VCF-parsing-versus-RDF-querying comparison as one ratio. Supplementary Figure~S5 adds each regional question, the Comunica engines, and the break-even per question.
-\item \textbf{Setup counted for what QLever needs.} The break-even now counts conversion to the gzip-framed N-Triples that QLever indexes, not HDT, which QLever does not use: about 2\,min of setup and 11 questions, instead of 7.4\,min and 44. The N-Triples are 21--25$\times$ the size of the gzipped VCF, and Figure~6 now shows the gzipped source VCF beside the uncompressed one.
+\item \textbf{Structure.} Implementation and Evaluation each have three subsections matching RQ1--RQ3. The \emph{base campaign} is now defined where it is first used: 143 runs in 12 experiment families with the published v3.1.0 release, detailed in Supplementary Section~S6.1.
+\item \textbf{Figures instead of tables.} The validation results, the workflow matches, the stage costs, and the retrieval comparison are now main Figures~3, 4, 5, and~9. The main text has nine figures and two tables; every exact number moved to a supplementary table.
+\item \textbf{One figure for the cost of querying.} Main Figure~9 combines four views of the same 100,000 HG005 records: the setup break-even, the size of what QLever ingests, regional queries by window size, and every VCF-parsing-versus-RDF-querying comparison as one ratio. Supplementary Figure~S5 adds each regional question, the Comunica engines, and the break-even per question.
+\item \textbf{Setup counted for what QLever needs.} The break-even now counts conversion to the gzip-framed N-Triples that QLever indexes, not HDT, which QLever does not use: about 2\,min of setup and 11 questions, instead of 7.4\,min and 44. The N-Triples are 21--25$\times$ the size of the gzipped VCF, and main Figure~7 now shows the gzipped source VCF beside the uncompressed one.
 \item \textbf{A fourth workflow arm.} Arm~4 applies layered rules to the complete NB72462M VCF (5,063,417 records), giving four requesters four different, non-empty release views. Both workflows agreed record for record.
 \item \textbf{Release v3.3.1.} Arm~4's record-level comparison exposed a linker defect: v3.3.0 did not link spanning-deletion (\texttt{*}) records to genes, so gene-based rules could not select them. v3.3.1 links them by their REF span; rerunning Arm~1 left every match unchanged.
-\item \textbf{Consumer WGS validation run now passes.} The three mismatches on 250,000 NG131FQA1I records were validator gaps (uncounted phase sets; QUAL compared as written). With the v3.3.1 validator the same graph gives 13/13 equal answers, and the default shapes report no violations. The failure history is kept in Supplementary Section~S3.2 only.
+\item \textbf{Consumer WGS validation run now passes.} The three mismatches on 250,000 NG131FQA1I records were validator gaps (uncounted phase sets; QUAL compared as written). With the v3.3.1 validator the same graph gives 13/13 equal answers, and the default shapes report no violations. The failure history is kept in Supplementary Section~S4.2 only.
+\item \textbf{A shared-input converter comparison.} JVarkit, TogoVar, and SPARQLing Genomics (each \texttt{vcf2rdf}) and BioInterchange converted the 100,000-record HG005 slice and a 16-sample, 10,000-record 1000~Genomes slice, and each graph answered the validator's content questions Q1--Q8, ported to its vocabulary, against the same oracle. Only VCF-RDFizer's graphs answered all eight as the oracle did on both inputs. The others were smaller and faster, but merged records, dropped symbolic alleles, wrote only carriers' calls, or omitted samples and header lines (main Figure~6 in Section~4.3; Supplementary Section~S2; Figure~7 below). The whole comparison reruns with one Docker Compose command.
+\item \textbf{A stated limitation for structural variants.} v3.3.1's gene linkers do not link records whose ALT is symbolic or a breakend. In Arm~2, gene-scoped rules therefore released 110 and 58 structural-variant records in cancer-predisposition genes to the two research views, although the carrier lists agreed. The paper keeps v3.3.1 and states the gap (main Section~5.7); the fix is an open pull request.
+\item \textbf{Title.} ``Policy-aware'' replaces ``Governable'' in the manuscript and the supplement.
 \item \textbf{A stated SHACL limitation.} Full shape validation does not yet scale to the graph of a complete single-sample VCF (Section~3 below).
 \item \textbf{Precise naming.} A VCF file is never called a ``genome'': the text names inputs (``the complete HG005 VCF'', ``five gene-span slices''), gives each graph size with its input, and uses All/OP/CC/DS/GRU for requesters throughout. The VCF side is described as \emph{VCF parsing} for whole-file reads and \emph{region queries on a tabix-indexed VCF} for indexed reads, the terms of the cyvcf2, tabix, and bcftools papers, rather than ``VCF access''.
 \end{itemize}
@@ -87,7 +90,7 @@ The SHACL engine holds the graph in memory at about 2.4\,GB per million triples.
 \subsection{What matters beyond pass counts}
 During development the validation found three real defects that a record count could not have shown: a header-only file omitted its declared samples; genotypes referred to allele resources a raw-INFO conversion never emitted; and withheld files left their headers in release views.
 
-\reading{main Sections~3.1, 4.1 and 5.5; supplement Sections~S3 and~S7.}
+\reading{main Sections~3.1, 4.1 and 5.5; supplement Sections~S4 and~S8.}
 
 \section{4. RQ2: the same answers, with explicit and reusable relationships}
 
@@ -119,7 +122,7 @@ For Arm~3, converting the complete HG005 VCF and ClinVar took 54\,min, linking 8
 \subsection{Important boundaries}
 SPDI joins assume the tested reference, normalization, and eligible allele classes; contig-alias handling is demonstrated, canonical identity across every equivalent representation is not. Every participant is a single-sample VCF, so masking samples within a multi-sample VCF is untested. Consents are simulated, and deployment security and real consent validity remain separate questions.
 
-\reading{main Sections~2.3, 3.2, 4.2 and~5.4; supplement Section~S4.}
+\reading{main Sections~2.3, 3.2, 4.2 and~5.4; supplement Section~S5.}
 
 \section{5. RQ3: costs depend on the workload, not on one headline number}
 
@@ -129,7 +132,7 @@ Neither route is uniformly cheaper. VCF parsing wins one-pass analyses and small
 \centering
 \includegraphics[width=0.95\textwidth]{figs/fig-regional.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~8). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Gzip-compressed sizes of the VCF and of the N-Triples QLever indexes, also for the complete HG005 VCF. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
+\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~9). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Gzip-compressed sizes of the VCF and of the N-Triples QLever indexes, also for the complete HG005 VCF. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
 \end{figure}
 
 \begin{center}\small
@@ -153,12 +156,22 @@ Large graphs & On the complete HG005 VCF (657.4M triples), QLever answered all t
 \centering
 \includegraphics[width=0.85\textwidth]{figs/fig-samples.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 6. Sample representation trades addressability for size} (main Figure~6). 10,000 records of the 1000~Genomes chromosome-20 VCF with one to 2,504 of its samples. (a)~Expanded triples grow 390$\times$ across the ladder, condensed ones 0.9\%. (b)~Stored size of HDT and gzip-framed N-Triples for each profile, beside the source VCF uncompressed and gzip-compressed. (c)~At 2,504 samples, expanded output has 432$\times$ the triples of condensed but 69$\times$ the HDT bytes.}
+\figcaption{\textbf{Figure 6. Sample representation trades addressability for size} (main Figure~7). 10,000 records of the 1000~Genomes chromosome-20 VCF with one to 2,504 of its samples. (a)~Expanded triples grow 390$\times$ across the ladder, condensed ones 0.9\%. (b)~Stored size of HDT and gzip-framed N-Triples for each profile, beside the source VCF uncompressed and gzip-compressed. (c)~At 2,504 samples, expanded output has 432$\times$ the triples of condensed but 69$\times$ the HDT bytes.}
 \end{figure}
 
 Keep the configurations apart: the 16.07-hour v3.1.0 conversion and the 54-minute use-case conversion differ in configuration and are not alternative measurements of the same task.
 
-\reading{main Sections~3.3, 4.3 and~5.6; supplement Sections~S8 and~S9.}
+\subsection{Other converters on the same inputs}
+The converter comparison sits in RQ3 because it weighs what a representation holds against what it costs. On the same two inputs, the other converters' graphs held 14--203 triples per record against VCF-RDFizer's 171 (HG005) and 536 (16 samples), and converted each slice in 0.1--6.3\,s against VCF-RDFizer's 31--92\,s, which includes starting a container per stage. None of them answered all eight content questions as the oracle did on both inputs, and every difference traces to what its graph holds, not to how it was queried. It shows what each graph can answer, not which converter suits a given purpose: TogoVar, for one, omits samples by design.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\textwidth]{figs/fig-converters.pdf}
+\vspace{2pt}
+\figcaption{\textbf{Figure 7. Only VCF-RDFizer's graphs answered every content question as the oracle did on both shared inputs} (main Figure~6). Each cell is one of the content questions Q1--Q8, ported to the converter's vocabulary and answered from its graph: \checkmark\ as the oracle, $\times$ differently, -- not in the graph. Q1--Q4 summarize records, Q5--Q6 genotypes, and Q7--Q8 the header. (a)~100,000 HG005 records, one sample. (b)~10,000 records and 16 samples of the 1000~Genomes chromosome-20 call set. JVarkit merges records sharing CHROM, POS, and REF; TogoVar drops symbolic and \texttt{*} alleles and writes no samples or header; SPARQLing Genomics writes only carriers' calls (1,401 of 10,000 cohort records); BioInterchange's HG005 header document is invalid JSON.}
+\end{figure}
+
+\reading{main Sections~3.3, 4.3 and~5.6; supplement Sections~S2, S9 and~S10.}
 
 \section{6. Coauthor decisions and submission work}
 
@@ -171,12 +184,12 @@ Keep the configurations apart: the 16.07-hour v3.1.0 conversion and the 54-minut
 \subsection{Presentation choices to confirm}
 \begin{itemize}
 \item The consumer WGS validation run is reported in the main text by its corrected-validator result alone, with the earlier failures and their diagnosis only in the supplement.
-\item Arm~4 and the v3.3.1 linker fix are minimal in the main text and detailed in Supplementary Section~S4.
+\item Arm~4 and the v3.3.1 linker fix are minimal in the main text and detailed in Supplementary Section~S5.
 \item The SHACL scaling limit is framed as future work rather than as a weakness of the validation design.
-\item The break-even is computed for the N-Triples QLever indexes, with HDT and COTTAS treated as optional artifacts, and Table~3 is replaced by Figure~8 with its medians in Supplementary Table~S15.
+\item The break-even is computed for the N-Triples QLever indexes, with HDT and COTTAS treated as optional artifacts, and Table~3 is replaced by Figure~9 with its medians in Supplementary Table~S17.
 \end{itemize}
 
 \subsection{Claim-dependent additions, not an automatic new benchmark campaign}
-\textbf{External relevance and converter comparison.} Would a focused clinical or data-access review of the application question strengthen the contribution? Do we need a shared-input comparison with one viable converter, and which representation and validation outcomes would it test? The bcftools comparison is a task comparison, not a converter benchmark, and there is no user study.
+\textbf{External relevance.} Would a focused clinical or data-access review of the application question strengthen the contribution? The shared-input converter comparison is now in the paper (Figure~7 here), but it covers four converters, two inputs, and Q1--Q8, so it shows what each graph can answer rather than which converter suits a purpose. The bcftools comparison is a task comparison, not a converter benchmark, and there is no user study.
 
 \end{document}
