@@ -1,0 +1,133 @@
+# Experiment 18: every image and every step of the converter comparison.
+#
+# Run the whole experiment (the host needs only Docker with the Compose plugin):
+#   benchmarks/converters/run.sh
+# which sets the four paths below and runs the `runner` service. Any single step can be re-run
+# by hand with `docker compose run --rm <service> ...`; the driver records each one it runs.
+#
+# Paths are mounted at the SAME absolute path inside every container. The runner starts the
+# other containers through the host's Docker socket, so a path it passes on has to mean the same
+# thing to the host daemon as it does inside the runner.
+#
+#   CONV_REPO     this repository (read-only)
+#   CONV_DATA     the directory holding the input VCFs (read-only)
+#   CONV_WORK     scratch: prepared inputs, the measuring binary, downloads
+#   BM_RESULTS    where the cells are recorded
+#
+# Every pin (base image, Debian snapshot date, upstream images and artifacts, checksums) comes from
+# pins.env; nothing here floats.
+name: vcf-converter-comparison
+
+x-paths: &paths
+  - ${CONV_REPO:?set CONV_REPO}:${CONV_REPO}:ro
+  - ${CONV_DATA:?set CONV_DATA}:${CONV_DATA}:ro
+  - ${CONV_WORK:?set CONV_WORK}:${CONV_WORK}
+  - ${BM_RESULTS:?set BM_RESULTS}:${BM_RESULTS}
+
+x-base-args: &base-args
+  CONV_BASE_IMAGE: ${CONV_BASE_IMAGE}
+  CONV_DEBIAN_SNAPSHOT: ${CONV_DEBIAN_SNAPSHOT}
+
+# A converter run: offline, as the calling user, measured by measure.sh, writing only under
+# CONV_WORK and BM_RESULTS.
+x-converter: &converter
+  network_mode: none
+  user: "${CONV_UID:-1000}:${CONV_GID:-1000}"
+  volumes:
+    - ${CONV_REPO}:${CONV_REPO}:ro
+    - ${CONV_DATA}:${CONV_DATA}:ro
+    - ${CONV_WORK}:${CONV_WORK}
+    - ${BM_RESULTS}:${BM_RESULTS}
+    - ${CONV_WORK}/meter:/meter:ro
+  entrypoint: ["/meter/busybox", "sh", "${CONV_REPO}/benchmarks/converters/measure.sh"]
+  profiles: [step]
+
+services:
+  # The driver. Runs benchmarks/18_converter_comparison.sh with the harness's usual cell records.
+  runner:
+    build:
+      context: docker/runner
+      args: *base-args
+    image: vcf-conv/runner:${CONV_DEBIAN_SNAPSHOT}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${CONV_REPO}:${CONV_REPO}:ro
+      - ${CONV_DATA}:${CONV_DATA}:ro
+      - ${CONV_WORK}:${CONV_WORK}
+      - ${BM_RESULTS}:${BM_RESULTS}
+    # The calling user, plus the socket's group so it can start the other containers.
+    user: "${CONV_UID:?run through run.sh}:${CONV_GID}"
+    group_add: ["${CONV_DOCKER_GID}"]
+    environment:
+      HOME: ${CONV_WORK}/home
+      CONV_REPO: ${CONV_REPO}
+      CONV_REPO_COMMIT: ${CONV_REPO_COMMIT:-unknown}
+      CONV_DATA: ${CONV_DATA}
+      CONV_WORK: ${CONV_WORK}
+      CONV_UID: ${CONV_UID}
+      CONV_GID: ${CONV_GID}
+      CONV_DOCKER_GID: ${CONV_DOCKER_GID}
+      BM_RESULTS: ${BM_RESULTS}
+      BM_REPS: ${BM_REPS:-3}
+    working_dir: ${CONV_REPO}
+    entrypoint: ["bash", "${CONV_REPO}/benchmarks/18_converter_comparison.sh"]
+
+  # Apache Jena riot: streams each converter's native RDF to N-Triples.
+  riot:
+    <<: *converter
+    build:
+      context: docker/riot
+      args:
+        <<: *base-args
+        CONV_JENA_VERSION: ${CONV_JENA_VERSION}
+        CONV_JENA_SHA512: ${CONV_JENA_SHA512}
+    image: vcf-conv/riot:${CONV_JENA_VERSION}
+
+  # JVarkit vcf2rdf: no upstream image or jar for the pinned commit, so built from source.
+  jvarkit:
+    <<: *converter
+    build:
+      context: docker/jvarkit
+      args:
+        <<: *base-args
+        CONV_JVARKIT_COMMIT: ${CONV_JVARKIT_COMMIT}
+        CONV_GRADLE_SHA256: ${CONV_GRADLE_SHA256}
+    image: vcf-conv/jvarkit:${CONV_JVARKIT_COMMIT}
+
+  # TogoVar vcf2rdf: the upstream image, by digest, unmodified.
+  togovar:
+    <<: *converter
+    image: ${CONV_TOGOVAR_IMAGE}
+
+  # SPARQLing Genomics vcf2rdf: the upstream 0.99.11 release image, loaded from its release
+  # tarball after the checksum in pins.env is verified, and tagged locally. Never pulled.
+  sparqling-genomics:
+    <<: *converter
+    image: vcf-conv/sparqling-genomics:${CONV_SG_VERSION}
+    pull_policy: never
+
+  # BioInterchange 2.0.5: the brewsci/bio Homebrew bottle, by blob digest (see its Dockerfile).
+  # Its JSON-LD is turned into N-Quads in the same image (bi_jsonld_to_nquads.py).
+  biointerchange:
+    <<: *converter
+    build:
+      context: docker/biointerchange
+      args:
+        CONV_BI_BASE_IMAGE: ${CONV_BI_BASE_IMAGE}
+        CONV_DEBIAN_SNAPSHOT: ${CONV_DEBIAN_SNAPSHOT}
+        CONV_BI_COMMIT: ${CONV_BI_COMMIT}
+        CONV_BI_BOTTLE_SHA256: ${CONV_BI_BOTTLE_SHA256}
+        CONV_BI_CONTEXT_SHA256: ${CONV_BI_CONTEXT_SHA256}
+        CONV_UID: ${CONV_UID:-1000}
+    image: vcf-conv/biointerchange:${CONV_BI_COMMIT}
+
+  # VCF-RDFizer v3.3.1 by digest: the comparison (oracle, QLever, normaliser, comparator) and
+  # input preparation (bgzip, tabix). Its conversions run through the release's own CLI, from
+  # the runner, exactly as in every other experiment.
+  vcf-rdfizer:
+    image: ${CONV_VCFRDFIZER_IMAGE}
+    network_mode: none
+    user: "${CONV_UID:-1000}:${CONV_GID:-1000}"
+    volumes: *paths
+    entrypoint: []
+    profiles: [step]

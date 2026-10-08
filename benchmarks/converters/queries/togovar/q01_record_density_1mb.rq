@@ -1,0 +1,20 @@
+PREFIX gvo: <http://genome-variation.org/resource#>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# TogoVar vcf2rdf v1.0.0-beta.12, run with --no-normalize so gvo:pos/ref/alt keep the VCF values.
+# It writes one node per ALT allele and no node for the record, so records are regrouped on
+# (reference, POS, REF, ID), all of which every allele node carries.
+# CHROM is not written: TogoVar replaces it with the reference IRI its configuration assigns.
+# {{CHROM_VALUES}} maps each IRI back to the CHROM it was assigned from, using the configuration
+# file of this conversion (written by `vcf2rdf generate config`).
+SELECT ?chrom ?windowIndex (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+    ?allele gvo:pos ?pos ; gvo:ref ?refLiteral ; dct:identifier ?id ;
+            faldo:location/(faldo:reference|faldo:begin/faldo:reference) ?seq .
+    BIND(CONCAT(STR(?seq), "|", STR(?pos), "|", STR(?refLiteral), "|", STR(?id)) AS ?record)
+  {{CHROM_VALUES}}
+  BIND(xsd:integer(FLOOR((xsd:integer(?pos) - 1) / 1000000)) AS ?windowIndex)
+}
+GROUP BY ?chrom ?windowIndex
+ORDER BY ?chrom ?windowIndex

@@ -1,0 +1,19 @@
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# ##fileformat is stored without its "VCFv" prefix (vcf.c:503-509); the port restores it.
+SELECT (COALESCE(?ff, "(absent)") AS ?fileFormat)
+       (COALESCE(?rg, "(absent)") AS ?referenceGenome)
+       (COALESCE(?ss, "(absent)") AS ?sourceSoftware)
+WHERE {
+  ?meta a gc:Meta .
+  OPTIONAL { ?meta g:vcfVersion ?version
+             BIND(IF(STRSTARTS(STR(?version), "VCFv"), STR(?version), CONCAT("VCFv", STR(?version))) AS ?ff) }
+  OPTIONAL { ?meta g:referenceFASTA ?reference BIND(STR(?reference) AS ?rg) }
+  OPTIONAL { ?meta g:source ?source BIND(STR(?source) AS ?ss) }
+}
