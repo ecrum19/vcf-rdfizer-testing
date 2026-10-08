@@ -1,0 +1,17 @@
+PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
+
+# The file-level declarations carried over from the VCF meta-information lines.
+#
+# COALESCE binds an explicit sentinel rather than leaving the variable unbound,
+# so a missing declaration is reported as a value mismatch against the parser
+# instead of failing result normalization with a less useful error.
+SELECT
+  (COALESCE(?ff, "(absent)") AS ?fileFormat)
+  (COALESCE(?rg, "(absent)") AS ?referenceGenome)
+  (COALESCE(?ss, "(absent)") AS ?sourceSoftware)
+WHERE {
+  ?file a vcfc:VCFFile .
+  OPTIONAL { ?file vcfc:fileFormat ?ffLiteral      BIND(STR(?ffLiteral) AS ?ff) }
+  OPTIONAL { ?file vcfc:referenceGenome ?rgLiteral BIND(STR(?rgLiteral) AS ?rg) }
+  OPTIONAL { ?file vcfc:sourceSoftware ?ssLiteral  BIND(STR(?ssLiteral) AS ?ss) }
+}

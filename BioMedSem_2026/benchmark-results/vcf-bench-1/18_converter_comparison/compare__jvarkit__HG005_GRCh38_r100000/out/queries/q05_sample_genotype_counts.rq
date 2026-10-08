@@ -1,0 +1,23 @@
+PREFIX vcf: <http://github.com/lindenb/jvarkit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# JVarkit vcf2rdf (commit fc2356a3), run with --hide '' so ALT, FILTER and GT are written.
+# Its classes are written as IRIs with the scheme "vcf" (<vcf:Variant>), not as prefixed names,
+# so they are matched literally. A record is <urn:variant/CHROM:POS:REF>.
+# One <vcf:Genotype> per record and sample, typed by htsjdk's call class. A no-call carries no
+# class and is read as MISSING; JVarkit writes no ploidy, so haploid calls cannot be told from
+# homozygous ones.
+SELECT ?sampleId ?genotypeClass (COUNT(DISTINCT ?genotype) AS ?callCount)
+WHERE {
+  ?genotype a <vcf:Genotype> ; vcf:sample ?sample .
+  BIND(STRAFTER(STR(?sample), "urn:sample/") AS ?sampleId)
+  OPTIONAL {
+    ?genotype a ?class .
+    VALUES (?class ?mapped) {
+      (<vcf:HomRefGenotype> "HOM_REF") (<vcf:HomVarGenotype> "HOM_ALT")
+      (<vcf:HetGenotype> "HET") (<vcf:HetNonRefGenotype> "HET")
+    }
+  }
+  BIND(COALESCE(?mapped, "MISSING") AS ?genotypeClass)
+}
+GROUP BY ?sampleId ?genotypeClass
+ORDER BY ?sampleId ?genotypeClass

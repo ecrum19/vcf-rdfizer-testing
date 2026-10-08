@@ -1,0 +1,19 @@
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+SELECT (COUNT(DISTINCT ?record) AS ?biallelicSnvCount)
+  (SUM(IF((?ref = "A" && ?alt = "G") || (?ref = "G" && ?alt = "A") || (?ref = "C" && ?alt = "T") || (?ref = "T" && ?alt = "C"), 1, 0)) AS ?transitionCount)
+  (SUM(IF((?ref = "A" && ?alt = "G") || (?ref = "G" && ?alt = "A") || (?ref = "C" && ?alt = "T") || (?ref = "T" && ?alt = "C"), 0, 1)) AS ?transversionCount)
+WHERE {
+  ?record a gc:Feature ; g:reference/g:sequence ?refLiteral ; g:variants/g:alleleB/g:sequence ?altLiteral .
+  OPTIONAL { ?record g:variants/g:alleleC ?secondAlt }
+  FILTER(!BOUND(?secondAlt))
+  BIND(UCASE(STR(?refLiteral)) AS ?ref)
+  BIND(UCASE(STR(?altLiteral)) AS ?alt)
+  FILTER(REGEX(?ref, "^[ACGT]$") && REGEX(?alt, "^[ACGT]$") && ?ref != ?alt)
+}

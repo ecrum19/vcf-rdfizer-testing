@@ -1,0 +1,28 @@
+PREFIX sg: <https://sparqling-genomics.org/0.99.11/>
+PREFIX vc: <sg://0.99.11/vcf2rdf/>
+PREFIX v: <sg://0.99.11/vcf2rdf/variant/>
+PREFIX gt: <sg://0.99.11/vcf2rdf/format/GT/>
+PREFIX hdr: <sg://0.99.11/vcf2rdf/header/>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# SPARQLing Genomics vcf2rdf 0.99.11, default options. It writes one vc:VariantCall per record and
+# sample, and only for calls with a non-reference allele; there is no record node. Call IRIs are
+# origin://<md5>@<k> with k = record index x samples + sample index (doc/command-line-tools.tex),
+# so records are regrouped on floor(k / samples). Only the first ALT allele is written.
+SELECT ?chrom ?windowIndex (COUNT(?record) AS ?recordCount)
+WHERE {
+  {
+    SELECT ?record (SAMPLE(?chromIri) AS ?chromValue) (SAMPLE(?position) AS ?pos)
+    WHERE {
+    { SELECT (COUNT(DISTINCT ?sampleNode) AS ?samples) WHERE { ?sampleNode a sg:Sample } }
+      ?call a vc:VariantCall ; faldo:reference ?chromIri ; faldo:position ?position .
+    BIND(xsd:integer(FLOOR(xsd:integer(STRAFTER(STR(?call), "@")) / ?samples)) AS ?record)
+    }
+    GROUP BY ?record
+  }
+  BIND(STRAFTER(STR(?chromValue), "http://www.ncbi.nlm.nih.gov/nuccore/") AS ?chrom)
+  BIND(xsd:integer(FLOOR((xsd:integer(?pos) - 1) / 1000000)) AS ?windowIndex)
+}
+GROUP BY ?chrom ?windowIndex
+ORDER BY ?chrom ?windowIndex

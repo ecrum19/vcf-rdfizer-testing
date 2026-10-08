@@ -1,0 +1,20 @@
+PREFIX gvo: <http://genome-variation.org/resource#>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# TogoVar vcf2rdf v1.0.0-beta.12, run with --no-normalize so gvo:pos/ref/alt keep the VCF values.
+# It writes one node per ALT allele and no node for the record, so records are regrouped on
+# (reference, POS, REF, ID), all of which every allele node carries.
+# CHROM is not written: TogoVar replaces it with the reference IRI its configuration assigns.
+# VALUES (?seq ?chrom) { (<http://identifiers.org/hco/1/GRCh37> "1") (<http://identifiers.org/hco/10/GRCh37> "10") (<http://identifiers.org/hco/11/GRCh37> "11") (<http://identifiers.org/hco/12/GRCh37> "12") (<http://identifiers.org/hco/13/GRCh37> "13") (<http://identifiers.org/hco/14/GRCh37> "14") (<http://identifiers.org/hco/15/GRCh37> "15") (<http://identifiers.org/hco/16/GRCh37> "16") (<http://identifiers.org/hco/17/GRCh37> "17") (<http://identifiers.org/hco/18/GRCh37> "18") (<http://identifiers.org/hco/19/GRCh37> "19") (<http://identifiers.org/hco/2/GRCh37> "2") (<http://identifiers.org/hco/20/GRCh37> "20") (<http://identifiers.org/hco/21/GRCh37> "21") (<http://identifiers.org/hco/22/GRCh37> "22") (<http://identifiers.org/hco/3/GRCh37> "3") (<http://identifiers.org/hco/4/GRCh37> "4") (<http://identifiers.org/hco/5/GRCh37> "5") (<http://identifiers.org/hco/6/GRCh37> "6") (<http://identifiers.org/hco/7/GRCh37> "7") (<http://identifiers.org/hco/8/GRCh37> "8") (<http://identifiers.org/hco/9/GRCh37> "9") (<http://identifiers.org/hco/MT/GRCh37> "MT") (<http://identifiers.org/hco/X/GRCh37> "X") (<http://identifiers.org/hco/Y/GRCh37> "Y") } maps each IRI back to the CHROM it was assigned from, using the configuration
+# file of this conversion (written by `vcf2rdf generate config`).
+SELECT ?chrom ?windowIndex (COUNT(DISTINCT ?record) AS ?recordCount)
+WHERE {
+    ?allele gvo:pos ?pos ; gvo:ref ?refLiteral ; dct:identifier ?id ;
+            faldo:location/(faldo:reference|faldo:begin/faldo:reference) ?seq .
+    BIND(CONCAT(STR(?seq), "|", STR(?pos), "|", STR(?refLiteral), "|", STR(?id)) AS ?record)
+  VALUES (?seq ?chrom) { (<http://identifiers.org/hco/1/GRCh37> "1") (<http://identifiers.org/hco/10/GRCh37> "10") (<http://identifiers.org/hco/11/GRCh37> "11") (<http://identifiers.org/hco/12/GRCh37> "12") (<http://identifiers.org/hco/13/GRCh37> "13") (<http://identifiers.org/hco/14/GRCh37> "14") (<http://identifiers.org/hco/15/GRCh37> "15") (<http://identifiers.org/hco/16/GRCh37> "16") (<http://identifiers.org/hco/17/GRCh37> "17") (<http://identifiers.org/hco/18/GRCh37> "18") (<http://identifiers.org/hco/19/GRCh37> "19") (<http://identifiers.org/hco/2/GRCh37> "2") (<http://identifiers.org/hco/20/GRCh37> "20") (<http://identifiers.org/hco/21/GRCh37> "21") (<http://identifiers.org/hco/22/GRCh37> "22") (<http://identifiers.org/hco/3/GRCh37> "3") (<http://identifiers.org/hco/4/GRCh37> "4") (<http://identifiers.org/hco/5/GRCh37> "5") (<http://identifiers.org/hco/6/GRCh37> "6") (<http://identifiers.org/hco/7/GRCh37> "7") (<http://identifiers.org/hco/8/GRCh37> "8") (<http://identifiers.org/hco/9/GRCh37> "9") (<http://identifiers.org/hco/MT/GRCh37> "MT") (<http://identifiers.org/hco/X/GRCh37> "X") (<http://identifiers.org/hco/Y/GRCh37> "Y") }
+  BIND(xsd:integer(FLOOR((xsd:integer(?pos) - 1) / 1000000)) AS ?windowIndex)
+}
+GROUP BY ?chrom ?windowIndex
+ORDER BY ?chrom ?windowIndex

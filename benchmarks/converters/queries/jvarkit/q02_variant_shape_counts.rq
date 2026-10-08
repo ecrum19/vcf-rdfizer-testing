@@ -1,0 +1,29 @@
+PREFIX vcf: <http://github.com/lindenb/jvarkit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# JVarkit vcf2rdf (commit fc2356a3), run with --hide '' so ALT, FILTER and GT are written.
+# Its classes are written as IRIs with the scheme "vcf" (<vcf:Variant>), not as prefixed names,
+# so they are matched literally. A record is <urn:variant/CHROM:POS:REF>.
+# One vcf:alt literal per ALT allele, REF excluded; a symbolic allele or breakend is written as "".
+SELECT ?variantClass (COUNT(?record) AS ?recordCount)
+WHERE {
+  {
+    SELECT ?record (SAMPLE(?refLiteral) AS ?refValue) (SAMPLE(?altLiteral) AS ?altValue)
+           (COUNT(DISTINCT ?altLiteral) AS ?nAlt)
+    WHERE {
+      ?record a <vcf:Variant> ; vcf:ref ?refLiteral .
+      OPTIONAL { ?record vcf:alt ?altLiteral }
+    }
+    GROUP BY ?record
+  }
+  BIND(UCASE(STR(?refValue)) AS ?ref)
+  BIND(UCASE(COALESCE(STR(?altValue), "")) AS ?alt)
+  BIND(IF(?nAlt = 0, "NO_ALT", IF(?nAlt > 1, "MULTIALLELIC",
+    IF(?alt = "" || ?alt = "*" || CONTAINS(?alt, "[") || CONTAINS(?alt, "]") ||
+       (STRSTARTS(?alt, "<") && STRENDS(?alt, ">")), "SYMBOLIC_OR_BREAKEND",
+    IF(!REGEX(?ref, "^[ACGTN]+$") || !REGEX(?alt, "^[ACGTN]+$"), "OTHER",
+    IF(STRLEN(?ref) = 1 && STRLEN(?alt) = 1, "SNV",
+    IF(STRLEN(?ref) = STRLEN(?alt), "MNV_OR_EQUAL_LENGTH_SUBSTITUTION",
+    IF(STRLEN(?ref) < STRLEN(?alt), "INSERTION_SHAPE", "DELETION_SHAPE"))))))) AS ?variantClass)
+}
+GROUP BY ?variantClass
+ORDER BY ?variantClass

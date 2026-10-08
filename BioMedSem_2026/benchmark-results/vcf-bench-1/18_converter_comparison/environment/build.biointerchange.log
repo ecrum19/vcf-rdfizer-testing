@@ -1,0 +1,31 @@
+--progress is a global compose flag, better use `docker compose --progress xx build ...
+#0 building with "default" instance using docker driver
+
+#1 [biointerchange internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.79kB done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${CONV_BI_BASE_IMAGE} results in empty or invalid base image name (line 11)
+#1 DONE 0.0s
+
+#2 [biointerchange internal] load metadata for docker.io/library/debian:bullseye-slim@sha256:e5b6442dd2e9684cf5e87d8338b5968f3b348636fc0be6d7850a381e3731a2bd
+#2 DONE 0.0s
+
+#3 [biointerchange internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [biointerchange 1/2] FROM docker.io/library/debian:bullseye-slim@sha256:e5b6442dd2e9684cf5e87d8338b5968f3b348636fc0be6d7850a381e3731a2bd
+#4 resolve docker.io/library/debian:bullseye-slim@sha256:e5b6442dd2e9684cf5e87d8338b5968f3b348636fc0be6d7850a381e3731a2bd done
+#4 DONE 0.0s
+
+#5 [biointerchange 2/2] RUN set -eux;     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*;     echo "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20261008T000000Z bullseye main"       > /etc/apt/sources.list;     apt-get update;     apt-get install -y --no-install-recommends libpython3.9 libssl1.1 python3 python3-pyld patchelf curl ca-certificates;     token="$(curl -fsS 'https://ghcr.io/token?scope=repository:brewsci/bio/biointerchange:pull'       | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')";     curl -fsSL -H "Authorization: Bearer ${token}" -o /tmp/bottle.tar.gz       "https://ghcr.io/v2/brewsci/bio/biointerchange/blobs/sha256:e4457fbc917fbec9f798c18225d2d8c2daee4d8daab0000d0f44efa823887ac4";     echo "e4457fbc917fbec9f798c18225d2d8c2daee4d8daab0000d0f44efa823887ac4  /tmp/bottle.tar.gz" | sha256sum -c -;     mkdir -p /opt/bottle /opt/biointerchange;     tar -xzf /tmp/bottle.tar.gz -C /opt/bottle;     install -m0755 "$(find /opt/bottle -path '*/bin/biointerchange' -type f)" /usr/local/bin/biointerchange;     patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 --remove-rpath /usr/local/bin/biointerchange;     ldd /usr/local/bin/biointerchange | tee /opt/biointerchange/ldd.txt;     ! grep -q 'not found' /opt/biointerchange/ldd.txt;     curl -fsSL -o /opt/biointerchange/vcf-f1.json       "https://raw.githubusercontent.com/BioInterchange/BioInterchangeC/49d570125cc6c6c9c8b4a7d2cd39700365258d15/context/vcf-f1.json";     echo "d82befb44082a01c2688c7c253f200bfb475ba7ecbdd0aaf53e006609bdc74cb  /opt/biointerchange/vcf-f1.json" | sha256sum -c -;     useradd --uid "1000" --no-create-home --shell /usr/sbin/nologin conv;     apt-get purge -y curl patchelf; apt-get autoremove -y; rm -rf /var/lib/apt/lists/* /tmp/bottle.tar.gz;     biointerchange -v
+#5 CACHED
+
+#6 [biointerchange] exporting to image
+#6 exporting layers done
+#6 exporting manifest sha256:f735e01af3645e36b9ca0db1f5dfaf28e666408e41ac493e0ea4e519ff657f1d done
+#6 exporting config sha256:3625e3606c3e721ae6028f03b6f016e689b09b2a0ce52f987a86073754f32aa3 done
+#6 exporting attestation manifest sha256:2f566ebd46623904d86856afa9dae730b46ed2e254ab40a56ea092897dd44b53 done
+#6 exporting manifest list sha256:9055de9f2cd3e093a217eff40cf611f3eccc3e255ea927cd33169ccf4b951836 done
+#6 naming to docker.io/vcf-conv/biointerchange:49d570125cc6c6c9c8b4a7d2cd39700365258d15 done
+#6 unpacking to docker.io/vcf-conv/biointerchange:49d570125cc6c6c9c8b4a7d2cd39700365258d15 done
+#6 DONE 0.0s

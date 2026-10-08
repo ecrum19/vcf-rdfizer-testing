@@ -1,0 +1,40 @@
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# Simple lines are properties of gc:Meta; FILTER, FORMAT and contig definitions are members of
+# a bag each; INFO and ALT share one bag (g:alleleFormat) and are told apart by whether the
+# definition has a g:type; unknown keys are under g:userDefined.
+SELECT ?headerKey (COUNT(DISTINCT ?item) AS ?lineCount)
+WHERE {
+  ?meta a gc:Meta .
+  {
+    VALUES (?property ?headerKey) {
+      (g:vcfVersion "fileformat") (g:fileDate "fileDate") (g:referenceFASTA "reference")
+      (g:source "source") (g:breakpointFASTA "assembly") (gu:phasing "phasing")
+    }
+    ?meta ?property ?item .
+  } UNION {
+    VALUES (?property ?headerKey) {
+      (g:annotationFormat "FILTER") (g:genotypeFormat "FORMAT") (g:contig "contig")
+      (gu:sample "SAMPLE") (gu:pedigree "PEDIGREE")
+    }
+    ?meta ?property ?bag . ?bag ?item ?definition .
+  } UNION {
+    ?meta g:alleleFormat ?bag . ?bag ?item ?definition . ?definition g:type ?type .
+    BIND("INFO" AS ?headerKey)
+  } UNION {
+    ?meta g:alleleFormat ?bag . ?bag ?item ?definition .
+    FILTER NOT EXISTS { ?definition g:type ?type }
+    BIND("ALT" AS ?headerKey)
+  } UNION {
+    ?meta g:userDefined ?userDefined . ?userDefined ?property ?item .
+    BIND(STRAFTER(STR(?property), "#unknownProperty-") AS ?headerKey)
+  }
+}
+GROUP BY ?headerKey
+ORDER BY ?headerKey

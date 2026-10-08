@@ -1,0 +1,6 @@
+{
+  "q05_sample_genotype_counts": "TogoVar reads no sample columns: its record holds only the contig, FILTER and INFO dictionaries, and nothing in src/ calls the FORMAT or genotype accessors (src/vcf/record.rs:40-47 at f17835a6). It publishes allele frequencies by design, for privacy.",
+  "q06_ac_an_distribution": "TogoVar reads no sample columns: its record holds only the contig, FILTER and INFO dictionaries, and nothing in src/ calls the FORMAT or genotype accessors (src/vcf/record.rs:40-47 at f17835a6). It publishes allele frequencies by design, for privacy. The oracle counts AN and AC from genotypes; INFO AC/AN, where an input has them, is a different quantity.",
+  "q07_file_metadata": "No meta-information line is written: the header is used only internally, for the contig, FILTER and INFO dictionaries (src/vcf/reader.rs:100-154; src/rdf/turtle_writer.rs:193-216 at f17835a6).",
+  "q08_header_line_census": "No meta-information line is written (src/vcf/reader.rs:100-154; src/rdf/turtle_writer.rs:193-216 at f17835a6)."
+}

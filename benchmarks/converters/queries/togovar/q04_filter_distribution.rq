@@ -1,0 +1,26 @@
+PREFIX gvo: <http://genome-variation.org/resource#>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# TogoVar vcf2rdf v1.0.0-beta.12, run with --no-normalize so gvo:pos/ref/alt keep the VCF values.
+# It writes one node per ALT allele and no node for the record, so records are regrouped on
+# (reference, POS, REF, ID), all of which every allele node carries.
+# One gvo:filter literal per FILTER value ("PASS" included); "." writes none. Multiple filters
+# lose their file order, so they are joined in sorted order.
+SELECT ?filterStatus ?filterLexical (COUNT(?record) AS ?recordCount)
+WHERE {
+  {
+    SELECT ?record (GROUP_CONCAT(DISTINCT ?filterValue; separator=";") AS ?filters)
+    WHERE {
+    ?allele gvo:pos ?pos ; gvo:ref ?refLiteral ; dct:identifier ?id ;
+            faldo:location/(faldo:reference|faldo:begin/faldo:reference) ?seq .
+    BIND(CONCAT(STR(?seq), "|", STR(?pos), "|", STR(?refLiteral), "|", STR(?id)) AS ?record)
+      OPTIONAL { ?allele gvo:filter ?filterLiteral BIND(STR(?filterLiteral) AS ?filterValue) }
+    }
+    GROUP BY ?record
+  }
+  BIND(IF(COALESCE(?filters, "") = "", ".", ?filters) AS ?filterLexical)
+  BIND(IF(?filterLexical = "PASS", "PASS", IF(?filterLexical = ".", "NOT_APPLIED", "FAILED")) AS ?filterStatus)
+}
+GROUP BY ?filterStatus ?filterLexical
+ORDER BY ?filterStatus ?filterLexical

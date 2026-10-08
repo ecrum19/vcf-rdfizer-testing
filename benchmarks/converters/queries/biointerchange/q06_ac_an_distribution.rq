@@ -1,0 +1,32 @@
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+SELECT ?an ?ac (COUNT(DISTINCT ?record) AS ?siteCount)
+WHERE {
+  {
+    SELECT ?record (SUM(?callAn) AS ?an) (SUM(?callAc) AS ?ac)
+    WHERE {
+      {
+        SELECT DISTINCT ?record ?call ?alleles
+        WHERE {
+          ?record a gc:Feature ; g:variants/g:alleleB ?firstAlt ; g:samples/rdf:rest*/rdf:first ?call .
+          OPTIONAL { ?record g:variants/g:alleleC ?secondAlt }
+          FILTER(!BOUND(?secondAlt))
+          OPTIONAL { ?call g:genotype/g:alleles ?allelesLiteral }
+          BIND(COALESCE(STR(?allelesLiteral), "") AS ?alleles)
+        }
+      }
+      BIND(IF(REGEX(?alleles, "^[AB]$"), 1, IF(REGEX(?alleles, "^[AB][AB]$"), 2, 0)) AS ?callAn)
+      BIND(IF(?alleles = "B" || ?alleles = "AB" || ?alleles = "BA", 1, IF(?alleles = "BB", 2, 0)) AS ?callAc)
+    }
+    GROUP BY ?record
+  }
+  FILTER(?an > 0)
+}
+GROUP BY ?an ?ac
+ORDER BY ?an ?ac

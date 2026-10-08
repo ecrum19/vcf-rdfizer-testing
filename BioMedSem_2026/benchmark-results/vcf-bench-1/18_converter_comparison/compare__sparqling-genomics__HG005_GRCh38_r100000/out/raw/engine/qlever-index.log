@@ -1,0 +1,43 @@
+2026-10-08 17:12:45.654 - INFO: [1mQLever index builder bfd5741, compiled on Thu Sep  3 17:32:42 UTC 2026 using git hash bfd5741[22m
+2026-10-08 17:12:45.654 - WARN: Implicitly using the parallel parser for a single input file for reasons of backward compatibility; this is deprecated, please use the command-line option --parallel-parsing or -p
+2026-10-08 17:12:45.654 - INFO: Processing triples from single input stream /home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/sparqling-genomics-HG005_GRCh38_r100000/graph.nt (parallel = true) ...
+2026-10-08 17:12:45.654 - INFO: Locale was not specified in settings file, default is en_US
+2026-10-08 17:12:45.654 - INFO: You specified "locale = en_US" and "ignore-punctuation = 0"
+2026-10-08 17:12:45.654 - INFO: By default, integers that cannot be represented by QLever will throw an exception
+2026-10-08 17:12:45.655 - INFO: Parsing input triples and creating partial vocabularies, one per batch ...
+2026-10-08 17:12:47.268 - INFO: Triples parsed: 2,958,769 [average speed 2.4 M/s] 
+2026-10-08 17:12:47.429 - INFO: Number of triples created (including QLever-internal ones): 2,958,769 [may contain duplicates]
+2026-10-08 17:12:47.429 - INFO: Number of partial vocabularies created: 1
+2026-10-08 17:12:47.463 - INFO: Merging partial vocabularies ...
+2026-10-08 17:12:47.493 - INFO: Words merged: 104,164 [average speed 3.5 M/s] 
+2026-10-08 17:12:47.526 - INFO: Finished writing compressed internal vocabulary, size = 516.7 kB [uncompressed = 5.1 MB, ratio = 10%]
+2026-10-08 17:12:47.526 - INFO: Number of words in external vocabulary: 104,164
+2026-10-08 17:12:47.527 - INFO: Converting triples from local IDs to global IDs ...
+2026-10-08 17:12:47.602 - INFO: Triples converted: 2,958,769 [average speed 41.9 M/s] 
+2026-10-08 17:12:47.655 - INFO: Creating permutations SPO and SOP ...
+2026-10-08 17:12:47.771 - INFO: Number of inputs to `uniqueView`: 2,958,769
+2026-10-08 17:12:47.771 - INFO: Number of unique elements: 2,958,767
+2026-10-08 17:12:47.771 - INFO: Triples sorted: 2,958,767 [average speed 25.5 M/s] 
+2026-10-08 17:12:47.920 - INFO: Statistics for SPO: #relations = 100,236, #blocks = 64, #triples = 2,958,767
+2026-10-08 17:12:47.920 - INFO: Statistics for SOP: #relations = 100,236, #blocks = 64, #triples = 2,958,767
+2026-10-08 17:12:47.920 - INFO: Number of distinct patterns: 27
+2026-10-08 17:12:47.920 - INFO: Number of subjects with pattern: 100,236 [all]
+2026-10-08 17:12:47.920 - INFO: Total number of distinct subject-predicate pairs: 2,958,766
+2026-10-08 17:12:47.920 - INFO: Average number of predicates per subject: 29.5
+2026-10-08 17:12:47.920 - INFO: Average number of subjects per predicate: 55,826
+2026-10-08 17:12:47.997 - INFO: Creating permutations OSP and OPS ...
+2026-10-08 17:12:48.458 - INFO: Triples sorted: 2,958,767 [average speed 6.4 M/s] 
+2026-10-08 17:12:48.472 - INFO: Statistics for OSP: #relations = 106,032, #blocks = 113, #triples = 2,958,767
+2026-10-08 17:12:48.472 - INFO: Statistics for OPS: #relations = 106,032, #blocks = 113, #triples = 2,958,767
+2026-10-08 17:12:48.472 - INFO: Adding 100,236 triples to the POS and PSO permutation for the internal `ql:has-pattern` ...
+2026-10-08 17:12:48.476 - INFO: Creating permutations PSO and POS ...
+2026-10-08 17:12:48.480 - INFO: Number of inputs to `uniqueView`: 100,236
+2026-10-08 17:12:48.480 - INFO: Number of unique elements: 100,236
+2026-10-08 17:12:48.480 - INFO: Triples sorted: 100,236 [average speed 30.3 M/s] 
+2026-10-08 17:12:48.493 - INFO: Statistics for PSO: #relations = 1, #blocks = 4, #triples = 100,236
+2026-10-08 17:12:48.493 - INFO: Statistics for POS: #relations = 1, #blocks = 4, #triples = 100,236
+2026-10-08 17:12:48.568 - INFO: Creating permutations PSO and POS ...
+2026-10-08 17:12:48.935 - INFO: Triples sorted: 2,958,767 [average speed 8.1 M/s] 
+2026-10-08 17:12:48.952 - INFO: Statistics for PSO: #relations = 53, #blocks = 126, #triples = 2,958,767
+2026-10-08 17:12:48.952 - INFO: Statistics for POS: #relations = 53, #blocks = 126, #triples = 2,958,767
+2026-10-08 17:12:48.953 - INFO: Index build completed

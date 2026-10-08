@@ -1,0 +1,28 @@
+PREFIX sg: <https://sparqling-genomics.org/0.99.11/>
+PREFIX vc: <sg://0.99.11/vcf2rdf/>
+PREFIX v: <sg://0.99.11/vcf2rdf/variant/>
+PREFIX gt: <sg://0.99.11/vcf2rdf/format/GT/>
+PREFIX hdr: <sg://0.99.11/vcf2rdf/header/>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# SPARQLing Genomics vcf2rdf 0.99.11, default options. It writes one vc:VariantCall per record and
+# sample, and only for calls with a non-reference allele; there is no record node. Call IRIs are
+# origin://<md5>@<k> with k = record index x samples + sample index (doc/command-line-tools.tex),
+# so records are regrouped on floor(k / samples). Only the first ALT allele is written.
+# Calls are written only when they carry a non-reference allele, so HOM_REF, HAPLOID_REF and
+# fully missing calls are absent from the graph.
+SELECT ?sampleId ?genotypeClass (COUNT(?call) AS ?callCount)
+WHERE {
+  ?call a vc:VariantCall ; sg:sample ?sample ; vc:ploidy ?ploidy ; gt:allele_1 ?a1 .
+  ?sample rdfs:label ?label .
+  OPTIONAL { ?call gt:allele_2 ?a2 }
+  OPTIONAL { ?call gt:allele_3 ?a3 }
+  BIND(STR(?label) AS ?sampleId)
+  BIND(IF(?a1 < 0 || COALESCE(?a2, 0) < 0 || COALESCE(?a3, 0) < 0, "MISSING",
+    IF(?ploidy >= 3, "OTHER_PLOIDY",
+    IF(?ploidy = 1, IF(?a1 = 0, "HAPLOID_REF", "HAPLOID_ALT"),
+    IF(?a1 = ?a2, IF(?a1 = 0, "HOM_REF", "HOM_ALT"), "HET")))) AS ?genotypeClass)
+}
+GROUP BY ?sampleId ?genotypeClass
+ORDER BY ?sampleId ?genotypeClass
