@@ -28,7 +28,7 @@
 \renewcommand{\textfraction}{.05}
 \renewcommand{\floatpagefraction}{.7}
 \begin{document}
-\title[VCF-RDFizer]{VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Governable Semantic Genomic Data}
+\title[VCF-RDFizer]{VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Policy-aware Semantic Genomic Data}
 \author*[1,2]{\fnm{Elias} \sur{Crum}\ORCID{0009-0005-3991-754X}}\email{elias.crum@ugent.be}
 \author[1]{\fnm{Bart} \sur{Buelens}\ORCID{0000-0001-7734-3747}}
 \author[2]{\fnm{Ruben} \sur{Taelman}\ORCID{0000-0001-5118-256X}}
@@ -278,7 +278,7 @@ Separate large-graph retrieval runs compare the same thirteen answers, without S
 The specification, exclusions, and oracle dependencies are in Supplementary Section~\ref{S-sec:validation}.
 
 \subsection{Linked genomic workflow}\label{subsec:eval-workflow}
-\paragraph{**Scope.**}
+\paragraph{Scope.}
 The three use cases introduced in Section~\ref{sec:background} share a common requirement: genomic observations should remain traceable to their source while being linked to information maintained elsewhere.
 We therefore evaluate a single linked workflow that combines source observations with external evidence and requester-specific release rules, rather than implementing any of the three applications in full.
 Agreement with a conventional workflow tests whether this linked, policy-aware route reproduces the defined results.
@@ -286,14 +286,14 @@ The separate frequency graph and applied rule changes then test whether external
 Together, these experiments assess core prerequisites of the motivating applications, while clinical effectiveness, production security, and application-specific deployment remain outside the scope of this study.
 Supplementary Section~\ref{S-sec:usecase} maps each motivating use case to the capabilities tested here and the additional work required for implementation.
 
-\paragraph{**Application question.**}
+\paragraph{Application question.}
 The application asks: \emph{which observed variants in the fixed 81-gene ACMG SF v3.2 secondary-findings set have a corresponding ClinVar classification, which participant and gene are associated with each match, and which matches may be released to each requester?}
 The benchmark fixes the gene set to ACMG SF v3.2 for reproducibility and does not represent the latest ACMG recommendations~\cite{miller2023acmg}.
 ClinVar variants are included when they have at least one review star, regardless of classification.
 Pathogenic and likely pathogenic (P/LP) matches are reported separately.
 These P/LP matches are not treated as reportable secondary findings because the workflow does not evaluate the additional gene-, inheritance-, and variant-specific criteria required for clinical reporting.
 
-\paragraph{**RDF and conventional comparison workflows.**}
+\paragraph{RDF and conventional comparison workflows.}
 The RDF workflow links the converted VCFs to ClinVar and gene resources, materializes a release view for each requester, and queries each view with SPARQL.
 The conventional workflow harmonizes contig names, annotates variants with bcftools, and evaluates the same case definition in a separate Python implementation.
 The two workflows are compared using tuples defined by participant, gene, contig, position, and alleles.
@@ -301,7 +301,7 @@ Timings are reported only when the sorted tuple sets agree exactly.
 Reported counts therefore represent participant--variant--gene matches rather than unique participants.
 Both workflows share preprocessing and the case definition, while the downstream linking, policy evaluation, and query implementations remain separate.
 
-\paragraph{**Evaluation arms and simulated release policies.**}
+\paragraph{Evaluation arms and simulated release policies.}
 We define an \emph{experimental arm} as a distinct dataset and policy scenario used to test one aspect of the linked workflow.
 Four arms evaluate integration, cohort breadth, scale beyond the gene spans, and fine-grained release.
 Arm~1 contains the ACMG gene-span regions of five single-sample VCFs from three sources and tests integration across heterogeneous inputs.
@@ -322,7 +322,7 @@ Each participant is represented by a single-sample VCF, so the experiment does n
 Four additional rule changes test where policy configuration or execution logic changes in each workflow; they do not measure usability or maintainability.
 Supplementary Section~\ref{S-sec:usecase} provides the complete arm definitions, policy rules, and evaluation protocol.
 
-\subsection{**Scalability and retrieval**}\label{subsec:eval-scalability}
+\subsection{Scalability and retrieval}\label{subsec:eval-scalability}
 We use controlled scaling \emph{ladders} to measure how conversion costs change as dataset size increases along one dimension at a time.
 The \emph{record ladder} processes progressively larger prefixes of HG005 containing 10,000, 100,000, and one million records, each with three replicates, followed by a single run on the complete HG005 VCF.
 The \emph{sample ladder} holds 10,000 cohort records and their INFO content fixed while increasing the number of samples from one to 2,504 under both sample-representation profiles.
@@ -471,8 +471,6 @@ The complete 2,504-sample chromosome-20 VCF was not converted under either profi
   Medians are shown where replicated.
   }\label{fig:samples}
 \end{figure}
-
-% TODO: Made it to here editing
 
 \subsubsection{Separating core conversion from optional artifact construction}\label{subsubsec:results-artifacts}
 Space-optimized processing reduced transient workspace by $9.19\times$ for 100,000 HG005 records, with a 5.2\% increase in runtime and no change to the generated triples.
@@ -719,9 +717,6 @@ Its tested inputs did not meet the empty-selector or no-VCF-triples conditions s
 Supplementary Section~\ref{S-sec:repro} identifies the pre-release and later-run commits, the v3.1.0 image digest, and the bundled shape snapshot.
 The public vocabulary is separately versioned \cite{vcfc210}.
 Results must be traced to their recorded build and input, not only to the latest package.
-\authorquery{Add a persistent archive identifier containing the exact evaluated code, dirty-tree changes for use-case arms 1--2, complete image digests, vocabulary/shapes, queries, and evidence manifests.
-Include the commits and configurations of the default-shape mutation rerun and the consumer WGS validation runs recorded in the release ledger.
-The supplied manuscript package does not itself establish this complete archived snapshot.}
 
 \subsection*{Competing interests}
 None declared.
