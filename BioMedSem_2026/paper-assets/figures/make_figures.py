@@ -15,7 +15,9 @@ value is also stated in the text or in the archived tidy datasets.
 
 from __future__ import annotations
 
+import csv
 import glob
+import os
 import re
 import statistics as st
 import sys
@@ -1222,6 +1224,83 @@ def fig_usecase_costs() -> None:
     for (name, _c), x, a, b in zip(arms, sizes, setup, query):
         print(f"costs {name}: {x} triples, first answer {a / 60:.1f} min, query {b:.1f} s")
 
+# ---------------------------------------------------------------------------
+# Figure: the shared-input converter comparison (main text)
+# ---------------------------------------------------------------------------
+#: Experiment 18's reported run. EXP18_RESULTS reads it from elsewhere, e.g. a checkout of the
+#: branch that archives it, before that archive is merged here.
+CONVERTERS = Path(os.environ.get("EXP18_RESULTS", site.RESULTS / "vcf-bench-1" / "18_converter_comparison"))
+CONVERTER_ROWS = (("vcf-rdfizer", "VCF-RDFizer"), ("jvarkit", "JVarkit"), ("togovar", "TogoVar"),
+                  ("sparqling-genomics", "SPARQLing Genomics"), ("biointerchange", "BioInterchange"))
+CONVERTER_INPUTS = (("HG005_GRCh38_r100000", "HG005", "100k records, 1 sample"),
+                    ("1000G_10000r_s16", "1000 Genomes", "10k records, 16 samples"))
+#: Outcome colours used by no other figure, so this grid's blue or orange is never read as another
+#: figure's series: the palette's violet slot, and a raspberry stepped clear of the orange.
+#: Validated with the dataviz palette validator against every colour the other figures use
+#: (blue, orange, aqua): CVD Delta E >= 9.2 and normal-vision Delta E >= 15.8 for every pair that
+#: involves them; white marks reach 8.6:1 on violet and 6.0:1 on raspberry.
+VIOLET = "#4a3aa7"
+RASPBERRY = "#b0306f"
+#: Outcome -> (fill, mark, mark colour, label). The mark carries the outcome too, so it is never
+#: colour alone.
+CONVERTER_OUTCOMES = {
+    "PASS": (VIOLET, "\u2713", "white", "Answers as the oracle does"),
+    "MISMATCH": (RASPBERRY, "\u00d7", "white", "Answers differently"),
+    "NOT_REPRESENTED": (GRID, "\u2013", INK_2, "Not in the graph"),
+}
+
+
+def converter_outcomes() -> dict[tuple[str, str, str], str]:
+    with (CONVERTERS / "summary" / "outcomes.csv").open(encoding="utf-8") as handle:
+        return {(row["tool"], row["input"], row["question"]): row["status"] for row in csv.DictReader(handle)}
+
+
+def fig_converters() -> None:
+    """Which of the content questions Q1-Q8 each converter's graph answers as the oracle does.
+
+    One grid per input: converters down, questions across, one cell per answer.
+    """
+    outcomes = converter_outcomes()
+    questions = sorted({question for (_tool, _input, question) in outcomes})
+    unknown = {status for status in outcomes.values()} - set(CONVERTER_OUTCOMES)
+    if unknown:
+        raise SystemExit(f"fig-converters: no style for {sorted(unknown)}")
+    rows = len(CONVERTER_ROWS)
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH_IN, 1.85), sharey=True)
+    fig.subplots_adjust(left=0.205, right=0.995, top=0.69, bottom=0.03, wspace=0.07)
+    for i, (ax, (key, name, what)) in enumerate(zip(axes, CONVERTER_INPUTS)):
+        for row, (tool, _label) in enumerate(CONVERTER_ROWS):
+            y = rows - 1 - row
+            for x, question in enumerate(questions):
+                fill, mark, ink, _ = CONVERTER_OUTCOMES[outcomes[(tool, key, question)]]
+                ax.add_patch(plt.Rectangle((x - 0.45, y - 0.41), 0.9, 0.82, facecolor=fill, linewidth=0))
+                # DejaVu Sans, bundled with matplotlib, has the check mark that Helvetica lacks.
+                ax.text(x, y, mark, ha="center", va="center", color=ink, fontsize=6.6, fontweight="bold",
+                        fontfamily="DejaVu Sans")
+        ax.set_xlim(-0.55, len(questions) - 0.45)
+        ax.set_ylim(-0.55, rows - 0.45)
+        ax.set_xticks(range(len(questions)))
+        ax.set_xticklabels([f"Q{int(question[1:3])}" for question in questions], fontsize=6.2)
+        ax.xaxis.tick_top()
+        ax.set_yticks(range(rows))
+        ax.set_yticklabels([label for _tool, label in reversed(CONVERTER_ROWS)], fontsize=6.5)
+        ax.tick_params(length=0, pad=2)
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        ax.set_title(f"({'ab'[i]}) {name}: {what}", fontsize=6.6, pad=13)
+    # The keys are the fills; every cell also carries its mark, which the caption names.
+    handles = [plt.Rectangle((0, 0), 1, 1, facecolor=fill, linewidth=0, label=label)
+               for fill, _mark, _ink, label in CONVERTER_OUTCOMES.values()]
+    fig.legend(handles=handles, loc="upper center", ncol=3, bbox_to_anchor=(0.6, 1.0), frameon=False,
+               fontsize=6.5, handlelength=1.0, handletextpad=0.5, columnspacing=1.8)
+    fig.savefig(OUT / "fig-converters.pdf", metadata=PDF_METADATA)
+    plt.close(fig)
+    for tool, label in CONVERTER_ROWS:
+        for key, name, _what in CONVERTER_INPUTS:
+            passed = sum(outcomes[(tool, key, q)] == "PASS" for q in questions)
+            print(f"converters {label} / {name}: {passed} of {len(questions)} as the oracle")
+
+
 if __name__ == "__main__":
     fig_scaling()
     fig_samples()
@@ -1232,6 +1311,7 @@ if __name__ == "__main__":
     fig_usecase_matches()
     fig_usecase_costs()
     fig_retrieval_detail()
-    for name in ("fig-scaling", "fig-samples", "fig-representations", "fig-retrieval", "fig-regional",
+    fig_converters()
+    for name in ("fig-converters", "fig-scaling", "fig-samples", "fig-representations", "fig-retrieval", "fig-regional",
                  "fig-validation", "fig-usecase-matches", "fig-usecase-costs", "fig-retrieval-detail"):
         print("wrote", OUT / f"{name}.pdf")

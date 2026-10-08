@@ -114,6 +114,97 @@ Semantic Beacons \cite{semantic_beac_2025} & \capP & \capN & \capY & \capN & \ca
 \end{longtable}
 }
 
+\section{Shared-input converter comparison}\label{sec:converters}
+Table~\ref{tab:tools-evidence} records what each converter documents.
+This section reports what four of them write when they convert the same inputs as VCF-RDFizer, measured with the paper's existing measurements: the validator's content questions Q1--Q8 against the oracle, conversion wall time and peak resident memory, triples per record, and gzipped N-Triples size (main Figure~\ref{M-fig:converters}).
+The run is experiment~18 of \texttt{vcf-rdfizer-testing} at commit \texttt{e3743590}, on \texttt{vcf-bench-1} on 8~October 2026, with three replicates of every conversion; its records are archived in \texttt{benchmark-results/vcf-bench-1/18\_converter\_comparison/}.
+The whole experiment runs from one Docker Compose file, so the host needs only Docker: \texttt{CONV\_DATA=\ldots{} benchmarks/converters/run.sh}.
+
+\subsection{Converters, builds, and options}\label{subsec:converters-tools}
+Each converter ran in its upstream release image wherever upstream publishes one, and with the options that make its output most complete rather than with its defaults (Table~\ref{tab:converters-tools}).
+Images built for the experiment start from a Debian base pinned by digest and take their packages from \texttt{snapshot.debian.org} at a fixed date; every downloaded artifact was checked against a pinned SHA-256, and the run records the resolved Compose file and every image ID.
+Converter containers ran without network access, as the calling user.
+A static BusyBox \texttt{time -v}, mounted read-only into each container, measured wall time and peak resident set size, the quantities VCF-RDFizer's own run summary reports for its stages; VCF-RDFizer's wall time spans all its stages, including starting a container for each.
+Apache Jena \texttt{riot} 6.2.0 streamed each native output to N-Triples, which were counted, gzipped, and indexed with the QLever build in the VCF-RDFizer image.
+
+\begin{table}[!htbp]
+\caption{Converters in the shared-input comparison: the version run, how it was obtained, and the options used.}\label{tab:converters-tools}%
+\centering\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}\renewcommand{\tabularxcolumn}[1]{m{#1}}%
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}m{0.17\textwidth}>{\raggedright\arraybackslash}m{0.15\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}m{0.27\textwidth}@{}}
+\toprule
+\textbf{Converter} & \textbf{Version} & \textbf{Obtained as} & \textbf{Options; output}\\
+\midrule
+VCF-RDFizer & v3.3.1 (\texttt{b25fb7b}) & Release image \texttt{sha256:3ad71b1a\ldots2993}, driven by the release's command-line tool & Expanded samples, space-optimized storage, N-Triples only; gzip-framed N-Triples\\
+\rowsep
+JVarkit \texttt{vcf2rdf} \cite{JVarkit_2015} & Commit \texttt{fc2356a3} & Built from source, with its git submodule; no jar is published, and the release tag was moved after publication, so the commit is the pin. The SHA-256 of every library jar the build fetched is recorded & \texttt{-{}-hide ''} (the default hides ALT, FILTER, and genotypes); Turtle\\
+\rowsep
+TogoVar \texttt{vcf2rdf} \cite{togovar_2022} & v1.0.0-beta.12 (\texttt{f17835a6}) & Upstream Docker Hub image, by digest & \texttt{generate config} for the input's assembly, then \texttt{convert -{}-no-normalize}, which keeps POS, REF, and ALT as written; Turtle\\
+\rowsep
+SPARQLing Genomics \texttt{vcf2rdf} \cite{sparqling_genomics_software} & 0.99.11 (\texttt{1859f6f8}) & Upstream release image (a Guix pack), loaded from its release tarball after a checksum check & Defaults, which already write INFO, FORMAT, and the header; N-Triples\\
+\rowsep
+BioInterchange \cite{biointerchange2_software} & 2.0.5 (\texttt{49d57012}) & The brewsci Homebrew bottle, still served by its registry and addressed by its SHA-256. The source build no longer works, because a dependency's repository has been deleted & Defaults; line-delimited JSON-LD, whose contexts now return HTTP 404 and were inlined from the pinned commit\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The other entries in Table~\ref{tab:tools-evidence} were not run.
+The VCF2RDF web service is offline and documents no command line; the BioHackathon \texttt{vcf2rdf} gem was never published; \texttt{rdf-vcf} has been unmaintained since 2015 and names no vocabulary; bio-vcf writes RDF only through user templates without a documented vocabulary; VariantKG converts with SPARQLing Genomics' \texttt{vcf2rdf}; AgroLD documents no VCF conversion; and Semantic Beacons maps Beacon responses rather than VCF files.
+
+\subsection{Questions and ports}\label{subsec:converters-ports}
+Every graph was compared by the same script, inside the VCF-RDFizer image, with that image's validator: the same oracle over the source VCF, QLever build, result normalization, and comparator.
+Only the SPARQL differs: each converter's Q1--Q8 are ported to its vocabulary, and VCF-RDFizer's are its validator's own queries.
+A question a graph cannot answer has no port; its reason, with evidence from the converter's source, is recorded instead and reported as not represented, and the script refuses to run when a question has neither.
+Q9--Q13 were excluded: Q9 and Q10 count VCF Core predicates and classes, and Q11--Q13 hash VCF-RDFizer's record IRIs.
+
+Ports read only what a graph states.
+Where a converter writes two VCF values the same way, the port reads that state as the value the converter's code derives it from, and the comparison shows whether the conflation costs anything on these inputs:
+JVarkit writes no FILTER triple for either PASS or `.' (read as PASS), writes no ploidy (haploid calls read as homozygous), and types neither a no-call nor a record without GT;
+TogoVar replaces CHROM with a reference IRI from its configuration, which the Q1 port maps back through the same configuration;
+SPARQLing Genomics writes no record node, so its calls are regrouped through the record index in their IRIs, as its manual documents, and it writes only the first ALT allele;
+and BioInterchange writes a missing allele as REF, writes `*' as an empty string, and strips the \texttt{VCFv} prefix from \texttt{\#\#fileformat}.
+TogoVar and SPARQLing Genomics lose the order of multiple FILTER codes.
+
+\subsection{Results}\label{subsec:converters-results}
+Every conversion and comparison completed (52 recorded steps, all with exit status~0).
+VCF-RDFizer answered Q1--Q8 as the oracle did on both inputs; the other graphs' differences come from what they hold:
+\begin{itemize}
+\item \textbf{JVarkit.} Its record IRI is \texttt{urn:variant/CHROM:POS:REF}, so the five pairs of 1000 Genomes lines that share CHROM, POS, and REF (for example \texttt{20:283049 C>CGAT} and \texttt{C>T}, both with ID `.') merge: 9,995 records instead of 10,000, five more multiallelic records, and every later count shifted. On the HG005 slice it answered Q1--Q6 as the oracle did.
+\item \textbf{TogoVar.} It drops alleles outside \texttt{[ACGTURYKMSWBDHVN]}: the 13 symbolic records of the 1000 Genomes slice disappear, and \texttt{chr1:1663386 C>*,T} on the HG005 slice becomes an SNV (Q2, Q3). The same five pairs merge, because TogoVar writes no record node. It writes no samples or header lines, by design.
+\item \textbf{SPARQLing Genomics.} A call is written only when it carries an alternate allele, so the 1000 Genomes graph holds the 1,401 of 10,000 records with a carrier, no homozygous-reference calls, and allele numbers over carriers only (Q6); multiallelic records are recognized only through an allele index of 2 or more, 19 of 70. On the HG005 slice, where every call carries an alternate allele, it answered Q1--Q7 as the oracle did; htslib adds a PASS FILTER definition the file does not declare (Q8).
+\item \textbf{BioInterchange.} Its header document for the HG005 slice (line~2 of 100,003) is not valid JSON, because the tool writes strings without escaping them, so the header is absent from that graph (Q7, Q8). All 100,001 record documents parse, and on the 1000 Genomes slice it answered all eight questions as the oracle did.
+\end{itemize}
+
+\begin{table}[!htbp]
+\caption{Conversion cost and output size in the shared-input comparison: median wall time and largest peak resident set size over three replicates, and the size of replicate~1's output once streamed to N-Triples. QLever index times are for the same graphs.}\label{tab:converters-cost}%
+\centering\footnotesize\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.1}%
+\newcommand{\hd}[1]{\textbf{\begin{tabular}[b]{@{}c@{}}#1\end{tabular}}}%
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
+\toprule
+\textbf{Converter} & \textbf{Input} & \hd{Wall\\(s)} & \hd{Peak RSS\\(GB)} & \textbf{Triples} & \hd{Triples per\\record} & \hd{N-Triples.gz\\$\div$ VCF.gz} & \hd{QLever\\index (s)}\\
+\midrule
+VCF-RDFizer & HG005 & 91.6 & 1.85 & 17,098,746 & 171.0 & 25.5 & 20.8\\
+ & 1000 Genomes & 31.4 & 0.93 & 5,359,578 & 536.0 & 136.9 & 7.0\\
+JVarkit & HG005 & 2.2 & 0.43 & 1,401,613 & 14.0 & 2.1 & 1.8\\
+ & 1000 Genomes & 1.4 & 0.30 & 1,020,454 & 102.0 & 18.2 & 1.4\\
+TogoVar & HG005 & 1.3 & 0.01 & 5,728,120 & 57.3 & 15.4 & 6.8\\
+ & 1000 Genomes & 0.1 & 0.01 & 564,940 & 56.5 & 35.0 & 1.0\\
+SPARQLing Genomics & HG005 & 6.3 & 0.01 & 2,958,769 & 29.6 & 4.8 & 3.3\\
+ & 1000 Genomes & 0.4 & 0.01 & 180,053 & 18.0 & 4.1 & 0.5\\
+BioInterchange & HG005 & 1.5 & 0.02 & 4,559,438 & 45.6 & 17.0 & 6.6\\
+ & 1000 Genomes & 0.4 & 0.01 & 2,031,215 & 203.1 & 154.3 & 3.2\\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\paragraph{Replicates.}
+Each converter's three outputs were byte-identical, with two exceptions.
+VCF-RDFizer's gzip framing differed between replicates, but its sorted triples were identical in all three replicates of both inputs; on the HG005 slice they equal those of the v3.1.0 conversion (Table~\ref{tab:builds}).
+BioInterchange's replicates differed only in their \texttt{Context} and \texttt{Summary} documents, which record run paths and timestamps.
+
+\paragraph{IRI warnings.}
+\texttt{riot} parsed every output, warning about three converters' IRIs: VCF-RDFizer's record IRIs, \texttt{file://<name>.vcf\#record/n}, place the file name where a URL's host would be (an ``unwise'' IRI; 23.6 million warnings on the HG005 graph); SPARQLing Genomics' \texttt{origin://<md5>@<k>} uses deprecated user information (3.1 million); and JVarkit's \texttt{urn:variant/\ldots} has an invalid URN namespace (0.6 million).
+None prevented parsing or indexing; TogoVar's and BioInterchange's outputs drew no warnings.
+
 \section{Representation and implementation details}\label{sec:model}
 \subsection{Model and sample profiles}\label{subsec:model-profiles}
 VCF-RDFizer uses the VCF Core vocabulary (\texttt{vcfc:}, \url{https://w3id.org/vcf-core/vocab\#}) to retain file and header assertions, variant records, and sample/genotype information~\cite{vcfc210}.
@@ -669,6 +760,8 @@ Additional validation runs & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904
 Consumer WGS validation rerun & Tree committed as \texttt{3994e94}, validation code as released in v3.3.1; scratch image \texttt{sha256:29c371ad\ldots5317} on \texttt{vcf-bench-2} & Same slice and graph; QLever, expanded profile; default shapes in 117 batches on four workers\\
 \rowsep
 N-Triples-only rerun & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2} & 100,000 HG005 records; conversion to gzip-framed N-Triples only, then the query-cost validation on QLever without SHACL; three replicates each\\
+\rowsep
+Shared-input converter comparison & Harness \texttt{e3743590}; VCF-RDFizer v3.3.1 image \texttt{sha256:3ad71b1a\ldots2993}; the other converters as in Table~\ref{tab:converters-tools}, on \texttt{vcf-bench-1} & 100,000 HG005 records and the 16-sample, 10,000-record ladder rung; Q1--Q8, three replicates (Section~\ref{sec:converters})\\
 \bottomrule
 \end{tabularx}
 \end{table}
