@@ -709,6 +709,9 @@ The shared-input converter comparison covers four converters, two inputs, and th
 The workflow comparison uses bcftools as the conventional reference.
 The sample-scaling experiment holds INFO content fixed, the complete multi-sample cohort was not converted, and the most comprehensive SHACL profiles were evaluated only on small inputs.
 The linking and policy experiments use single-sample files and simulated access rules, so all reported outcomes remain specific to the tested datasets, software versions, reference releases, and policy configurations.
+Gene-scoped release rules also have a gap in v3.3.1: its gene linkers link no record whose alternate allele is symbolic or a breakend, so a prohibition on a gene panel does not reach structural variants in those genes.
+In Arm~2, run with v3.3.1, this released structural-variant records in cancer-predisposition genes to the two research views, 110 to the disease-specific view and 58 to the general-research view, although their carrier lists agreed with the baseline; Arms~1, 3, and 4 contain no such records.
+The gap is documented in the tool's limitations, and a fix that links such records by their reference span is in preparation.
 
 Future work can therefore proceed in stages.
 The first priority is to strengthen the representation and validation layer by closing remaining oracle-coverage gaps, extending conformant sites-only support, and defining clearer boundaries for variant normalization and shared identity.
