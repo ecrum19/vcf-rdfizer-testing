@@ -37,12 +37,18 @@ def parse_time_v(path: Path) -> tuple[float | None, int | None]:
         return None, None
     text = path.read_text(errors="replace")
     wall = rss = None
-    match = re.search(r"Elapsed \(wall clock\) time[^:]*:\s*([0-9:.]+)", text)
+    # GNU time writes h:mm:ss or m:ss.ss; BusyBox writes "0m 2.17s" (and "1h 2m 3s" past an hour).
+    match = re.search(r"Elapsed \(wall clock\) time \([^)]*\):\s*(.+)", text)
     if match:
-        seconds = 0.0
-        for part in match.group(1).split(":"):
-            seconds = seconds * 60 + float(part)
-        wall = seconds
+        value = match.group(1).strip()
+        units = re.fullmatch(r"(?:(\d+)h\s*)?(?:(\d+)m\s*)?([\d.]+)s", value)
+        if units:
+            hours, minutes, seconds = units.groups()
+            wall = int(hours or 0) * 3600 + int(minutes or 0) * 60 + float(seconds)
+        elif re.fullmatch(r"[\d:.]+", value):
+            wall = 0.0
+            for part in value.split(":"):
+                wall = wall * 60 + float(part)
     match = re.search(r"Maximum resident set size \(kbytes\):\s*(\d+)", text)
     if match:
         rss = int(match.group(1))

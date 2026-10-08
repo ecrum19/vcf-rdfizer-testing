@@ -283,9 +283,10 @@ for spec in "${INPUTS[@]}"; do
     binds=()
     [[ "$tool" == togovar ]] && binds=(--bind "CHROM_VALUES=$WORK/togovar/$name.chrom-values.rq")
     label="compare__${tool}__${name}"
+    # The interpreter the release CLI runs its validator with: the image's venv, which has cyvcf2.
     bm_run_raw "$EXPERIMENT" "$label" -- docker compose -f "$CONV/compose.yaml" \
       --env-file "$CONV/pins.env" --profile step run --rm -T vcf-rdfizer \
-      python3 "$CONV/compare_converters.py" --tool "$tool" --vcf "$vcf" --graph "$graph" \
+      /opt/pycottas-venv/bin/python "$CONV/compare_converters.py" --tool "$tool" --vcf "$vcf" --graph "$graph" \
       --queries "$CONV/queries/$tool" --out "$OUT/$label/out" \
       --scratch "$WORK/scratch/$tool-$name" "${binds[@]}"
     record_image "$OUT/$label" vcf-rdfizer
