@@ -103,6 +103,9 @@ def main() -> int:
         report_path = cell / "out" / "comparison.json"
         report = json.loads(report_path.read_text()) if report_path.is_file() else {}
         sizes = read_tsv(root / f"normalise__{tool}__{name}" / "sizes.tsv")
+        warnings_path = root / f"normalise__{tool}__{name}" / "riot-warnings.tsv"
+        warnings = [line.split("\t") for line in warnings_path.read_text().splitlines()] \
+            if warnings_path.is_file() else []
         for question in QUESTIONS:
             record = report.get("questions", {}).get(question, {"status": "NO_RESULT"})
             outcomes.append({"tool": tool, "input": name, "question": question,
@@ -125,6 +128,8 @@ def main() -> int:
             "nt_gz_over_vcf_gz": int(sizes["nt_gz_bytes"]) / int(sizes["vcf_gz_bytes"])
                 if "nt_gz_bytes" in sizes else None,
             "qlever_index_s": report.get("engine", {}).get("indexBuildSeconds"),
+            "riot_warnings": sum(int(w[1]) for w in warnings),
+            "riot_warning_kinds": "; ".join(f"{w[2]} ({int(w[1]):,})" for w in warnings[:2]),
             **{question[:3]: SHORT.get(next(o["status"] for o in outcomes if o["tool"] == tool
                                             and o["input"] == name and o["question"] == question),
                                        "no result")
@@ -140,9 +145,9 @@ def main() -> int:
 
     lines = ["# Experiment 18 summary", "",
              "| Converter | Input | Wall (s, median) | Peak RSS (GB) | Same output every replicate "
-             "| Triples | Triples/record | N-Triples.gz ÷ VCF.gz | QLever index (s) | "
+             "| Triples | Triples/record | N-Triples.gz ÷ VCF.gz | QLever index (s) | riot warnings | "
              + " | ".join(q[:3].upper() for q in QUESTIONS) + " |",
-             "|" + "---|" * (9 + len(QUESTIONS))]
+             "|" + "---|" * (10 + len(QUESTIONS))]
     for row in rows:
         lines.append("| " + " | ".join([
             row["tool"], row["input"], fmt(row["wall_s_median"], ".1f"),
@@ -150,6 +155,7 @@ def main() -> int:
             {True: "yes", False: "no", None: "–"}[row["deterministic"]],
             fmt(row["triples"], ","), fmt(row["triples_per_record"], ".1f"),
             fmt(row["nt_gz_over_vcf_gz"], ".1f"), fmt(row["qlever_index_s"], ".1f"),
+            f'{row["riot_warnings"]:,}' + (f' ({row["riot_warning_kinds"]})' if row["riot_warning_kinds"] else ""),
             *[row[q[:3]] for q in QUESTIONS]]) + " |")
     (out / "summary.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))

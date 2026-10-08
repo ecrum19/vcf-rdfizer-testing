@@ -32,6 +32,8 @@ x-base-args: &base-args
 # CONV_WORK and BM_RESULTS.
 x-converter: &converter
   network_mode: none
+  # Resolvable without a network, so Java's local-host lookup does not log an exception.
+  hostname: localhost
   user: "${CONV_UID:-1000}:${CONV_GID:-1000}"
   volumes:
     - ${CONV_REPO}:${CONV_REPO}:ro

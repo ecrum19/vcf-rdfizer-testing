@@ -267,8 +267,21 @@ for spec in "${INPUTS[@]}"; do
     cell="$OUT/$label"
     bm_run_raw "$EXPERIMENT" "$label" -- docker compose -f "$CONV/compose.yaml" \
       --env-file "$CONV/pins.env" --profile step run --rm -T riot \
-      "$cell/out/time.txt" "$cell/out/graph.nt" riot --syntax="$syntax" --output=nt "$native"
+      "$cell/out/time.txt" "$cell/out/stdout.txt" \
+      sh "$CONV/riot_normalise.sh" "$syntax" "$native" "$cell/out/graph.nt" "$cell/out/riot-warnings.log.gz"
     record_image "$cell" riot
+    # riot's warnings by kind: the offending IRI or literal and its position are stripped.
+    zcat "$cell/out/riot-warnings.log.gz" | python3 -c '
+import collections, re, sys
+kinds = collections.Counter()
+for line in sys.stdin:
+    match = re.search(r"\b(WARN|ERROR)\s+riot\s+::\s+\[[^]]*\]\s*(.*)", line)
+    if match:
+        message = re.sub(r"<[^>]*>|\"[^\"]*\"", "<…>", match.group(2)).strip()
+        kinds[(match.group(1), message)] += 1
+for (level, message), count in kinds.most_common():
+    print(f"{level}\t{count}\t{message}")
+' > "$cell/riot-warnings.tsv"
     if [[ "$BM_LAST_RC" != "0" ]]; then
       log "$label: riot could not read the output (exit $BM_LAST_RC); see $cell/stderr.log"
       continue
