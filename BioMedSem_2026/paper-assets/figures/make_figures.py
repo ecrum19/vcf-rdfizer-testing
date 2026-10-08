@@ -297,6 +297,30 @@ def fig_scaling() -> None:
 # ---------------------------------------------------------------------------
 # Figure: when converting pays off (supplement)
 # ---------------------------------------------------------------------------
+#: The N-Triples-only rerun on vcf-bench-2: conversion alone (convert__repN), and the query-cost
+#: run without HDT or COTTAS (validate__repN), both with v3.1.0 on the 100,000-record slice.
+NT_ONLY = site.RESULTS / "vcf-bench-2" / "nt-only"
+
+
+def nt_only_rerun() -> dict:
+    """Conversion wall times, QLever setup, and per-question query and parse times of the rerun."""
+    conversion = [float((d / "wall_seconds.txt").read_text()) for d in sorted(NT_ONLY.glob("convert__rep*"))]
+    sparql, parser, setup, seen = defaultdict(list), defaultdict(list), {}, set()
+    for rep in sorted(NT_ONLY.glob("validate__rep*")):
+        for path in rep.glob("out/run_metrics/*/reports/validation/*/benchmark.csv"):
+            for row in tidy(path):
+                if row["query_id"] not in dict(QUERIES) or row["status"] != "PASS" or row["engine"] != "qlever":
+                    continue
+                if (rep.name, row["query_id"]) in seen:
+                    continue
+                seen.add((rep.name, row["query_id"]))
+                sparql[row["query_id"]].append(float(row["wall_seconds"]))
+                parser[row["query_id"]].append(float(row["oracle_query_seconds"]))
+                setup.setdefault(rep.name, float(row["engine_setup_seconds"]))
+    return {"conversion": conversion, "index": list(setup.values()),
+            "sparql": dict(sparql), "parser": dict(parser)}
+
+
 def breakeven() -> dict:
     """Setup, per-question parse and query times, and the break-even, on 100,000 HG005 records.
 
