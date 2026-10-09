@@ -43,7 +43,7 @@ We present VCF-RDFizer, a command-line tool that converts VCF into the Resource 
 \textbf{Results:}
 We evaluated source fidelity, linked and policy-aware reuse, scalability, retrieval, and semantic coverage relative to four executable VCF-to-RDF converters.
 All 984 applicable source-comparison results in the base validation campaign agreed after normalization, while query- and constraint-based checks detected complementary classes of injected and implementation defects.
-A linked workflow combined observations with ClinVar, population frequencies, and simulated policies and returned the same requester-specific matches as a conventional bcftools workflow across heterogeneous genomes, a 104-participant cohort, and two complete single-sample VCFs.
+A linked workflow combined observations with ClinVar, population frequencies, and simulated policies and returned the same requester-specific matches as a conventional bcftools workflow across gene-span slices of five heterogeneous VCFs, a 104-participant cohort, and two complete single-sample VCFs.
 On shared inputs, VCF-RDFizer was the only evaluated converter whose graphs answered all eight cross-vocabulary content questions as the source-derived oracle did, although its broader representation increased conversion time and output size.
 Native VCF processing remained preferable for the tested one-pass analyses and small indexed regions, whereas selected repeated and large-region questions benefited from an existing graph index.
 
@@ -457,7 +457,7 @@ Triple count alone does not capture the capability of either representation.
 
 Native VCF access remains preferable for many one-pass analyses and small indexed regions because no semantic conversion or graph indexing is required.
 The additional RDF setup becomes more defensible when the same genomic data support repeated questions, independently maintained links, or policy-dependent release.
-A clinical reanalysis service, for example, could retain a converted genome while querying successive evidence releases instead of reconstructing every relationship for each cycle.
+A clinical reanalysis service, for example, could retain a converted VCF while querying successive evidence releases instead of reconstructing every relationship for each cycle.
 The present experiments demonstrate prerequisites for such reuse but do not benchmark longitudinal updates.
 
 The measured eleven-query crossover is therefore an example, not a tool constant.
