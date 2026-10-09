@@ -163,7 +163,9 @@ Code is under the MIT License ([LICENSE](LICENSE)). Data and documents, includin
 records in `BioMedSem_2026/benchmark-results/`, the figures, and the manuscript sources, are
 under CC BY 4.0 ([LICENSE-DATA](LICENSE-DATA)). The source VCFs are not redistributed: the
 table above gives the download command for each, and
-`BioMedSem_2026/benchmark-results/input-checksums.tsv` its SHA-256.
+`BioMedSem_2026/benchmark-results/input-checksums.tsv` its SHA-256. The recorded
+MyVariant.info responses in `benchmarks/use_case/acmg/myvariant-cache/` are
+under MyVariant.info's terms, not this repository's licences (see the README there).
 
 The version of this repository that accompanies the BioMedSem 2026 manuscript is archived on
 Zenodo; `.zenodo.json` holds that record's metadata.

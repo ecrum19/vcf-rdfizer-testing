@@ -231,16 +231,20 @@ PGP files, whose ID columns carry rsIDs, and
 [`compare_myvariant.py`](compare_myvariant.py) sets its links against those of
 `rsid-dbsnp`, which rewrites every rsID without checking it. The stage does not
 query the service by default. The linker replays recorded responses with
-`--offline` from `BM_MYVARIANT_CACHE` (default: `myvariant-cache/` beside this
-file, laid out as the linker's `--links-cache`), and a request the recording
-cannot answer stops the cell. The linker keys each response by its request,
+`--offline` from `BM_MYVARIANT_CACHE` (default: [`myvariant-cache/`](myvariant-cache/)
+beside this file, laid out as the linker's `--links-cache`), and a request the
+recording cannot answer stops the cell. The linker keys each response by its request,
 which depends only on the file's rsIDs, so a recording made from the same
 derived VCFs answers every request.
 
 The paper's recording is the 21 responses MyVariant.info returned on
 2026-09-28: one POST per batch of up to 1,000 rsIDs, 10 for NB72462M and 11 for
-NG131FQA1I. Each cell's `*.links.json` lists every response's SHA-256. To query
-the service instead:
+NG131FQA1I. They are in [`myvariant-cache/`](myvariant-cache/), with their
+provenance and terms, and each cell's `*.links.json` lists every response's
+SHA-256. **To reproduce the paper's result, use this recording, as the stage
+does by default, not the live service.** MyVariant.info's data change, so a
+live query tests whether today's service confirms the rsIDs. To query the
+service anyway:
 
 ```bash
 BM_ALLOW_NETWORK=1 BM_CONTACT_EMAIL=you@your-institution.org BM_ACMG_STAGES=link_myvariant ./17_use_case_acmg.sh

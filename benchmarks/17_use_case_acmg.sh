@@ -290,6 +290,8 @@ stage_link() {
 # replays recorded responses offline from BM_MYVARIANT_CACHE (laid out as the
 # linker's --links-cache, responses/rsid-myvariant/<version>/), so a request
 # the recording cannot answer stops the cell instead of reaching the service.
+# The default, use_case/acmg/myvariant-cache, is the recording the paper's
+# result rests on; reproduce it from there, not from the live service.
 # BM_ALLOW_NETWORK=1 with BM_CONTACT_EMAIL queries the service instead, at the
 # linker's 1 request/s; the cell then keeps the responses it fetched in out/cache,
 # a recording for the next run. The address goes in the requests' User-Agent.
