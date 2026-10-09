@@ -79,7 +79,7 @@ Because genomic data are sensitive and potentially identifying, release decision
 None of these tasks is impossible with the current VCF representation.
 Variant-analysis frameworks, clinical systems, and data-access infrastructures already address important parts of the workflows~\cite{paila2013gemini,wake2022pgx,rehm2021ga4gh}.
 The remaining challenges increasingly concern interoperability, reproducibility as knowledge changes, and the computational and operational cost of connecting independently maintained systems.
-VCF was designed to represent genomic variation, genotypes, and associated annotations rather than as a shared model linking source observations to longitudinal evidence, clinical context, and data-use conditions~\cite{danecek2011vcf}.
+VCF was designed to represent genomic variation, genotypes, and associated annotations rather than as a shared model linking source observations to longitudinal evidence, clinical context, and data-use conditions~\cite{vcf_intro}.
 Downstream systems therefore often add such relationships outside the source representation; for example, GEMINI imports VCF variants into a relational database and augments them with resources such as ClinVar, dbSNP, and population annotations to support integrated queries~\cite{paila2013gemini}.
 Such application-specific integration motivates a shared representation in which relationships between source observations and independently maintained information can be expressed explicitly and reused across workflows.
 

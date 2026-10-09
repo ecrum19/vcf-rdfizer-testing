@@ -12,7 +12,7 @@
 \usepackage[section]{placeins}
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
-\externaldocument[M-]{current_revised}
+\externaldocument[M-]{current_short}
 \graphicspath{{figures/}}
 \usepackage[font=small,labelfont=bf,labelsep=period,skip=4pt]{caption}
 \captionsetup[table]{position=top}
@@ -597,8 +597,8 @@ For Arm~4, conversion required 92.7 minutes, linking 23.1 minutes, and each sele
 \centering
 \includegraphics[width=\textwidth]{fig-usecase-costs.pdf}
 \caption{\textbf{Most linked-workflow cost occurs before the first query.}
-Bars report conversion and linking once per arm and the clinical-care requester's view writing, validation, and indexing.
-Points report median query time.
+The upper line is the time before the clinical-care requester's first answer: conversion and linking once per arm, then that requester's view writing, validation, and indexing.
+The lower line is the median query time.
 The indexed size includes each arm's VCF graphs, ClinVar, frequencies where applicable, and linksets.}
 \label{fig:usecase-costs}
 \end{figure}

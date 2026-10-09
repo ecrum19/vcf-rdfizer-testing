@@ -3,12 +3,12 @@
 # A distributed source bundle carries its figures inside this directory.
 
 # The main text's source name; package.py reads it from here.
-PAPER     = current_revised
+PAPER     = current_short
 BUILD_DIR = .build/$(PAPER)
 LATEXMK   = latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error
 FIGURE_DIR = $(if $(wildcard figures),figures,../paper-assets)
-# Main text: vcf2rdf-v3 (Figure 1), vcf-core-minimal (Figure 2), fig-validation, fig-converters, fig-usecase-matches,
-# fig-usecase-costs, fig-samples, and fig-retrieval; the rest are the supplement's.
+# Main text: vcf-core-minimal, fig-validation, fig-usecase-matches, fig-converters, and fig-regional;
+# the rest are the supplement's.
 FIGURES = $(addprefix $(FIGURE_DIR)/,vcf2rdf-v3.pdf vcf-core-minimal.pdf fig-validation.pdf fig-converters.pdf fig-usecase-matches.pdf \
 	fig-usecase-costs.pdf fig-samples.pdf fig-retrieval.pdf fig-regional.pdf \
 	vcf-core-classes.pdf fig-linking-framework.pdf fig-scaling.pdf fig-representations.pdf \
