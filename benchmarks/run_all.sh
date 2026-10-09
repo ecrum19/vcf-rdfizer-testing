@@ -79,7 +79,7 @@ case "${1:-all}" in
     ;;
   biomedsem)
     # The configuration behind the BioMedSem manuscript. Every claim in
-    # benchmarking_suggestions.md is still supported; the cost is cut by
+    # DESIGN.md is still supported; the cost is cut by
     # choosing where the evidence has to be expensive and where it does not.
     # Unlike `smoke`, these ARE measurements.
     #

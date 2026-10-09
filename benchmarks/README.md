@@ -1,7 +1,10 @@
 # Benchmark suite
 
-Runnable version of [`benchmarking_suggestions.md`](../benchmarking_suggestions.md).
-One script per plan section; output is CSV + JSON only.
+The experiments behind the BioMedSem 2026 manuscript, one script per experiment.
+[`DESIGN.md`](DESIGN.md) gives the reasoning behind each (its section numbers
+match the table below); this file is the operator's guide. Output is CSV and
+JSON only. [How the manuscript's results were produced](#how-the-manuscripts-results-were-produced)
+records which release, host and configuration each archived result used.
 
 ## Setup
 
@@ -20,7 +23,8 @@ so nothing rebuilds mid-sweep. To reproduce against a published release
 instead:
 
 ```bash
-export BM_IMAGE_VERSION=3.1.0     # base manuscript campaign release
+export BM_IMAGE_VERSION=3.1.0     # the base campaign (00-13)
+export BM_IMAGE_VERSION=3.3.1     # everything else the manuscript reports (14-18)
 ```
 
 `BM_REBUILD=1` forces a rebuild. A dirty checkout gets a `-dirty` tag and is
@@ -139,7 +143,7 @@ a time** — two concurrent runs invalidate every timing and memory number.
 | `08_robustness.sh` | §4.3 | Mutation score, round-trip, determinism, index idempotence. |
 | `09_awkward_inputs.sh` | §4.4 | 11 difficult VCFs + extensibility smoke runs. |
 | `10_feasibility.sh` | §4.4 | Memory ceiling × configuration → completed / OOM. |
-| `11_covering_set.sh` | §5.1 | Six runs covering every option value and pair. |
+| `11_covering_set.sh` | §5.1 | Ten runs covering every option value and pair. |
 | `12_modes_smoke.sh` | §5.2–5.3 | Phase A/B separation; every mode exercised once. |
 | `13_query_cost.sh` | §4.5 | SPARQL retrieval vs the cyvcf2 parser, on identical work. |
 
@@ -152,7 +156,8 @@ Not in `run_all.sh`, and not part of any profile. Run directly when wanted.
 | `14_regional_access.sh` | Indexed regional access: SPARQL against bgzip+tabix seeks, on five region-restricted questions. It reuses `13_query_cost`'s graphs, so run it after 13 on the same host. It needs an image with VCF-RDFizer's regional runner and tabix (`BM_REGIONAL_IMAGE`); v3.1.0 has neither and records a skip. |
 | `15_scale_prepare.sh` | **Generation half** of the scale experiment. Builds one large graph per scale into `BM_SCALE_STORE` and writes a manifest. Roughly 3-4 h at 1M records (171M triples) and ~16 h for the whole HG005 genome (657M triples). Idempotent: a scale that is already built is skipped, so an interrupted campaign resumes by re-running the same command. |
 | `16_scale_retrieval.sh` | **Querying half.** Reads the store and *never builds anything* — it refuses a scale that is not prepared. Every axis is selectable, so one question against one artifact is a minute's work rather than a rebuild. |
-| `17_use_case_acmg.sh` | The real-data use case: carriers of ClinVar pathogenic variants in the 81 ACMG SF v3.2 genes, across real single-sample VCFs (the ACMG gene spans of five VCFs in arm 1, a 104-participant cohort in arm 2, and the complete HG005 and NB72462M VCFs in arms 3 and 4), with simulated per-participant consents. An RDF route (convert, link through shared SPDI identifiers, one checked release view per requester, one SPARQL query) and a bcftools baseline must give identical carrier lists. See [`use_case/acmg/README.md`](use_case/acmg/README.md). The link stage needs the `spdi` linker, which comes after v3.2.0. |
+| `17_use_case_acmg.sh` | The real-data use case: carriers of ClinVar pathogenic variants in the 81 ACMG SF v3.2 genes, across real single-sample VCFs (the ACMG gene spans of five VCFs in arm 1, a 104-participant cohort in arm 2, and the complete HG005 and NB72462M VCFs in arms 3 and 4), with simulated per-participant consents. An RDF route (convert, link through shared SPDI identifiers, one checked release view per requester, one SPARQL query) and a bcftools baseline must give identical carrier lists. See [`use_case/acmg/README.md`](use_case/acmg/README.md). The link stage needs the `spdi` linker, which VCF-RDFizer ships from v3.3.0. |
+| `18_converter_comparison.sh` | Four other VCF-to-RDF converters (JVarkit, TogoVar, SPARQLing Genomics, BioInterchange) and VCF-RDFizer on two shared inputs, in pinned containers under Docker Compose, with content questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md). |
 
 #### The scale store, and why 15 and 16 are separate
 
@@ -179,13 +184,13 @@ Every axis of 16 is selectable, which is what makes a targeted follow-up cheap:
 BM_SCALE_QUERIES=q03_titv BM_REPS=1 ./16_scale_retrieval.sh r1000000
 # the cross-engine comparison, each engine on its native artifact
 BM_SCALE_CELLS="qlever:nt.gz comunica:nt.gz hdt:hdt cottas:cottas" ./16_scale_retrieval.sh r1000000
-# one engine reading all three artifacts (Figure 6c's question)
+# one engine reading all three artifacts
 BM_SCALE_CELLS="qlever:nt.gz qlever:hdt qlever:cottas" ./16_scale_retrieval.sh whole
 ```
 
 Two things to know before quoting a number from it:
 
-* **The default query set is `core`, the thirteen queries Figure 6 reports** —
+* **The default query set is `core`, the thirteen queries the manuscript reports** —
   not the whole suite. Per artifact on the 17.1M cell the thirteen cost 17 s and
   the preflight set costs 201 s, so running everything pays twelve times over
   for numbers the figure does not contain. A subset makes the tool report
@@ -195,8 +200,8 @@ Two things to know before quoting a number from it:
   verdict back at full cost.
 * **`q01`–`q13` are byte-identical between v3.1.0 and current `main`, and the
   two `preflight_missing_token_conformance` queries are not** — they were
-  narrowed after v3.1.0. Core timings from 16 may be put beside Figure 6's;
-  preflight timings may not.
+  narrowed after v3.1.0. Core timings from 16 may be put beside the
+  query-cost experiment's; preflight timings may not.
 
 Generation pins the *published* release image so a stored graph is traceable to
 a release rather than to whatever the checkout was that afternoon; 15 refuses a
@@ -289,3 +294,55 @@ Move or delete the cell, or set `BM_RESULTS` to a new root.
 `BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES` ceiling above which the in-memory Comunica
 arm is refused and the refusal recorded ·
 `BM_SCALE_ALLOW_LOCAL_IMAGE=1` let 15 build from an unpinned image
+
+## How the manuscript's results were produced
+
+Every archived cell records its command, host, tool commit, image digest, exit
+status and timings (`bench.json`, `command.txt`), so this section only adds what
+a single cell cannot show: how the runs were divided and where they went.
+
+**The base campaign (`00`–`13`).** The `biomedsem` profile ran on the published
+image `ecrum19/vcf-rdfizer:3.1.0` (`sha256:1904e96d…34aa`, commit `d3b34d5`), on
+two hosts with the same hardware, one experiment at a time per host:
+
+| Host | Experiments |
+| --- | --- |
+| `vcf-bench-1` | `01 04 07 08 09 10 11 12 13` |
+| `vcf-bench-2` | `03 05 06` |
+
+- **Whole experiments, never cells, were split between hosts.** An experiment's
+  cells are compared with each other, so running them on two hosts would
+  confound every comparison with hardware. `scripts/build_run_summary.py` refuses
+  an archive in which an experiment spans two hosts.
+- **Each host ran a calibration cell first:** `12_modes_smoke`, under identical
+  settings (`benchmarks_outputs_calibration/` in the archive).
+  - It found identical triples and timings that differed between hosts.
+  - Timings are therefore compared only within a host.
+- **Cite the digest, not the tag.** Each host wrote its environment and image
+  digest to `00_environment/provenance.<host>.<commit>.json`. Two hosts once
+  built the same local tag independently and got different images.
+- **Nothing was deleted.** The archive keeps every other run, beside the results:
+  - cells started on the wrong host (`__offsplit/`);
+  - interrupted cells (`__partial/`);
+  - superseded runs (`__superseded/`);
+  - stopped runs (`__stalled/`);
+  - the earlier pre-release campaign (`__campaign1__*`).
+- **`BM_CORPUS_WHOLE=HG005_GRCh38.vcf.gz`** is the one corpus file converted
+  whole, at about 16 h with HDT and COTTAS. The other corpus files are their
+  first 250,000 records.
+
+Each host's results tree was mirrored, without the generated RDF (`out/`), into
+`BioMedSem_2026/benchmark-results/<host>/benchmarks_outputs/`, and
+`scripts/build_run_summary.py` integrates both into `summary.json`.
+
+**Later experiments (`14`–`18`).** They ran outside the profile. As reported:
+- `14` and `18` on `vcf-bench-1`;
+- `15` and `16` on `vcf-bench-3`;
+- `17`'s arms 1 and 2 on `vcf-bench-1`, and arms 3 and 4 on `vcf-bench-2`.
+
+Every result that a pre-release build first produced was then rerun with the
+published v3.3.1 (`sha256:3ad71b1a…2993`) by one driver, `run_v331.sh`. The driver
+and its logs are archived under `BioMedSem_2026/benchmark-results/vcf-bench-*/v331-rerun/`,
+whose READMEs give each job's result. The use-case arms, regional retrieval,
+large-graph retrieval and the consumer WGS validation run all come from that rerun.
+

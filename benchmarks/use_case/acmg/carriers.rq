@@ -8,8 +8,8 @@
 # Two tables joined on the SPDI identifier both sides link to, never on the
 # files' own IRIs or contig names. Each table is a subquery so an engine plans
 # it on its own: as one group of ~20 patterns, QLever's planner either takes
-# exponential time or picks a cross product (workstream-a-implementation.md,
-# progress log, 2026-09-28).
+# exponential time or picks a cross product (observed on the
+# first arm 1 run, 2026-09-28).
 
 PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>
 PREFIX vcfl: <https://w3id.org/vcf-rdfizer/linking#>

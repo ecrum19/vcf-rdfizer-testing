@@ -1,10 +1,10 @@
-# Benchmarking plan
+# Benchmark design
 
-> **Runnable version: [`benchmarks/`](benchmarks/).** One script per section
-> below, `benchmarks/run_all.sh` to drive them, and `benchmarks/analysis/` to
-> turn the runs into CSV/JSON. [`benchmarks/README.md`](benchmarks/README.md) is
-> the operator's guide; this document is the reasoning behind what the scripts
-> do. Section numbers match.
+> **The runnable version is this directory.** There is one script per section
+> below, [`run_all.sh`](run_all.sh) drives them, and [`analysis/`](analysis/)
+> turns the runs into CSV and JSON. [`README.md`](README.md) is the operator's
+> guide; this document is the reasoning behind what the scripts do. Section
+> numbers match.
 
 
 This plan motivates the current benchmark suite's separation of conversion,
@@ -265,7 +265,7 @@ workspace, artifact bytes) need 3 repetitions. This makes the whole ladder cheap
 — 7 rungs × 2 modes = 14 conversions, on 10k-record inputs.
 
 The theory predicts, per the
-[sample-representation guide](../vcf-rdfizer/docs/sample-representation-guide.md):
+[sample-representation guide](https://github.com/ecrum19/VCF-RDFizer/blob/v3.3.1/docs/sample-representation-guide.md):
 
 ```text
 expanded  sample-layer structure  ~  V x S x F        slope ~1 in S
