@@ -54,7 +54,7 @@ Later sets of results are kept beside the campaign's, and none of them is in
 | `vcf-bench-3/use-case/17_use_case_acmg__layered__smoke_v3.3.0/` | Arm 4 on a gene-region slice with v3.3.0: the record comparison that found the `*` linking gap |
 | `vcf-bench-3/use-case/17_use_case_acmg__layered__v3.3.0/` | Arm 4 with the published v3.3.0: carrier lists agree, record counts do not (the `*` gap v3.3.1 closed; see its README) |
 | `vcf-bench-2/review-runs/` | The default-profile mutation score and the paired validation of the first 250,000 records of a consumer WGS VCF, on v3.1.0 (see its README) |
-| `vcf-bench-1/v331-rerun/`, `vcf-bench-2/v331-rerun/`, `vcf-bench-3/v331-rerun/` | The rerun of every result not produced by a published release, with v3.3.1 (`sha256:3ad71b1a...2993`): Arms 1 and 2 and regional retrieval on vcf-bench-1; the v3.1.0/v3.3.1 conversion check, the consumer WGS validation run, and Arms 3 and 4 on vcf-bench-2; large-graph retrieval on vcf-bench-3. Run records only; each folder's README gives the results and lists what was left out |
+| `vcf-bench-1/v331-rerun/`, `vcf-bench-2/v331-rerun/`, `vcf-bench-3/v331-rerun/` | The rerun of every result not produced by a published release, with v3.3.1 (`sha256:3ad71b1a...2993`): Arms 1 and 2, Arm 1's MyVariant.info tier (replaying its recorded responses offline), and regional retrieval on vcf-bench-1; the v3.1.0/v3.3.1 conversion check, the consumer WGS validation run, and Arms 3 and 4 on vcf-bench-2; large-graph retrieval on vcf-bench-3. Run records only; each folder's README gives the results and lists what was left out |
 
 ## What is not here
 

@@ -5,6 +5,8 @@
 #   bench1  arm 1, regional retrieval, arm 2 (cohort)
 #   bench2  v3.3.1-vs-v3.1.0 conversion check, consumer WGS validation, arm 3, arm 4
 #   bench3  large-graph retrieval on the existing v3.1.0 graphs
+#   bench1-myvariant  arm 1's MyVariant.info tier, replayed offline (harness 4ea07cc7)
+#   bench2-arm4-resume  arm 4's govern, query and compare, after the disk was cleared
 # Waits until the image can be pulled, then runs its queue one job at a time.
 # Writes only under ~/vrdev-test/v331; inputs are read in place.
 set -uo pipefail
@@ -62,7 +64,7 @@ job() {  # job <name> <command...>
 arm() {  # arm <arm1|cohort|wgs|layered> <use-case data dir>
   ( cd "$B" && env "${common_env[@]}" BM_ACMG_ARM="$1" BM_VCF_DATA="$HOME/vcf-rdfizer-testing/vcf_data" \
       BM_ACMG_DATA="$2" BM_ACMG_DERIVED="$V/derived/$1" BM_ACMG_SERVE_TIMEOUT=14400 \
-      BM_ACMG_STAGES="derive convert link baseline govern query compare" ./17_use_case_acmg.sh )
+      BM_ACMG_STAGES="${ARM_STAGES:-derive convert link baseline govern query compare}" ./17_use_case_acmg.sh )
 }
 
 bridge() {  # v3.3.1 conversion of the 100,000-record slice against the v3.1.0 N-Triples-only rerun
@@ -95,10 +97,11 @@ regional() {  # the regional experiment on the v3.1.0 graphs that 13_query_cost 
 }
 
 scale() {  # large-graph retrieval on the existing v3.1.0 graphs: the cells reported
+  # (16_scale_retrieval.sh is not executable in the harness tree, so run it with bash)
   ( cd "$B" && export "${common_env[@]}" BM_SCALE_STORE="$HOME/vcf-rdfizer-testing/scale_store" &&
-    BM_SCALE_CELLS="qlever:nt.gz qlever:hdt qlever:cottas" BM_REPS=3 ./16_scale_retrieval.sh whole &&
-    BM_SCALE_CELLS="qlever:nt.gz" BM_REPS=3 ./16_scale_retrieval.sh r1000000 &&
-    BM_SCALE_CELLS="hdt:hdt cottas:cottas" BM_REPS=1 BM_SCALE_NODE_HEAP_MB=24576 ./16_scale_retrieval.sh r1000000 )
+    BM_SCALE_CELLS="qlever:nt.gz qlever:hdt qlever:cottas" BM_REPS=3 bash 16_scale_retrieval.sh whole &&
+    BM_SCALE_CELLS="qlever:nt.gz" BM_REPS=3 bash 16_scale_retrieval.sh r1000000 &&
+    BM_SCALE_CELLS="hdt:hdt cottas:cottas" BM_REPS=1 BM_SCALE_NODE_HEAP_MB=24576 bash 16_scale_retrieval.sh r1000000 )
 }
 
 inputs() {  # record what each job reads
@@ -120,6 +123,26 @@ case "$ROLE" in
     job arm4 arm layered "$HOME/vrdev-test/acmg-data" ;;
   bench3)
     job scale scale ;;
+  bench1-myvariant)
+    # Arm 1's MyVariant.info tier, which the harness above did not have: harness 4ea07cc7 adds
+    # the link_myvariant stage. It replays the 21 responses the service returned on 2026-09-28
+    # (copied from this host's linker cache) offline, so no request reaches the service.
+    H2="4ea07cc72abd6a853179a9a45759ea13230bad65"; HD="$V/vcf-rdfizer-testing-${H2:0:8}"
+    if [[ ! -d "$HD" ]]; then
+      tar -xzf "$V/harness-${H2:0:8}.tar.gz" -C "$V"
+      echo "vcf-rdfizer-testing $H2 (benchmarks/, scripts/)" > "$HD/SOURCE.txt"
+    fi
+    if [[ ! -d "$V/myvariant-cache" ]]; then
+      mkdir -p "$V/myvariant-cache/responses"
+      cp -a "$HOME/.cache/vcf-rdfizer/linkers/responses/rsid-myvariant" "$V/myvariant-cache/responses/"
+    fi
+    inputs "$V"/myvariant-cache/responses/rsid-myvariant/1.0.0/*.json
+    export BM_MYVARIANT_CACHE="$V/myvariant-cache"
+    B="$HD/benchmarks" ARM_STAGES="link_myvariant" job myvariant arm arm1 "$HOME/vcf-rdfizer-testing/vcf_data/use_case" ;;
+  bench2-arm4-resume)
+    # Arm 4 stopped at govern's disk pre-check (48 GB free, ~55 needed) after derive, convert,
+    # link, and baseline had completed; space was freed and the remaining stages run here.
+    ARM_STAGES="govern query compare" job arm4_resume arm layered "$HOME/vrdev-test/acmg-data" ;;
   *) echo "unknown role $ROLE" >&2; exit 2 ;;
 esac
 log "V331-$ROLE-DONE"
