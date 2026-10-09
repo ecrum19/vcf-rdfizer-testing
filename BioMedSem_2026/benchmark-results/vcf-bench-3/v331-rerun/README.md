@@ -12,7 +12,11 @@ v3.1.0 graphs in `scale_store/`. The two releases write the same graph: see vcf-
 | 1,000,000 HG005 records, native COTTAS (24 GB heap) | 1 | 29 min | Did not complete (exit 1) |
 
 The native paths' failures match the base campaign's, which the paper reports. Per-cell records are in
-`results/16_scale_retrieval/`.
+`results/16_scale_retrieval/`. Its `retrieval.csv` and `retrieval-raw.json`, which the figures and the paper
+read, were built from those cells with
+`python3 benchmarks/analysis/scale_retrieval.py 16_scale_retrieval --results BioMedSem_2026/benchmark-results/vcf-bench-3/v331-rerun/results`.
+On the complete HG005 VCF, QLever answered the thirteen questions in 646.4 s after an 880.8 s index build
+(the earlier pre-release runners `245fe1f` and `5ed75c8`: 634.6 s and 868.0 s).
 
 `attempt1-exit126/` is the first start, which exited after 60 s because `16_scale_retrieval.sh` is not
 executable in the harness tree. The driver now runs it with `bash`; nothing else changed. No file was left

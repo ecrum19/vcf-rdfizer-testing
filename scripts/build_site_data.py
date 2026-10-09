@@ -5,8 +5,8 @@
 
 Standard library only, and no network: everything is read from
 BioMedSem_2026/benchmark-results and benchmarks/use_case/acmg. Only the reported
-results are included -- the live v3.1.0 campaign trees and the unsuffixed
-use-case cells; superseded, stalled and failed attempts are left out. The
+results are included -- the live v3.1.0 campaign trees and the v3.3.1 rerun's
+unsuffixed cells; superseded, stalled and failed attempts are left out. The
 values behind the paper's figures come from the same module make_figures.py
 uses (paper-assets/figures/figure_data.py), so the site and the paper cannot
 compute them differently.
@@ -31,9 +31,13 @@ sys.path.insert(0, str(ROOT / "BioMedSem_2026" / "paper-assets" / "figures"))
 import figure_data as fd  # noqa: E402
 
 RESULTS = fd.RESULTS
+#: Arm 1's pre-release run, read only for the live MyVariant.info tier, which the v3.3.1 rerun left out.
 USE_CASE = RESULTS / "vcf-bench-1" / "use-case"
-USE_CASE_WGS = RESULTS / "vcf-bench-2" / "use-case"
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
+#: The rerun with the published v3.3.1 of every result a pre-release build first produced, per host.
+#: The use-case arms, regional and large-graph retrieval, and the consumer WGS validation run are
+#: read from here; the v3.1.0 campaign and the v3.1.0 review run are not rerun.
+V331 = {host: RESULTS / host / "v331-rerun" / "results" for host in ("vcf-bench-1", "vcf-bench-2", "vcf-bench-3")}
 ACMG = ROOT / "benchmarks" / "use_case" / "acmg"
 REPO_URL = "https://github.com/ecrum19/vcf-rdfizer-testing"
 
@@ -175,20 +179,20 @@ def mutation_profiles() -> dict:
     }
 
 
-def review_report(run: str) -> Path:
-    """The validation report directory of one review run on NG131FQA1I's first 250,000 records."""
-    return Path(glob.glob(str(REVIEW / run / "out" / "run_metrics" / "*" / "reports" / "validation"
+def review_report(run: str, root: Path = REVIEW) -> Path:
+    """The validation report directory of one run on NG131FQA1I's first 250,000 records."""
+    return Path(glob.glob(str(root / run / "out" / "run_metrics" / "*" / "reports" / "validation"
                               / "NG131FQA1I_first250000"))[0])
 
 
 def real_genome() -> dict:
     """The paired validation of NG131FQA1I's first 250,000 records.
 
-    The v3.1.0 review run (no shapes) is the diagnosis; the rerun with the
-    v3.3.1 validator, default shapes batched, is the current result.
+    The v3.1.0 review run (no shapes) is the diagnosis; the published v3.3.1's
+    run, default shapes batched, is the current result.
     """
     report = review_report("validate__NG131FQA1I__first250000__noshacl")
-    rerun = review_report("validate__NG131FQA1I__first250000__fixes_b500k")
+    rerun = review_report("consumer_wgs__NG131FQA1I__first250000", V331["vcf-bench-2"])
     comparison = load(report / "comparison.json")
     shacl = load(rerun / "shacl.json")
     rapper = load(report / "rdf-validation.json")
@@ -257,11 +261,14 @@ def scaling() -> dict:
 # ---------------------------------------------------------------------------
 # Retrieval
 # ---------------------------------------------------------------------------
+REGIONAL = V331["vcf-bench-1"] / "14_regional_access"
+
+
 def regional() -> dict:
     """Median over questions of each question's median per arm and window size."""
     out = {}
     for graph in ("small", "slice"):
-        path = RESULTS / "vcf-bench-1" / "benchmarks_outputs" / "14_regional_access" / graph / "out" / "regional.csv"
+        path = REGIONAL / graph / "out" / "regional.csv"
         times = defaultdict(list)
         executions = failures = disagreements = 0
         for row in fd.tidy(path):
@@ -293,7 +300,7 @@ def regional() -> dict:
 
 
 def scale() -> dict:
-    path = RESULTS / "vcf-bench-3" / "benchmarks_outputs" / "16_scale_retrieval" / "retrieval.csv"
+    path = V331["vcf-bench-3"] / "16_scale_retrieval" / "retrieval.csv"
     rows = []
     for row in fd.tidy(path):
         rows.append({
@@ -360,9 +367,9 @@ def retrieval() -> dict:
 # Use case
 # ---------------------------------------------------------------------------
 ARMS = {
-    "arm1": USE_CASE / "17_use_case_acmg",
-    "arm2": USE_CASE / "17_use_case_acmg__cohort",
-    "arm3": USE_CASE_WGS / "17_use_case_acmg__wgs",
+    "arm1": V331["vcf-bench-1"] / "17_use_case_acmg",
+    "arm2": V331["vcf-bench-1"] / "17_use_case_acmg__cohort",
+    "arm3": V331["vcf-bench-2"] / "17_use_case_acmg__wgs",
 }
 
 

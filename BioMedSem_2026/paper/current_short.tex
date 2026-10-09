@@ -1,5 +1,6 @@
 % Condensed manuscript revision, 9 October 2026. Build with make.
-% Results are transcribed from the supplied updated draft; no experiments rerun.
+% The linked workflow, regional and large-graph retrieval, and the consumer WGS
+% validation run report the v3.3.1 rerun (benchmark-results/vcf-bench-*/v331-rerun).
 \documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
 \usepackage[T1]{fontenc}
 \usepackage{xurl}
@@ -282,6 +283,8 @@ Supplementary Sections~\ref{S-sec:inputs}, \ref{S-sec:validation}, and~\ref{S-se
 \subsection{RQ2: Shared identifiers enabled reusable joins and verified release views}\label{subsec:results-workflow}
 Across all four arms, the RDF and conventional workflows returned identical requester-specific participant--variant--gene match sets (Figure~\ref{fig:usecase-matches}).
 Every materialized release view passed the policy and source checks.
+Released-record counts also agreed in Arms~1, 3, and~4.
+In Arm~2, the RDF views additionally released 110 and 58 symbolic structural-variant records in restricted cancer-predisposition genes to disease-specific and general research, because v3.3.1 links no symbolic allele to a gene; no match changed (Supplementary Section~\ref{S-subsec:usecase-results}).
 For HG005, the query over the complete VCF reproduced the result from its gene-span slice exactly, returning 1,496 matches.
 The unrestricted pathogenic or likely pathogenic subset contained no matches in Arms~1, 3, and~4 and eight in the Arm~2 cohort.
 The counts describe matches under the study definition, not unique participants or clinically adjudicated findings.
@@ -289,6 +292,7 @@ The counts describe matches under the study definition, not unique participants 
 Arm~4 tested fine-grained release from the complete \texttt{NB72462M} VCF, containing 5,063,417 normalized records.
 The participant's physician received every record, clinical care received all but six APOE records, general research received all but 2,520 restricted records, and disease-specific research received only the 6,397 records in its cardiovascular panel.
 The two workflows agreed on both released-record counts and resulting matches.
+\authorquery{Arm~4's values (this paragraph, Figure~\ref{fig:usecase-matches}, the 146-second query time and the 55--74-minute views below, and the supplement's Arm~4 rows) are still from its pre-release v3.3.1 run. Its rerun with the published v3.3.1 image is running on \texttt{vcf-bench-2} and will replace them.}
 
 \begin{figure}[!htbp]
 \centering
@@ -312,9 +316,9 @@ The conventional route required corresponding code and configuration changes.
 Three other rule changes were similarly small data edits in both workflows, so the result demonstrates reusable configuration for the tested identity-targeted rule rather than a general usability advantage.
 
 Most linked-workflow cost occurred before query execution.
-For Arm~3, converting the complete HG005 VCF and ClinVar required 54 minutes, linking required 8 minutes, and materializing, validating, and indexing the clinical view required a further 2.5 hours.
-Individual queries then required 205--209 seconds.
-Across all arms, query times ranged from 146--209 seconds, suggesting that the fixed ClinVar join dominated the measured query rather than establishing scale-independent SPARQL performance.
+For Arm~3, converting the complete HG005 VCF and ClinVar required 55 minutes, linking required 8 minutes, and materializing, validating, and indexing the clinical view required a further 2.6 hours.
+Individual queries then required 216--218 seconds.
+Across all arms, query times ranged from 146--217 seconds, suggesting that the fixed ClinVar join dominated the measured query rather than establishing scale-independent SPARQL performance.
 Arm~4's selective views of a 1.2-billion-triple graph each required 55--74 minutes to materialize and validate.
 Supplementary Figure~\ref{S-fig:usecase-costs} and Table~\ref{S-tab:usecase-costs} report every stage and requester.
 
@@ -360,7 +364,7 @@ Regional queries provide the stronger indexed-VCF comparison (Figure~\ref{fig:re
 Across 11,160 executions, all answers agreed and no execution failed.
 Tabix-indexed VCF access was faster for windows up to 100\,kb and for 1\,Mb windows with bcftools, while QLever was faster for 10\,Mb windows and for 1\,Mb windows with cyvcf2.
 QLever query time remained nearly constant across window sizes, whereas VCF-region retrieval increased with the number of records parsed.
-Setup required 23.2 seconds for QLever and 0.48 seconds for bgzip and tabix.
+Setup required 23.3 seconds for QLever and 0.46 seconds for bgzip and tabix.
 
 \begin{figure}[!htbp]
 \centering
@@ -373,8 +377,8 @@ Panel (d) summarizes the ratio of VCF parsing time to QLever query time, excludi
 \label{fig:regional}
 \end{figure}
 
-On the 657.4-million-triple graph of complete HG005, QLever answered all thirteen questions in 634.6 seconds after an 868.0-second index build, with every answer equal to the parser-derived result.
-Loading the same graph from N-Triples, HDT, or COTTAS changed indexed query time by only 0.3\%, although decode costs differed.
+On the 657.4-million-triple graph of complete HG005, QLever answered all thirteen questions in 646.4 seconds after an 880.8-second index build, with every answer equal to the parser-derived result.
+Loading the same graph from N-Triples, HDT, or COTTAS changed indexed query time by only 0.4\%, although decode costs differed.
 The native HDT- and COTTAS-backed paths did not complete the full workload on the 171-million-triple graph.
 Supplementary Figure~\ref{S-fig:retrieval}, Table~\ref{S-tab:retrieval-scale}, and Section~\ref{S-sec:measurements} retain the detailed engine and artifact results.
 
@@ -495,8 +499,9 @@ VCF-RDFizer is a first step toward evidence-aware reanalysis, pharmacogenomic de
 \textbf{License:} MIT.
 \textbf{Any restrictions to use by non-academics:} none.
 Docker supplies the pinned benchmark environment; requirements for other installations are documented with each release.
-v3.1.0 produced the base benchmark, v3.2.0 converted the use-case inputs, v3.3.0 releases the linking and policy extensions evaluated in pre-release builds, and v3.3.1 provided the linking for Arm~4 and the validator for the consumer WGS validation run.
-The release ledger distinguishes those builds rather than attributing every result to one version, although v3.3.1 should be able to reproduce all data generated in this study.
+v3.1.0 produced the base benchmark, and v3.3.1 produced the linked workflow, regional and large-graph retrieval, the consumer WGS validation run, and the converter comparison.
+On the same 100,000 HG005 records, both releases wrote identical sorted triples.
+Supplementary Section~\ref{S-subsec:repro-builds} records the build behind each result.
 
 \section*{Declarations}
 \subsection*{Ethics approval and consent to participate}
@@ -518,10 +523,9 @@ Its match sets, timings, and check reports, as well as the additional validation
 No biological materials were generated or used.
 
 The software is available at the project home page.
-The base benchmark used v3.1.0 (\texttt{d3b34d5}), and the linking and policy extensions are released in v3.3.0 (\texttt{7ab2300}; image \texttt{sha256:1838720d\ldots06432}).
-The use case ran pre-release builds, including \texttt{578c2be} for Arm~3, rather than the exact final v3.3.0 release.
-Its tested inputs did not meet the empty-selector or no-VCF-triples conditions subsequently refused by the plug-ins.
-Supplementary Section~\ref{S-sec:repro} identifies the pre-release and later-run commits, the v3.1.0 image digest, and the bundled shape snapshot.
+The base benchmark used v3.1.0 (\texttt{d3b34d5}; image \texttt{sha256:1904e96d\ldots34aa}).
+The linked workflow, regional and large-graph retrieval, converter comparison, and consumer WGS validation run used v3.3.1 (\texttt{b25fb7b}; image \texttt{sha256:3ad71b1a\ldots2993}), the release that includes the linking and policy extensions.
+Supplementary Section~\ref{S-sec:repro} identifies each experiment's build, the image digests, and the bundled shape snapshot.
 The public vocabulary is separately versioned \cite{vcfc210}.
 Results must be traced to their recorded build and input, not only to the latest package.
 
