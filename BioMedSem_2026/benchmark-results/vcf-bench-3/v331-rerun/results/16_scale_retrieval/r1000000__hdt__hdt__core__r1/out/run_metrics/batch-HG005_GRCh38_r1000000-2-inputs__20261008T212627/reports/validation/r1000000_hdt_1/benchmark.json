@@ -1,0 +1,139 @@
+{
+  "engines": {
+    "hdt": {
+      "artifactOrigin": "run artifact",
+      "artifactSizeBytes": 1182206289,
+      "queries": {
+        "q01_record_density_1mb": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 2169.053009316791
+        },
+        "q02_variant_shape_counts": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 2217.20983298216
+        },
+        "q03_titv": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 2217.8906713670585
+        },
+        "q04_filter_distribution": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 2285.3272809779737
+        },
+        "q05_sample_genotype_counts": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 3600.0630962338764
+        },
+        "q06_ac_an_distribution": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.0005056930240243673
+        },
+        "q07_file_metadata": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.00035359920002520084
+        },
+        "q08_header_line_census": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.00030613411217927933
+        },
+        "q09_predicate_census": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.00028391298837959766
+        },
+        "q10_class_census": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.0002717990428209305
+        },
+        "q11_record_digest": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.0003760450053960085
+        },
+        "q12_info_value_digest": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.000275246100500226
+        },
+        "q13_format_value_digest": {
+          "derived": false,
+          "status": "EXECUTION_FAILED",
+          "wallSeconds": 0.0002502638380974531
+        }
+      },
+      "querySeconds": 12489.546513571171,
+      "setupSeconds": 6.683804342057556,
+      "slowestQuery": "q05_sample_genotype_counts",
+      "status": "EXECUTION_FAILED"
+    }
+  },
+  "oracle": {
+    "censusSeconds": 0.00022048410028219223,
+    "perQuerySeconds": {
+      "q01_record_density_1mb": 124.3621111989487,
+      "q02_variant_shape_counts": 124.3621111989487,
+      "q03_titv": 124.3621111989487,
+      "q04_filter_distribution": 124.3621111989487,
+      "q05_sample_genotype_counts": 132.2246242898982,
+      "q06_ac_an_distribution": 132.2246242898982,
+      "q07_file_metadata": 124.3621111989487,
+      "q08_header_line_census": 124.3621111989487,
+      "q09_predicate_census": 124.3621111989487,
+      "q10_class_census": 124.3621111989487,
+      "q11_record_digest": 124.3621111989487,
+      "q12_info_value_digest": 124.3621111989487,
+      "q13_format_value_digest": 132.2246242898982
+    },
+    "phases": {
+      "assemblySeconds": 41.88035610481165,
+      "censusSeconds": 0.00022048410028219223,
+      "readerOpenSeconds": 0.006834476022049785,
+      "sampleBlockSeconds": 7.862513090949506,
+      "scanSeconds": 90.3374337090645
+    },
+    "sampleLevelQueries": [
+      "q05_sample_genotype_counts",
+      "q06_ac_an_distribution",
+      "q13_format_value_digest"
+    ],
+    "totalSeconds": 133.70720268180594,
+    "vcfParseSeconds": 133.7069786398206
+  },
+  "preparation": {
+    "materializationSeconds": 262.31874318188056,
+    "shaclSeconds": null
+  },
+  "queryIds": [
+    "q01_record_density_1mb",
+    "q02_variant_shape_counts",
+    "q03_titv",
+    "q04_filter_distribution",
+    "q05_sample_genotype_counts",
+    "q06_ac_an_distribution",
+    "q07_file_metadata",
+    "q08_header_line_census",
+    "q09_predicate_census",
+    "q10_class_census",
+    "q11_record_digest",
+    "q12_info_value_digest",
+    "q13_format_value_digest"
+  ],
+  "totals": {
+    "engineQuerySeconds": {
+      "hdt": 12489.546513571171
+    },
+    "engineSetupSeconds": {
+      "hdt": 6.683804342057556
+    },
+    "oracleSeconds": 133.70720268180594
+  }
+}

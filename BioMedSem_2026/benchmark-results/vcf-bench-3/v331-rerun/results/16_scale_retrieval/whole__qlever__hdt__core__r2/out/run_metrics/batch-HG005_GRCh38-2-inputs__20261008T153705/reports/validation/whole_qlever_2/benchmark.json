@@ -1,0 +1,139 @@
+{
+  "engines": {
+    "qlever": {
+      "artifactOrigin": null,
+      "artifactSizeBytes": null,
+      "queries": {
+        "q01_record_density_1mb": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 1.3037425931543112
+        },
+        "q02_variant_shape_counts": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 18.775729654124007
+        },
+        "q03_titv": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 15.00383057910949
+        },
+        "q04_filter_distribution": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 8.271121460944414
+        },
+        "q05_sample_genotype_counts": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 89.8072806079872
+        },
+        "q06_ac_an_distribution": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 102.10130794113502
+        },
+        "q07_file_metadata": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 0.008787655970081687
+        },
+        "q08_header_line_census": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 0.004553394857794046
+        },
+        "q09_predicate_census": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 7.385518352035433
+        },
+        "q10_class_census": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 55.154438137076795
+        },
+        "q11_record_digest": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 52.416719088796526
+        },
+        "q12_info_value_digest": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 160.59942728606984
+        },
+        "q13_format_value_digest": {
+          "derived": false,
+          "status": "PASS",
+          "wallSeconds": 131.57029685610905
+        }
+      },
+      "querySeconds": 642.40275360737,
+      "setupSeconds": 885.8390924560372,
+      "slowestQuery": "q12_info_value_digest",
+      "status": "TIMING_ONLY"
+    }
+  },
+  "oracle": {
+    "censusSeconds": 0.00023226113989949226,
+    "perQuerySeconds": {
+      "q01_record_density_1mb": 480.5489650357049,
+      "q02_variant_shape_counts": 480.5489650357049,
+      "q03_titv": 480.5489650357049,
+      "q04_filter_distribution": 480.5489650357049,
+      "q05_sample_genotype_counts": 510.70031611341983,
+      "q06_ac_an_distribution": 510.70031611341983,
+      "q07_file_metadata": 480.5489650357049,
+      "q08_header_line_census": 480.5489650357049,
+      "q09_predicate_census": 480.5489650357049,
+      "q10_class_census": 480.5489650357049,
+      "q11_record_digest": 480.5489650357049,
+      "q12_info_value_digest": 480.5489650357049,
+      "q13_format_value_digest": 510.70031611341983
+    },
+    "phases": {
+      "assemblySeconds": 161.3129682810977,
+      "censusSeconds": 0.00023226113989949226,
+      "readerOpenSeconds": 0.12986914115026593,
+      "sampleBlockSeconds": 30.151351077714935,
+      "scanSeconds": 349.25747869117185
+    },
+    "sampleLevelQueries": [
+      "q05_sample_genotype_counts",
+      "q06_ac_an_distribution",
+      "q13_format_value_digest"
+    ],
+    "totalSeconds": 515.1942632228602,
+    "vcfParseSeconds": 515.1940277169924
+  },
+  "preparation": {
+    "materializationSeconds": 978.532252585981,
+    "shaclSeconds": null
+  },
+  "queryIds": [
+    "q01_record_density_1mb",
+    "q02_variant_shape_counts",
+    "q03_titv",
+    "q04_filter_distribution",
+    "q05_sample_genotype_counts",
+    "q06_ac_an_distribution",
+    "q07_file_metadata",
+    "q08_header_line_census",
+    "q09_predicate_census",
+    "q10_class_census",
+    "q11_record_digest",
+    "q12_info_value_digest",
+    "q13_format_value_digest"
+  ],
+  "totals": {
+    "engineQuerySeconds": {
+      "qlever": 642.40275360737
+    },
+    "engineSetupSeconds": {
+      "qlever": 885.8390924560372
+    },
+    "oracleSeconds": 515.1942632228602
+  }
+}
