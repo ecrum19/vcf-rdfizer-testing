@@ -31,7 +31,10 @@ The live tier (`rsid-myvariant` on the two PGP files) first ran on 2026-09-28 fr
 the harness, and made 21 requests to MyVariant.info. Harness `4ea07cc7` adds it to experiment 17 as the
 `link_myvariant` stage, which replays recorded responses offline. This job ran that stage with v3.3.1 on the
 21 responses of 2026-09-28, copied from this host's linker cache to `~/vrdev-test/v331/myvariant-cache/`
-(their SHA-256 in [`inputs.bench1-myvariant.sha256`](inputs.bench1-myvariant.sha256)):
+(their SHA-256 in [`inputs.bench1-myvariant.sha256`](inputs.bench1-myvariant.sha256)). The same 21 files,
+byte for byte, are published as the stage's default recording in
+[`benchmarks/use_case/acmg/myvariant-cache/`](../../../../benchmarks/use_case/acmg/myvariant-cache/);
+reproduce the result from them, not from the live service, whose data change.
 - **No request reached the service.** Each `link_myvariant__*/out/*.links.json` records 0 requests, 0 bytes
   transferred, and 10 and 11 cache hits; their response digests are the 2026-09-28 run's.
 - **Identical result.** The linker confirmed 9,223 of 9,951 (NB72462M) and 9,479 of 10,316 (NG131FQA1I) rsID
@@ -50,5 +53,5 @@ The 253 files listed in [`excluded-files.tsv`](excluded-files.tsv), with size an
 - the per-record `decisions.csv` and `records.tsv`;
 - anything else over 5 MB.
 
-They stay on the host under `~/vrdev-test/v331/`, as do the 21 recorded MyVariant.info responses. [`pack_v331.sh`](pack_v331.sh) made the selection on
+They stay on the host under `~/vrdev-test/v331/`. [`pack_v331.sh`](pack_v331.sh) made the selection on
 every host.
