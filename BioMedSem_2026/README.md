@@ -1,32 +1,57 @@
-# BioMedSem 2026 paper and evidence
+# BioMedSem 2026: manuscript and evidence
 
-- [`paper/`](paper/README.md): current manuscript, supplementary material,
-  compiled PDFs, and the portable LaTeX source ZIP builder.
-- [`paper-assets/`](paper-assets/): figures used by those documents and their
-  TikZ/Python sources.
-- [`benchmark-results/`](benchmark-results/README.md): recorded measurements,
-  provenance and validation evidence. The large-graph retrieval extension, up to the
-  complete HG005 VCF, is documented under [`vcf-bench-3`](benchmark-results/vcf-bench-3/README.md).
+| Directory | Contents |
+| --- | --- |
+| [`paper/`](paper/README.md) | The manuscript (`current_short.tex`, also built as `paper.pdf`), its supplementary material (`supplementary.tex`), the compiled PDFs, and the portable source-ZIP builder |
+| [`paper-assets/`](paper-assets/) | Every figure the two documents include, with its source |
+| [`benchmark-results/`](benchmark-results/README.md) | The run records behind every reported number: commands, logs, timings, comparisons, validation reports and provenance |
 
-Build both documents from the repository root:
+## Figures
 
-```bash
-make -C BioMedSem_2026/paper
-```
+The data figures are drawn from `benchmark-results/` by
+[`paper-assets/figures/make_figures.py`](paper-assets/figures/make_figures.py),
+which reads every value through
+[`figure_data.py`](paper-assets/figures/figure_data.py) and
+[`scripts/build_site_data.py`](../scripts/build_site_data.py), the results site's
+builder. The paper and the site therefore cannot compute a value differently.
+The diagrams are standalone TikZ sources beside their PDFs.
 
-Create the shareable source ZIP with `make -C BioMedSem_2026/paper bundle`.
-Recipients need a LaTeX installation; they do not need the benchmark archive.
+| Figure | File | Source |
+| --- | --- | --- |
+| 1 | `vcf-core-minimal.pdf` | `vcf-core-minimal.tex` |
+| 2 | `fig-validation.pdf` | `make_figures.py` |
+| 3 | `fig-usecase-matches.pdf` | `make_figures.py` |
+| 4 | `fig-converters.pdf` | `make_figures.py` |
+| 5 | `fig-regional.pdf` | `make_figures.py` |
+| S1 | `vcf-core-classes.pdf` | `vcf-core-classes.tex` |
+| S2 | `vcf2rdf-v3.pdf` | `vcf2rdf-v3.tex` |
+| S3 | `fig-linking-framework.pdf` | `fig-linking-framework.tex` |
+| S4 | `fig-usecase-costs.pdf` | `make_figures.py` |
+| S5 | `fig-scaling.pdf` | `make_figures.py` |
+| S6 | `fig-samples.pdf` | `make_figures.py` |
+| S7 | `fig-representations.pdf` | `make_figures.py` |
+| S8 | `fig-retrieval.pdf` | `make_figures.py` |
+| S9 | `fig-retrieval-detail.pdf` | `make_figures.py` |
 
-To regenerate the four data plots from the recorded results:
+To redraw the data figures (Python 3 with Matplotlib), from the repository root:
 
 ```bash
 python3 BioMedSem_2026/paper-assets/figures/make_figures.py
 ```
 
-Plot generation needs Python and Matplotlib. The workflow, vocabulary and use-case
-figures have standalone `.tex` sources beside their PDFs. The benchmark archive's
-README documents how to rebuild its integrated summary.
+The figures carry no creation timestamp, so an unchanged figure is redrawn
+byte for byte. To rebuild a diagram, run `pdflatex <name>.tex` in `paper-assets/`.
 
-The previous ECCB manuscript, old reporting pipeline and superseded figures are
-preserved on the [`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy);
-see [the archive inventory](../LEGACY.md).
+## Building the documents
+
+```bash
+make -C BioMedSem_2026/paper          # manuscript and supplement
+make -C BioMedSem_2026/paper bundle   # also a self-contained LaTeX source ZIP
+```
+
+Recipients of the ZIP need only a LaTeX installation, not this archive; see
+[`paper/README.md`](paper/README.md).
+
+Earlier manuscripts (the ECCB submission and the full-length BioMedSem draft) and
+superseded figures are listed in [`LEGACY.md`](../LEGACY.md), with how to
+retrieve them.
