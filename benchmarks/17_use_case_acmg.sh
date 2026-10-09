@@ -110,7 +110,7 @@ have_cell() { [[ -d "$EXP_DIR/$1" ]]; }
 
 # Stop before a stage that cannot fit, rather than let an index fill the disk
 # half-way through (arm 2's first run). The figures are arm 3's estimates,
-# scaled from arm 1 (workstream-a-implementation.md, 2026-09-29); the smaller
+# scaled from arm 1 on 2026-09-29; the smaller
 # arms need little.
 need_space() {
   local gb="$1" what="$2" free
@@ -261,7 +261,7 @@ stage_link() {
   fi
   # Linking reads the derived VCF, not the converted graph: the runner derives
   # the converter's subject IRIs from it, and parsing N-Triples would cost far
-  # more (workstream-a-implementation.md §3.4). govern's check catches any link
+  # more. govern's check catches any link
   # whose subject the graph does not contain.
   local id linkers
   for id in $(participant_ids) $(annotation_ids); do

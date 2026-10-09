@@ -5,10 +5,6 @@ in the `Makefile`); `supplementary.tex` contains its supplementary material. The
 compiled main text is supplied as both `paper.pdf` and `current_short.pdf`
 (identical files). The supplement is `supplementary.pdf`.
 
-`current_long.tex` and `supplementary_long.tex` are the previous full-length
-pair, kept for reference and not built by `make`. Each refers to the other, so
-compile them with the three commands below, using their names.
-
 ## Compile the downloaded ZIP
 
 1. Unzip `BioMedSem_2026-paper.zip` and open the extracted directory.

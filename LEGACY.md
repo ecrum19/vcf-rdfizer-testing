@@ -18,6 +18,25 @@ Files retain their original paths. `main` contains the current tests and reports
 | `BioMedSem_2026/paper-assets/class-hierarchy-paper.png`, `combined_metrics_figure.png`, `vcf2rdf.pdf`, `vcf2rdf.svg` | Figures no longer included by the current manuscript or supplement. |
 | `BioMedSem_2026/paper-assets/fig-policy-*` and `figures/data/policy-demo/` | The synthetic policy demonstrator's figures and captured results, superseded in the paper by the real-genome use case. Its plotting code is preserved in the archived `make_figures.py`. |
 
+## Removed from main before the Zenodo release (2026-10-09)
+
+These files were unused by the manuscript, the harness or the results site, or
+were internal working notes. Each can be read at commit `efd5f22d`, the last
+commit that has all of them, for example
+`git show efd5f22d:benchmarks/RUN_PLAN.md`.
+
+| Original path | What it was |
+| --- | --- |
+| `BioMedSem_2026/paper/current_long.tex`, `supplementary_long.tex` and their PDFs | The full-length manuscript and supplement, superseded by the condensed pair. Their numbers predate the v3.3.1 rerun. |
+| `BioMedSem_2026/paper-assets/fig-workflow.*`, `fig-usecase.*` | A workflow diagram no document included, and the use-case diagram that only the first co-author brief used. |
+| `BioMedSem_2026/paper-assets/figures/count_validation.py` | A tally of the validation evidence, superseded by `validation_counts()` in `scripts/build_site_data.py`, which the figures and the site tests use. |
+| `BioMedSem_2026/paper-assets/vcf2rdf-v3.fls`, `vcf2rdf-v3.fdb_latexmk` | LaTeX build files. |
+| `benchmarks/RUN_PLAN.md`, `benchmarks/AGGREGATION.md` | The pre-release campaign's host plan and the steps for pulling results off the hosts. Their lasting content is in `benchmarks/README.md`, under "How the manuscript's results were produced". |
+| `tool-docs/jbms-review-vcf-rdfizer.md`, `jbms-revision-plan.md`, `workstream-a-implementation.md`, `proposal-indexed-regional-access-arm.md`, `results-site-plan.md`, `cottas-multiple-indexes.md` | A simulated journal review and the plans and notes written while acting on it. |
+| `tool-docs/coauthor-report/report.tex`, and the figure copies only it used | The first co-author brief, superseded by `report_revised.tex`. |
+
+`benchmarking_suggestions.md` moved to [`benchmarks/DESIGN.md`](benchmarks/DESIGN.md).
+
 ## Material retained on main
 
 The current benchmark harness, fixtures, plug-in tests, ACMG use case, paper and
@@ -27,8 +46,8 @@ superseded runs. Removing them would break the paper's evidence trail.
 
 `scripts/combine_benchmark_metrics.py` remains because the current
 `build_run_summary.py` imports it. The download, Ubuntu setup and host-reporting
-scripts are also active dependencies. The benchmark design rationale and the
-current review/implementation documents remain with the workflows they support.
+scripts are also active dependencies. The benchmark design rationale is
+`benchmarks/DESIGN.md`.
 
 ## Retrieve archived files
 
@@ -45,5 +64,5 @@ For a single file, without changing the current checkout:
 git show origin/legacy:scripts/export_latex_tables.py
 ```
 
-This is a normal branch archive; no Git history was rewritten. Historical files
-remain available through `legacy` and the existing commits.
+Neither cleanup rewrote Git history. Historical files remain available through
+`legacy`, `efd5f22d`, and the existing commits.

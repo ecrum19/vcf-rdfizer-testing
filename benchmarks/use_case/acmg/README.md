@@ -3,9 +3,8 @@
 > *Which participants carry a ClinVar-classified variant in an ACMG SF v3.2
 > gene, and what may each requester see?*
 
-This is workstream A of the JBMS revision plan
-([`tool-docs/jbms-revision-plan.md`](../../../tool-docs/jbms-revision-plan.md)).
-It is the paper's demonstration that VCF-RDFizer is *useful*, not just correct.
+This use case is the paper's demonstration that VCF-RDFizer is *useful*, not
+just correct.
 The question is clinically recognisable, it needs data from outside the VCFs,
 it spans several files, and it has a consent dimension: secondary findings are
 exactly what consent codes govern.

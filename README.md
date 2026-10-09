@@ -1,100 +1,118 @@
-# VCF-RDFizer testing
+# VCF-RDFizer evaluation: harness, run records and manuscript
 
-This repository contains the current benchmark harness, plug-in tests, archived
-measurement evidence, and the BioMedSem manuscript for VCF-RDFizer.
-Large VCF inputs are downloaded from their original providers and are not stored
-in Git.
+The evaluation of [VCF-RDFizer](https://github.com/ecrum19/VCF-RDFizer) reported in
+*VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Policy-aware Semantic
+Genomic Data* (BioMedSem 2026). The repository holds:
+- the benchmark harness that ran every experiment;
+- the run records of every reported result;
+- the manuscript and supplement, with the scripts that draw their figures;
+- an interactive results site.
 
-| Directory or file | Purpose |
+Every number, table and figure in the manuscript can be traced to a run record
+here and regenerated from it.
+
+The input VCFs are downloaded from their providers (see [Datasets](#datasets)),
+and the generated RDF is not stored. Every run records the command, tool
+commit and image digest that rebuild it.
+
+## Contents
+
+| Path | Contents |
 | --- | --- |
-| [`benchmarks/`](benchmarks/README.md) | Experiment runners, fixtures and analysis; includes the separate regional retrieval, large-graph retrieval (up to the complete HG005 VCF) and ACMG use-case experiments. |
-| [`benchmarks/RUN_PLAN.md`](benchmarks/RUN_PLAN.md) | Configuration and host allocation for the manuscript campaign. |
-| [`benchmarking_suggestions.md`](benchmarking_suggestions.md) | Design rationale behind the numbered benchmark experiments. |
-| [`plugin-tests/`](plugin-tests/README.md) | Policy, SPDI and gene-linker verification. |
-| [`BioMedSem_2026/paper/`](BioMedSem_2026/paper/README.md) | Current manuscript, supplement, compiled PDFs and portable source ZIP builder. |
-| [`BioMedSem_2026/benchmark-results/`](BioMedSem_2026/benchmark-results/README.md) | Measurement records and provenance used by the paper, including evidence for its testing-issues supplement. |
-| [`tool-docs/`](tool-docs/) | Current review, revision and implementation work, plus the advisor report. |
+| [`benchmarks/`](benchmarks/README.md) | The harness: experiments `00`–`18`, the linked workflow ([`use_case/acmg/`](benchmarks/use_case/acmg/README.md)), the converter comparison ([`converters/`](benchmarks/converters/README.md)), fixtures, and analysis scripts. [`DESIGN.md`](benchmarks/DESIGN.md) gives the reasoning behind each experiment |
+| [`BioMedSem_2026/benchmark-results/`](BioMedSem_2026/benchmark-results/README.md) | The run records, per benchmark host. Its README maps each reported result to its records |
+| [`BioMedSem_2026/paper/`](BioMedSem_2026/paper/README.md) | The manuscript and supplementary material: sources, PDFs, and a portable source-ZIP builder |
+| [`BioMedSem_2026/paper-assets/`](BioMedSem_2026/README.md#figures) | Every figure, with the script or TikZ source that draws it |
+| [`plugin-tests/`](plugin-tests/README.md) | Tests of VCF-RDFizer's SPDI, gene and policy plug-ins on real data |
+| [`scripts/`](#support-scripts) | Input download, host setup, the archive summary, and the results site's data builder |
+| [`site/`](site/) | The [results site](https://ecrum19.github.io/vcf-rdfizer-testing/) |
+| [`tool-docs/`](tool-docs/README.md) | Working notes for the authors; no result depends on them |
+| [`LEGACY.md`](LEGACY.md) | Material removed from this branch over time, and how to retrieve it |
 
-The ECCB manuscript, finished experiments and superseded runners, reports and
-figures are preserved on the [`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy).
-See [the archive inventory](LEGACY.md) for what moved and how to retrieve it.
+## Software versions
 
-## Running the current tests
+The base campaign (experiments `00`–`13`) ran VCF-RDFizer **v3.1.0**: image
+`ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa`,
+commit `d3b34d5`.
 
-Start with the [benchmark operator's guide](benchmarks/README.md) for the tool
-checkout, Docker and Python dependencies. From this repository's root:
+The later experiments ran **v3.3.1**: image
+`ecrum19/vcf-rdfizer@sha256:3ad71b1a54612142e3be43b24e7e4a38551949cb641f4421bcae9bf051102993`,
+commit `b25fb7b`, [doi:10.5281/zenodo.23237636](https://doi.org/10.5281/zenodo.23237636).
+They are:
+- the linked workflow;
+- regional and large-graph retrieval;
+- the converter comparison;
+- the consumer WGS validation run.
 
-```bash
-export BM_IMAGE_VERSION=3.1.0
-bash benchmarks/00_environment.sh
-bash benchmarks/run_all.sh smoke
-python3 benchmarks/analysis/collect_metrics.py --all
-```
+On the same 100,000 HG005 records, the two releases write identical sorted
+triples, so the v3.1.0 graphs that the retrieval experiments query stand for
+v3.3.1's.
 
-The smoke profile checks the pipeline with small inputs; its timings are not
-benchmark measurements. Follow [the run plan](benchmarks/RUN_PLAN.md) to reproduce
-the manuscript campaign. Regional retrieval, scale retrieval and the ACMG use
-case are separate experiments; see the operator's guide and
-[the ACMG instructions](benchmarks/use_case/acmg/README.md).
+## Reproducing the results
 
-Run plug-in checks using [their separate instructions](plugin-tests/README.md).
-The paired Q1–Q13 validation workload is exercised by
-`benchmarks/06_equivalence.sh` through VCF-RDFizer's validation runner.
-
-## Building the paper and reports
-
-```bash
-make -C BioMedSem_2026/paper
-make -C BioMedSem_2026/paper bundle
-```
-
-These build the main paper and supplement; `bundle` also produces a self-contained
-LaTeX source ZIP. See [the paper README](BioMedSem_2026/paper/README.md) for
-compilation requirements and instructions for recipients.
-
-The integrated archive summary is rebuilt with:
+**Redraw the figures, rebuild the site data, and check both against the paper,
+using only the archived run records** (Python 3.12 with Matplotlib; the rest is
+the standard library):
 
 ```bash
-python3 scripts/build_run_summary.py BioMedSem_2026/benchmark-results \
-  --output BioMedSem_2026/benchmark-results/summary.json
+python3 -m unittest scripts/test_build_site_data.py      # every pinned number matches the paper
+python3 BioMedSem_2026/paper-assets/figures/make_figures.py
+python3 scripts/build_site_data.py --out site/data
+make -C BioMedSem_2026/paper                              # manuscript and supplement (LaTeX)
 ```
+
+**Rerun an experiment.** You need Docker, Python 3, and a VCF-RDFizer checkout at
+the release the experiment used. Start with the
+[operator's guide](benchmarks/README.md), whose section *How the manuscript's
+results were produced* gives each experiment's release, host and configuration.
+In outline:
+
+```bash
+bash scripts/download_test_data.sh                       # the ten input VCFs
+BM_IMAGE_VERSION=3.1.0 bash benchmarks/00_environment.sh
+BM_IMAGE_VERSION=3.1.0 bash benchmarks/run_all.sh biomedsem      # the base campaign
+BM_IMAGE_VERSION=3.3.1 bash benchmarks/17_use_case_acmg.sh       # e.g. the linked workflow
+bash benchmarks/18_converter_comparison.sh                       # the converter comparison
+```
+
+Compare a download against `BioMedSem_2026/benchmark-results/input-checksums.tsv`
+before trusting any comparison. `run_all.sh smoke` checks the pipeline on small
+inputs; its timings are not measurements. The plug-in tests run
+separately; see [`plugin-tests/README.md`](plugin-tests/README.md).
+
+The linked workflow's MyVariant.info tier replays the service responses recorded
+on 2026-09-28, which are published in
+[`benchmarks/use_case/acmg/myvariant-cache/`](benchmarks/use_case/acmg/myvariant-cache/README.md).
+Use them, not the live service, whose data change.
 
 ## Results site
 
-An interactive version of the evidence is published at
-<https://ecrum19.github.io/vcf-rdfizer-testing/>, built from the archive by
-`.github/workflows/pages.yml` on every push to `main`. To build and view it locally:
+<https://ecrum19.github.io/vcf-rdfizer-testing/> presents the evidence as
+interactive charts. `.github/workflows/pages.yml` builds it from the archive on
+every push to `main`. The page types no numbers of its own:
+- charts read the data files;
+- every number in its prose is filled from `facts.json`, which
+  `scripts/build_site_data.py` computes from the run records;
+- the tests fail if a digit is typed into the page.
+
+To view it locally:
 
 ```bash
-python3 -m unittest scripts/test_build_site_data.py   # the data must match the paper
 python3 scripts/build_site_data.py --out site/data
 python3 -m http.server 8765 --directory site
 ```
 
-The page types no numbers of its own: charts read the data files, and every
-number in its prose is a `{placeholder}` or `data-fill` span filled from
-`facts.json`, which the builder computes from `BioMedSem_2026/benchmark-results`
-and `benchmarks/use_case/acmg`. The tests fail if a digit is typed into the page.
+## Support scripts
 
-| Support script | Current use |
+| Script | Use |
 | --- | --- |
-| `scripts/download_test_data.sh` | Downloads and normalizes the ten public VCF inputs. |
-| `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and, optionally, the VCF-RDFizer CLI on Ubuntu. |
-| `scripts/report_system_conditions.py` | Captures host/software details; called by `00_environment.sh`. |
-| `scripts/build_run_summary.py` | Integrates archived cells, provenance and validation outcomes. |
-| `scripts/combine_benchmark_metrics.py` | Extracts per-run measurements; imported by the archive summary builder. |
-| `scripts/build_site_data.py` | Builds the results site's data files from the archive (stdlib only). |
-
-## Ubuntu setup
-
-```bash
-bash scripts/install_vcf_rdfizer_ubuntu.sh --docker-only
-```
-
-Open a new login shell afterwards for Docker group membership to take effect.
-To install the CLI as well, omit `--docker-only`; use
-`VCF_RDFIZER_VERSION=3.1.0` to select the base benchmark release. The installer
-skips dependencies already installed.
+| `scripts/download_test_data.sh` | Downloads the ten public VCF inputs and normalizes their names |
+| `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and, optionally, the VCF-RDFizer CLI on Ubuntu (`--docker-only`; `VCF_RDFIZER_VERSION=3.1.0` selects a release) |
+| `scripts/report_system_conditions.py` | Records host and software details; called by `benchmarks/00_environment.sh` |
+| `scripts/build_run_summary.py` | Integrates the base campaign's run records into `summary.json` |
+| `scripts/combine_benchmark_metrics.py` | Extracts per-run measurements; imported by `build_run_summary.py` |
+| `scripts/build_site_data.py` | Builds the results site's data from the run records (standard library only) |
+| `scripts/test_build_site_data.py` | Pins the site's numbers to the paper's |
 
 ## Datasets
 
@@ -149,7 +167,7 @@ Optional output directory:
 DATA_DIR=vcf_data bash scripts/download_test_data.sh
 ```
 
-The script now rejects `index.html*` artifacts during mirroring.
+The script rejects `index.html*` artifacts during mirroring.
 
 Before downloading each dataset, the script checks for its canonical filename in `vcf_data/`. If that file, or the original downloaded filename/archive, is already present, `wget` is skipped and only the required normalization or extraction step is performed.
 
@@ -157,15 +175,22 @@ The Sequencing.com collection is downloaded as `SequencingdotcomVCFs.zip`. After
 
 The four additional datasets are direct downloads from the public IGSR and NIST FTP servers. The 1000 Genomes Phase 3 chromosome-20 file is a phased GRCh37 batch VCF with 2,504 samples. The HGSVC2 `freeze3.sv.alt.vcf.gz` file is a GRCh38 structural-variant batch VCF with 32 samples; it uses sequence alleles in the `REF`/`ALT` columns rather than the symbolic-allele representation. The HG004 and HG005 files are single-sample GRCh38 Genome in a Bottle benchmark VCFs covering chromosomes 1–22. Their canonical names and download URLs are listed in the table above and are also used directly by `scripts/download_test_data.sh`.
 
-## License and archive
+## Licences
 
-Code is under the MIT License ([LICENSE](LICENSE)). Data and documents, including the run
-records in `BioMedSem_2026/benchmark-results/`, the figures, and the manuscript sources, are
-under CC BY 4.0 ([LICENSE-DATA](LICENSE-DATA)). The source VCFs are not redistributed: the
-table above gives the download command for each, and
-`BioMedSem_2026/benchmark-results/input-checksums.tsv` its SHA-256. The recorded
-MyVariant.info responses in `benchmarks/use_case/acmg/myvariant-cache/` are
-under MyVariant.info's terms, not this repository's licences (see the README there).
+- **Code:** MIT License ([`LICENSE`](LICENSE)). This covers shell, Python,
+  JavaScript, HTML and CSS sources, Makefiles, and the LaTeX/TikZ sources of
+  figures.
+- **Data and documents:** CC BY 4.0 ([`LICENSE-DATA`](LICENSE-DATA)). This covers
+  the run records, the figures, the manuscript, and the documentation.
+- **Exception:** the recorded MyVariant.info responses in
+  `benchmarks/use_case/acmg/myvariant-cache/` remain under MyVariant.info's
+  terms; see the README there.
+- **Not redistributed:** the source VCFs stay under their providers' terms.
 
-The version of this repository that accompanies the BioMedSem 2026 manuscript is archived on
-Zenodo; `.zenodo.json` holds that record's metadata.
+## Citation
+
+Please cite the manuscript, and this archive by its Zenodo record (metadata in
+[`.zenodo.json`](.zenodo.json), citation in [`CITATION.cff`](CITATION.cff)).
+VCF-RDFizer itself is cited as
+[doi:10.5281/zenodo.23237635](https://doi.org/10.5281/zenodo.23237635) (all
+versions) or by the version used.

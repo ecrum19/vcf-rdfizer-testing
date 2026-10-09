@@ -17,8 +17,7 @@ $pdf_mode = 1;
 # is missing or older than its source. The environment variable stops the partner
 # build from starting another one.
 unless ($ENV{VCFR_XR_PARTNER}) {
-  my %partner = ('current_short' => 'supplementary', 'supplementary' => 'current_short',
-                 'current_long' => 'supplementary_long', 'supplementary_long' => 'current_long');
+  my %partner = ('current_short' => 'supplementary', 'supplementary' => 'current_short');
   for my $arg (@ARGV) {
     (my $base = $arg) =~ s{^.*/}{};
     $base =~ s/\.tex$//;
