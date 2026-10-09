@@ -25,6 +25,10 @@
 #   derive    restrict each input to the ACMG gene spans and normalise it
 #   convert   VCF-RDFizer, expanded, one cell per input
 #   link      the spdi linker on all six graphs, rsid-dbsnp on the PGP genomes
+#   link_myvariant
+#             arm 1 only: rsid-myvariant confirms the PGP files' rsIDs against
+#             MyVariant.info, by default by replaying recorded responses
+#             offline, and compare_myvariant.py sets them against rsid-dbsnp's
 #   govern    vcf-rdfizer-policy evaluate + check, per requester and genome
 #   query     carriers.rq over each requester's view (and over everything,
 #             as the "unrestricted" answer), under QLever
@@ -58,7 +62,9 @@ WHOLE_GENOME=0; [[ "$ARM" == wgs || "$ARM" == layered ]] && WHOLE_GENOME=1
 # A case with purposes of its own ships their vocabulary beside its policy.
 PURPOSES=(); [[ -s "${POLICY%/*}/purposes.ttl" ]] && PURPOSES=(--purposes "${POLICY%/*}/purposes.ttl")
 EXPERIMENT="17_use_case_acmg$SUFFIX"
-STAGES="${BM_ACMG_STAGES:-derive convert link govern query baseline compare}"
+DEFAULT_STAGES="derive convert link govern query baseline compare"
+[[ "$ARM" == arm1 ]] && DEFAULT_STAGES="derive convert link link_myvariant govern query baseline compare"
+STAGES="${BM_ACMG_STAGES:-$DEFAULT_STAGES}"
 REPLICATES="${BM_REPS:-3}"
 DATA="${BM_ACMG_DATA:-$BM_VCF_DATA/use_case}"       # downloaded inputs
 DERIVED="${BM_ACMG_DERIVED:-$BM_DERIVED/acmg$SUFFIX}"   # derived inputs
@@ -78,6 +84,10 @@ participant_ids() { python3 -c 'import json,sys
 print(" ".join(p["id"] for p in json.load(open(sys.argv[1]))["participants"]))' "$CASE_JSON"; }
 participant_input() { python3 -c 'import json,sys
 print(next(p["input"] for p in json.load(open(sys.argv[1]))["participants"] if p["id"]==sys.argv[2]))' "$CASE_JSON" "$1"; }
+# Whether a participant's ID column carries rsIDs (the PGP files), so the rsID linkers apply.
+has_rsids() { python3 -c 'import json,sys
+sys.exit(0 if any(p["id"]==sys.argv[2] and p["rsids"] for p in json.load(open(sys.argv[1]))["participants"]) else 1)' \
+  "$CASE_JSON" "$1"; }
 # The shared annotation files, joined to the genomes by SPDI: ClinVar, and the
 # panel's frequencies when the case declares them (arm 2).
 annotation_ids() { python3 -c 'import json,sys
@@ -259,9 +269,7 @@ stage_link() {
     [[ -s "$DERIVED/$id.acmg.vcf" ]] || { bm_step "link__$id: not derived yet"; continue; }
     # Genomes also get gene links: the policy's cancer panel selects on them.
     [[ " $(annotation_ids) " == *" $id "* ]] && linkers=spdi || linkers=spdi,ensembl-genes-grch38
-    python3 -c 'import json,sys
-sys.exit(0 if any(p["id"]==sys.argv[2] and p["rsids"] for p in json.load(open(sys.argv[1]))["participants"]) else 1)' \
-      "$CASE_JSON" "$id" && linkers="$linkers,rsid-dbsnp"
+    has_rsids "$id" && linkers="$linkers,rsid-dbsnp"
     # The linker writes plain N-Triples; a whole genome's links are ~1 GB of
     # them, so the cell keeps them gzipped (with the linker's JSON report).
     bm_run_raw "$EXPERIMENT" "link__$id" -- bash -c '
@@ -275,6 +283,46 @@ sys.exit(0 if any(p["id"]==sys.argv[2] and p["rsids"] for p in json.load(open(sy
       "$linkers" "$id.acmg" "$EXP_DIR/link__$id/out"
     bm_expect_ok
   done
+}
+
+# Tier 3 on arm 1's PGP files, whose ID columns carry rsIDs: rsid-myvariant
+# links only the rsIDs a MyVariant.info dbSNP record confirms. By default it
+# replays recorded responses offline from BM_MYVARIANT_CACHE (laid out as the
+# linker's --links-cache, responses/rsid-myvariant/<version>/), so a request
+# the recording cannot answer stops the cell instead of reaching the service.
+# The default, use_case/acmg/myvariant-cache, is the recording the paper's
+# result rests on; reproduce it from there, not from the live service.
+# BM_ALLOW_NETWORK=1 with BM_CONTACT_EMAIL queries the service instead, at the
+# linker's 1 request/s; the cell then keeps the responses it fetched in out/cache,
+# a recording for the next run. The address goes in the requests' User-Agent.
+stage_link_myvariant() {
+  bm_banner "link_myvariant — rsid-myvariant on the PGP files, against rsid-dbsnp"
+  [[ "$ARM" == arm1 ]] || { bm_step "link_myvariant: arm 1 only"; return 0; }
+  local id cache ids=() access
+  for id in $(participant_ids); do has_rsids "$id" && ids+=("$id"); done
+  if [[ "${BM_ALLOW_NETWORK:-0}" == "1" ]]; then
+    : "${BM_CONTACT_EMAIL:?set BM_CONTACT_EMAIL for a live MyVariant.info run}"
+  else
+    cache="${BM_MYVARIANT_CACHE:-$CASE_DIR/myvariant-cache}"
+    if [[ ! -d "$cache/responses/rsid-myvariant" ]]; then
+      bm_skip "$EXPERIMENT" "link_myvariant" "no recorded responses under $cache; set BM_MYVARIANT_CACHE, or BM_ALLOW_NETWORK=1 and BM_CONTACT_EMAIL"
+      return 0
+    fi
+  fi
+  for id in "${ids[@]}"; do
+    skip_done "link_myvariant__$id" && continue
+    [[ -s "$DERIVED/$id.acmg.vcf" ]] || { bm_step "link_myvariant__$id: not derived yet"; continue; }
+    if [[ "${BM_ALLOW_NETWORK:-0}" == "1" ]]; then
+      access=(--links-contact-email "$BM_CONTACT_EMAIL" --links-cache "$EXP_DIR/link_myvariant__$id/out/cache")
+    else
+      access=(--offline --links-cache "$cache")
+    fi
+    bm_run_raw "$EXPERIMENT" "link_myvariant__$id" -- \
+      "${PYTHON:-python3}" "$(dirname -- "$BM_TOOL")/vcf_rdfizer_link.py" run -i "$DERIVED/$id.acmg.vcf" \
+      --link rsid-myvariant "${access[@]}" -o "$EXP_DIR/link_myvariant__$id/out/$id.myvariant.links.nt"
+    bm_expect_ok
+  done
+  python3 "$CASE_DIR/compare_myvariant.py" "$EXP_DIR" "${ids[@]}"
 }
 
 # A QLever endpoint over files under EXP_DIR, in the image, on 127.0.0.1:<port>.
@@ -422,7 +470,7 @@ stage_compare() {
 mkdir -p "$EXP_DIR" "$DERIVED"
 for stage in $STAGES; do
   case "$stage" in
-    fetch|fetch_cohort|derive|convert|link|govern|query|baseline|compare) "stage_$stage" ;;
+    fetch|fetch_cohort|derive|convert|link|link_myvariant|govern|query|baseline|compare) "stage_$stage" ;;
     *) bm_die "unknown stage: $stage" ;;
   esac
 done

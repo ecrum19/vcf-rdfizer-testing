@@ -224,6 +224,37 @@ at, so that checkout must have the linker. Until it does, the link stage
 records a skip, and govern, query and compare skip after it. derive, convert
 and baseline need only the v3.2.0 image.
 
+### The live tier: MyVariant.info
+
+On arm 1, `link_myvariant` runs the tier-3 `rsid-myvariant` linker on the two
+PGP files, whose ID columns carry rsIDs, and
+[`compare_myvariant.py`](compare_myvariant.py) sets its links against those of
+`rsid-dbsnp`, which rewrites every rsID without checking it. The stage does not
+query the service by default. The linker replays recorded responses with
+`--offline` from `BM_MYVARIANT_CACHE` (default: [`myvariant-cache/`](myvariant-cache/)
+beside this file, laid out as the linker's `--links-cache`), and a request the
+recording cannot answer stops the cell. The linker keys each response by its request,
+which depends only on the file's rsIDs, so a recording made from the same
+derived VCFs answers every request.
+
+The paper's recording is the 21 responses MyVariant.info returned on
+2026-09-28: one POST per batch of up to 1,000 rsIDs, 10 for NB72462M and 11 for
+NG131FQA1I. They are in [`myvariant-cache/`](myvariant-cache/), with their
+provenance and terms, and each cell's `*.links.json` lists every response's
+SHA-256. **To reproduce the paper's result, use this recording, as the stage
+does by default, not the live service.** MyVariant.info's data change, so a
+live query tests whether today's service confirms the rsIDs. To query the
+service anyway:
+
+```bash
+BM_ALLOW_NETWORK=1 BM_CONTACT_EMAIL=you@your-institution.org BM_ACMG_STAGES=link_myvariant ./17_use_case_acmg.sh
+```
+
+The linker then sends at most one request a second and 30 per file, names the
+address in its User-Agent, and keeps the responses in the cell's `out/cache/`,
+a recording for the next run. Its counts can differ from the paper's as
+MyVariant.info's data changes.
+
 ### Outputs
 
 Everything is written under `benchmarks/results/17_use_case_acmg/`:
@@ -236,6 +267,8 @@ Everything is written under `benchmarks/results/17_use_case_acmg/`:
 | `query/<requester>/` | `carriers.tsv`, `timing.json` (engine setup, then per-replicate query time) |
 | `baseline/` | `carriers.<requester>.tsv`, `summary.json` (per requester, the classification spread, and the reportable subset) |
 | `comparison.json`, `grid.tsv` | Agreement per requester, and carriers per requester and participant |
+| `link_myvariant__<id>/` | Arm 1's tier-3 links (`out/<id>.myvariant.links.nt`) and the linker's report: requests, cache hits, and every response's SHA-256 |
+| `tier1_vs_tier3_myvariant.json` | Per PGP file: tier-1 and tier-3 link counts, and the tier-1 links and rsIDs the service did not confirm |
 
 ## Tests
 

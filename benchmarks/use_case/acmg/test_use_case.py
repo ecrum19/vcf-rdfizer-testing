@@ -39,6 +39,7 @@ import make_cohort as M  # noqa: E402
 import make_layered as LAY  # noqa: E402
 import make_wgs as W  # noqa: E402
 import compare as C  # noqa: E402
+import compare_myvariant as CMV  # noqa: E402
 
 from rdflib import Graph, Literal, Namespace, RDF, URIRef, XSD  # noqa: E402
 
@@ -267,6 +268,43 @@ class RareBaseline(unittest.TestCase):
                 with self.subTest(requester=name):
                     carriers = read(f"carriers.{name}.tsv")
                     self.assertEqual(read(f"rare.{name}.tsv"), [r for r in carriers if int(r["pos"]) == brca1])
+
+
+class MyVariantComparison(unittest.TestCase):
+    """compare_myvariant.py: what the service confirmed, against what the file declared."""
+
+    def link_set(self, cell: pathlib.Path, links: list[tuple[int, str]], extra: str = "", gz: bool = False):
+        (cell / "out").mkdir(parents=True)
+        text = extra + "".join(f"<file://A.acmg.vcf#call/{n}> <{VCFL}sameVariantAs> "
+                               f"<https://identifiers.org/dbsnp:{rsid}> .\n" for n, rsid in links)
+        if gz:
+            (cell / "out" / "A.acmg.links.nt.gz").write_bytes(gzip.compress(text.encode()))
+        else:
+            (cell / "out" / "A.myvariant.links.nt").write_text(text, encoding="utf-8")
+
+    def compare(self, tier1, tier3) -> tuple[int, dict]:
+        with tempfile.TemporaryDirectory() as work:
+            work = pathlib.Path(work)
+            # The tier-1 cell also holds spdi and gene links, which must not count.
+            other = (f"<file://A.acmg.vcf#call/1> <{VCFL}sameVariantAs> <{SPDI}NC_000001.11:9:A:G> .\n"
+                     f"<file://A.acmg.vcf#call/1> <{VCFL}overlapsGene> <https://identifiers.org/ensembl:ENSG1> .\n")
+            self.link_set(work / "link__A", tier1, extra=other, gz=True)
+            self.link_set(work / "link_myvariant__A", tier3)
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = CMV.main([str(work), "A"])
+            return code, json.loads((work / "tier1_vs_tier3_myvariant.json").read_text(encoding="utf-8"))["A"]
+
+    def test_unconfirmed_links_and_rsids_are_counted_apart(self):
+        # rs3 is declared on two calls: two unconfirmed links, one unconfirmed rsID.
+        code, report = self.compare([(1, "rs1"), (2, "rs2"), (3, "rs3"), (4, "rs3")], [(1, "rs1"), (2, "rs2")])
+        self.assertEqual(code, 0)
+        self.assertEqual(report, {"tier1_links": 4, "tier3_links": 2, "tier3_subset_of_tier1": True,
+                                  "unconfirmed_links": 2, "unconfirmed_rsids": 1, "examples": ["rs3"]})
+
+    def test_a_link_the_file_never_declared_fails(self):
+        code, report = self.compare([(1, "rs1")], [(1, "rs1"), (2, "rs9")])
+        self.assertEqual(code, 1)
+        self.assertFalse(report["tier3_subset_of_tier1"])
 
 
 class TwoConsentImplementationsAgree(unittest.TestCase):
