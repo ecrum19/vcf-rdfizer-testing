@@ -1,0 +1,32 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/convert__NB72462M/out/run_metrics/NB72462M.acmg__20261008T115548
+  Detailed logs: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/convert__NB72462M/out/run_metrics/NB72462M.acmg__20261008T115548/logs/wrapper.log
+  Progress log: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/convert__NB72462M/out/run_metrics/NB72462M.acmg__20261008T115548/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: NB72462M.acmg.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample calls streamed: 10,010; FORMAT values: 53,152
+    * Streaming structured header RDF
+    * Header lines typed: 251; contigs: 195
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 166,806 values
+    * QUAL values streamed: 10,010; INFO values: 166,982; declarations: 19
+    * Triples produced: 2,389,320
+    * Compression ✅
+    * Output directory: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/convert__NB72462M/out/NB72462M.acmg
+      - RDF aggregate: NB72462M.acmg.nt.gz
+      - RDF (.gz): 10.51 MB (retained because it is also the selected gzip artifact)
+      - gzip (.nt.gz): 10.51 MB
+Total triples produced (full run): 2,389,320
+Conversion process finished.
+Run time (full mode): 24.42s
+Timing log: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/convert__NB72462M/out/run_metrics/NB72462M.acmg__20261008T115548/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/convert__NB72462M/out/run_metrics/NB72462M.acmg__20261008T115548/summary.json

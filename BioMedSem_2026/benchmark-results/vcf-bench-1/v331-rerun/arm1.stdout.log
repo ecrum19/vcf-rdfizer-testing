@@ -1,0 +1,50 @@
+
+=== derive — restrict to the ACMG gene spans, normalise ===
+    - derive__NB72462M
+    - derive__NG131FQA1I
+    - derive__HG002
+    - derive__HG004
+    - derive__HG005
+    - derive__clinvar
+
+=== convert — VCF-RDFizer, expanded, one cell per input ===
+    - convert: 34 GB free (needs ~3)
+    - convert__NB72462M
+    - convert__NG131FQA1I
+    - convert__HG002
+    - convert__HG004
+    - convert__HG005
+    - convert__clinvar
+
+=== link — spdi on every graph, rsid-dbsnp on the PGP genomes ===
+    - link__NB72462M
+    - link__NG131FQA1I
+    - link__HG002
+    - link__HG004
+    - link__HG005
+    - link__clinvar
+
+=== baseline — bcftools and a consent script ===
+    - baseline
+
+=== govern — one release view per requester, on QLever, checked ===
+    - govern: 34 GB free (needs ~3)
+wrote 471015 triple(s) to /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg/oracle/oracle.nt.gz
+    - source endpoint ready on :7201 after ~20s
+    - oracle endpoint ready on :7202 after ~5s
+    - govern__clinical
+    - view endpoint ready on :7203 after ~10s
+    - govern__cardio
+    - view endpoint ready on :7203 after ~10s
+    - govern__biobank
+    - view endpoint ready on :7203 after ~5s
+
+=== query — carriers.rq (and rare.rq) under QLever, per requester ===
+    - query: 34 GB free (needs ~3)
+    - query__unrestricted
+    - query__clinical
+    - query__cardio
+    - query__biobank
+
+=== compare — the two routes' carrier lists ===
+AGREE: unrestricted 7211/7211, clinical 2878/2878, cardio 2988/2988, biobank 1987/1987; records: clinical 19625/19625, cardio 23933/23933, biobank 16105/16105
