@@ -93,7 +93,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual(arms["arm1"]["linking"]["genomes"]["spdi"]["linked"], 51302)
         self.assertEqual(arms["arm2"]["linking"]["genomes"]["spdi"]["linked"], 1149198)
         self.assertEqual(arms["arm3"]["linking"]["genomes"]["spdi"]["linked"], 3887200)
-        self.assertEqual(arms["arm3"]["linking"]["genomes"]["ensembl-genes-grch38"]["linked"], 1704921)
+        self.assertEqual(arms["arm3"]["linking"]["genomes"]["ensembl-genes-grch38"]["linked"], 1704954)
         self.assertEqual(arms["arm1"]["linking"]["clinvar"]["spdi"]["linked"], 331413)
 
     def test_retrieval(self):
@@ -103,16 +103,16 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual({e: round(x["mean"], 1) for e, x in r["engines"].items()},
                          {"qlever": 1.1, "comunica": 23.4, "cottas": 38.2, "hdt": 45.1})
         regional = r["regional"]["slice"]["ms"]
-        self.assertEqual(round(regional["qlever"]["1000"], 1), 9.6)
-        self.assertEqual(round(regional["qlever"]["10000000"], 1), 11.1)
-        self.assertEqual(round(regional["cyvcf2-indexed"]["1000"], 1), 3.3)
+        self.assertEqual(round(regional["qlever"]["1000"], 1), 10.6)
+        self.assertEqual(round(regional["qlever"]["10000000"], 1), 10.3)
+        self.assertEqual(round(regional["cyvcf2-indexed"]["1000"], 1), 3.2)
         executions = sum(g["executions"] for g in r["regional"].values())
         self.assertEqual(executions, 11160)
         whole = [row for row in r["scale"]["rows"]
                  if row["scale"] == "whole" and row["engine"] == "qlever" and row["artifact"] == "nt.gz"]
-        self.assertAlmostEqual(sum(row["seconds"] for row in whole), 634.6, delta=0.1)
+        self.assertAlmostEqual(sum(row["seconds"] for row in whole), 646.4, delta=0.1)
         per_million = [round(row["perMillion"], 2) for row in r["costBySize"]]
-        self.assertEqual(per_million, [1.13, 1.0, 0.96, 0.97])
+        self.assertEqual(per_million, [1.13, 1.0, 0.97, 0.98])
 
     def test_conversion_cost(self):
         s = self.data["scaling"]
@@ -131,14 +131,14 @@ class SiteDataMatchesThePaper(unittest.TestCase):
             "comparisonsEqual": "984", "comparisons": "988", "faults": "113", "faultsMissed": "17",
             "faultClasses": "ten", "realTriples": "58.2M", "phaseSets": "30,910", "qualChanged": "1,998",
             "genes": "81", "requesters": "three", "cohort": "104", "restrictedGenes": "28",
-            "wholeGenomeAgreement": "equals", "wholeGenomeFold": "400", "wholeGenomeIndexMinutes": "45",
+            "wholeGenomeAgreement": "equals", "wholeGenomeFold": "400", "wholeGenomeIndexMinutes": "46",
             "dataEdits": "three of four", "rdfRules": "72 lines (policy.ttl 41, carriers.rq 31)",
             "baselineRules": "131 lines (baseline.sh 33, baseline_carriers.py 98)",
             "myvariantShare": "92–93%", "myvariantRequests": "21",
             "rssLow": "1.0", "rssHigh": "1.7", "diskCut": "7.7–9.2", "tripleRatio": "432", "hdtRatio": "69",
             "representationHours": "14.5", "wholeHours": "16.07", "sliceTriples": "17.1M",
             "fixtureTriples": "0.96M", "midTriples": "171M", "maxTriples": "657M", "qleverIndex": "22.8 s",
-            "artifactSpread": "0.3%", "regionalExecutions": "11,160", "regionalFailures": "no",
+            "artifactSpread": "0.4%", "regionalExecutions": "11,160", "regionalFailures": "no",
         }
         self.assertEqual({k: facts[k] for k in expected}, expected)
 

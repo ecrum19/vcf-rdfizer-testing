@@ -688,7 +688,7 @@ REGIONAL_SIZES = [1_000, 100_000, 1_000_000, 10_000_000]
 
 def regional_window_records() -> dict[int, float]:
     """Median records per window, per window size, on the 100,000-record HG005 slice."""
-    path = site.RESULTS / "vcf-bench-1" / "benchmarks_outputs" / "14_regional_access" / "slice" / "out" / "regional.csv"
+    path = site.REGIONAL / "slice" / "out" / "regional.csv"
     seen, per_size = set(), defaultdict(list)
     for row in tidy(path):
         key = (row["window_size"], row["window_id"])
@@ -869,8 +869,7 @@ COMUNICA_PATHS = [("comunica", "Comunica, N-Triples", BLUE_LIGHT, "v", "-"),
 
 def fig_retrieval_detail() -> None:
     """Supplementary detail: each regional question, the fixture's seven paths, and per-question break-even."""
-    base = site.RESULTS / "vcf-bench-1" / "benchmarks_outputs" / "14_regional_access"
-    summary = site.load(base / "slice" / "out" / "regional.json")["summary"]
+    summary = site.load(site.REGIONAL / "slice" / "out" / "regional.json")["summary"]
     fixture = {arm: {int(s): v for s, v in sizes.items()}
                for arm, sizes in site.regional()["small"]["ms"].items()}
     b = breakeven()
