@@ -31,8 +31,6 @@ sys.path.insert(0, str(ROOT / "BioMedSem_2026" / "paper-assets" / "figures"))
 import figure_data as fd  # noqa: E402
 
 RESULTS = fd.RESULTS
-#: Arm 1's pre-release run, read only for the live MyVariant.info tier, which the v3.3.1 rerun left out.
-USE_CASE = RESULTS / "vcf-bench-1" / "use-case"
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
 #: The rerun with the published v3.3.1 of every result a pre-release build first produced, per host.
 #: The use-case arms, regional and large-graph retrieval, and the consumer WGS validation run are
@@ -444,10 +442,16 @@ def study() -> dict:
 
 
 def myvariant() -> dict:
-    """The live tier: how many rsID links MyVariant.info confirmed, and at how many requests."""
-    confirmed = load(USE_CASE / "17_use_case_acmg" / "tier1_vs_tier3_myvariant.json")
-    requests = sum(linker.get("requests") or 0
-                   for path in (USE_CASE / "17_use_case_acmg").glob("link_myvariant__*/out/*.links.json")
+    """The live tier: how many rsID links MyVariant.info confirmed, and in how many service responses.
+
+    The v3.3.1 run replays the responses recorded on 2026-09-28 rather than
+    requesting them again, so its linker reports 0 requests: count the
+    responses it used, live or recorded.
+    """
+    arm = ARMS["arm1"]
+    confirmed = load(arm / "tier1_vs_tier3_myvariant.json")
+    requests = sum(len(linker.get("responses") or [])
+                   for path in arm.glob("link_myvariant__*/out/*.links.json")
                    for linker in load(path).get("linkers", []))
     return {"genomes": {g: {"rsid": c["tier1_links"], "confirmed": c["tier3_links"]} for g, c in confirmed.items()},
             "requests": requests}

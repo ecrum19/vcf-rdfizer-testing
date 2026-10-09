@@ -457,7 +457,8 @@ Line counts describe the two implementations and do not measure usability or mai
 \subsection{Linking results, matches, and rule changes}\label{subsec:usecase-results}
 The SPDI linker emitted links for eligible explicit alleles under the stated assembly and normalization assumptions.
 A seven-variant BRCA1 check agreed with NCBI expressions outside repeats, while repeat-region spans differed from NCBI contextual representations.
-The live tier confirmed 9,223 of 9,951 and 9,479 of 10,316 PGP rsID rewrites in 21 requests; this is the one result that ran only on a pre-release linker (Section~\ref{subsec:repro-builds}).
+The live tier confirmed 9,223 of 9,951 and 9,479 of 10,316 PGP rsID rewrites.
+Its 21 batch requests reached MyVariant.info once, on 2026-09-28; v3.3.1 confirmed the same links offline from the recorded responses, which the linker keys by request (Section~\ref{subsec:repro-builds}).
 The Ensembl live variation service returned HTTP 500 after three retries, and no partial linkset was published.
 
 \begin{table}[!htbp]
@@ -681,7 +682,7 @@ Every result outside the base campaign that was first produced by a pre-release 
 from one harness commit (\texttt{6f2239ff}) and the same inputs: the four use-case arms, regional and large-graph retrieval, and the consumer WGS validation run.
 Each ran on its original host, except Arm~4, which moved from \texttt{vcf-bench-3} to \texttt{vcf-bench-2}.
 Retrieval reran on the v3.1.0 graphs; converting the same 100,000 HG005 records with v3.3.1 gave sorted triples identical to v3.1.0's (17,098,746 triples).
-The one result left on a pre-release build is the live MyVariant.info tier, which ran once on an uncommitted \texttt{feature/spdi-linker} tree on \texttt{f266db5} and was not repeated.
+The live MyVariant.info tier did not query the service again: from harness commit \texttt{4ea07cc7}, v3.3.1 replayed the 21 responses the service returned on 2026-09-28 to the first, pre-release run, and confirmed the same links.
 
 \begin{table}[!htbp]
 \caption{Builds and assessment boundaries of each experiment family. A reproducible state requires the recorded code, local changes, dependencies, and external resources.}\label{tab:builds}%
@@ -698,7 +699,7 @@ Large-graph retrieval & v3.3.1 on the v3.1.0 graphs; \texttt{vcf-bench-3} & Sepa
 \rowsep
 Release conversion check & v3.3.1 against v3.1.0, on \texttt{vcf-bench-2} & 100{,}000 HG005 records; identical sorted triples, so the v3.1.0 graphs stand for v3.3.1's\\
 \rowsep
-Linked use case & v3.3.1 for every stage; Arms~1--2 on \texttt{vcf-bench-1}, Arms~3--4 on \texttt{vcf-bench-2} & SPDI, gene links, policy views, and record-level comparison; the live MyVariant.info tier ran once on a pre-release tree on \texttt{f266db5}\\
+Linked use case & v3.3.1 for every stage; Arms~1--2 on \texttt{vcf-bench-1}, Arms~3--4 on \texttt{vcf-bench-2} & SPDI, gene links, policy views, and record-level comparison; the MyVariant.info tier replays the responses recorded on 2026-09-28\\
 \rowsep
 Additional validation runs & v3.1.0 (\texttt{d3b34d5}, image \texttt{sha256:1904e96d\ldots34aa}) on \texttt{vcf-bench-2} & Default-profile mutation rerun; consumer WGS validation run (250{,}000 NG131FQA1I records) on QLever, expanded profile, rerun without shapes under v3.1.0's size gates\\
 \rowsep
@@ -711,7 +712,7 @@ Shared-input converter comparison & Harness \texttt{e3743590}; VCF-RDFizer v3.3.
 \end{tabularx}
 \end{table}
 
-\authorquery{Arm~4's rows are still from its pre-release v3.3.1 run on \texttt{vcf-bench-3}; its rerun with the published image is running on \texttt{vcf-bench-2}. Decide whether to rerun the live MyVariant.info tier with v3.3.1 or keep it as the one pre-release result.}
+\authorquery{Arm~4's rows are still from its pre-release v3.3.1 run on \texttt{vcf-bench-3}; its rerun with the published image is running on \texttt{vcf-bench-2}.}
 The 657.4M-triple conversion/retrieval graph and the 662.4M-triple normalized use-case graph are different artifacts, not alternative counts of the same graph.
 
 \subsection{Hosts, measurements, and execution status}\label{subsec:repro-hosts}
