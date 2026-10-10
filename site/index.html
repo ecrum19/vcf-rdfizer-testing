@@ -20,7 +20,7 @@
           The evidence behind the manuscript, organized by its three research questions. Every number on this page is
           computed, when the site is built, from the run records in
           <a href="https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/benchmark-results">this repository</a>,
-          by the same code that draws the paper's figures.
+          by the same code that generates the manuscript's figures.
         </p>
         <p class="meta" id="dataMeta">Loading data…</p>
       </header>
@@ -39,7 +39,7 @@
           <span>Under which workloads and representation choices are the costs practical?</span>
         </a>
         <div class="section-nav">
-          <a href="#explorer">Campaign explorer</a>
+          <a href="#explorer">Base-campaign explorer</a>
           <a href="#notes">Notes and provenance</a>
         </div>
       </nav>
@@ -51,11 +51,12 @@
         <summary><span class="rq-tag">RQ1</span> Which aspects of VCF information are preserved and verifiable?</summary>
         <p class="finding">Source comparisons and structural validation provide complementary evidence.</p>
         <p class="section-intro">
-          VCF-RDFizer's validation layer answers <span data-fill="questions"></span> questions (<span data-fill="qRange"></span>) of each graph in SPARQL and again,
-          independently, from the source VCF with cyvcf2, and SHACL shapes check structure the questions do not observe.
-          The base campaign ran <span data-fill="validations"></span> paired validations: difficult-input fixtures, a small fixture under both sample profiles and
-          three RDF artifacts, and HG005 slices up to <span data-fill="sliceTriples"></span> triples. A fault-injection experiment applies
-          <span data-fill="faults"></span> deliberate corruptions, and a later run validates a consumer WGS VCF with the default shapes.
+          Validation compares <span data-fill="questions"></span> SPARQL results (<span data-fill="qRange"></span>) with corresponding answers derived independently
+          from the source VCF using cyvcf2 and, for exact FILTER text, bcftools; SHACL shapes check structural constraints
+          that the source-comparison queries do not observe. In the base campaign, <span data-fill="validations"></span> paired validation runs covered
+          difficult-input fixtures, a single-sample fixture under both sample profiles and three RDF artifacts, and HG005
+          slices up to <span data-fill="sliceTriples"></span> triples. A fault-injection experiment applies <span data-fill="faults"></span> deliberate corruptions, and a later consumer
+          WGS validation run tests <span data-fill="realRecords"></span> records from <span data-fill="realSample"></span> with the default shapes.
         </p>
         <div class="table-wrap" id="evidenceTable"></div>
         <div class="chart-grid">
@@ -65,22 +66,23 @@
         <h3 class="subhead">Consumer WGS validation run: <span data-fill="realSample"></span>, first <span data-fill="realRecords"></span> records</h3>
         <div class="table-wrap" id="realGenomeTable"></div>
         <aside class="interpretation">
-          <h3>What the evidence shows</h3>
+          <h3>Findings</h3>
           <p>
-            Across the base campaign, <span data-fill="comparisonsEqual"></span> of <span data-fill="comparisons"></span> paired comparisons were exactly equal after
-            normalization; the other <span data-fill="comparisonsOther"></span> are genotype questions verified not applicable to files without genotypes. Every
-            engine that answered agreed. This establishes representation equivalence for the fields the questions cover,
-            not that the source calls are biologically correct.
+            Across the base campaign, all <span data-fill="comparisonsEqual"></span> applicable SPARQL results agreed exactly with their source-derived
+            counterparts after normalization; <span data-fill="comparisonsOther"></span> further genotype-query instances were verified as not applicable to
+            files without genotypes. Every engine that answered returned the same normalized answers. This establishes
+            representation equivalence for the fields the queries cover, not the biological correctness of the source calls.
           </p>
           <p>
-            The two layers catch different defects. The source-comparison questions miss <span data-fill="faultsMissed"></span> of the
-            <span data-fill="faults"></span> injected faults, in <span data-fill="faultClasses"></span> classes they cannot observe, such as which allele a genotype calls or a
-            header attribute's value. The default shape profile, the only one practical at scale, catches none of them;
-            all shape profiles together catch every one, but have not been shown practical for a complete VCF.
+            Source comparison and structural validation detect complementary defects. The source-comparison queries did not
+            detect <span data-fill="faultsMissed"></span> of the <span data-fill="faults"></span> injected faults, which fall into <span data-fill="faultClasses"></span> mutation classes that change relationships or
+            values the queries do not observe, such as the allele a genotype references or the value of a header attribute.
+            The default SHACL profile, the only profile practical at scale, detected none of them; all shape profiles together
+            detected every one, but the deeper profiles have not been shown practical at whole-VCF scale.
           </p>
           <p>
-            On a consumer WGS VCF converted to <span data-fill="realTriples"></span> triples, all thirteen answers equal the VCF's, and the default
-            shapes, checked in record batches, report no violations.
+            For the consumer WGS validation run, all thirteen query results agreed, and batched default-shape validation
+            reported no violations on <span data-fill="realTriples"></span> triples.
           </p>
           <p class="source" id="fidelitySource"></p>
         </aside>
@@ -93,12 +95,14 @@
         <p class="section-intro">
           <em>Which participant–variant–gene matches connect an observed allele to a ClinVar classification in the
           <span data-fill="genes"></span>-gene <span data-fill="geneList"></span> set, and which matches may each requester receive?</em>
-          Two routes answer it and must agree: an RDF route (SPDI and gene links, one checked release view per requester,
-          one SPARQL query per view) and a conventional bcftools route that applies the same rules in Python.
+          The RDF workflow links converted VCFs to ClinVar and gene resources, materializes a validated release view for
+          each requester, and queries each view with SPARQL. The conventional workflow harmonizes contigs, annotates with
+          bcftools, and applies the same case definition and simulated release rules in Python. The sorted participant,
+          gene, contig, position and allele tuples must agree before timings are compared.
           Arm 1: gene-span slices of <span data-fill="arm1Genomes"></span> single-sample VCFs (<span data-fill="arm1Sources"></span>).
           Arm 2: <span data-fill="cohort"></span> 1000 Genomes participants. Arm 3: the complete <span data-fill="wholeGenome"></span> VCF.
           Arm 4: the complete <span data-fill="arm4Participant"></span> VCF under layered consent, with <span data-fill="arm4Requesters"></span> requesters.
-          Consents are simulated; the VCFs are real and public. Every stage ran VCF-RDFizer <span data-fill="useCaseVersion"></span>.
+          Consent and access conditions are simulated; the VCFs are public. Every stage used VCF-RDFizer <span data-fill="useCaseVersion"></span>.
         </p>
         <div class="chart-grid">
           <div class="chart-card wide" data-chart="matches"></div>
@@ -106,28 +110,31 @@
           <div class="chart-card" data-chart="effort"></div>
           <div class="chart-card wide" data-chart="usecaseCost"></div>
         </div>
-        <h3 class="subhead">Released records: each release view against the conventional route</h3>
+        <h3 class="subhead">Released records: release views compared with the conventional workflow</h3>
         <div class="table-wrap" id="recordsTable"></div>
-        <h3 class="subhead">Linking: calls linked to shared identifiers</h3>
+        <h3 class="subhead">Linksets: records linked to shared identifiers</h3>
         <div class="table-wrap" id="linkingTable"></div>
         <aside class="interpretation">
-          <h3>What the workflow shows</h3>
+          <h3>Findings</h3>
           <p>
-            In all <span data-fill="arms"></span> arms the RDF and conventional routes returned identical requester-specific match sets, and every
-            release view passed its policy and source checks. Released-record counts also agreed in <span data-fill="recordArmsAgree"></span>.
-            In <span data-fill="recordArmsDiffer"></span>, the RDF views released <span data-fill="recordExtra"></span> more records to disease-specific and general
-            research: symbolic structural variants in restricted genes, which the release links to no gene. No match changed.
+            Across all <span data-fill="arms"></span> arms, the RDF and conventional workflows returned identical requester-specific
+            participant–variant–gene match sets, and every materialized release view passed the policy and source checks.
+            Released-record counts also agreed in <span data-fill="recordArmsAgree"></span>. In <span data-fill="recordArmsDiffer"></span>, the RDF views additionally released
+            <span data-fill="recordExtra"></span> symbolic structural-variant records in restricted cancer-predisposition genes to disease-specific and general
+            research, because VCF-RDFizer <span data-fill="useCaseVersion"></span> links no symbolic allele to a gene; no match changed.
           </p>
           <p>
-            Explicit links did not mean fewer lines: <span data-fill="dataEdits"></span> realistic changes were data edits of similar size in the
-            table-driven conventional pipeline. The difference is where a rule lives. A consent or cohort rule becomes a
-            statement beside the data that a query can ask about and a check can verify against the VCF text, and a rule on
-            one variant's SPDI identity holds whatever a file calls its chromosome.
+            Shared variant identity changed how one release rule was expressed: restricting a single variant required a policy
+            edit, without changes to the policy engine, and selected the record regardless of contig naming. The other changes
+            were similarly small data edits in both workflows (<span data-fill="dataEdits"></span> changes were data-only in the conventional workflow), so
+            the result demonstrates reusable configuration for an identity-targeted rule rather than a general usability
+            advantage.
           </p>
           <p>
-            The cost is paid before the first answer: conversion, linking, view writing and indexing. Queries took
-            <span data-fill="querySeconds"></span> seconds across the arms, because the fixed ClinVar join dominates them; this does not show that SPARQL
-            performance is independent of scale.
+            Most linked-workflow cost occurred before query execution: conversion, linking, and the materialization,
+            validation and indexing of each release view. Query times ranged from <span data-fill="querySeconds"></span> seconds across the arms,
+            suggesting that the fixed ClinVar join dominated the measured query rather than establishing scale-independent
+            SPARQL performance.
           </p>
           <p class="source" id="usecaseSource"></p>
         </aside>
@@ -140,9 +147,10 @@
 
         <h3 class="rq-sub" id="coverage">Semantic coverage across converters</h3>
         <p class="section-intro">
-          VCF-RDFizer and <span data-fill="converters"></span> other executable converters convert the same <span data-fill="converterInputs"></span> inputs. The content
-          questions <span data-fill="converterRange"></span> are ported to each vocabulary and compared with the same source-derived oracle, so a cell
-          differs only because the graph lacks or transforms the information.
+          A shared-input comparison evaluates <span data-fill="converters"></span> other executable converters alongside VCF-RDFizer on the same
+          <span data-fill="converterInputs"></span> inputs, each with its most complete available options. Content questions <span data-fill="converterRange"></span> are translated to each
+          vocabulary and compared with the same source-derived oracle, normalization, comparator and QLever build used for
+          VCF-RDFizer. A question is reported as not represented when the graph lacks the required information.
         </p>
         <div class="chart-grid">
           <div class="chart-card wide" data-chart="converters"></div>
@@ -150,8 +158,10 @@
 
         <h3 class="rq-sub" id="conversion">Conversion cost</h3>
         <p class="section-intro">
-          Controlled ladders vary one dimension at a time: records on HG005, and sample columns on a fixed set of 1000 Genomes
-          records. The storage mode and the optional HDT and COTTAS artifacts trade disk and time.
+          Controlled scaling ladders vary one dimension at a time: the record ladder processes increasing numbers of HG005
+          records, and the sample ladder holds <span data-fill="sampleRecords"></span> 1000 Genomes records fixed while varying the sample count from
+          <span data-fill="samplesMin"></span> to <span data-fill="samplesMax"></span> under both profiles. Stage timings, resident memory, transient workspace and retained artifact
+          sizes are measured separately.
         </p>
         <div class="chart-grid">
           <div class="chart-card" data-chart="records"></div>
@@ -162,9 +172,10 @@
 
         <h3 class="rq-sub" id="retrieval">Retrieval cost</h3>
         <p class="section-intro">
-          The same <span data-fill="questions"></span> questions answered by SPARQL and by cyvcf2 parsing the VCF, with every answer compared before any
-          timing was read; the SPARQL engines and artifacts against each other; QLever on graphs up to the complete HG005 VCF;
-          and region-restricted questions against a tabix-indexed VCF.
+          Retrieval experiments compare individual questions, the <span data-fill="questions"></span>-question batch and <span data-fill="regionalQuestions"></span> regional questions in
+          QLever against cyvcf2 and bcftools VCF access, after verifying that every answer agrees. They also compare the SPARQL
+          engines and RDF artifacts, and QLever on graphs up to the complete HG005 VCF. Regional queries apply the same
+          POS-based selection on every execution path. Setup and query execution are reported separately.
         </p>
         <div class="chart-grid">
           <div class="chart-card wide" data-chart="perQuestion"></div>
@@ -173,35 +184,37 @@
           <div class="chart-card wide" data-chart="regional"></div>
         </div>
         <div class="calculator panel-inset" id="breakEven">
-          <h3>When does converting pay? A break-even calculator</h3>
+          <h3>Setup amortization: break-even calculator</h3>
           <p class="section-intro">
-            Defaults are the measured minimal setup for the <span data-fill="sliceRecords"></span>-record HG005 slice: conversion to gzip-framed
-            N-Triples only, then a QLever index. Change them to match your own setting.
+            Defaults are the measured minimal RDF setup for the <span data-fill="sliceRecords"></span>-record HG005 slice: conversion to gzip-framed
+            N-Triples, followed by QLever indexing. Adjust the values to estimate the break-even for another workload.
           </p>
           <div class="controls-grid" id="breakEvenInputs"></div>
           <p class="calc-result" id="breakEvenResult" aria-live="polite"></p>
         </div>
         <aside class="interpretation">
-          <h3>What the costs show</h3>
+          <h3>Findings</h3>
           <p>
-            <span data-fill="converterAllPass"></span> was the only converter whose graphs answered all <span data-fill="converterQuestions"></span> content questions as the oracle
-            does on both inputs. The other graphs differed because information was absent or transformed, not because a
-            different engine queried them.
+            <span data-fill="converterAllPass"></span> was the only converter whose graphs matched the source-derived oracle for all <span data-fill="converterQuestions"></span>
+            cross-vocabulary content questions on both inputs. The other outputs differed because information was absent or
+            transformed, not because different query engines were used.
           </p>
           <p>
-            Conversion is memory-bounded: across a <span data-fill="recordsFold"></span>-fold range of records the mapping stage's peak memory stays
-            between <span data-fill="rssLow"></span> and <span data-fill="rssHigh"></span>&nbsp;GB, while triples, time and disk grow in proportion. Space-optimized storage cuts
-            the peak disk <span data-fill="diskCut"></span>-fold for <span data-fill="spaceTimeCost"></span> more time. The expanded sample profile has <span data-fill="tripleRatio"></span> times the
-            condensed profile's triples at <span data-fill="samplesMax"></span> samples but only <span data-fill="hdtRatio"></span> times its HDT bytes, because condensed vectors
-            keep the values. Building HDT and COTTAS took <span data-fill="representationHours"></span> of the complete HG005 VCF's <span data-fill="wholeHours"></span> conversion hours.
+            Across a <span data-fill="recordsFold"></span>-fold range of records, mapping-stage resident memory remained <span data-fill="rssLow"></span>–<span data-fill="rssHigh"></span>&nbsp;GB, while
+            triples, end-to-end time and peak workspace grew approximately linearly. Space-optimized storage reduced peak
+            workspace <span data-fill="diskCut"></span>-fold, with a <span data-fill="spaceTimeCost"></span> increase in time. At <span data-fill="samplesMax"></span> samples, the expanded profile produced
+            <span data-fill="tripleRatio"></span> times the condensed profile's triples but only <span data-fill="hdtRatio"></span> times its HDT bytes, because condensed sample vectors
+            retain the values. Optional artifacts dominated the complete HG005 conversion: approximately
+            <span data-fill="representationHours"></span> of its <span data-fill="wholeHours"></span> hours were HDT and COTTAS construction.
           </p>
           <p>
-            VCF parsing and indexed RDF querying favor different workloads. A single cold question, one exhaustive pass and
-            narrow tabix lookups favor the VCF; once the index exists, repeated and selective questions favor SPARQL, whose
-            cost is flat in the width of a genomic window. With the minimal setup, converting pays after about
-            <span data-fill="breakEven"></span> separately executed questions (<span data-fill="breakEvenRange"></span> per question), or <span data-fill="breakEvenWithHdt"></span> if the setup also builds HDT.
-            QLever's cost stays linear to <span data-fill="maxTriples"></span> triples, while the in-place HDT and COTTAS engines fail at
-            <span data-fill="midTriples"></span>.
+            VCF parsing and indexed RDF querying favor different workloads. Native VCF processing remained preferable for
+            one-pass analyses and small indexed regions, whereas repeated and large-region questions benefited from an existing
+            RDF index; QLever's regional query time was nearly constant across window sizes. With the minimal RDF setup, the
+            cumulative times crossed after approximately <span data-fill="breakEven"></span> separately executed questions (<span data-fill="breakEvenRange"></span> per question);
+            including HDT construction in the setup raises the estimate to <span data-fill="breakEvenWithHdt"></span>. QLever's query time remained approximately
+            linear in graph size up to <span data-fill="maxTriples"></span> triples, whereas the native HDT and COTTAS engines answered only
+            <span data-fill="nativeAnswered"></span> of the <span data-fill="questions"></span> questions at <span data-fill="midTriples"></span> triples.
           </p>
           <p class="source" id="retrievalSource"></p>
         </aside>
@@ -209,10 +222,10 @@
 
       <!-- ===================================================== Explorer -->
       <details class="panel collapsible" id="explorer">
-        <summary>Campaign explorer: every base-campaign cell</summary>
+        <summary>Base-campaign explorer</summary>
         <p class="section-intro">
-          The <span data-fill="cells"></span> cells of the <span data-fill="campaignVersion"></span> base campaign, each linked to its archived folder (command, metrics, reports).
-          Filters are kept in the address bar, so a shared link reopens the same view.
+          The <span data-fill="cells"></span> runs (cells) of the <span data-fill="campaignVersion"></span> base campaign, each linked to its archived run record (command,
+          metrics and reports). Filter settings are stored in the URL, so a shared link reproduces the view.
         </p>
         <div class="controls-grid" id="explorerControls"></div>
         <p class="table-meta" id="explorerMeta"></p>
@@ -224,11 +237,11 @@
         <summary>Notes and provenance</summary>
         <ul class="notes">
           <li>The base campaign ran the published image <code><span data-fill="campaignImage"></span></code> on <span data-fill="campaignHosts"></span> hosts with identical hardware (below).</li>
-          <li>The linked workflow, regional retrieval, large-graph retrieval at <span data-fill="midTriples"></span> and <span data-fill="maxTriples"></span> triples, the consumer WGS validation run and the converter comparison ran the published VCF-RDFizer <span data-fill="useCaseVersion"></span>. Both releases write identical sorted triples for the same input.</li>
-          <li>The linked workflow's consents are simulated and attach to no real participant's wishes.</li>
+          <li>The linked workflow, regional retrieval, large-graph retrieval at <span data-fill="midTriples"></span> and <span data-fill="maxTriples"></span> triples, the consumer WGS validation run and the converter comparison used the published VCF-RDFizer <span data-fill="useCaseVersion"></span>. On the same <span data-fill="sliceRecords"></span> HG005 records, both releases wrote identical sorted triples.</li>
+          <li>The linked workflow's consents are simulated and do not express any real participant's wishes.</li>
           <li>Only the runs behind reported results are shown. Pre-release, superseded, stalled and failed runs are on the repository's <a href="https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results">legacy branch</a>.</li>
           <li>The generated RDF is not archived; every cell records the command, commit and image digest that produced it.</li>
-          <li>Values the archive does not hold are shown as N/A, never estimated.</li>
+          <li>Values not present in the archive are shown as N/A and are not estimated.</li>
         </ul>
         <div class="table-wrap" id="hostTable"></div>
       </details>
