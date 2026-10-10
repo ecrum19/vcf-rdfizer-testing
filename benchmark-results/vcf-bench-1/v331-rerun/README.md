@@ -8,7 +8,7 @@ harness `vcf-rdfizer-testing` `6f2239ff`. The driver is [`run_v331.sh`](run_v331
 
 | Job | What | Wall | Result |
 |---|---|---|---|
-| `arm1` | Experiment 17, Scenario 1: five gene-span slices | 53 min | Both routes agree on every carrier list and record count (`results/17_use_case_acmg/comparison.json`) |
+| `arm1` | Experiment 17, Scenario 1: five gene-span slices | 53 min | Both workflows agree on every carrier list and record count (`results/17_use_case_acmg/comparison.json`) |
 | `regional` | Experiment 14, regional retrieval on the v3.1.0 graphs that `13_query_cost` built | 85 min | Completed (`results/14_regional_access/`) |
 | `arm2` | Experiment 17, Scenario 2: 104 1000 Genomes participants | 3.0 h | Carrier lists agree. The record-level check does not: see below. Exit 1 is the comparison's verdict, not a failure. |
 | `myvariant` | Experiment 17, Scenario 1's MyVariant.info tier (2026-10-09; role `bench1-myvariant`, harness `4ea07cc7`) | 1 min | Same links as the 2026-09-28 run, from its recorded responses: see below |
@@ -17,7 +17,7 @@ harness `vcf-rdfizer-testing` `6f2239ff`. The driver is [`run_v331.sh`](run_v331
 
 The release views released 110 more records to the disease-specific requester (cardio, DUO:0000007) and
 58 more to the general-research requester (biobank, DUO:0000042) than the bcftools baseline.
-[`diag-arm2/`](diag-arm2/) re-applies the baseline's rule to every record in the RDF route's decision log:
+[`diag-arm2/`](diag-arm2/) re-applies the baseline's rule to every record in the RDF workflow's decision log:
 - Every differing record is a symbolic structural variant: `<INS:ME:...>`, `<DUP>`, or `<INS>`.
 - Each lies inside a cancer-predisposition gene, such as BRCA2, WT1, NF2, STK11, or TSC2.
 

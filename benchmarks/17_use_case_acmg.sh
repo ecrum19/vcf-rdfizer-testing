@@ -11,12 +11,12 @@
 #    ClinVar classification in an ACMG SF v3.2 gene, and which may each
 #    requester receive?"
 #
-# Two routes answer it from the same derived inputs and the same definitions
+# Two workflows answer it from the same derived inputs and the same definitions
 # (use_case/acmg/use_case.json), and neither reads the other's work:
 #
-#   RDF route        convert -> link (spdi, genes, rsid-dbsnp) -> govern (one release
-#                    view per requester) -> one SPARQL query per requester
-#   baseline route   bcftools annotate/view/query -> a consent script
+#   RDF workflow           convert -> link (spdi, genes, rsid-dbsnp) -> govern (one
+#                          release view per requester) -> one SPARQL query per requester
+#   conventional workflow  bcftools annotate/view/query -> a consent script
 #
 # The experiment passes only if both give identical carrier lists for every
 # requester. Timings and step counts are reported beside that, never instead.
@@ -36,8 +36,8 @@
 #   govern    vcf-rdfizer-policy evaluate + check, per requester and genome
 #   query     carriers.rq over each requester's view (and over everything,
 #             as the "unrestricted" answer), under QLever
-#   baseline  the bcftools route
-#   compare   the two routes' carrier lists, requester by requester
+#   baseline  the conventional workflow (bcftools)
+#   compare   the two workflows' carrier lists, requester by requester
 #
 # Usage:
 #   BM_ACMG_STAGES=fetch ./17_use_case_acmg.sh           # once per host

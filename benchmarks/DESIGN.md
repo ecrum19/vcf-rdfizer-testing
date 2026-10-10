@@ -216,7 +216,7 @@ One workflow, experiment `17`, built and run as specified in
 [`use_case/acmg/README.md`](use_case/acmg/README.md). Every stage used
 VCF-RDFizer v3.3.1. Scenarios 1–2 ran on vcf-bench-1 and Scenarios 3–4 on vcf-bench-2.
 
-### 2.1 The question, and two routes that must agree
+### 2.1 The question, and two workflows that must agree
 
 Which participant–variant–gene matches connect an observed allele to a ClinVar
 classification in the 81 genes of ACMG SF v3.2, and which matches may each
@@ -224,13 +224,13 @@ requester receive? ClinVar (release 2026-09-13) records need at least one
 review star. Pathogenic and likely pathogenic matches are reported separately,
 but not used as a filter.
 
-| | RDF route | Conventional route |
+| | RDF workflow | Conventional workflow |
 | --- | --- | --- |
 | Identity | Converted VCFs and ClinVar linked by SPDI identifier | Contigs renamed to ClinVar's, then `bcftools annotate` |
 | Release | One checked release view per requester, from ODRL rules | The same rules, hand-written in Python |
 | Question | One SPARQL query per requester on QLever | `bcftools view` and `query`, then the script |
 
-Both routes read the same derived inputs and the same case definition
+Both workflows read the same derived inputs and the same case definition
 (`use_case.json`); linking, policy evaluation and querying are implemented
 separately. **The gate:** the sorted participant, gene, contig, position and
 allele tuples must agree for every requester before any timing is compared
@@ -268,7 +268,7 @@ Reported in Table S7.
 The policy plug-in streams one release view per requester and checks it before
 use: against the policy, and against an oracle graph written directly from the
 VCF text beside the same link graphs. Every scenario also compares the records each
-view releases with the count the conventional route releases to that requester.
+view releases with the count the conventional workflow releases to that requester.
 
 Release and querying run on QLever, never on an in-memory graph. Scenario 4's graph
 alone holds 1.2 billion triples, so an in-memory graph could not hold every scenario.
@@ -277,15 +277,15 @@ alone holds 1.2 billion triples, so an in-memory graph could not hold every scen
 
 ### 2.5 Authoring effort (`use_case/acmg/effort.py`)
 
-`effort.py` counts the non-blank, non-comment lines each route asks its author
+`effort.py` counts the non-blank, non-comment lines each workflow asks its author
 to write for Scenario 1, with rules and data counted apart. It then applies four
-changes to both routes as real edits:
+changes to both workflows as real edits:
 - a withdrawal;
 - a requester with a new purpose;
 - a cardiac panel in place of the cancer one;
 - a rule on one variant.
 
-After each edit, both routes must still release the same records to every
+After each edit, both workflows must still release the same records to every
 requester on a fixture. The result is committed as `effort.json`. Reported in
 Table S10.
 
@@ -480,7 +480,7 @@ turns that into the experiment, with three replicates at two scales and no SHACL
   RDF setup divided by the per-question saving (Section S9.4). Conversion is in
   neither column and is quoted from §3.2.
 - **Minimal setup.** The campaign's conversions also built HDT and COTTAS, which
-  QLever does not need, so their setup overstates the RDF route. The
+  QLever does not need, so their setup overstates the RDF workflow. The
   N-Triples-only rerun (`benchmark-results/vcf-bench-2/nt-only/`, v3.1.0, three
   replicates) converts the same slice to gzip-framed N-Triples only, then indexes
   and queries it on QLever. That gives the minimal setup in the crossover.
@@ -490,7 +490,7 @@ turns that into the experiment, with three replicates at two scales and no SHACL
 ### 3.9 Regional access (`14`)
 
 **Question.** Against a coordinate-indexed VCF, which is the strongest
-conventional route for a region-restricted question, how does SPARQL compare?
+conventional execution path for a region-restricted question, and how does SPARQL compare?
 
 **Design.** Five region-restricted questions, asked of every access path on
 windows of 1 kb, 100 kb, 1 Mb and 10 Mb (seeded by `BM_WINDOW_SEED`):

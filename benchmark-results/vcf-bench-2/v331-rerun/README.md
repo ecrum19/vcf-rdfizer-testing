@@ -7,8 +7,8 @@ driver role `bench2`.
 |---|---|---|---|
 | `bridge` | v3.3.1 converts the 100,000-record HG005 slice to N-Triples; its sorted triples are compared with the v3.1.0 N-Triples-only rerun's | 3 min | Identical: 17,098,746 triples, sorted SHA-256 `661578e7...94ed` for both (`bridge/sorted_triples.sha256`). Both releases write the same graph. |
 | `consumer_wgs` | The consumer WGS validation run (first 250,000 records of NG131FQA1I) with the v3.3.1 validator on QLever, default shapes | 1.8 h | PASS: every comparison and preflight check agrees, and SHACL reports 0 violations (`results/consumer_wgs__NG131FQA1I__first250000/out/run_metrics/*/reports/validation/`) |
-| `arm3` | Experiment 17, Scenario 3: the complete HG005 VCF | 6.7 h | Both routes agree on every carrier list and record count; the clinical view holds all 3,887,810 records |
-| `arm4`, `arm4_resume` | Experiment 17, Scenario 4: the complete NB72462M VCF under layered consent, four requesters | 1.8 h, then 19.1 h | Both routes agree on every carrier list and record count; every view passed its check (`results/17_use_case_acmg__layered/comparison.json`). See below |
+| `arm3` | Experiment 17, Scenario 3: the complete HG005 VCF | 6.7 h | Both workflows agree on every carrier list and record count; the clinical view holds all 3,887,810 records |
+| `arm4`, `arm4_resume` | Experiment 17, Scenario 4: the complete NB72462M VCF under layered consent, four requesters | 1.8 h, then 19.1 h | Both workflows agree on every carrier list and record count; every view passed its check (`results/17_use_case_acmg__layered/comparison.json`). See below |
 
 ## Scenario 4
 

@@ -130,7 +130,7 @@ The workflow asks which observed variants in the frozen 81-gene ACMG SF v3.2 set
 \figcaption{\textbf{Figure 4. Setup grows with the data; querying does not} (Supplementary Figure~S3). Time before the clinical-care requester's first answer (convert and link, then write, check, and index its view) against the median query time. Sizes are the triples indexed for each scenario's unrestricted query, including the 33.1M-triple ClinVar subset and all links.}
 \end{figure}
 
-For Scenario~3, converting the complete HG005 VCF and ClinVar took 55\,min, linking 8\,min, and the clinical view a further 2.6\,h (70\,min of it validation), peaking at 11.2\,GB of host memory and 31\,GB of disk. Queries then took 171--233\,s in every scenario, dominated by the fixed ClinVar join.
+For Scenario~3, converting the complete HG005 VCF and ClinVar took 55\,min, linking 8\,min, and the clinical view a further 2.6\,h (70\,min of it validation), peaking at 11.2\,GB of host memory and 31\,GB of disk. Queries over non-empty views then took 171--233\,s in every scenario, dominated by the fixed ClinVar join.
 
 \subsection{Important boundaries}
 SPDI joins assume the tested reference, normalization, and eligible allele classes; contig-alias handling is demonstrated, canonical identity across every equivalent representation is not. Every participant is a single-sample VCF, so masking samples within a multi-sample VCF is untested. Consents are simulated, and deployment security and real consent validity remain separate questions.
@@ -139,7 +139,7 @@ SPDI joins assume the tested reference, normalization, and eligible allele class
 
 \section{5. RQ3: costs depend on the workload, not on one headline number}
 
-Neither route is uniformly cheaper. VCF parsing wins one-pass analyses and small regions on a tabix-indexed VCF; RDF querying wins large regions, whole-file questions asked one at a time, and, once its setup of about two minutes is paid, repeated questions. The graph route costs storage as well as time: the N-Triples QLever indexes are 21--25$\times$ the gzipped VCF. The sample representation decides how much graph there is, and triple counts alone overstate that difference.
+Neither workflow is uniformly cheaper. VCF parsing wins one-pass analyses and small regions on a tabix-indexed VCF; RDF querying wins large regions, whole-file questions asked one at a time, and, once its setup of about two minutes is paid, repeated questions. The RDF workflow costs storage as well as time: the N-Triples QLever indexes are 21--25$\times$ the gzipped VCF. The sample representation decides how much graph there is, and triple counts alone overstate that difference.
 
 \begin{figure}[!htb]
 \centering
