@@ -2,8 +2,9 @@
 
 The [`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy)
 preserves the complete repository at the October 1, 2026 cleanup boundary
-(`71ec037e`), plus the previously untracked ECCB LaTeX template files.
-Files retain their original paths. `main` contains the current tests and reports.
+(`71ec037e`), plus the previously untracked ECCB LaTeX template files, and the
+run records moved off `main` on 2026-10-10. Files retain their original paths.
+`main` contains the harness and the run records of every reported result.
 
 ## Material removed from main
 
@@ -31,7 +32,7 @@ commit that has all of them, for example
 | `BioMedSem_2026/paper-assets/fig-workflow.*`, `fig-usecase.*` | A workflow diagram no document included, and the use-case diagram that only the first co-author brief used. |
 | `BioMedSem_2026/paper-assets/figures/count_validation.py` | A tally of the validation evidence, superseded by `validation_counts()` in `scripts/build_site_data.py`, which the figures and the site tests use. |
 | `BioMedSem_2026/paper-assets/vcf2rdf-v3.fls`, `vcf2rdf-v3.fdb_latexmk` | LaTeX build files. |
-| `benchmarks/RUN_PLAN.md`, `benchmarks/AGGREGATION.md` | The pre-release campaign's host plan and the steps for pulling results off the hosts. Their lasting content is in `benchmarks/README.md`, under "How the manuscript's results were produced". |
+| `benchmarks/RUN_PLAN.md`, `benchmarks/AGGREGATION.md` | The pre-release campaign's host plan and the steps for pulling results off the hosts. Their lasting content, which host ran each experiment and how its records were archived, is in `benchmarks/README.md` and `benchmark-results/README.md`. |
 | `tool-docs/jbms-review-vcf-rdfizer.md`, `jbms-revision-plan.md`, `workstream-a-implementation.md`, `proposal-indexed-regional-access-arm.md`, `results-site-plan.md`, `cottas-multiple-indexes.md` | A simulated journal review and the plans and notes written while acting on it. |
 | `tool-docs/coauthor-report/report.tex`, and the figure copies only it used | The first co-author brief, superseded by `report_revised.tex`. |
 
@@ -48,17 +49,38 @@ Both were moved with `git mv`, so `git log --follow <new path>` shows each file'
 full history. `BioMedSem_2026/` and `tool-docs/` stay in the repository but are
 left out of the Zenodo archive (see `.gitattributes`).
 
+## Moved to the legacy branch (2026-10-10)
+
+`main` now holds only the runs whose results the manuscript reports. Every other
+run record moved to `legacy`, at the path it had on `main` and byte-identical to
+`main` at `66f53577`; the supplement cites some of them as evidence of the
+defects the reported runs corrected.
+[`benchmark-results/README.md` on `legacy`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results) lists each one,
+what it is, and which statement in the supplement cites it.
+
+| Moved from `benchmark-results/` | What it is |
+| --- | --- |
+| `vcf-bench-{1,2}/benchmarks_outputs__campaign1__*/`, `benchmarks_outputs_calibration*/` | The pre-release campaign, and the host calibrations |
+| `vcf-bench-1/benchmarks_outputs__superseded/`, `vcf-bench-2/benchmarks_outputs__stalled/`, `vcf-bench-{1,2}/benchmarks_outputs__partial/`, `vcf-bench-2/benchmarks_outputs__offsplit/`, `vcf-bench-1/benchmarks_outputs__tool8b1b4a8/` | Superseded, stopped, interrupted and off-host base-campaign runs, and an older tool's storage data |
+| `vcf-bench-1/benchmarks_outputs/14_regional_access/`, `vcf-bench-3/benchmarks_outputs/16_scale_retrieval*/`, `vcf-bench-{1,2,3}/use-case/` | The pre-release regional, large-graph and use-case runs, rerun with v3.3.1 |
+| `vcf-bench-2/review-runs/validate__*`, `shacl-mem/`, `diag_q11*`, `e2e_*`, `validate_noshacl.sh` | The v3.1.0 consumer WGS validation runs, their diagnostics, and the validator-fix runs, rerun with v3.3.1 |
+| `vcf-bench-2/v331-rerun/attempt{1,2}-*`, `vcf-bench-3/v331-rerun/attempt1-exit126/` | Failed attempts within the v3.3.1 rerun |
+| `_manifests/` | The 2026-09 host pulls' file counts and tarball checksums, which count the moved trees |
+
+`summary.json` was rebuilt from what remains, the 143 base-campaign cells; those
+records are unchanged. `main`'s earlier `summary.json`, which classifies all 382
+cells, moved with the runs. The results site's consumer WGS panel now shows only
+the v3.3.1 run.
+
 ## Material retained on main
 
-The current benchmark harness, fixtures, plug-in tests, ACMG use case, paper and
-supplement remain on `main`. So do the run records used to substantiate the
-supplement's testing issues, even when those records describe failed or
-superseded runs. Removing them would break the paper's evidence trail.
-
-`scripts/combine_benchmark_metrics.py` remains because the current
-`build_run_summary.py` imports it. The download, Ubuntu setup and host-reporting
-scripts are also active dependencies. The benchmark design rationale is
-`benchmarks/DESIGN.md`.
+The benchmark harness, fixtures, plug-in tests, linked-workflow definitions,
+results site, paper and supplement remain on `main`, with the run records of every
+reported result. Every script in `benchmarks/` and `scripts/` produced, computes or
+checks a reported result; `benchmarks/README.md` and the README's support-script
+table say which. `benchmarks/DESIGN.md` gives each experiment's design as run,
+by the paper's research questions; the plan written before the campaign is in its
+history (`git show 66f53577:benchmarks/DESIGN.md`).
 
 ## Retrieve archived files
 
@@ -75,5 +97,5 @@ For a single file, without changing the current checkout:
 git show origin/legacy:scripts/export_latex_tables.py
 ```
 
-Neither cleanup rewrote Git history. Historical files remain available through
-`legacy`, `efd5f22d`, and the existing commits.
+No cleanup rewrote Git history. Historical files remain available through
+`legacy`, `efd5f22d`, `66f53577`, and the existing commits.

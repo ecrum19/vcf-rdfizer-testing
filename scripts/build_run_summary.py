@@ -24,8 +24,9 @@ the branches apart:
               not ("__supplement_"), e.g. the sample ladder's COTTAS bytes;
               reported where it is used, never counted as campaign cells
 
-Only `live` feeds the reported numbers. Everything else is carried so a reader
-can see what was excluded and why, rather than having to take it on trust.
+Only `live` feeds the reported numbers. On main, `live` is the only branch left:
+the other trees moved to the repository's legacy branch, where this script still
+classifies them (and where main's earlier summary.json, with all 382 cells, is kept).
 
 Usage:
   python3 scripts/build_run_summary.py benchmark-results \
@@ -36,6 +37,7 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -63,6 +65,17 @@ TREE_KINDS = (
     ("_calibration", "calibration"),
     ("benchmarks_outputs", "live"),
 )
+
+
+#: The base campaign is experiments 00-13 in a host's benchmarks_outputs* trees. Everything
+#: else under benchmark-results/ (the v3.3.1 rerun, the N-Triples-only rerun, the converter
+#: comparison, the large-graph builds) is reported on its own and is not counted here.
+CAMPAIGN_TREE = "benchmarks_outputs"
+CAMPAIGN_EXPERIMENT = re.compile(r"(0\d|1[0-3])_")
+
+
+def is_campaign_tree(tree_name: str) -> bool:
+    return tree_name.startswith(CAMPAIGN_TREE)
 
 
 def tree_kind(tree_name: str) -> str:
@@ -129,8 +142,20 @@ def git_describe(repo: Path) -> str | None:
         return None
 
 
+def relative_to_root(value: Any, prefix: str) -> Any:
+    """The combined metrics name files by absolute path; record them relative to the root,
+    so the summary does not depend on where the archive was checked out."""
+    if isinstance(value, str):
+        return value[len(prefix):] if value.startswith(prefix) else value
+    if isinstance(value, list):
+        return [relative_to_root(v, prefix) for v in value]
+    if isinstance(value, dict):
+        return {k: relative_to_root(v, prefix) for k, v in value.items()}
+    return value
+
+
 def collect_cells(root: Path) -> list[dict[str, Any]]:
-    """One record per cell, wherever it lives, with its branch recorded."""
+    """One record per base-campaign cell, wherever it lives, with its branch recorded."""
     cells: list[dict[str, Any]] = []
     # rglob rather than a fixed depth: the stalled archives nest an extra level
     # (<tree>/<archive>/<experiment>/<cell>), and a fixed glob silently skipped
@@ -142,7 +167,11 @@ def collect_cells(root: Path) -> list[dict[str, Any]]:
         if len(parts) < 4:
             continue
         host, tree = parts[0], parts[1]
+        if not is_campaign_tree(tree):
+            continue
         bench = read_json(bench_path) or {}
+        if not CAMPAIGN_EXPERIMENT.match(bench.get("experiment") or cell_dir.parent.name):
+            continue
 
         record: dict[str, Any] = {
             "host": host,
@@ -187,7 +216,7 @@ def collect_cells(root: Path) -> list[dict[str, Any]]:
                     if k in validation
                 }
             try:
-                combined = build_combined_metrics_for_run(run_dir)
+                combined = relative_to_root(build_combined_metrics_for_run(run_dir), f"{root}/")
                 entry["datasets"] = combined.get("datasets") or []
                 entry["compression_by_method"] = combined.get("compression_by_method") or []
             except Exception as error:  # a bad run must not sink the summary
@@ -361,7 +390,7 @@ def main() -> int:
                     ),
                     "files": sum(1 for _ in tree.rglob("*") if _.is_file()),
                 }
-                for tree in sorted((root / host).iterdir()) if tree.is_dir()
+                for tree in sorted((root / host).iterdir()) if tree.is_dir() and is_campaign_tree(tree.name)
             }
             for host in sorted({c["host"] for c in cells})
         },

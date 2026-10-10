@@ -28,7 +28,8 @@ ecrum19/VCF-RDFizer#34 links such records by their REF span.
 ## Arm 1's MyVariant.info tier
 
 The live tier (`rsid-myvariant` on the two PGP files) first ran on 2026-09-28 from a pre-release tree, outside
-the harness, and made 21 requests to MyVariant.info. Harness `4ea07cc7` adds it to experiment 17 as the
+the harness, and made 21 requests to MyVariant.info. That run's records are on the legacy branch, in
+[`vcf-bench-1/use-case/17_use_case_acmg/link_myvariant__*`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results/vcf-bench-1/use-case/17_use_case_acmg). Harness `4ea07cc7` adds it to experiment 17 as the
 `link_myvariant` stage, which replays recorded responses offline. This job ran that stage with v3.3.1 on the
 21 responses of 2026-09-28, copied from this host's linker cache to `~/vrdev-test/v331/myvariant-cache/`
 (their SHA-256 in [`inputs.bench1-myvariant.sha256`](inputs.bench1-myvariant.sha256)). The same 21 files,

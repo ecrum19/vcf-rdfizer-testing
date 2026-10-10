@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
-# Plan §4.3 — robustness evidence, most of which already exists unused.
+# Plan §1.3 and §1.4 — fault sensitivity and reproducibility.
 #
-#   1. Mutation score        the strongest quantified claim in the repo
-#   2. Round-trip identity   compress -> decompress -> same triples
-#   3. Determinism           same input + config twice -> same digest
-#   4. Index idempotence     re-indexing changes nothing
+#   1. Mutation score        which of 113 deliberate corruptions each validation
+#                            layer detects (§1.3)
+#   2. Round-trip identity   compress -> decompress -> same triples (§1.4)
+#   3. Determinism           same input + config twice -> same triples (§1.4)
+#   4. Index idempotence     re-indexing changes nothing (§1.4)
 #
-# The mutation score is the headline. docs/vcf-coverage.md records 96/113 (85%)
-# across 60 named mutations with every gap enumerated in
-# test/validation_mutations.py. That is a quantified statement that the
-# validation suite would DETECT corruption of specific VCF elements — far
-# beyond "we ran it and it exited 0". A paper reporting 85% with the gaps listed
-# is trusted more than one reporting nothing.
+# The mutation score runs VCF-RDFizer's own mutation test on the host
+# (test/test_validation_mutation_unit.py, corruptions defined in
+# test/validation_mutations.py): once with the queries alone, and once with all
+# three shape profiles. The default-profile score is a separate rerun on the
+# same release (benchmark-results/vcf-bench-2/review-runs/).
+#
+# The other three compare sorted triple sets, never file checksums. The base
+# campaign's biomedsem profile ran them on the 100,000-record HG005 slice
+# (BM_ROBUSTNESS_INPUT; the default is test-larger.vcf.gz).
 #
 # Usage:
 #   ./08_robustness.sh              # everything
@@ -46,7 +50,7 @@ run_fixtures() {
 # 1. Mutation score, regenerated against the pinned commit.
 # --------------------------------------------------------------------------
 run_mutation() {
-  bm_banner "§4.3 mutation score"
+  bm_banner "§1.3 mutation score"
   if [[ ! -f "$TOOL_DIR/test/test_validation_mutation_unit.py" ]]; then
     bm_skip "$EXPERIMENT" "mutation_score" \
       "mutation harness not found in $TOOL_DIR/test — needs a tool checkout, not an installed package"
@@ -136,7 +140,7 @@ PYEOF
 #    Cheap, strong, and it exercises two modes the old suite never touched.
 # --------------------------------------------------------------------------
 run_roundtrip() {
-  bm_banner "§4.3 round-trip identity"
+  bm_banner "§1.4 round-trip identity"
   bm_have_vcf "$INPUT" || { bm_skip "$EXPERIMENT" "roundtrip" "input not available: $INPUT"; return 0; }
   local vcf; vcf="$(bm_vcf "$INPUT")"
 
@@ -196,7 +200,7 @@ real finding, not a script error: record it and investigate before publishing."
 #    canonicalized graph. One extra run; nearly free.
 # --------------------------------------------------------------------------
 run_determinism() {
-  bm_banner "§4.3 determinism"
+  bm_banner "§1.4 determinism"
   bm_have_vcf "$INPUT" || { bm_skip "$EXPERIMENT" "determinism" "input not available: $INPUT"; return 0; }
   local vcf; vcf="$(bm_vcf "$INPUT")"
 
@@ -233,7 +237,7 @@ identical invocations produced different graphs; record it and investigate."
 #    so it is the deliberate exception to the collision policy.
 # --------------------------------------------------------------------------
 run_index() {
-  bm_banner "§4.3 index idempotence"
+  bm_banner "§1.4 index idempotence"
   bm_have_vcf "$INPUT" || { bm_skip "$EXPERIMENT" "index" "input not available: $INPUT"; return 0; }
   local vcf; vcf="$(bm_vcf "$INPUT")"
 

@@ -1,348 +1,256 @@
-# Benchmark suite
+# Benchmark harness
 
 The experiments behind the BioMedSem 2026 manuscript, one script per experiment.
-[`DESIGN.md`](DESIGN.md) gives the reasoning behind each (its section numbers
-match the table below); this file is the operator's guide. Output is CSV and
-JSON only. [How the manuscript's results were produced](#how-the-manuscripts-results-were-produced)
-records which release, host and configuration each archived result used.
+Each script writes one directory per *cell* (one configuration of one
+experiment), and every cell records its command, host, tool commit, image
+digest, exit status and timings. The cells the manuscript reports are archived,
+without the generated RDF, in [`../benchmark-results/`](../benchmark-results/README.md).
 
-## Setup
+- [Experiments](#experiments): what each script measures, the result it produced, and where its records are
+- [Runs made outside these scripts](#runs-made-outside-these-scripts)
+- [Supporting code](#supporting-code)
+- [Running the harness](#running-the-harness)
+- [Reading the outputs](#reading-the-outputs)
 
-```bash
-bash ../scripts/download_test_data.sh        # corpus VCFs (~2.3 GB)
-export VCF_RDFIZER=/path/to/vcf_rdfizer.py   # only if not a sibling checkout
-python3 -m pip install numpy rdflib          # rdflib: linking + mutation score
-```
+[`DESIGN.md`](DESIGN.md) gives the design of every experiment as it was run,
+organized by the paper's research questions (RQ1 fidelity and validation, RQ2
+the linked workflow, RQ3 costs); the scripts' comments cite its sections as
+"Plan §". This file is the practical guide: what each script produced, where its
+records are, and how to run it.
 
-Needs Docker. `bcftools` is **not** required — derived inputs are built with awk.
+## Experiments
 
-**Docker image.** By default the suite builds the image once from the tool
-checkout and tags it `vcf-rdfizer:local-<commit>`, so the tag records which
-source produced a result. Cells then run with `--image <that ref> --no-build`,
-so nothing rebuilds mid-sweep. To reproduce against a published release
-instead:
+Figure and table numbers are the manuscript's (main text) and the supplement's
+(prefix S). Records are under `benchmark-results/`; `b1`, `b2` and `b3` are the
+hosts `vcf-bench-1`, `-2` and `-3`.
 
-```bash
-export BM_IMAGE_VERSION=3.1.0     # the base campaign (00-13)
-export BM_IMAGE_VERSION=3.3.1     # everything else the manuscript reports (14-18)
-```
+### Base campaign: `00`–`13`, VCF-RDFizer v3.1.0
 
-`BM_REBUILD=1` forces a rebuild. A dirty checkout gets a `-dirty` tag and is
-rebuilt every session, with a warning — commit before a publishable run.
+143 cells in 12 experiment families (Table S12). `00` and `02` prepare the
+others and are not counted. Every family ran whole on one host.
 
-## Run
+| Script | RQ, design | What it measures | Reported in | Records |
+| --- | --- | --- | --- | --- |
+| `00_environment.sh` | §4.1 | Host, Docker and image manifest; resolves the image tag to its digest | Sections S6.2–S6.3 | `b1`, `b2`: `benchmarks_outputs/00_environment/` |
+| `02_derive_ladders.sh` | §4.2 | Builds the derived inputs with awk: the sample ladder (10,000 records of the 1000 Genomes chr20 call set at 1–2,504 samples) and the record ladder (HG005 prefixes of 10,000, 100,000 and 1,000,000 records) | Inputs to `01`, `03`, `04`, `10`, `13` | (inputs, not cells) |
+| `01_storage_mode.sh` | RQ3, §3.4 | Plain against space-optimized storage: peak workspace and time, on 100,000 HG005 records (3 replicates) and a 269M-triple test file (once each) | Section 3.3; Figure S4f | `b1/benchmarks_outputs/01_storage_mode/` |
+| `03_sample_representation.sh` | RQ3, §3.3 | Condensed against expanded samples across the sample ladder, with timing replicates and a single- and a multi-sample anchor | Section 3.3; Figure S5 | `b2/benchmarks_outputs/03_sample_representation/` |
+| `04_scaling_records.sh` | RQ3, §3.2 | Cost against record count on the record ladder (3 replicates) and the complete HG005 VCF (once); the only place record-scaling exponents are fitted | Section 3.3; Figure S4a–e; Section S9.1 | `b1/benchmarks_outputs/04_scaling_records/` |
+| `05_corpus_breadth.sh` | RQ3, §3.5 | HDT and COTTAS construction on the first 250,000 records of eight public VCFs and on the complete HG005 VCF | Section 3.3; Figure S6; Table S14 | `b2/benchmarks_outputs/05_corpus_breadth/` |
+| `06_equivalence.sh` | RQ1, §1.1–1.2 | The thirteen source-comparison queries on a 10,000-line fixture, in both storage modes and sample profiles, on four SPARQL engines over three RDF artifacts and two HDT strategies, plus two required refusals | Section 3.1; Section S10 | `b2/benchmarks_outputs/06_equivalence/` |
+| `07_representation_axes.sh` | RQ3, §3.6; RQ1, §1.5 | Raw against structured INFO, basic against structured headers, and fixtures declaring VCF 4.1–4.5 or no version | Sections S7, S10 | `b1/benchmarks_outputs/07_representation_axes/` |
+| `08_robustness.sh` | RQ1, §1.3–1.4 | Determinism (two identical conversions), a compress–decompress round trip, index idempotence, and the 113-fault mutation score with the default and all shape profiles | Section 3.1; Figure 3b; Table S6 | `b1/benchmarks_outputs/08_robustness/` |
+| `09_awkward_inputs.sh` | RQ1, §1.5 | Eleven difficult fixtures, a conversion with the three demonstration linkers, and a custom-mapping cell | Section S7; Table S15 | `b1/benchmarks_outputs/09_awkward_inputs/` |
+| `10_feasibility.sh` | RQ3, §3.7 | One million HG005 records under three configurations, each with memory ceilings of 8, 16 and 31 GB | Section S10 | `b1/benchmarks_outputs/10_feasibility/` |
+| `11_covering_set.sh` | RQ1, §1.6 | Ten configuration rows on a 1,000-line fixture covering every value and every pair of values of seven options, each validated with shapes | Section S10 | `b1/benchmarks_outputs/11_covering_set/` |
+| `12_modes_smoke.sh` | RQ1, §1.6; §4.3 | Each operating mode on its own: TSV, conversion, validation, compression, decompression, HDT and COTTAS indexing | Section S10 | `b1/benchmarks_outputs/12_modes_smoke/` |
+| `13_query_cost.sh` | RQ3, §3.8 | SPARQL against the cyvcf2 parser on identical work: the thirteen queries on the fixture (0.96M triples) and on 100,000 HG005 records (17.1M triples), 3 replicates | Section 3.3; Figures 6a, 6d, S7, S8c; Section S9.4 | `b1/benchmarks_outputs/13_query_cost/` |
 
-```bash
-./run_all.sh              # everything, in order
-./run_all.sh cheap        # skips the large-input experiments (01, 04, 05, 10)
-./run_all.sh smoke        # fast end-to-end pass — see below
-./run_all.sh 03 06        # selected only
-```
+`scripts/build_run_summary.py` integrates these cells into
+`benchmark-results/summary.json`, and refuses an archive in which a family spans
+two hosts.
 
-**`biomedsem` is the manuscript configuration.** Every claim in the plan is
-still supported; what changes is *where* the evidence is allowed to be
-expensive. Unlike `smoke`, these are measurements and are meant to be reported.
+### Later experiments: `14`–`18`, VCF-RDFizer v3.3.1
 
-The full plan runs for multiple weeks, and the measured reason is that a
-handful of cells dominate while most of the evidence sits in cheap ones:
+These are outside `run_all.sh` and its profiles; each is run by name. The
+reported runs of `14`, `16` and `17` come from one rerun with v3.3.1, driven by
+`run_v331.sh`, whose copy, logs and results are in each host's `v331-rerun/`.
 
-| measured | |
+| Script | RQ, design | What it measures | Reported in | Records |
+| --- | --- | --- | --- | --- |
+| `14_regional_access.sh` | RQ3, §3.9 | Region-restricted questions from 1 kb to 10 Mb: QLever on `13_query_cost`'s graphs, against tabix-indexed cyvcf2 and bcftools; 11,160 executions | Section 3.3; Figures 6c, S8a–b; Table S18 | `b1/v331-rerun/results/14_regional_access/` |
+| `15_scale_prepare.sh` | RQ3, §3.10 | Builds the large graphs once, with the published v3.1.0 image: 1,000,000 HG005 records (170.9M triples) and the complete VCF (657.4M), each with a manifest of every artifact's size and SHA-256 | The graphs that `16` queries | `b3/benchmarks_outputs/15_scale_prepare/`, `b3/scale-store-manifests/` |
+| `16_scale_retrieval.sh` | RQ1, §1.7; RQ3, §3.10 | The thirteen questions on those graphs: QLever from N-Triples, HDT and COTTAS, and the native HDT and COTTAS engines | Figure 3a; Table S17 | `b3/v331-rerun/results/16_scale_retrieval/` |
+| `17_use_case_acmg.sh` | RQ2, §2 | The linked workflow: carriers of ClinVar-classified variants in the 81 ACMG SF v3.2 genes, with simulated consent, by an RDF route and a bcftools baseline that must agree. Arm 1: five gene-span slices; Arm 2: 104 1000 Genomes participants; Arm 3: the complete HG005 VCF; Arm 4: the complete NB72462M VCF under layered consent. See [`use_case/acmg/README.md`](use_case/acmg/README.md) | Section 3.2; Figures 4, S3; Tables S7–S11 | `b1/v331-rerun/results/17_use_case_acmg/` (Arm 1, with the MyVariant.info tier) and `…__cohort/` (Arm 2); `b2/v331-rerun/results/17_use_case_acmg__wgs/` (Arm 3) and `…__layered/` (Arm 4) |
+| `18_converter_comparison.sh` | RQ3, §3.1 | JVarkit, TogoVar, SPARQLing Genomics, BioInterchange and VCF-RDFizer on two shared inputs, in pinned containers, with questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md) | Section 3.3; Figure 5; Section S2; Tables S2–S3 | `b1/18_converter_comparison/` |
+
+`15` and `16` are two halves of one experiment. `13` reconverts its input on
+every replicate, which is affordable at 17.1M triples but not at 657M: three
+replicates would spend about 48 h rebuilding the same graph. So `15` builds each
+graph once into a store outside the results tree, and `16` only reads it,
+refusing a scale that has not been built. Generation pins the published image so
+that a stored graph traces to a release; querying may use a newer image, which
+changes retrieval cost but not the graph.
+
+## Runs made outside these scripts
+
+Four reported results came from small drivers that call the tool directly. Each
+driver is archived with its records.
+
+| Result | RQ, design | Driver | Records |
+| --- | --- | --- | --- |
+| Default-profile mutation rerun (Figure 3b) | RQ1, §1.3 | `review_runs.sh` | `b2/review-runs/` |
+| Minimal RDF setup and the repeated-question crossover: `13_query_cost`'s large input converted to N-Triples only (Figure 6a) | RQ3, §3.8 | `run_nt_only.sh` | `b2/nt-only/` |
+| Consumer WGS validation run: the first 250,000 NG131FQA1I records, validated on QLever with batched default shapes (Figure 3a; Section S4.2) | RQ1, §1.7 | `run_v331.sh`, job `consumer_wgs` | `b2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
+| Release conversion check: v3.3.1 and v3.1.0 write the same sorted triples for 100,000 HG005 records (Section S6.2) | RQ3, §3.10 | `run_v331.sh`, job `bridge` | `b2/v331-rerun/bridge/` |
+
+## Supporting code
+
+| Path | What it does |
 | --- | --- |
-| `01` at default sizes/reps | 57.8 h for 11 of its 30 cells |
-| one HG005 cell | 12.3 h |
-| `03`'s three real-file anchors | 17.7 h — vs 3.6 min for the same contrast on a fixture |
-| `06` on a 10k fixture, one engine | 92 min — validation is overhead-bound, not data-bound |
+| `run_all.sh` | Runs `00`–`13` in order, one at a time, under a profile (below) |
+| `lib/common.sh` | Shared shell helpers: resolving the tool and image, running a cell into a fresh directory with its `bench.json`, sampling workspace bytes, recording assertions, finding inputs, and the cohort-scale guard |
+| `lib/scale.sh` | The scale store's layout and manifests, shared by `15` and `16` |
+| `lib/make_fixtures.py` | Builds the small fixtures in `fixtures/` |
+| `fixtures/` | The difficult-input and VCF-version fixtures of `07` and `09`; [`FIXTURES.json`](fixtures/FIXTURES.json) records how each was made |
+| `analysis/collect_metrics.py` | Collects one experiment's cells into `tidy.csv` and `tidy.json` |
+| `analysis/datasets.py` | Joins collected cells into one dataset per question: corpus, equivalence, awkward inputs, feasibility, coverage, query cost, regional access |
+| `analysis/compare_graphs.py` | Compares two graphs by their sorted triple set, not their bytes (used by `08`) |
+| `analysis/describe_inputs.py` | Structural descriptors of the input VCFs: records, samples, variant classes |
+| `analysis/equivalence.py` | Decides an equivalence claim from paired runs against a stated margin (`01`, `03`) |
+| `analysis/fit_scaling.py` | Fits scaling exponents on a log-log axis, only on the derived ladders (`03`, `04`) |
+| `analysis/stats.py` | The shared statistics, numpy only: a bootstrap interval on a paired ratio, and a log-log slope with its interval |
+| `analysis/provenance.py` | Resolves each host's image tags to digests (`02`, `14`, `15`) |
+| `analysis/scale_store.py` | Lists the scale store and re-hashes it against its manifests |
+| `analysis/scale_retrieval.py` | Turns `16`'s cells into `retrieval.csv` and `retrieval-raw.json` |
+| `use_case/acmg/` | Experiment 17's definitions, policies, queries, baseline, comparison and tests; [README](use_case/acmg/README.md) |
+| `converters/` | Experiment 18's containers, query ports, normalization and summary; [README](converters/README.md) |
 
-Those are two different cost regimes and they need different cuts:
+The figures and the results site do not use `analysis/`. They read the cells
+directly, through `scripts/figure_data.py` and `scripts/build_site_data.py`.
 
-- **C1** — replicates bound the CI, and run-to-run variance is a property of the
-  machine, not the input (sd was ~1 % of the mean). So the corridor is bought on
-  the cheapest size and larger sizes run once each as a size check
-  (`BM_REPS_AT_SCALE`). The 397 MB third size is dropped: §3's ladder covers the
-  size trend far more cheaply than a third paired arm. **The peak-disk half needs
-  no replicates at all** — it was identical across every replicate in each arm.
-- **C2** — the ladder is the evidence; §2.4 says so itself ("anchors, not the
-  evidence"). The anchors move to `test-larger-multisample.vcf.gz`, which makes
-  the same 2,504-vs-1 sample contrast.
-- **C3** — unchanged. The ladders were always the cheap part.
-- **C4 breadth** — becomes a *feature*-coverage claim. `BM_CORPUS_MAX_RECORDS`
-  truncates each corpus file to its first 250k records, keeping the header and so
-  the declared INFO/FORMAT/FILTER fields; `BM_CORPUS_WHOLE` exempts one file so a
-  real VCF is still converted end to end. Truncated cells carry a `__firstN`
-  label. This is the one change that genuinely weakens a claim — from "converted
-  ten whole cohorts" to "handled the features of ten cohorts, one of them whole"
-  — and the manuscript should say so rather than gloss it.
-- **C4 feasibility** — the claim is that it *completes* under a memory cap, which
-  a 1M-record ladder input demonstrates as well as a 397 MB file does.
-- **C4/C5 validation** — cross-engine agreement is bought once in §4.1, where it
-  *is* the claim (`BM_EQUIV_ENGINES`), and one engine runs everywhere else.
+## Running the harness
 
-Every value is a default, so an explicit env var still wins. `00` and `02` must
-run first: the profile draws on the derived ladders.
-
-**`smoke` is for "does this still work", never for numbers.** It selects the
-same scripts as `cheap` and shrinks everything they read: one replicate, a
-two-rung samples ladder, 2,000-record derived bases, fixtures in place of every
-corpus file, and a single SPARQL engine. `cheap` on its own is *not* fast —
-several of its experiments default to a 1.16M-record or 139 MB input.
-
-Two classes of cell had to be parameterised for this to work, because they
-ignore the ladder rungs by design and run whole real files: §2.4's real-cohort
-anchors (`BM_ANCHOR_PAIRS`) and §4.2's INFO inputs (`BM_INFO_INPUTS`). Measured
-on one smoke pass before they were overridable, §2.4 alone took **17.7 h of
-`03`'s 17.8 h**, while the eight cells the rungs *did* shrink took **2.7
-minutes** — so shrinking rungs without shrinking those is close to no saving at
-all. `BM_VALIDATION_ENGINES` and `BM_QUERY_ENGINES` drop to one engine for the
-same reason: validation setup is per engine per artifact, so `all` multiplies a
-cheap graph by twelve engine startups.
-
-The smoke anchors use `test-larger-multisample.vcf.gz` (2,504 samples) against
-`test-10k.vcf` (1 sample), which keeps the cohort-vs-single contrast the
-section is about and still exercises the cohort guard, since the multisample
-expanded cell is skipped by it.
-
-Every value the profile sets is a default, so an explicit env var still wins.
-Results from a smoke run are not measurements; do not report them.
-
-**Cohort-scale inputs are guarded out of the `expanded` cells.** The expanded
-representation emits per sample per record, so cost is records x samples. A
-cohort file is small on disk and enormous once expanded:
-`1000G_phase3_chr20.vcf.gz` is 327 MB gzipped, but at 1,812,841 records x 2,504
-samples it reached **23 GB after 20,000 variants (1.1%)** — about **2.1 TB** for
-the whole file, against a 189 GB volume. Unguarded it fills the disk and dies,
-and because every experiment loop is serial, everything after it waits behind a
-cell that cannot finish.
-
-`bm_skip_if_cohort_scale` (in `lib/common.sh`) skips such a cell when the input
-has more than `BM_CORPUS_MAX_SAMPLES` (default 1000) sample columns. It is used
-in two places, which are the two that run full cohort files:
-
-- `05_corpus_breadth.sh` — §3.2 runs everything at expanded
-- `03_sample_representation.sh` — the §2.4 real-cohort anchors
-
-**Only `expanded` is affected.** `condensed` is ~S + (V x F) and stays
-tractable, so the cohort file still gets its condensed cell — which is the
-comparison §2 is actually making. The skip is recorded as a real result with
-its reason, so the table shows the case was considered rather than quietly
-absent; "expanded does not scale to a 2,504-sample cohort" is a finding, not a
-gap. Raise the variable if you have the disk.
-
-`00_environment.sh` must run first and once per session. Run **one experiment at
-a time** — two concurrent runs invalidate every timing and memory number.
-
-| Script | Plan | What it answers |
-|---|---|---|
-| `00_environment.sh` | §5.4 | Environment manifest. Numbers are meaningless without it. |
-| `02_derive_ladders.sh` | §2.1, §3.1 | Builds the samples and records ladders (awk, no bcftools). |
-| `01_storage_mode.sh` | §1 | plain vs space-optimized, paired, 3 sizes × 5 reps. |
-| `03_sample_representation.sh` | §2 | condensed vs expanded across a 1→2504 sample ladder. |
-| `04_scaling_records.sh` | §3.1 | Records ladder. The only place records-slopes are fitted. |
-| `05_corpus_breadth.sh` | §3.2 | Ten real files, one config. Deliberately not a curve. |
-| `06_equivalence.sh` | §4.1 | Q1–Q13 vs oracle across every encoding, + the mechanism check. |
-| `07_representation_axes.sh` | §4.2 | info/header representation cost; VCF 4.1–4.5 conformance. |
-| `08_robustness.sh` | §4.3 | Mutation score, round-trip, determinism, index idempotence. |
-| `09_awkward_inputs.sh` | §4.4 | 11 difficult VCFs + extensibility smoke runs. |
-| `10_feasibility.sh` | §4.4 | Memory ceiling × configuration → completed / OOM. |
-| `11_covering_set.sh` | §5.1 | Ten runs covering every option value and pair. |
-| `12_modes_smoke.sh` | §5.2–5.3 | Phase A/B separation; every mode exercised once. |
-| `13_query_cost.sh` | §4.5 | SPARQL retrieval vs the cyvcf2 parser, on identical work. |
-
-### Investigations outside the suite
-
-Not in `run_all.sh`, and not part of any profile. Run directly when wanted.
-
-| Script | What it investigates |
-|---|---|
-| `14_regional_access.sh` | Indexed regional access: SPARQL against bgzip+tabix seeks, on five region-restricted questions. It reuses `13_query_cost`'s graphs, so run it after 13 on the same host. It needs an image with VCF-RDFizer's regional runner and tabix (`BM_REGIONAL_IMAGE`); v3.1.0 has neither and records a skip. |
-| `15_scale_prepare.sh` | **Generation half** of the scale experiment. Builds one large graph per scale into `BM_SCALE_STORE` and writes a manifest. Roughly 3-4 h at 1M records (171M triples) and ~16 h for the whole HG005 genome (657M triples). Idempotent: a scale that is already built is skipped, so an interrupted campaign resumes by re-running the same command. |
-| `16_scale_retrieval.sh` | **Querying half.** Reads the store and *never builds anything* — it refuses a scale that is not prepared. Every axis is selectable, so one question against one artifact is a minute's work rather than a rebuild. |
-| `17_use_case_acmg.sh` | The real-data use case: carriers of ClinVar pathogenic variants in the 81 ACMG SF v3.2 genes, across real single-sample VCFs (the ACMG gene spans of five VCFs in arm 1, a 104-participant cohort in arm 2, and the complete HG005 and NB72462M VCFs in arms 3 and 4), with simulated per-participant consents. An RDF route (convert, link through shared SPDI identifiers, one checked release view per requester, one SPARQL query) and a bcftools baseline must give identical carrier lists. See [`use_case/acmg/README.md`](use_case/acmg/README.md). The link stage needs the `spdi` linker, which VCF-RDFizer ships from v3.3.0. |
-| `18_converter_comparison.sh` | Four other VCF-to-RDF converters (JVarkit, TogoVar, SPARQLing Genomics, BioInterchange) and VCF-RDFizer on two shared inputs, in pinned containers under Docker Compose, with content questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md). |
-
-#### The scale store, and why 15 and 16 are separate
-
-`13_query_cost.sh` re-converts its input on every replicate. That is affordable
-at 17.1M triples and not at 657M: three replicates would spend ~48 h rebuilding
-the same graph to ask ~33 minutes of questions. So the build happens once, in
-15, and writes to a **store outside `benchmarks_outputs`** — outside, because
-freeing disk by deleting `out/<dataset>/` is a normal thing to do in a results
-tree, and a 16-hour artifact must not live somewhere anyone would reasonably
-clear.
+### Setup
 
 ```bash
-BM_IMAGE_VERSION=3.1.0 ./15_scale_prepare.sh r1000000   # build once
-./16_scale_retrieval.sh r1000000                        # query as often as you like
-python3 analysis/scale_store.py list                    # what is built
-python3 analysis/scale_store.py verify                  # re-hash against the manifests
+bash ../scripts/download_test_data.sh        # the input VCFs (about 2.3 GB)
+export VCF_RDFIZER=/path/to/vcf_rdfizer.py   # only if the tool is not a sibling checkout
+python3 -m pip install numpy rdflib          # rdflib: linking and the mutation score
+```
+
+Docker is required; `bcftools` is not, because the derived inputs are built with
+awk. By default the harness builds an image from the tool checkout, tags it
+`vcf-rdfizer:local-<commit>`, and runs every cell with `--no-build`. To use the
+published releases instead, as the reported runs did:
+
+```bash
+export BM_IMAGE_VERSION=3.1.0     # the base campaign (00-13), and 15
+export BM_IMAGE_VERSION=3.3.1     # 14, 16, 17 and 18
+```
+
+A dirty checkout gets a `-dirty` tag and a warning. Commit before a run you
+intend to report.
+
+### Run
+
+```bash
+./run_all.sh biomedsem              # the manuscript configuration of 00-13
+./run_all.sh biomedsem 03 05 06     # part of it, e.g. one host's share
+./run_all.sh smoke                  # does everything still run? (not measurements)
+./run_all.sh 03 06                  # selected experiments at their defaults
+BM_IMAGE_VERSION=3.3.1 BM_ACMG_ARM=arm1 ./17_use_case_acmg.sh
+```
+
+Run `00_environment.sh` first, once per session, and run one experiment at a
+time: two concurrent runs invalidate every timing and memory number. Detach long
+runs (`systemd-run --user --scope`, or `nohup`); Ctrl-C on the wrapper leaves its
+container running.
+
+**The `biomedsem` profile** sets the defaults the base campaign used; an
+explicit environment variable still wins. It:
+- runs three replicates at the cheapest size and the larger sizes once
+  (`BM_REPS=3`, `BM_REPS_AT_SCALE=1`);
+- truncates each corpus file to its first 250,000 records, keeping the header
+  (`BM_CORPUS_MAX_RECORDS`), with one file converted whole (`BM_CORPUS_WHOLE`; the
+  campaign set `HG005_GRCh38.vcf.gz`);
+- uses the 1,000,000-record HG005 rung for feasibility, and the 100,000-record rung
+  for robustness, INFO and header costs, and query cost;
+- validates on all four SPARQL engines in `06` (`BM_EQUIV_ENGINES=all`) and on
+  Comunica in `09`, `11` and `12` (`BM_VALIDATION_ENGINES=comunica`). `13` runs
+  every engine on the fixture and QLever on the 100,000-record input
+  (`BM_QUERY_ENGINES`, `BM_QUERY_LARGE_ENGINES`).
+
+**The `smoke` profile** shrinks every input to a fixture and runs one replicate on
+one engine. It checks that the scripts and the analysis still run; its timings are
+not measurements.
+
+**The cohort-scale guard.** The expanded sample profile emits a resource per sample
+per record. The 1000 Genomes chr20 call set (1,812,841 records, 2,504 samples)
+reached 23 GB after 1.1% of its records, about 2.1 TB in full.
+`bm_skip_if_cohort_scale` therefore skips an expanded cell whose input has more
+than `BM_CORPUS_MAX_SAMPLES` (default 1,000) sample columns, and records the skip
+as a result. It applies in `03` and `05`; condensed cells still run.
+
+### The large-graph store
+
+```bash
+BM_IMAGE_VERSION=3.1.0 ./15_scale_prepare.sh r1000000   # build once: about 4 h (the complete VCF: about 14 h)
+./16_scale_retrieval.sh r1000000                        # query as often as needed
+python3 analysis/scale_store.py verify                  # re-hash the store against its manifests
 python3 analysis/scale_retrieval.py                     # -> results/16_*/retrieval.csv
 ```
 
-Every axis of 16 is selectable, which is what makes a targeted follow-up cheap:
+Every axis of `16` is selectable; for example, one engine reading all three artifacts:
 
 ```bash
-# one query, one replicate
-BM_SCALE_QUERIES=q03_titv BM_REPS=1 ./16_scale_retrieval.sh r1000000
-# the cross-engine comparison, each engine on its native artifact
-BM_SCALE_CELLS="qlever:nt.gz comunica:nt.gz hdt:hdt cottas:cottas" ./16_scale_retrieval.sh r1000000
-# one engine reading all three artifacts
 BM_SCALE_CELLS="qlever:nt.gz qlever:hdt qlever:cottas" ./16_scale_retrieval.sh whole
 ```
 
-Two things to know before quoting a number from it:
-
-* **The default query set is `core`, the thirteen queries the manuscript reports** —
-  not the whole suite. Per artifact on the 17.1M cell the thirteen cost 17 s and
-  the preflight set costs 201 s, so running everything pays twelve times over
-  for numbers the figure does not contain. A subset makes the tool report
-  `TIMING_ONLY` instead of a validation verdict, *by design*; each selected
-  query is still compared against the cyvcf2 oracle, so equality is still
-  established before any timing is compared. `BM_SCALE_QUERIES=all` buys the
-  verdict back at full cost.
-* **`q01`–`q13` are byte-identical between v3.1.0 and current `main`, and the
-  two `preflight_missing_token_conformance` queries are not** — they were
-  narrowed after v3.1.0. Core timings from 16 may be put beside the
-  query-cost experiment's; preflight timings may not.
-
-Generation pins the *published* release image so a stored graph is traceable to
-a release rather than to whatever the checkout was that afternoon; 15 refuses a
-local build unless `BM_SCALE_ALLOW_LOCAL_IMAGE=1`. Querying may run a newer
-image — it needs `--validation-queries`, which postdates v3.1.0 — and that
-asymmetry is safe precisely because the halves are separate: a newer engine
-reading an older graph changes retrieval cost, not the graph.
-
-## Get the data out
+### Collect
 
 ```bash
-python3 analysis/collect_metrics.py --all          # -> results/<exp>/tidy.{csv,json}
-```
-
-Then whichever apply:
-
-```bash
-python3 analysis/equivalence.py 01_storage_mode --margin 0.10
+python3 analysis/collect_metrics.py --all          # -> results/<experiment>/tidy.{csv,json}
+python3 analysis/datasets.py querycost 13_query_cost
 python3 analysis/fit_scaling.py 03_sample_representation \
         --x samples --y triples --group mode --cell-filter __structure
-python3 analysis/describe_inputs.py --corpus       # structural descriptors
-python3 analysis/datasets.py corpus 05_corpus_breadth
-python3 analysis/datasets.py equivalence 06_equivalence
-python3 analysis/datasets.py awkward 09_awkward_inputs
-python3 analysis/datasets.py feasibility 10_feasibility
-python3 analysis/datasets.py coverage 11_covering_set
-python3 analysis/datasets.py querycost 13_query_cost   # aggregate + per-query
-python3 analysis/datasets.py regional 14_regional_access
 ```
 
-`tidy.csv` is the schema everything else joins on. Values stay numeric; missing
-is empty, not `—`.
-
-## Layout
+### Layout
 
 ```
-results/<experiment>/<cell>/    bench.json, command.txt, stdout.log, stderr.log,
-                               workspace_bytes.tsv, out/  (the tool's own tree)
+results/<experiment>/<cell>/    bench.json, command.txt, command.json, stdout.log, stderr.log,
+                                workspace_bytes.tsv, out/ (the tool's own output tree)
 results/<experiment>/tidy.csv   one row per cell
-results/descriptors.json        per-input structural descriptors
 ```
 
-Each cell gets a fresh `--out`; re-running a cell fails rather than overwriting.
-Move or delete the cell, or set `BM_RESULTS` to a new root.
+Each cell gets a fresh `--out`; rerunning a cell fails rather than overwrite it.
+Move the cell, or set `BM_RESULTS` to a new root.
 
-## Eight things that will bite you
+### Environment variables
 
-1. **Peak workspace, not final bytes.** Both storage modes emit the same
-   triples, so a final-size table shows ~0% and looks like it refutes §1.
-   `peak_host_out_tree_bytes` is the number. The partitioned stage's Docker
-   volume is a *separate* number (`peak_volume_workspace_bytes`) — never add them.
-2. **Never compare `.nt.gz` checksums.** space-optimized writes a concatenated
-   gzip stream, plain gzips one merged `.nt`. Same triples, different bytes. Use
-   `analysis/compare_graphs.py`, which digests the sorted triple set.
-3. **`--hdt-strategy single` only works with `plain` + `hdt` (no cottas).**
-   Anything else exits 2. It is a verification path, not a faster one.
-4. **Derived ladder files are not valid VCFs.** Sample columns are cut without
-   recomputing INFO, so AC/AN disagree with the retained genotypes. That is
-   intentional (INFO is a held-fixed control) — say so in the manuscript.
-5. **`--validation-engine all` only on small inputs.** At scale use `qlever` or
-   `--validate-artifacts hdt`.
-6. **In `benchmark.csv`, compare against `oracle_query_seconds`, not
-   `oracle_wall_seconds`.** The first is the parser's cost for *that* query and
-   is row-wise comparable; the second is its total for *all* queries, repeated
-   on each row for join convenience, so a row-wise ratio against it is wrong by
-   ~27×. `datasets.py querycost` writes both an aggregate and a per-query file
-   and uses the right column in each.
-7. **A window means POS, not overlap.** A tabix seek returns every record whose
-   span overlaps the region, so an indel starting before the window comes back
-   from htslib but not from a SPARQL `?pos` filter. Every VCF arm in
-   `14_regional_access` keeps the seek and then drops out-of-window POS, which
-   is what makes the arms comparable; if you add an arm, it must do the same.
-8. **Detach long runs** (`systemd-run --user --scope`, or `nohup`). Ctrl-C on the
-   wrapper leaves its container running.
+`BM_RESULTS` results root · `BM_REPS` replicates · `BM_SIZES` storage-mode inputs ·
+`BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` ladder rungs · `BM_SAMPLE_REPRESENTATIONS` and
+`BM_SAMPLE_PARTS` for `03` · `BM_VALIDATION_ENGINES` · `BM_SPARK_PARTITIONS` (default 8) ·
+`BM_CEILINGS` memory ceilings for `10` · `BM_IMAGE_VERSION` a published release ·
+`BM_REBUILD=1` force a rebuild · `BM_REGIONAL_SCALES`, `BM_REGIONAL_ARMS`,
+`BM_REGIONAL_RDF_SMALL` / `_SLICE` / `_WHOLE` and `BM_REGIONAL_IMAGE` for `14` ·
+`BM_WINDOW_SEED` · `BM_SCALE_STORE` (default `../scale_store`), `BM_SCALE_SET`,
+`BM_SCALE_REPRS`, `BM_SCALE_CELLS`, `BM_SCALE_QUERIES` (`core`, `preflight` or `all`),
+`BM_SCALE_NODE_HEAP_MB` and `BM_SCALE_ALLOW_LOCAL_IMAGE=1` for `15` and `16` ·
+`BM_ACMG_ARM` (`arm1`, `cohort`, `wgs`, `layered`), `BM_ACMG_STAGES` and
+`BM_MYVARIANT_CACHE` for `17` · `BM_ALLOW_NETWORK=1` with `BM_CONTACT_EMAIL` for a
+live linker · `BM_CUSTOM_RULES` custom mapping · `BM_DRY_RUN=1` print commands
+without running
 
-## Environment variables
+## Reading the outputs
 
-`BM_RESULTS` results root · `BM_REPS` repetitions · `BM_SIZES` §1 inputs ·
-`BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` ladder rungs · `BM_SAMPLE_REPRESENTATIONS` (default `hdt,cottas`) and `BM_SAMPLE_PARTS` (`structure timing anchors`) for 03 · `BM_VALIDATION_ENGINES` ·
-`BM_SPARK_PARTITIONS` (default 8) · `BM_CEILINGS` §10 ceilings ·
-`BM_IMAGE_VERSION` pin a published release · `BM_REBUILD=1` force a rebuild ·
-`BM_REGIONAL_SCALES` small/slice/whole (default `small slice`, mirroring 13) · `BM_REGIONAL_ARMS` (or `_SMALL`/`_SLICE`/`_WHOLE`) · `BM_REGIONAL_THIN_ARMS` arms timed on `BM_SCAN_WINDOWS_PER_SIZE` windows only (default: the scan arm) · `BM_WINDOW_SEED` ·
-`BM_REGIONAL_RDF_SMALL` / `_SLICE` / `_WHOLE` reuse a specific graph · `BM_REGIONAL_IMAGE` run 14 on its own image (v3.1.0 lacks the regional runner) ·
-`BM_DRY_RUN=1` print commands without running · `BM_ALLOW_NETWORK=1` +
-`BM_CONTACT_EMAIL` tier-3 linker · `BM_CUSTOM_RULES` custom mapping ·
-`BM_SCALE_STORE` where built graphs live (default `../scale_store`) ·
-`BM_SCALE_SET` `<id>:<input>` pairs · `BM_SCALE_REPRS` which artifacts 15 builds ·
-`BM_SCALE_QUERY_SCALES` / `BM_SCALE_CELLS` `<engine>:<artifact>` pairs /
-`BM_SCALE_QUERIES` ids or `core`/`preflight`/`all` ·
-`BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES` ceiling above which the in-memory Comunica
-arm is refused and the refusal recorded ·
-`BM_SCALE_ALLOW_LOCAL_IMAGE=1` let 15 build from an unpinned image
-
-## How the manuscript's results were produced
-
-Every archived cell records its command, host, tool commit, image digest, exit
-status and timings (`bench.json`, `command.txt`), so this section only adds what
-a single cell cannot show: how the runs were divided and where they went.
-
-**The base campaign (`00`–`13`).** The `biomedsem` profile ran on the published
-image `ecrum19/vcf-rdfizer:3.1.0` (`sha256:1904e96d…34aa`, commit `d3b34d5`), on
-two hosts with the same hardware, one experiment at a time per host:
-
-| Host | Experiments |
-| --- | --- |
-| `vcf-bench-1` | `01 04 07 08 09 10 11 12 13` |
-| `vcf-bench-2` | `03 05 06` |
-
-- **Whole experiments, never cells, were split between hosts.** An experiment's
-  cells are compared with each other, so running them on two hosts would
-  confound every comparison with hardware. `scripts/build_run_summary.py` refuses
-  an archive in which an experiment spans two hosts.
-- **Each host ran a calibration cell first:** `12_modes_smoke`, under identical
-  settings (`benchmarks_outputs_calibration/` in the archive).
-  - It found identical triples and timings that differed between hosts.
-  - Timings are therefore compared only within a host.
-- **Cite the digest, not the tag.** Each host wrote its environment and image
-  digest to `00_environment/provenance.<host>.<commit>.json`. Two hosts once
-  built the same local tag independently and got different images.
-- **Nothing was deleted.** The archive keeps every other run, beside the results:
-  - cells started on the wrong host (`__offsplit/`);
-  - interrupted cells (`__partial/`);
-  - superseded runs (`__superseded/`);
-  - stopped runs (`__stalled/`);
-  - the earlier pre-release campaign (`__campaign1__*`).
-- **`BM_CORPUS_WHOLE=HG005_GRCh38.vcf.gz`** is the one corpus file converted
-  whole, at about 16 h with HDT and COTTAS. The other corpus files are their
-  first 250,000 records.
-
-Each host's results tree was mirrored, without the generated RDF (`out/`), into
-`benchmark-results/<host>/benchmarks_outputs/`, and
-`scripts/build_run_summary.py` integrates both into `summary.json`.
-
-**Later experiments (`14`–`18`).** They ran outside the profile. As reported:
-- `14` and `18` on `vcf-bench-1`;
-- `15` and `16` on `vcf-bench-3`;
-- `17`'s arms 1 and 2 on `vcf-bench-1`, and arms 3 and 4 on `vcf-bench-2`.
-
-Every result that a pre-release build first produced was then rerun with the
-published v3.3.1 (`sha256:3ad71b1a…2993`) by one driver, `run_v331.sh`. The driver
-and its logs are archived under `benchmark-results/vcf-bench-*/v331-rerun/`,
-whose READMEs give each job's result. The use-case arms, regional retrieval,
-large-graph retrieval and the consumer WGS validation run all come from that rerun.
-
+1. **Peak workspace, not final bytes.** Both storage modes write the same triples,
+   so their final sizes match. `peak_host_out_tree_bytes` is the storage-mode
+   result. The partitioned stage's Docker volume is a separate number
+   (`peak_volume_workspace_bytes`); never add them.
+2. **Never compare `.nt.gz` checksums.** Space-optimized storage writes a
+   concatenated gzip stream; plain storage gzips one merged file. Compare sorted
+   triple sets with `analysis/compare_graphs.py`.
+3. **`--hdt-strategy single` works only with plain storage and HDT without
+   COTTAS.** Anything else exits 2, and `06` asserts both refusals.
+4. **The derived ladder files are not valid VCFs.** Sample columns are cut without
+   recomputing INFO, so AC and AN disagree with the retained genotypes. INFO is a
+   held-fixed control.
+5. **A non-zero exit is not always a failure.** `bench.json` records an
+   `assertion` (`ok`, `refusal` or `recorded`): `06`'s refusal cells must fail, and
+   `09` records the refusal of an awkward input as a valid outcome.
+6. **In `benchmark.csv`, compare with `oracle_query_seconds`, not
+   `oracle_wall_seconds`.** The first is the parser's cost for that query; the
+   second is its total for all queries, repeated on each row.
+7. **A regional window means POS, not overlap.** A tabix seek returns every record
+   whose span overlaps the region. Every VCF arm of `14` drops out-of-window POS
+   after the seek, which makes it comparable with a SPARQL `?pos` filter.
+8. **`16`'s default query set is the thirteen core queries.** A subset makes the
+   tool report `TIMING_ONLY` instead of a validation verdict. Each selected query
+   is still compared with the cyvcf2 oracle, and `answersAgree` in the cell's
+   `summary.json` is the flag to check.
+9. **Cite the image digest, not the tag.** Two hosts that build the same local tag
+   independently get different images. Each host's
+   `00_environment/provenance.*.json` records the digest, and `summary.json`
+   resolves every cell's tag to it.

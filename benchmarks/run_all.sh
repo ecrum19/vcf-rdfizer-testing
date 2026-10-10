@@ -63,8 +63,8 @@ case "${1:-all}" in
     export BM_QUERY_SMALL="${BM_QUERY_SMALL:-test-1k.vcf}"
     export BM_QUERY_LARGE="${BM_QUERY_LARGE:-test-10k.vcf}"
     # The cells that ignore the rung parameters, because they deliberately run
-    # whole real files: §2.4's anchors and §4.2's INFO inputs. Measured on one
-    # smoke pass, §2.4 alone was 17.7h of that script's 17.8h while the eight
+    # whole real files: §3.3's anchors and §3.6's INFO inputs. Measured on one
+    # smoke pass, §3.3's anchors alone were 17.7h of that script's 17.8h while the eight
     # cells the rungs *did* shrink took 2.7 minutes. Point them at fixtures.
     # test-larger-multisample keeps the cohort/single contrast (2,504 samples
     # vs 1), and its expanded cell is still skipped by the cohort guard --
@@ -83,37 +83,38 @@ case "${1:-all}" in
     # choosing where the evidence has to be expensive and where it does not.
     # Unlike `smoke`, these ARE measurements.
     #
-    # Measured costs this is built from (see the plan's §5.4 run manifests):
+    # Measured costs this is built from (see the plan's §4.4):
     #   01 at default sizes/reps        57.8 h for 11 of 30 cells
     #   one HG005 cell                  12.3 h
     #   03's three real-file anchors    17.7 h, vs 3.6 min on the fixture
     #   06 on a 10k fixture, 1 engine   92 min  (validation is overhead-bound)
     shift; SELECTED="${*:-$ALL}"
 
-    # C1 -- replicates bound the CI and variance is a machine property (sd was
+    # §3.4 storage mode -- replicates bound the CI and variance is a machine property (sd was
     # ~1% of the mean), so buy the corridor on the cheap size and run the large
-    # one once as a size check. Drops the 397 MB size entirely: §3's ladder
+    # one once as a size check. Drops the 397 MB size entirely: §3.2's ladder
     # covers the size trend far more cheaply than a third paired arm.
     export BM_REPS="${BM_REPS:-3}"
     export BM_REPS_AT_SCALE="${BM_REPS_AT_SCALE:-1}"
     export BM_SIZES="${BM_SIZES:-HG005_GRCh38_r100000.vcf.gz test-larger.vcf.gz}"
 
-    # C2 -- the ladder is the evidence and it is cheap. The §2.4 anchors are
+    # §3.3 sample representation -- the ladder is the evidence and it is cheap. The §3.3 anchors are
     # explicitly "anchors, not the evidence", and the multisample fixture makes
     # the same cohort-vs-single contrast at 2,504 samples.
     export BM_ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-test-larger-multisample.vcf.gz:cohort test-10k.vcf:single}"
 
-    # C4 breadth -- features, not file length; one real file still whole.
+    # §3.5 corpus breadth -- features, not file length; one real file still
+    # whole. The base campaign set BM_CORPUS_WHOLE=HG005_GRCh38.vcf.gz.
     export BM_CORPUS_MAX_RECORDS="${BM_CORPUS_MAX_RECORDS:-250000}"
     export BM_CORPUS_WHOLE="${BM_CORPUS_WHOLE:-NG1N86S6FC.vcf.gz}"
 
-    # C4 feasibility -- the claim is that it COMPLETES under a memory cap. A
+    # §3.7 memory ceilings -- the question is whether it COMPLETES under a cap. A
     # 1M-record ladder input demonstrates that; the 397 MB file only makes it
     # slower to demonstrate.
     export BM_FEASIBILITY_INPUT="${BM_FEASIBILITY_INPUT:-HG005_GRCh38_r1000000.vcf.gz}"
 
-    # C4/C5 validation -- buy cross-engine agreement once, where it IS the
-    # claim (§4.1), and run one engine everywhere else. Validation cost is
+    # §1.1 and §4.3 validation engines -- buy cross-engine agreement once, where it IS the
+    # claim (§1.1), and run one engine everywhere else. Validation cost is
     # engine setup x artifacts x queries, so this is the dominant saving.
     export BM_EQUIV_ENGINES="${BM_EQUIV_ENGINES:-all}"
     export BM_EQUIV_INPUT="${BM_EQUIV_INPUT:-test-10k.vcf}"
@@ -121,13 +122,13 @@ case "${1:-all}" in
     export BM_QUERY_SMALL="${BM_QUERY_SMALL:-test-10k.vcf}"
     export BM_QUERY_LARGE="${BM_QUERY_LARGE:-HG005_GRCh38_r100000.vcf.gz}"
 
-    # C4 robustness -- round-trip, determinism and idempotence are PROPERTIES,
+    # §1.4 robustness -- round-trip, determinism and idempotence are PROPERTIES,
     # not timings. The default test-larger.vcf.gz means four conversions of
     # 1.16M records (~20h) to prove things a 100k-record input proves just as
     # well, while still being large enough to span multiple chunks.
     export BM_ROBUSTNESS_INPUT="${BM_ROBUSTNESS_INPUT:-HG005_GRCh38_r100000.vcf.gz}"
 
-    # C4 axes -- reuse the derived ladder rather than whole corpus files.
+    # §3.6 representation axes -- reuse the derived ladder rather than whole corpus files.
     export BM_INFO_INPUTS="${BM_INFO_INPUTS:-HGSVC2.vcf.gz HG005_GRCh38_r100000.vcf.gz}"
     export BM_HEADER_INPUT="${BM_HEADER_INPUT:-HG005_GRCh38_r100000.vcf.gz}"
 

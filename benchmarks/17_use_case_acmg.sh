@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
-# Real-data use case: ACMG secondary findings across five genomes and ClinVar.
+# Real-data use case (RQ2, plan §2): ACMG secondary findings across participant
+# VCFs and ClinVar, in four arms selected by BM_ACMG_ARM (arm1, cohort, wgs,
+# layered).
 #
 # A standalone investigation, not part of the suite: run_all.sh does not run
 # it, and no profile includes it. The design, definitions and expected outputs
 # are in benchmarks/use_case/acmg/README.md; read that first.
 #
-#   "Which participants carry a ClinVar pathogenic or likely-pathogenic variant
-#    in an ACMG SF v3.2 gene, and what may each requester see?"
+#   "Which participant-variant-gene matches connect an observed allele to a
+#    ClinVar classification in an ACMG SF v3.2 gene, and which may each
+#    requester receive?"
 #
 # Two routes answer it from the same derived inputs and the same definitions
 # (use_case/acmg/use_case.json), and neither reads the other's work:
 #
-#   RDF route        convert -> link (spdi, rsid-dbsnp) -> govern (one release
+#   RDF route        convert -> link (spdi, genes, rsid-dbsnp) -> govern (one release
 #                    view per requester) -> one SPARQL query per requester
 #   baseline route   bcftools annotate/view/query -> a consent script
 #
@@ -24,7 +27,8 @@
 #             opt-in: it is NOT in the default stage list)
 #   derive    restrict each input to the ACMG gene spans and normalise it
 #   convert   VCF-RDFizer, expanded, one cell per input
-#   link      the spdi linker on all six graphs, rsid-dbsnp on the PGP genomes
+#   link      spdi on every graph, Ensembl genes on the participant VCFs,
+#             rsid-dbsnp on the files with rsIDs
 #   link_myvariant
 #             arm 1 only: rsid-myvariant confirms the PGP files' rsIDs against
 #             MyVariant.info, by default by replaying recorded responses
@@ -37,7 +41,7 @@
 #
 # Usage:
 #   BM_ACMG_STAGES=fetch ./17_use_case_acmg.sh           # once per host
-#   BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh         # everything else
+#   BM_IMAGE_VERSION=3.3.1 BM_ACMG_ARM=arm1 ./17_use_case_acmg.sh   # everything else
 #   BM_ACMG_STAGES="query compare" ./17_use_case_acmg.sh
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
@@ -354,7 +358,7 @@ serve() {
 }
 unserve() { docker rm -f "acmg-$1" >/dev/null 2>&1 || true; }
 
-# Governance runs on QLever, never on an in-memory graph (plan §4.5). One
+# Governance runs on QLever, never on an in-memory graph (plan §2.4). One
 # endpoint serves every genome and its links; a second serves the oracle graph
 # written straight from the VCF text, beside the same link graphs. The links
 # belong there: the policy's gene panel selects on them, and the linker computed

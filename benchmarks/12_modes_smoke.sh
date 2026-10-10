@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Plan §5.2 and §5.3 — phase separation, and the modes nothing else touches.
+# Plan §4.3 and §1.6 — phase separation, and the modes nothing else touches.
 #
-# §5.2  Conversion is minutes; validation is hours. Never let them share a run.
+# §4.3  Conversion is minutes; validation is hours. Never let them share a run.
 #       Phase A converts with validation OFF; Phase B validates the artifacts
 #       Phase A already produced. A re-runnable Phase B means a validation bug
 #       costs you Phase B, not the six hours of conversion in front of it — and
 #       it exercises --mode validation, which the old suite never did.
 #
-# §5.3  One small-input smoke run each for --mode tsv, compress, decompress,
+# §1.6  One small-input smoke run each for --mode tsv, compress, decompress,
 #       index and validation. 08_robustness.sh gives most of these a purpose
 #       beyond smoke (round-trip, determinism, idempotence); this script is the
 #       bare "does it run at all" pass plus the phase-separation demonstration.
@@ -25,13 +25,13 @@ fi
 VCF="$(bm_vcf "$INPUT")"
 
 # --------------------------------------------------------------------------
-bm_banner "§5.3 --mode tsv"
+bm_banner "§1.6 --mode tsv"
 bm_run "$EXPERIMENT" "mode_tsv" -- \
   --mode tsv --input "$VCF"
 bm_expect_ok
 
 # --------------------------------------------------------------------------
-bm_banner "§5.2 Phase A — conversion, validation OFF"
+bm_banner "§4.3 Phase A — conversion, validation OFF"
 bm_run "$EXPERIMENT" "phaseA_convert" -- \
   --mode full --input "$VCF" \
   --rdf-storage-mode space-optimized \
@@ -52,7 +52,7 @@ bm_step "hdt:       ${HDT:-none}"
 bm_step "cottas:    ${COTTAS:-none}"
 
 # --------------------------------------------------------------------------
-bm_banner "§5.2 Phase B — validation against Phase A's artifacts"
+bm_banner "§4.3 Phase B — validation against Phase A's artifacts"
 
 # --mode validation needs the source VCF and the graph to check it against.
 if [[ -n "$AGGREGATE" ]]; then
@@ -66,7 +66,7 @@ else
 fi
 
 # --------------------------------------------------------------------------
-bm_banner "§5.3 --mode compress / decompress / index"
+bm_banner "§1.6 --mode compress / decompress / index"
 
 if [[ -n "$AGGREGATE" ]]; then
   bm_run "$EXPERIMENT" "mode_compress" -- \
@@ -102,7 +102,7 @@ else
   bm_skip "$EXPERIMENT" "mode_index_cottas" "Phase A produced no .cottas"
 fi
 
-bm_info "Done. Every mode the plan lists in §5.3 now has a recorded run.
+bm_info "Done. Every mode the plan lists in §1.6 now has a recorded run.
 At scale, prefer --validation-engine qlever or --validate-artifacts hdt;
 --validation-engine all belongs on small inputs only, where cross-engine
-agreement is the actual deliverable (§4.1)."
+agreement is the actual deliverable (§1.1)."

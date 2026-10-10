@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# Plan §1 — storage mode: same compute, much less disk.
+# Plan §3.4 — storage mode: same compute, much less disk.
 #
 # Paired comparison of --rdf-storage-mode plain vs space-optimized. Everything
 # else is held fixed, including --hdt-strategy partitioned: `single` cannot read
 # a gzip aggregate and is refused, so the strategy is a confound that has to be
 # pinned, not a second factor (§1.2).
 #
-# Three input sizes, because the point is that the disk saving GROWS with input
-# size while the time penalty stays flat. One size cannot show that.
+# By default, three input sizes with five replicates each, so the disk saving
+# can be seen growing with input size. The base campaign's biomedsem profile ran
+# two: the 100,000-record HG005 slice, three replicates per mode, and
+# test-larger.vcf.gz (269M triples) once per mode as a size check (BM_SIZES,
+# BM_REPS=3, BM_REPS_AT_SCALE=1). The disk result is peak workspace, not final
+# bytes, and time is judged against a +/-10% equivalence margin (§3.4).
 #
 # Repetitions are interleaved (p,s,p,s,...) rather than blocked, so thermal
 # drift and page-cache state cannot land preferentially on one mode.
@@ -34,7 +38,7 @@ REPS_AT_SCALE="${BM_REPS_AT_SCALE:-$REPS}"
 DEFAULT_SIZES="test-larger.vcf.gz HG005_GRCh38.vcf.gz NG1N86S6FC.vcf.gz"
 SIZES="${BM_SIZES:-$DEFAULT_SIZES}"
 
-bm_banner "§1 Storage mode (paired, $REPS reps, interleaved)"
+bm_banner "§3.4 Storage mode (paired, $REPS reps, interleaved)"
 bm_step "sizes: $SIZES"
 
 first_size="${SIZES%% *}"
@@ -71,7 +75,7 @@ bm_info "Done. Analyse with:
 
 cat <<'NOTE'
 
-Reporting reminders (§1.1):
+Reporting reminders (§3.4):
   * The disk metric is PEAK WORKSPACE, not final artifact bytes. Both modes
     emit the same triples, so a table of final sizes shows ~0% and looks like
     it refutes the claim. bench.json records peak_out_tree_bytes; the Docker

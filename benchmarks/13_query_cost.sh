@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §4.5 — SPARQL retrieval against a VCF parser, on identical work.
+# Plan §3.8 — SPARQL retrieval against a VCF parser, on identical work.
 #
 # The question a biological researcher actually asks: if I convert my VCF to
 # RDF, what does it cost me to get an answer out compared with parsing the VCF?
@@ -21,10 +21,11 @@
 #   oracle_wall_seconds  the parser's total for ALL queries, repeated on every
 #                        row so the CSV needs no join
 #
-# A row-wise ratio therefore divides one query by twenty-seven. The only valid
-# comparison is aggregate against aggregate — the sum of an engine's query
-# seconds against the oracle total — which is what datasets.py querycost
-# computes. There is no per-query oracle timing to be had today.
+# A row-wise ratio against it therefore divides one query by twenty-seven.
+# Compare a single query with `oracle_query_seconds` instead: the parser's time
+# for that question, attributed from the oracle's measured phases (§3.8). Or
+# compare an engine's total with the oracle's total. datasets.py querycost
+# writes both datasets.
 #
 # ---------------------------------------------------------------------------
 # WHAT IS BEING COMPARED, HONESTLY
@@ -41,11 +42,17 @@
 # from is the mistake to avoid.
 #
 # Also true and worth stating: conversion cost is not in either column. The
-# graph has to exist first. Quote it from §3 rather than folding it in here.
+# graph has to exist first. Quote it from §3.2 rather than folding it in here.
 #
 # Note: the query set is not selectable — the suite always runs its full set
 # (preflight + count + core). The aggregate is therefore over all of them,
 # which is a fairer basis than a hand-picked subset anyway.
+#
+# The base campaign's biomedsem profile ran test-10k.vcf (0.96M triples) on
+# every engine and the 100,000-record HG005 slice (17.1M triples) on QLever,
+# three replicates each, without SHACL (BM_QUERY_SMALL, BM_QUERY_LARGE). The
+# minimal-setup crossover adds the N-Triples-only rerun
+# (benchmark-results/vcf-bench-2/nt-only/).
 #
 # Usage:
 #   ./13_query_cost.sh
@@ -71,7 +78,7 @@ run_scale() {
   fi
   local vcf; vcf="$(bm_vcf "$input")"
 
-  bm_banner "§4.5 $label scale: $(basename "$vcf")  engines=$engines"
+  bm_banner "§3.8 $label scale: $(basename "$vcf")  engines=$engines"
 
   local rep
   for rep in $(seq 1 "$REPS"); do

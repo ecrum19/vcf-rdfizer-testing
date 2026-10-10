@@ -50,15 +50,15 @@
         <p class="section-intro">
           VCF-RDFizer's validation layer asks <span data-fill="questions"></span> questions of each graph in SPARQL and answers them again,
           independently, from the source VCF; SHACL shapes check structure no oracle observes. This section shows what
-          that layer found across the <span data-fill="campaignVersion"></span> campaign, how sensitive it is to injected faults, and what happened on a
-          real genome.
+          that layer found across the <span data-fill="campaignVersion"></span> campaign, how sensitive it is to injected faults, and what it found on a
+          consumer WGS VCF.
         </p>
         <div class="table-wrap" id="evidenceTable"></div>
         <div class="chart-grid">
           <div class="chart-card wide" data-chart="mutationScores"></div>
           <div class="chart-card wide" data-chart="mutationClasses"></div>
         </div>
-        <h3 class="subhead">A real genome: <span data-fill="realSample"></span>, first <span data-fill="realRecords"></span> records</h3>
+        <h3 class="subhead">Consumer WGS validation run: <span data-fill="realSample"></span>, first <span data-fill="realRecords"></span> records</h3>
         <div class="table-wrap" id="realGenomeTable"></div>
         <aside class="interpretation">
           <h3>Interpretation</h3>
@@ -76,11 +76,9 @@
             small inputs. On larger inputs those <span data-fill="faultClasses"></span> classes go undetected.
           </p>
           <p>
-            On a real <span data-fill="realTriples"></span>-triple genome every field of every record equals the VCF text, but the layer in <span data-fill="campaignVersion"></span> still reported
-            a mismatch, for two reasons of its own: its oracle did not count GATK's phase sets (<span data-fill="phaseSets"></span> of them), and QLever prints a
-            decimal QUAL canonically, without trailing zeros (<span data-fill="qualChanged"></span> QUAL values). Both were validator limitations, not
-            conversion errors. The corrected validator fixes both: rerun on the same graph, all thirteen answers are equal, and the default shapes, now checked in
-            record batches, report no violations.
+            On a consumer WGS VCF converted to <span data-fill="realTriples"></span> triples, all thirteen answers equal the VCF's, and the default shapes,
+            checked in record batches, report no violations. The run used the corrected validator, whose oracle counts phase sets and compares
+            decimal QUAL values canonically.
           </p>
           <p class="source" id="fidelitySource"></p>
         </aside>

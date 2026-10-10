@@ -4,9 +4,9 @@
     python3 scripts/build_site_data.py --out site/data
 
 Standard library only, and no network: everything is read from
-benchmark-results/ and benchmarks/use_case/acmg. Only the reported
-results are included -- the live v3.1.0 campaign trees and the v3.3.1 rerun's
-unsuffixed cells; superseded, stalled and failed attempts are left out. The
+benchmark-results/ and benchmarks/use_case/acmg, which hold only the reported
+runs: the v3.1.0 campaign, the additional v3.1.0 runs, and the v3.3.1 rerun.
+Superseded, stalled and failed attempts are on the repository's legacy branch. The
 values behind the paper's figures come from the same module make_figures.py
 uses (scripts/figure_data.py), so the site and the paper cannot
 compute them differently.
@@ -34,7 +34,7 @@ RESULTS = fd.RESULTS
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
 #: The rerun with the published v3.3.1 of every result a pre-release build first produced, per host.
 #: The use-case arms, regional and large-graph retrieval, and the consumer WGS validation run are
-#: read from here; the v3.1.0 campaign and the v3.1.0 review run are not rerun.
+#: read from here; the v3.1.0 campaign and the v3.1.0 mutation rerun are not rerun.
 V331 = {host: RESULTS / host / "v331-rerun" / "results" for host in ("vcf-bench-1", "vcf-bench-2", "vcf-bench-3")}
 ACMG = ROOT / "benchmarks" / "use_case" / "acmg"
 REPO_URL = "https://github.com/ecrum19/vcf-rdfizer-testing"
@@ -177,50 +177,26 @@ def mutation_profiles() -> dict:
     }
 
 
-def review_report(run: str, root: Path = REVIEW) -> Path:
-    """The validation report directory of one run on NG131FQA1I's first 250,000 records."""
-    return Path(glob.glob(str(root / run / "out" / "run_metrics" / "*" / "reports" / "validation"
-                              / "NG131FQA1I_first250000"))[0])
-
-
 def real_genome() -> dict:
-    """The paired validation of NG131FQA1I's first 250,000 records.
+    """The consumer WGS validation run: NG131FQA1I's first 250,000 records, validated by v3.3.1.
 
-    The v3.1.0 review run (no shapes) is the diagnosis; the published v3.3.1's
-    run, default shapes batched, is the current result.
+    The paired comparison on QLever, with the default shapes checked in record batches. The
+    v3.1.0 runs on the same slice, which the supplement cites for the oracle's corrections,
+    are on the legacy branch.
     """
-    report = review_report("validate__NG131FQA1I__first250000__noshacl")
-    rerun = review_report("consumer_wgs__NG131FQA1I__first250000", V331["vcf-bench-2"])
-    comparison = load(report / "comparison.json")
-    shacl = load(rerun / "shacl.json")
-    rapper = load(report / "rdf-validation.json")
-    diagnosis = (REVIEW / "diag_q11b.out").read_text(encoding="utf-8")
-    # One line per QUAL rendering: how many values it changes, and how many
-    # digest buckets then still differ from QLever's.
-    qual = {line.split("QUAL")[0].strip(): [int(n) for n in re.findall(r":\s+(\d+)", line)]
-            for line in diagnosis.splitlines() if "QUAL" in line}
+    report = Path(glob.glob(str(V331["vcf-bench-2"] / "consumer_wgs__NG131FQA1I__first250000" / "out"
+                                / "run_metrics" / "*" / "reports" / "validation" / "NG131FQA1I_first250000"))[0])
+    shacl = load(report / "shacl.json")
     sample, records = re.fullmatch(r"(.+)_first(\d+)", report.name).groups()
-    phase_sets = sum(row["resourceCount"] for row in comparison["queries"]["q10_class_census"]["extraRows"]
-                     if row["class"].endswith("#PhaseSet"))
     return {
         "sample": sample, "records": int(records),
-        "triples": rapper["tripleCount"],
-        "phaseSets": phase_sets,
-        "qual": {"changed": qual["trailing zeros stripped"][0],
-                 "differAsWritten": qual["as written"][1],
-                 "differStripped": qual["trailing zeros stripped"][1]},
-        "queries": [{"query": q, "status": r["status"]} for q, r in sorted(comparison["queries"].items())],
-        "qualDiagnosis": diagnosis.strip().splitlines(),
+        "triples": load(report / "rdf-validation.json")["tripleCount"],
+        "queries": [{"query": q, "status": r["status"]}
+                    for q, r in sorted(load(report / "comparison.json")["queries"].items())],
+        "shacl": {"status": shacl["status"], "violations": shacl["violationCount"],
+                  "advisories": shacl["advisoryCount"], "batches": shacl["batches"],
+                  "workers": shacl["workers"], "minutes": round(shacl["wallSeconds"] / 60)},
         "source": rel(report),
-        "rerun": {
-            "triples": load(rerun / "rdf-validation.json")["tripleCount"],
-            "queries": [{"query": q, "status": r["status"]}
-                        for q, r in sorted(load(rerun / "comparison.json")["queries"].items())],
-            "shacl": {"status": shacl["status"], "violations": shacl["violationCount"],
-                      "advisories": shacl["advisoryCount"], "batches": shacl["batches"],
-                      "workers": shacl["workers"], "minutes": round(shacl["wallSeconds"] / 60)},
-            "source": rel(rerun),
-        },
     }
 
 
@@ -519,9 +495,6 @@ def facts(d: dict) -> dict[str, str]:
     out["realSample"] = real["sample"]
     out["realRecords"] = f"{real['records']:,}"
     out["realTriples"] = millions(real["triples"])
-    out["phaseSets"] = f"{real['phaseSets']:,}"
-    out["qualChanged"] = f"{real['qual']['changed']:,}"
-    out["qualDiffer"] = f"{real['qual']['differAsWritten']:,}"
 
     # Use case
     sources = Counter(p["source"].split()[0] for p in study["participants"])

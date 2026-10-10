@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Plan §4.4 — awkward-input handling.
+# Plan §1.5 — awkward-input handling.
 #
 # A table of deliberately difficult real-VCF situations, each with the observed
 # behaviour. BOTH outcomes are acceptable results: converted, or refused with a
 # clear diagnostic. A crash or a silently wrong graph is not.
 #
-# This is what supports "does MANY useful VCF things", and it is honest about
-# the edges — which is more convincing than a table of successes.
+# It also converts a 100-record fixture and links it with the three
+# demonstration linkers (gene-demo, rsid-dbsnp, rsid-ensembl), and records a
+# skip for the custom-mapping cell unless BM_CUSTOM_RULES names a rules file.
 #
 # Every fixture carries its own expectation in benchmarks/fixtures/FIXTURES.json
 # (written by lib/make_fixtures.py). The analysis pairs observed against
@@ -24,7 +25,7 @@ if [[ ! -f "$FIXTURE_DIR/FIXTURES.json" ]]; then
   python3 "$BM_ROOT/lib/make_fixtures.py" "$FIXTURE_DIR"
 fi
 
-bm_banner "§4.4 awkward inputs"
+bm_banner "§1.5 awkward inputs"
 
 # Validation is on: a fixture that converts but produces a graph disagreeing
 # with its own source is the failure mode this experiment exists to catch, and
@@ -54,7 +55,7 @@ done
 # --------------------------------------------------------------------------
 # Extensibility, same spirit: one smoke run each for the two extension points.
 # --------------------------------------------------------------------------
-bm_banner "§4.4 extensibility smoke runs"
+bm_banner "§1.5 extensibility smoke runs"
 
 SMOKE_INPUT="${BM_SMOKE_INPUT:-test-100.vcf}"
 if bm_have_vcf "$SMOKE_INPUT"; then

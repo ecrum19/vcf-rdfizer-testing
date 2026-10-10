@@ -574,22 +574,14 @@ function renderEvidence() {
   document.getElementById("evidenceTable").innerHTML = table(
     [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "What it establishes" }], rows);
   const real = D.fidelity.realGenome;
-  const rerun = Object.fromEntries(real.rerun.queries.map((q) => [q.query, q.status]));
-  const why = {
-    q09_predicate_census: fill("{phaseSets} phase sets from GATK's PS field, which the {campaignVersion} oracle did not count"),
-    q10_class_census: "the same phase sets, as vcfc:PhaseSet resources",
-    q11_record_digest: fill("QLever prints a decimal QUAL canonically: {qualDiffer} digest buckets differed as written, none once trailing zeros are dropped from the {qualChanged} QUAL values that have them"),
-  };
   const verdict = (s) => `<span class="status ${s === "PASS" ? "pass" : "fail"}">${esc(s === "PASS" ? "equal" : "mismatch")}</span>`;
-  const sh = real.rerun.shacl;
+  const sh = real.shacl;
   document.getElementById("realGenomeTable").innerHTML =
-    `<p class="table-meta">${num(real.triples)} triples on QLever. ${D.facts.campaignVersion} validated without shapes; every field of every record was also compared directly with the VCF text: no differences. ` +
-    `The corrected validator's rerun also checked the default shapes, in ${num(sh.batches)} record batches over ${sh.minutes} min: ${num(sh.violations)} violations.</p>` +
+    `<p class="table-meta">${num(real.triples)} triples on QLever, checked by the corrected validator. ` +
+    `The default shapes were checked in ${num(sh.batches)} record batches over ${sh.minutes} min: ${num(sh.violations)} violations, ${num(sh.advisories)} non-blocking recommendations.</p>` +
     table([{ key: "query", label: "Question", format: (q) => pretty(q) },
-      { key: "status", label: D.facts.campaignVersion, html: (r) => verdict(r.status) },
-      { key: "rerun", label: "Corrected validator", html: (r) => verdict(rerun[r.query]) },
-      { key: "why", label: `Cause of the ${D.facts.campaignVersion} mismatch`, format: (_, r) => why[r.query] || "" }], real.queries);
-  document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, <code>${esc(real.rerun.source)}</code>, the campaign's validation reports and <code>08_robustness/mutation_score*</code>.`;
+      { key: "status", label: "Graph and VCF", html: (r) => verdict(r.status) }], real.queries);
+  document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, the campaign's validation reports and <code>08_robustness/mutation_score*</code>.`;
 }
 
 function renderLinking() {

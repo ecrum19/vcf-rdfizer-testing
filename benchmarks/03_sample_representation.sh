@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §2 — condensed vs expanded: negligible at one sample, decisive at a cohort.
+# Plan §3.3 — condensed vs expanded: negligible at one sample, decisive at a cohort.
 #
 # The claim is an INTERACTION between --sample-representation and sample count,
 # so it is measured as one: a ladder in S with the record set held fixed, not
@@ -43,7 +43,7 @@ PARTS=" ${BM_SAMPLE_PARTS:-structure timing anchors} "
 has_part() { [[ "$PARTS" == *" $1 "* ]]; }
 
 # One conversion per (rung, mode) for the deterministic triple count.
-has_part structure && bm_banner "§2 sample-representation ladder — structure (n=1 per cell)"
+has_part structure && bm_banner "§3.3 sample-representation ladder — structure (n=1 per cell)"
 
 for rung in $RUNGS; do
   has_part structure || break
@@ -70,7 +70,7 @@ done
 
 # Repetitions only where a timing comparison is actually reported: the S=1
 # endpoint (the equivalence claim) and the top rung (the difference claim).
-has_part timing && bm_banner "§2 endpoint timing ($REPS reps on rungs: $TIMING_RUNGS)"
+has_part timing && bm_banner "§3.3 endpoint timing ($REPS reps on rungs: $TIMING_RUNGS)"
 
 for rung in $TIMING_RUNGS; do
   has_part timing || break
@@ -81,7 +81,7 @@ for rung in $TIMING_RUNGS; do
   fi
   vcf="$(bm_vcf "$input")"
   for rep in $(seq 1 "$REPS"); do
-    for mode in expanded condensed; do   # interleaved, as in §1
+    for mode in expanded condensed; do   # interleaved, as in §3.4
       bm_run "$EXPERIMENT" "s${rung}__${mode}__r${rep}" -- \
         --mode full \
         --input "$vcf" \
@@ -96,16 +96,19 @@ for rung in $TIMING_RUNGS; do
   done
 done
 
-# §2.4 — two anchors on unsubsetted real files. Anchors, not the evidence.
+# §3.3 — two anchors, a cohort input and a single-sample input. Anchors, not
+# the evidence: the ladder above is.
 #
-# Overridable because these are full real files and ignore the rung parameters
-# above: for the real experiment they dominate this script's cost (17.7h of
-# 17.8h in one measured smoke pass, against 2.7 minutes for the eight ladder
-# cells). A fast end-to-end pass points them at fixtures instead; `run_all.sh
-# smoke` does exactly that.
+# The defaults are full real files, which ignore the rung parameters and
+# dominate this script's cost (17.7h of 17.8h in one measured smoke pass,
+# against 2.7 minutes for the eight ladder cells). The base campaign's
+# biomedsem profile, like `run_all.sh smoke`, points them at fixtures that make
+# the same contrast: test-larger-multisample.vcf.gz (2,504 samples) and
+# test-10k.vcf (one sample). The expanded cohort anchor is skipped by the
+# cohort-scale guard either way.
 ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-1000G_phase3_chr20.vcf.gz:cohort HG004_GRCh38.vcf.gz:single}"
 
-has_part anchors && bm_banner "§2.4 real-cohort anchors"
+has_part anchors && bm_banner "§3.3 real-cohort anchors"
 
 for pair in $ANCHOR_PAIRS; do
   has_part anchors || break
@@ -118,7 +121,7 @@ for pair in $ANCHOR_PAIRS; do
   for mode in expanded condensed; do
     # The cohort anchor at expanded is ~2 TB and cannot finish; its condensed
     # counterpart is the half of the contrast that can, and "expanded does not
-    # scale to a 2,504-sample cohort" is itself what §2 claims.
+    # scale to a 2,504-sample cohort" is itself what §3.3 claims.
     bm_skip_if_cohort_scale "$EXPERIMENT" "anchor_${role}__${mode}" "$vcf" "$mode" && continue
     bm_run "$EXPERIMENT" "anchor_${role}__${mode}" -- \
       --mode full \
@@ -140,13 +143,13 @@ bm_info "Done. Analyse with:
 
 cat <<'NOTE'
 
-Reporting reminders (§2.3):
+Reporting reminders (§3.3):
   * Report the STRUCTURE ratio and the ARTIFACT-BYTE ratio in separate columns
     and label them differently. The guide's worked example gives ~1,070x on
     structure; final .hdt bytes shrink far less, because the scalar values
     persist inside vector literals and HDT's dictionary already recovers part
     of the repetition. Conflating them reads as a compression claim that the
     data does not support.
-  * The S=1 cell is an equivalence claim. Use the same +/-10% margin framing as
-    §1, and here it CAN be pre-registered — do that before running.
+  * The S=1 cells are compared with the same +/-10% equivalence margin as
+    §3.4 (equivalence.py --cell-filter s1__, above).
 NOTE
