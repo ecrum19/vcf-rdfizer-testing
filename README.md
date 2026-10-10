@@ -28,7 +28,7 @@ commit and image digest that rebuild it.
 
 | Path | Contents |
 | --- | --- |
-| [`benchmarks/`](benchmarks/README.md) | The harness: experiments `00`–`18`, the linked workflow ([`use_case/acmg/`](benchmarks/use_case/acmg/README.md)), the converter comparison ([`converters/`](benchmarks/converters/README.md)), fixtures, and analysis scripts. Its README gives each script, what it measures, the result it produced and where its records are; [`DESIGN.md`](benchmarks/DESIGN.md) is the plan written before the campaign |
+| [`benchmarks/`](benchmarks/README.md) | The harness: experiments `00`–`18`, the linked workflow ([`use_case/acmg/`](benchmarks/use_case/acmg/README.md)), the converter comparison ([`converters/`](benchmarks/converters/README.md)), fixtures, and analysis scripts. Its README gives each script, what it measures, the result it produced and where its records are; [`DESIGN.md`](benchmarks/DESIGN.md) gives each experiment's design as run, by the paper's research questions |
 | [`benchmark-results/`](benchmark-results/README.md) | The run records of every reported result, per benchmark host. Its README maps each result to its records |
 | [`plugin-tests/`](plugin-tests/README.md) | Tests of VCF-RDFizer's SPDI, gene and policy plug-ins on real data |
 | [`scripts/`](#support-scripts) | Input download, host setup, the archive summary, and the code that computes every reported value (`figure_data.py`, `build_site_data.py`) |

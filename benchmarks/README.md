@@ -12,9 +12,11 @@ without the generated RDF, in [`../benchmark-results/`](../benchmark-results/REA
 - [Running the harness](#running-the-harness)
 - [Reading the outputs](#reading-the-outputs)
 
-[`DESIGN.md`](DESIGN.md) is the plan written before the campaign. The scripts'
-comments cite its sections as "Plan §". It explains why each experiment is
-shaped as it is; this file describes what ran.
+[`DESIGN.md`](DESIGN.md) gives the design of every experiment as it was run,
+organized by the paper's research questions (RQ1 fidelity and validation, RQ2
+the linked workflow, RQ3 costs); the scripts' comments cite its sections as
+"Plan §". This file is the practical guide: what each script produced, where its
+records are, and how to run it.
 
 ## Experiments
 
@@ -27,22 +29,22 @@ hosts `vcf-bench-1`, `-2` and `-3`.
 143 cells in 12 experiment families (Table S12). `00` and `02` prepare the
 others and are not counted. Every family ran whole on one host.
 
-| Script | What it measures | Reported in | Records |
-| --- | --- | --- | --- |
-| `00_environment.sh` | Host, Docker and image manifest; resolves the image tag to its digest | Sections S6.2–S6.3 | `b1`, `b2`: `benchmarks_outputs/00_environment/` |
-| `02_derive_ladders.sh` | Builds the derived inputs with awk: the sample ladder (10,000 records of the 1000 Genomes chr20 call set at 1–2,504 samples) and the record ladder (HG005 prefixes of 10,000, 100,000 and 1,000,000 records) | Inputs to `01`, `03`, `04`, `10`, `13` | (inputs, not cells) |
-| `01_storage_mode.sh` | Plain against space-optimized storage: peak workspace and time, on 100,000 HG005 records (3 replicates) and a 269M-triple test file (once each) | Section 3.3; Figure S4f | `b1/benchmarks_outputs/01_storage_mode/` |
-| `03_sample_representation.sh` | Condensed against expanded samples across the sample ladder, with timing replicates and a single- and a multi-sample anchor | Section 3.3; Figure S5 | `b2/benchmarks_outputs/03_sample_representation/` |
-| `04_scaling_records.sh` | Cost against record count on the record ladder (3 replicates) and the complete HG005 VCF (once); the only place record-scaling exponents are fitted | Section 3.3; Figure S4a–e; Section S9.1 | `b1/benchmarks_outputs/04_scaling_records/` |
-| `05_corpus_breadth.sh` | HDT and COTTAS construction on the first 250,000 records of eight public VCFs and on the complete HG005 VCF | Section 3.3; Figure S6; Table S14 | `b2/benchmarks_outputs/05_corpus_breadth/` |
-| `06_equivalence.sh` | The thirteen source-comparison queries on a 10,000-line fixture, in both storage modes and sample profiles, on four SPARQL engines over three RDF artifacts and two HDT strategies, plus two required refusals | Section 3.1; Section S10 | `b2/benchmarks_outputs/06_equivalence/` |
-| `07_representation_axes.sh` | Raw against structured INFO, basic against structured headers, and fixtures declaring VCF 4.1–4.5 or no version | Sections S7, S10 | `b1/benchmarks_outputs/07_representation_axes/` |
-| `08_robustness.sh` | Determinism (two identical conversions), a compress–decompress round trip, index idempotence, and the 113-fault mutation score with the default and all shape profiles | Section 3.1; Figure 3b; Table S6 | `b1/benchmarks_outputs/08_robustness/` |
-| `09_awkward_inputs.sh` | Eleven difficult fixtures, a conversion with the three demonstration linkers, and a custom-mapping cell | Section S7; Table S15 | `b1/benchmarks_outputs/09_awkward_inputs/` |
-| `10_feasibility.sh` | One million HG005 records under three configurations, each with memory ceilings of 8, 16 and 31 GB | Section S10 | `b1/benchmarks_outputs/10_feasibility/` |
-| `11_covering_set.sh` | Ten configuration rows on a 1,000-line fixture covering every value and every pair of values of seven options, each validated with shapes | Section S10 | `b1/benchmarks_outputs/11_covering_set/` |
-| `12_modes_smoke.sh` | Each operating mode on its own: TSV, conversion, validation, compression, decompression, HDT and COTTAS indexing | Section S10 | `b1/benchmarks_outputs/12_modes_smoke/` |
-| `13_query_cost.sh` | SPARQL against the cyvcf2 parser on identical work: the thirteen queries on the fixture (0.96M triples) and on 100,000 HG005 records (17.1M triples), 3 replicates | Section 3.3; Figures 6a, 6d, S7, S8c; Section S9.4 | `b1/benchmarks_outputs/13_query_cost/` |
+| Script | RQ, design | What it measures | Reported in | Records |
+| --- | --- | --- | --- | --- |
+| `00_environment.sh` | §4.1 | Host, Docker and image manifest; resolves the image tag to its digest | Sections S6.2–S6.3 | `b1`, `b2`: `benchmarks_outputs/00_environment/` |
+| `02_derive_ladders.sh` | §4.2 | Builds the derived inputs with awk: the sample ladder (10,000 records of the 1000 Genomes chr20 call set at 1–2,504 samples) and the record ladder (HG005 prefixes of 10,000, 100,000 and 1,000,000 records) | Inputs to `01`, `03`, `04`, `10`, `13` | (inputs, not cells) |
+| `01_storage_mode.sh` | RQ3, §3.4 | Plain against space-optimized storage: peak workspace and time, on 100,000 HG005 records (3 replicates) and a 269M-triple test file (once each) | Section 3.3; Figure S4f | `b1/benchmarks_outputs/01_storage_mode/` |
+| `03_sample_representation.sh` | RQ3, §3.3 | Condensed against expanded samples across the sample ladder, with timing replicates and a single- and a multi-sample anchor | Section 3.3; Figure S5 | `b2/benchmarks_outputs/03_sample_representation/` |
+| `04_scaling_records.sh` | RQ3, §3.2 | Cost against record count on the record ladder (3 replicates) and the complete HG005 VCF (once); the only place record-scaling exponents are fitted | Section 3.3; Figure S4a–e; Section S9.1 | `b1/benchmarks_outputs/04_scaling_records/` |
+| `05_corpus_breadth.sh` | RQ3, §3.5 | HDT and COTTAS construction on the first 250,000 records of eight public VCFs and on the complete HG005 VCF | Section 3.3; Figure S6; Table S14 | `b2/benchmarks_outputs/05_corpus_breadth/` |
+| `06_equivalence.sh` | RQ1, §1.1–1.2 | The thirteen source-comparison queries on a 10,000-line fixture, in both storage modes and sample profiles, on four SPARQL engines over three RDF artifacts and two HDT strategies, plus two required refusals | Section 3.1; Section S10 | `b2/benchmarks_outputs/06_equivalence/` |
+| `07_representation_axes.sh` | RQ3, §3.6; RQ1, §1.5 | Raw against structured INFO, basic against structured headers, and fixtures declaring VCF 4.1–4.5 or no version | Sections S7, S10 | `b1/benchmarks_outputs/07_representation_axes/` |
+| `08_robustness.sh` | RQ1, §1.3–1.4 | Determinism (two identical conversions), a compress–decompress round trip, index idempotence, and the 113-fault mutation score with the default and all shape profiles | Section 3.1; Figure 3b; Table S6 | `b1/benchmarks_outputs/08_robustness/` |
+| `09_awkward_inputs.sh` | RQ1, §1.5 | Eleven difficult fixtures, a conversion with the three demonstration linkers, and a custom-mapping cell | Section S7; Table S15 | `b1/benchmarks_outputs/09_awkward_inputs/` |
+| `10_feasibility.sh` | RQ3, §3.7 | One million HG005 records under three configurations, each with memory ceilings of 8, 16 and 31 GB | Section S10 | `b1/benchmarks_outputs/10_feasibility/` |
+| `11_covering_set.sh` | RQ1, §1.6 | Ten configuration rows on a 1,000-line fixture covering every value and every pair of values of seven options, each validated with shapes | Section S10 | `b1/benchmarks_outputs/11_covering_set/` |
+| `12_modes_smoke.sh` | RQ1, §1.6; §4.3 | Each operating mode on its own: TSV, conversion, validation, compression, decompression, HDT and COTTAS indexing | Section S10 | `b1/benchmarks_outputs/12_modes_smoke/` |
+| `13_query_cost.sh` | RQ3, §3.8 | SPARQL against the cyvcf2 parser on identical work: the thirteen queries on the fixture (0.96M triples) and on 100,000 HG005 records (17.1M triples), 3 replicates | Section 3.3; Figures 6a, 6d, S7, S8c; Section S9.4 | `b1/benchmarks_outputs/13_query_cost/` |
 
 `scripts/build_run_summary.py` integrates these cells into
 `benchmark-results/summary.json`, and refuses an archive in which a family spans
@@ -54,13 +56,13 @@ These are outside `run_all.sh` and its profiles; each is run by name. The
 reported runs of `14`, `16` and `17` come from one rerun with v3.3.1, driven by
 `run_v331.sh`, whose copy, logs and results are in each host's `v331-rerun/`.
 
-| Script | What it measures | Reported in | Records |
-| --- | --- | --- | --- |
-| `14_regional_access.sh` | Region-restricted questions from 1 kb to 10 Mb: QLever on `13_query_cost`'s graphs, against tabix-indexed cyvcf2 and bcftools; 11,160 executions | Section 3.3; Figures 6c, S8a–b; Table S18 | `b1/v331-rerun/results/14_regional_access/` |
-| `15_scale_prepare.sh` | Builds the large graphs once, with the published v3.1.0 image: 1,000,000 HG005 records (170.9M triples) and the complete VCF (657.4M), each with a manifest of every artifact's size and SHA-256 | The graphs that `16` queries | `b3/benchmarks_outputs/15_scale_prepare/`, `b3/scale-store-manifests/` |
-| `16_scale_retrieval.sh` | The thirteen questions on those graphs: QLever from N-Triples, HDT and COTTAS, and the native HDT and COTTAS engines | Figure 3a; Table S17 | `b3/v331-rerun/results/16_scale_retrieval/` |
-| `17_use_case_acmg.sh` | The linked workflow: carriers of ClinVar-classified variants in the 81 ACMG SF v3.2 genes, with simulated consent, by an RDF route and a bcftools baseline that must agree. Arm 1: five gene-span slices; Arm 2: 104 1000 Genomes participants; Arm 3: the complete HG005 VCF; Arm 4: the complete NB72462M VCF under layered consent. See [`use_case/acmg/README.md`](use_case/acmg/README.md) | Section 3.2; Figures 4, S3; Tables S7–S11 | `b1/v331-rerun/results/17_use_case_acmg/` (Arm 1, with the MyVariant.info tier) and `…__cohort/` (Arm 2); `b2/v331-rerun/results/17_use_case_acmg__wgs/` (Arm 3) and `…__layered/` (Arm 4) |
-| `18_converter_comparison.sh` | JVarkit, TogoVar, SPARQLing Genomics, BioInterchange and VCF-RDFizer on two shared inputs, in pinned containers, with questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md) | Section 3.3; Figure 5; Section S2; Tables S2–S3 | `b1/18_converter_comparison/` |
+| Script | RQ, design | What it measures | Reported in | Records |
+| --- | --- | --- | --- | --- |
+| `14_regional_access.sh` | RQ3, §3.9 | Region-restricted questions from 1 kb to 10 Mb: QLever on `13_query_cost`'s graphs, against tabix-indexed cyvcf2 and bcftools; 11,160 executions | Section 3.3; Figures 6c, S8a–b; Table S18 | `b1/v331-rerun/results/14_regional_access/` |
+| `15_scale_prepare.sh` | RQ3, §3.10 | Builds the large graphs once, with the published v3.1.0 image: 1,000,000 HG005 records (170.9M triples) and the complete VCF (657.4M), each with a manifest of every artifact's size and SHA-256 | The graphs that `16` queries | `b3/benchmarks_outputs/15_scale_prepare/`, `b3/scale-store-manifests/` |
+| `16_scale_retrieval.sh` | RQ1, §1.7; RQ3, §3.10 | The thirteen questions on those graphs: QLever from N-Triples, HDT and COTTAS, and the native HDT and COTTAS engines | Figure 3a; Table S17 | `b3/v331-rerun/results/16_scale_retrieval/` |
+| `17_use_case_acmg.sh` | RQ2, §2 | The linked workflow: carriers of ClinVar-classified variants in the 81 ACMG SF v3.2 genes, with simulated consent, by an RDF route and a bcftools baseline that must agree. Arm 1: five gene-span slices; Arm 2: 104 1000 Genomes participants; Arm 3: the complete HG005 VCF; Arm 4: the complete NB72462M VCF under layered consent. See [`use_case/acmg/README.md`](use_case/acmg/README.md) | Section 3.2; Figures 4, S3; Tables S7–S11 | `b1/v331-rerun/results/17_use_case_acmg/` (Arm 1, with the MyVariant.info tier) and `…__cohort/` (Arm 2); `b2/v331-rerun/results/17_use_case_acmg__wgs/` (Arm 3) and `…__layered/` (Arm 4) |
+| `18_converter_comparison.sh` | RQ3, §3.1 | JVarkit, TogoVar, SPARQLing Genomics, BioInterchange and VCF-RDFizer on two shared inputs, in pinned containers, with questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md) | Section 3.3; Figure 5; Section S2; Tables S2–S3 | `b1/18_converter_comparison/` |
 
 `15` and `16` are two halves of one experiment. `13` reconverts its input on
 every replicate, which is affordable at 17.1M triples but not at 657M: three
@@ -75,12 +77,12 @@ changes retrieval cost but not the graph.
 Four reported results came from small drivers that call the tool directly. Each
 driver is archived with its records.
 
-| Result | Driver | Records |
-| --- | --- | --- |
-| Default-profile mutation rerun (Figure 3b) | `review_runs.sh` | `b2/review-runs/` |
-| Minimal RDF setup and the repeated-question crossover: `13_query_cost`'s large input converted to N-Triples only (Figure 6a) | `run_nt_only.sh` | `b2/nt-only/` |
-| Consumer WGS validation run: the first 250,000 NG131FQA1I records, validated on QLever with batched default shapes (Figure 3a; Section S4.2) | `run_v331.sh`, job `consumer_wgs` | `b2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
-| Release conversion check: v3.3.1 and v3.1.0 write the same sorted triples for 100,000 HG005 records (Section S6.2) | `run_v331.sh`, job `bridge` | `b2/v331-rerun/bridge/` |
+| Result | RQ, design | Driver | Records |
+| --- | --- | --- | --- |
+| Default-profile mutation rerun (Figure 3b) | RQ1, §1.3 | `review_runs.sh` | `b2/review-runs/` |
+| Minimal RDF setup and the repeated-question crossover: `13_query_cost`'s large input converted to N-Triples only (Figure 6a) | RQ3, §3.8 | `run_nt_only.sh` | `b2/nt-only/` |
+| Consumer WGS validation run: the first 250,000 NG131FQA1I records, validated on QLever with batched default shapes (Figure 3a; Section S4.2) | RQ1, §1.7 | `run_v331.sh`, job `consumer_wgs` | `b2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
+| Release conversion check: v3.3.1 and v3.1.0 write the same sorted triples for 100,000 HG005 records (Section S6.2) | RQ3, §3.10 | `run_v331.sh`, job `bridge` | `b2/v331-rerun/bridge/` |
 
 ## Supporting code
 
