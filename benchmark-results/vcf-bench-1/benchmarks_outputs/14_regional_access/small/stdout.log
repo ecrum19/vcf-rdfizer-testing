@@ -1,0 +1,23 @@
+[setup] scanning test-10k.vcf to place windows on real records
+[setup] 9,986 records across 2 contigs in 0.0s
+[setup] building the bgzip + index (one-time VCF-side cost)
+[setup] bgzip 0.0s + tbi index 0.0s
+[reference] computing expected answers for every window
+[arm] cyvcf2-scan: 12 windows x 5 questions x 3 replicates
+[arm] cyvcf2-indexed: 80 windows x 5 questions x 3 replicates
+[arm] bcftools-indexed: 80 windows x 5 questions x 3 replicates
+[setup] materializing nt.gz as N-Triples for the SPARQL arms
+[arm] comunica: preparing engine
+[arm] comunica: setup 12.40s; 80 windows x 5 questions x 3 replicates
+[arm] hdt: preparing engine
+[arm] hdt: setup 11.41s; 80 windows x 5 questions x 3 replicates
+[arm] cottas: preparing engine
+[arm] cottas: setup 37.18s; 80 windows x 5 questions x 3 replicates
+[arm] qlever: preparing engine
+[arm] qlever: setup 2.07s; 80 windows x 5 questions x 3 replicates
+
+wrote /data/regional/regional.csv
+wrote /data/regional/regional.json
+wrote /data/regional/windows.json
+
+7380 timed executions, 0 failed, 0 disagreed with the reference

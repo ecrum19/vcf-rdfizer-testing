@@ -49,7 +49,7 @@ such as TogoVar's omission of genotypes, is reported as `NOT_REPRESENTED`, not a
 | `1000G_10000r_s16.vcf.gz` | 10,000 × 16 | Multi-sample, phased, with multiallelic records, so Q05–Q06 are tested on more than one sample |
 
 Both are derived by `02_derive_ladders.sh`. Their SHA-256 values are in
-`BioMedSem_2026/benchmark-results/vcf-input-sizes.json`.
+`benchmark-results/vcf-input-sizes.json`.
 
 ## Reproducing
 

@@ -1,0 +1,34 @@
+captured: 2026-09-17T20:27:54+02:00  host: vcf-bench-2
+--- processes
+    PID     ELAPSED                  STARTED %CPU COMMAND
+1204963  2-03:20:01 Tue Sep 15 17:07:52 2026  0.0 bash /home/ubuntu/.bms_split2.sh
+1264901  1-20:37:19 Tue Sep 15 23:50:33 2026  0.0 bash ./benchmarks/run_all.sh biomedsem 06 10
+1264939  1-20:37:19 Tue Sep 15 23:50:34 2026  0.0 bash /home/ubuntu/vcf-rdfizer-testing/benchmarks/06_equivalence.sh
+1283207  1-17:23:05 Wed Sep 16 03:04:48 2026  0.0 bash /home/ubuntu/vcf-rdfizer-testing/benchmarks/06_equivalence.sh
+1283211  1-17:23:05 Wed Sep 16 03:04:48 2026  0.0 python3 /home/ubuntu/VCF-RDFizer/vcf_rdfizer.py --mode full --input /home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf --sample-representation condensed --rdf-storage-mode plain --hdt-strategy partitioned --representations hdt,cottas --rdf-compression gzip --artifact-compression none --validate --validate-artifacts all --validation-engine all --spark-partitions 8 --image vcf-rdfizer:local-025fb7d --no-build --out /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out
+--- docker
+afb916e7c69b702425c9a05be4d8667dfe6b199ea509729822b0c4486e360d54 vigilant_bassi Up 41 hours vcf-rdfizer:local-025fb7d "/__cacert_entrypoint.sh /usr/bin/time -v -o /data/metrics/timings/validation/test-10k.txt -- /opt/pycottas-venv/bin/python /opt/vcf-rdfizer/validation/validation_runner.py --vcf /data/vcf/test-10k.vcf --rdf /data/rdf/test-10k.nt --rdf-format nt --engine comunica,qlever,hdt,cottas --representation condensed --results-dir /data/validation --dataset-id test-10k --filter-oracle auto --scratch-dir /work --progress-path /data/metrics/.progress/validation-test-10k.jsonl"
+--- tool/harness
+tool    be658a2 Merge pull request #12 from ecrum19/fix/vcf45-structured-accessors
+harness d472e83 Record a failed cell and continue instead of abandoning the experiment
+--- last progress lines seen
+queries · hdt: completed q12_info_value_digest
+queries · hdt: completed q13_format_value_digest
+queries · cottas: completed preflight_record_cardinality
+queries · cottas: completed preflight_position_datatype
+queries · cottas: completed preflight_missing_token_conformance
+queries · cottas: completed preflight_representation_profile
+queries · cottas: completed preflight_sample_gt_inventory
+queries · cottas: completed preflight_blank_nodes
+queries · cottas: completed preflight_empty_values
+queries · cottas: completed preflight_distinct_triple_count
+queries · cottas: completed preflight_record_cardinality_count
+queries · cottas: completed preflight_position_datatype_count
+queries · cottas: completed preflight_missing_token_conformance_count
+queries · cottas: completed preflight_representation_profile_count
+queries · cottas: completed preflight_blank_nodes_count
+queries · cottas: completed preflight_empty_values_count
+queries · cottas: completed q01_record_density_1mb
+queries · cottas: completed q02_variant_shape_counts
+queries · cottas: completed q03_titv
+queries · cottas: completed q04_filter_distribution

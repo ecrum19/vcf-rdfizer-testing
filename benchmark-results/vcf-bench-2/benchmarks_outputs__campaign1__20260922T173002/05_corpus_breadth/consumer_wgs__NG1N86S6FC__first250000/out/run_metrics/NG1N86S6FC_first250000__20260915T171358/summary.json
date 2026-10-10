@@ -1,0 +1,92 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260915T171358",
+  "timestamp": "2026-09-15T17:13:58",
+  "completed_at": "2026-09-15T17:53:50",
+  "mode": "full",
+  "status": "success",
+  "exit_code": 0,
+  "execution": {
+    "wall_seconds": 2392.944084,
+    "wall_human": "39m 52.9s",
+    "total_triples": 30523340
+  },
+  "summary_tables": {
+    "conversion_and_compression": [
+      {
+        "run_id": "20260915T171358",
+        "timestamp": "2026-09-15T17:13:58",
+        "output_name": "NG1N86S6FC_first250000",
+        "output_dir": "/data/out/NG1N86S6FC_first250000",
+        "vcf_version": "",
+        "vcf_version_source": "",
+        "exit_code_java": "0",
+        "wall_seconds_java": "20.760",
+        "user_seconds_java": "86.27",
+        "sys_seconds_java": "3.83",
+        "max_rss_kb_java": "1392372",
+        "input_mapping_size_bytes": "13898",
+        "input_vcf_size_bytes": "28119843",
+        "output_dir_size_bytes": "146863448",
+        "output_triples": "30523340",
+        "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+        "mapping_file": "/data/rules/NG1N86S6FC_first250000.rules.ttl",
+        "output_path": "/data/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.nt.gz",
+        "exit_code_tsv": "0",
+        "wall_seconds_tsv": "2.251837",
+        "user_seconds_tsv": "1.750000",
+        "sys_seconds_tsv": "0.050000",
+        "max_rss_kb_tsv": "7296",
+        "tsv_output_size_bytes": "37587535",
+        "tsv_output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/.intermediate/tsv/NG1N86S6FC_first250000.records.tsv|/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/.intermediate/tsv/NG1N86S6FC_first250000.header_lines.tsv|/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/.intermediate/tsv/NG1N86S6FC_first250000.file_metadata.tsv",
+        "combined_rdf_size_bytes": "146863448",
+        "compression_methods": "hdt|cottas",
+        "cottas_size_bytes": "75647779",
+        "exit_code_cottas": "0",
+        "wall_seconds_cottas": "1396.302338",
+        "user_seconds_cottas": "null",
+        "sys_seconds_cottas": "null",
+        "max_rss_kb_cottas": "null",
+        "source_triples_cottas": "30523340",
+        "decoded_triples_cottas": "30523340",
+        "validation_cottas": "true",
+        "hdt_size_bytes": "222661860",
+        "exit_code_hdt": "0",
+        "wall_seconds_hdt": "724.059634",
+        "user_seconds_hdt": "null",
+        "sys_seconds_hdt": "null",
+        "max_rss_kb_hdt": "null",
+        "source_triples_hdt": "30523340",
+        "decoded_triples_hdt": "30523340",
+        "validation_hdt": "true",
+        "hdt_source": "partitioned_generated"
+      }
+    ],
+    "tsv": [],
+    "wrapper": [
+      {
+        "run_id": "20260915T171358",
+        "timestamp": "2026-09-15T17:13:58",
+        "mode": "full",
+        "exit_code": "0",
+        "status": "success",
+        "elapsed_seconds": "2392.944084",
+        "elapsed_human": "39m 52.9s",
+        "total_triples": "30523340"
+      }
+    ]
+  },
+  "stage_reports": [
+    "stages/compression/NG1N86S6FC_first250000.json",
+    "stages/compression_operations/NG1N86S6FC_first250000/partitioned_compression.json",
+    "stages/conversion/NG1N86S6FC_first250000.json",
+    "stages/partitioned/NG1N86S6FC_first250000.json",
+    "stages/tsv/NG1N86S6FC_first250000.json"
+  ],
+  "reports": [],
+  "validation": [],
+  "logs": [
+    "logs/progress.log",
+    "logs/wrapper.log"
+  ]
+}

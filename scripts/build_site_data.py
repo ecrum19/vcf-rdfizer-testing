@@ -4,11 +4,11 @@
     python3 scripts/build_site_data.py --out site/data
 
 Standard library only, and no network: everything is read from
-BioMedSem_2026/benchmark-results and benchmarks/use_case/acmg. Only the reported
+benchmark-results/ and benchmarks/use_case/acmg. Only the reported
 results are included -- the live v3.1.0 campaign trees and the v3.3.1 rerun's
 unsuffixed cells; superseded, stalled and failed attempts are left out. The
 values behind the paper's figures come from the same module make_figures.py
-uses (paper-assets/figures/figure_data.py), so the site and the paper cannot
+uses (scripts/figure_data.py), so the site and the paper cannot
 compute them differently.
 """
 
@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "BioMedSem_2026" / "paper-assets" / "figures"))
+sys.path.insert(0, str(ROOT / "scripts"))
 import figure_data as fd  # noqa: E402
 
 RESULTS = fd.RESULTS
@@ -69,7 +69,7 @@ def campaign() -> dict:
             "status": c["status"], "wallSeconds": c.get("wrapper_wall_seconds"),
             "toolCommit": (c.get("tool_commit") or "")[:7] or None,
             "imageDigest": c.get("image_digest"),
-            "url": f"{REPO_URL}/tree/main/BioMedSem_2026/benchmark-results/{c['path']}",
+            "url": f"{REPO_URL}/tree/main/benchmark-results/{c['path']}",
         }
         for c in summary["cells"] if c["branch"] == "live"
     ]

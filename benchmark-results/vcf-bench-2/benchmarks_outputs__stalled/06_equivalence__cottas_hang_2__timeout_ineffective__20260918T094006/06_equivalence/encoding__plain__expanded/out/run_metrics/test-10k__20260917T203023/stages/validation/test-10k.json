@@ -1,0 +1,57 @@
+{
+  "run_id": "20260917T203023",
+  "timestamp": "2026-09-17T20:30:23",
+  "stage": "validation",
+  "validation_id": "test-10k",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/test-10k/test-10k.nt",
+  "rdf_format": "nt",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260917T203023/reports/validation/test-10k",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260917T203023/reports/validation/test-10k/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 384.6727469312027,
+      "cottas": 2894.1955104675144,
+      "hdt": 342.0911206435412,
+      "qlever": 12.744310442358255
+    },
+    "engineSetupSeconds": {
+      "comunica": 12.569022585172206,
+      "cottas": 34.15411804104224,
+      "hdt": 11.384781552944332,
+      "qlever": 2.132025161292404
+    },
+    "oracleSeconds": 0.6215160200372338
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__expanded/out/run_metrics/test-10k__20260917T203023/reports/validation/test-10k/benchmark.csv",
+  "input_rdf_size_bytes": 122644300,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 3699.922956171911,
+    "user_seconds": 4983.62,
+    "sys_seconds": 291.21,
+    "max_rss_kb": 2159420
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": false,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}

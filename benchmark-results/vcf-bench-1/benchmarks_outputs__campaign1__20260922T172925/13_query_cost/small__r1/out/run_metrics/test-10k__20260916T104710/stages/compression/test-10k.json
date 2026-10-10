@@ -1,0 +1,307 @@
+{
+  "run_id": "20260916T104710",
+  "timestamp": "2026-09-16T10:47:10",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k",
+  "output_name": "test-10k",
+  "compression_methods": "gzip,hdt,cottas",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz",
+  "combined_rdf_size_bytes": 4059289,
+  "index_warnings": [],
+  "methods": {
+    "gzip": {
+      "exit_code": 0,
+      "wall_seconds": 0.0,
+      "user_seconds": 0.0,
+      "sys_seconds": 0.0,
+      "max_rss_kb": 0,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz",
+      "output_size_bytes": 4059289,
+      "source": "already_compressed"
+    },
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 4.7150510309729725,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.hdt",
+      "output_size_bytes": 6029849,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 122644300,
+        "record_count": 958919,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 958919,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 122644300,
+            "record_count": 958919,
+            "payload_bytes": 122644300
+          }
+        ],
+        "merge_rounds": 0,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.hdt.index.v1-1",
+        "index_size_bytes": 4877229,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 958919,
+          "decoded_triples": 958919,
+          "expected_triples": 958919,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 1.3223191949073225,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    },
+    "cottas": {
+      "exit_code": 0,
+      "wall_seconds": 34.25654118298553,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.cottas",
+      "output_size_bytes": 1474151,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 122644300,
+        "record_count": 958919,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 958919,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 122644300,
+            "record_count": 958919,
+            "payload_bytes": 122644300
+          }
+        ],
+        "merge_rounds": 0,
+        "merge_strategy": "pyarrow_streaming_k_way",
+        "merge_batch_rows": "2048",
+        "index": "spo",
+        "validation": {
+          "valid": true,
+          "source_triples": 958919,
+          "decoded_triples": 958919,
+          "expected_triples": 958919,
+          "count_match": true,
+          "validator": "pycottas.cottas2rdf",
+          "timing": {
+            "wall_seconds": 1.8025103989057243,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    }
+  },
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz",
+    "output_gz_size_bytes": 4059289,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 0.0,
+      "user_seconds": 0.0,
+      "sys_seconds": 0.0,
+      "max_rss_kb": 0
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.cottas",
+    "output_cottas_size_bytes": 1474151,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 34.25654118298553,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 958919,
+      "decoded_triples": 958919,
+      "expected_triples": 958919,
+      "count_match": true,
+      "validator": "pycottas.cottas2rdf",
+      "timing": {
+        "wall_seconds": 1.8025103989057243,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    }
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.hdt",
+    "output_hdt_size_bytes": 6029849,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 4.7150510309729725,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 958919,
+      "decoded_triples": 958919,
+      "expected_triples": 958919,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 1.3223191949073225,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "semantic_validation": {
+    "run_id": "20260916T104710",
+    "timestamp": "2026-09-16T10:47:10",
+    "stage": "validation",
+    "validation_id": "test-10k",
+    "validation_target": "aggregate",
+    "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+    "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz",
+    "rdf_format": "nt.gz",
+    "engine": "comunica",
+    "representation": "expanded",
+    "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/run_metrics/test-10k__20260916T104710/reports/validation/test-10k",
+    "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/run_metrics/test-10k__20260916T104710/reports/validation/test-10k/summary.json",
+    "input_rdf_size_bytes": 4059289,
+    "exit_code": 0,
+    "status": "PASS",
+    "timing": {
+      "wall_seconds": 3303.5361688288394,
+      "user_seconds": 4633.94,
+      "sys_seconds": 265.79,
+      "max_rss_kb": 2162128
+    },
+    "temporary_rdf": {
+      "decompressed_inside_container": true,
+      "persisted_on_host": false,
+      "cleanup_confirmed_by_runner": true
+    },
+    "engines": [
+      "comunica",
+      "qlever",
+      "hdt",
+      "cottas"
+    ],
+    "strict_conformance": false,
+    "engine_statuses": {
+      "comunica": "PASS",
+      "cottas": "PASS",
+      "hdt": "PASS",
+      "qlever": "PASS"
+    },
+    "engine_agreement": true,
+    "benchmark": {
+      "engineQuerySeconds": {
+        "comunica": 246.49143847823143,
+        "cottas": 2721.2512174346484,
+        "hdt": 261.4961905484088,
+        "qlever": 12.475235877558589
+      },
+      "engineSetupSeconds": {
+        "comunica": 12.800875956891105,
+        "cottas": 29.68388439808041,
+        "hdt": 10.86263090884313,
+        "qlever": 2.066353874048218
+      },
+      "oracleSeconds": 0.6573050098959357
+    },
+    "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/run_metrics/test-10k__20260916T104710/reports/validation/test-10k/benchmark.csv",
+    "rdf_gzip_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r1/out/test-10k/test-10k.nt.gz"
+  }
+}

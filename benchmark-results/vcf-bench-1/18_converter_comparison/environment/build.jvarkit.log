@@ -1,0 +1,50 @@
+--progress is a global compose flag, better use `docker compose --progress xx build ...
+#0 building with "default" instance using docker driver
+
+#1 [jvarkit internal] load build definition from Dockerfile
+#1 DONE 0.0s
+
+#1 [jvarkit internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.54kB done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${CONV_BASE_IMAGE} results in empty or invalid base image name (line 11)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${CONV_BASE_IMAGE} results in empty or invalid base image name (line 37)
+#1 DONE 0.0s
+
+#2 [jvarkit internal] load metadata for docker.io/library/debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+#2 DONE 0.0s
+
+#3 [jvarkit internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [jvarkit build 1/4] FROM docker.io/library/debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+#4 resolve docker.io/library/debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f 0.0s done
+#4 DONE 0.0s
+
+#5 [jvarkit build 2/4] RUN set -eux;     rm -f /etc/apt/sources.list.d/debian.sources;     echo "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20261008T000000Z trixie main"       > /etc/apt/sources.list;     apt-get update;     apt-get install -y --no-install-recommends openjdk-21-jdk-headless git ca-certificates;     rm -rf /var/lib/apt/lists/*
+#5 CACHED
+
+#6 [jvarkit build 4/4] RUN set -eux;     git init -q .;     git remote add origin https://github.com/lindenb/jvarkit.git;     git fetch -q --depth 1 origin "fc2356a347e1ec9b12d586c7a096c0d61bfbe8c1";     git checkout -q --detach FETCH_HEAD;     test "$(git rev-parse HEAD)" = "fc2356a347e1ec9b12d586c7a096c0d61bfbe8c1";     git submodule update --init --recursive;     git submodule status --recursive > submodules.txt;     echo "distributionSha256Sum=9d926787066a081739e8200858338b4a69e837c3a821a33aca9db09dd4a41026" >> gradle/wrapper/gradle-wrapper.properties;     ./gradlew --no-daemon -q -Djvarkit.generate.doc=false jvarkit;     { sha256sum dist/jvarkit.jar;       find . -name '*.jar' -not -path './.git/*' -not -path './dist/*' -print0 | sort -z | xargs -0 sha256sum;     } > build-sha256.txt
+#6 CACHED
+
+#7 [jvarkit stage-1 3/4] COPY --from=build /src/dist/jvarkit.jar /src/build-sha256.txt /src/submodules.txt /opt/jvarkit/
+#7 CACHED
+
+#8 [jvarkit stage-1 2/4] RUN set -eux;     rm -f /etc/apt/sources.list.d/debian.sources;     echo "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20261008T000000Z trixie main"       > /etc/apt/sources.list;     apt-get update;     apt-get install -y --no-install-recommends openjdk-21-jre-headless;     rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [jvarkit build 3/4] WORKDIR /src
+#9 CACHED
+
+#10 [jvarkit stage-1 4/4] RUN echo "fc2356a347e1ec9b12d586c7a096c0d61bfbe8c1" > /opt/jvarkit/COMMIT
+#10 CACHED
+
+#11 [jvarkit] exporting to image
+#11 exporting layers done
+#11 exporting manifest sha256:4b41d407768f4256dd410898eaa394ece9c773147d6bb9d0a8e7c6677001734e done
+#11 exporting config sha256:4a103507af48e6025e22b0948f91cd28dec3b353671eaa81beaa768014ffda0c done
+#11 exporting attestation manifest sha256:fc06f3279a991c2f34e018b6c43a0b8a03a4d252b7f12e1a216785e6bb5e50a4 done
+#11 exporting manifest list sha256:b9ed75ede51f8a5d34906020535e9b64dba1f038b08b80212a3daa3caacda818 done
+#11 naming to docker.io/vcf-conv/jvarkit:fc2356a347e1ec9b12d586c7a096c0d61bfbe8c1 done
+#11 unpacking to docker.io/vcf-conv/jvarkit:fc2356a347e1ec9b12d586c7a096c0d61bfbe8c1 done
+#11 DONE 0.0s

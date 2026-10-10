@@ -1,0 +1,110 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__condensed__structure/out/1000G_10000r_s16/1000G_10000r_s16.nt.gz",
+  "output_name": "1000G_10000r_s16",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 10.460936613380909,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__condensed__structure/out/1000G_10000r_s16/1000G_10000r_s16.hdt",
+        "output_size_bytes": 10267660,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__condensed__structure/out/1000G_10000r_s16/1000G_10000r_s16.nt.gz"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 207636054,
+          "record_count": 1439578,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 1439578,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 207636054,
+              "record_count": 1439578,
+              "payload_bytes": 207636054
+            }
+          ],
+          "merge_rounds": 0,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s16__condensed__structure/out/1000G_10000r_s16/1000G_10000r_s16.hdt.index.v1-1",
+          "index_size_bytes": 7582995,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 1439578,
+            "decoded_triples": 1439578,
+            "expected_triples": 1439578,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 2.091456847032532,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 9.889489244204015,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 10267660,
+        "workspace_free_bytes_after": 140190527488,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 140200796160,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 0.5714473691768944,
+        "output_path": "/data/out/1000G_10000r_s16.hdt.index.v1-1",
+        "output_size_bytes": 7582995,
+        "workspace_free_bytes_after": 140390576128,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 140398166016,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 2.091456847032532,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 159,
+        "workspace_free_bytes_after": 140390572032,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 140390576128,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    ],
+    "index_warnings": []
+  }
+}

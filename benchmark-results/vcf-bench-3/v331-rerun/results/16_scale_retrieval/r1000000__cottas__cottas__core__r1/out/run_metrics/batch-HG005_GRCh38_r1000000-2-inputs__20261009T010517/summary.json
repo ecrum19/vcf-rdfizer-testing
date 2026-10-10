@@ -1,0 +1,134 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20261009T010517",
+  "timestamp": "2026-10-09T01:05:17",
+  "completed_at": "2026-10-09T01:34:07",
+  "mode": "validation",
+  "status": "failure",
+  "exit_code": 1,
+  "execution": {
+    "wall_seconds": 1730.161088,
+    "wall_human": "28m 50.2s",
+    "total_triples": null
+  },
+  "summary_tables": {
+    "conversion_and_compression": [
+      {
+        "run_id": "20261009T010517",
+        "timestamp": "2026-10-09T01:05:17",
+        "output_name": "r1000000_cottas_1",
+        "output_dir": "/home/ubuntu/vrdev-test/v331/results/16_scale_retrieval/r1000000__cottas__cottas__core__r1/out/run_metrics/batch-HG005_GRCh38_r1000000-2-inputs__20261009T010517/reports/validation/r1000000_cottas_1",
+        "vcf_version": "",
+        "vcf_version_source": "",
+        "exit_code_java": "",
+        "wall_seconds_java": "",
+        "user_seconds_java": "",
+        "sys_seconds_java": "",
+        "max_rss_kb_java": "",
+        "input_mapping_size_bytes": "",
+        "input_vcf_size_bytes": "",
+        "output_dir_size_bytes": "",
+        "output_triples": "",
+        "jar": "",
+        "mapping_file": "",
+        "output_path": "",
+        "exit_code_tsv": "0",
+        "wall_seconds_tsv": "null",
+        "user_seconds_tsv": "null",
+        "sys_seconds_tsv": "null",
+        "max_rss_kb_tsv": "null",
+        "tsv_output_size_bytes": "0",
+        "tsv_output_path": "",
+        "validation_status": "EXECUTION_FAILED",
+        "validation_exit_code": "1",
+        "validation_wall_seconds": "1730.019075",
+        "validation_user_seconds": "2344.060000",
+        "validation_sys_seconds": "68.440000",
+        "validation_max_rss_kb": "23182084",
+        "validation_results_path": "/home/ubuntu/vrdev-test/v331/results/16_scale_retrieval/r1000000__cottas__cottas__core__r1/out/run_metrics/batch-HG005_GRCh38_r1000000-2-inputs__20261009T010517/reports/validation/r1000000_cottas_1",
+        "validation_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/scale_store/r1000000/HG005_GRCh38_r1000000/HG005_GRCh38_r1000000.cottas",
+        "validation_engines": "cottas",
+        "validation_oracle_seconds": "133.500949",
+        "validation_engine_query_seconds": "cottas=1188.734950",
+        "validation_engine_setup_seconds": "cottas=7.052966"
+      }
+    ],
+    "tsv": [],
+    "wrapper": [
+      {
+        "run_id": "20261009T010517",
+        "timestamp": "2026-10-09T01:05:17",
+        "mode": "validation",
+        "exit_code": "1",
+        "status": "failure",
+        "elapsed_seconds": "1730.161088",
+        "elapsed_human": "28m 50.2s",
+        "total_triples": ""
+      }
+    ]
+  },
+  "stage_reports": [
+    "stages/validation/r1000000_cottas_1.json"
+  ],
+  "reports": [
+    "reports/validation/r1000000_cottas_1/benchmark.csv",
+    "reports/validation/r1000000_cottas_1/benchmark.json",
+    "reports/validation/r1000000_cottas_1/engine-agreement.json",
+    "reports/validation/r1000000_cottas_1/engines/cottas/query-executions.json",
+    "reports/validation/r1000000_cottas_1/manifest.json",
+    "reports/validation/r1000000_cottas_1/materialization.json",
+    "reports/validation/r1000000_cottas_1/parser.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/engine/cottas-server.log",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q01_record_density_1mb.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q01_record_density_1mb.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q02_variant_shape_counts.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q02_variant_shape_counts.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q03_titv.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q03_titv.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q04_filter_distribution.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q04_filter_distribution.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q05_sample_genotype_counts.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q05_sample_genotype_counts.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q06_ac_an_distribution.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q06_ac_an_distribution.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q07_file_metadata.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q07_file_metadata.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q08_header_line_census.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q08_header_line_census.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q09_predicate_census.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q09_predicate_census.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q10_class_census.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q10_class_census.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q11_record_digest.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q11_record_digest.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q12_info_value_digest.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q12_info_value_digest.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q13_format_value_digest.sparql.json",
+    "reports/validation/r1000000_cottas_1/raw/cottas/q13_format_value_digest.stderr.txt",
+    "reports/validation/r1000000_cottas_1/raw/materialization/cottas-decompress.log",
+    "reports/validation/r1000000_cottas_1/rdf-validation/rapper.txt",
+    "reports/validation/r1000000_cottas_1/rdf-validation.json",
+    "reports/validation/r1000000_cottas_1/summary.json"
+  ],
+  "validation": [
+    {
+      "validation_id": "r1000000_cottas_1",
+      "stage_report": "stages/validation/r1000000_cottas_1.json",
+      "results_dir": "reports/validation/r1000000_cottas_1",
+      "status": "EXECUTION_FAILED",
+      "engine": "cottas",
+      "validation_target": null,
+      "wall_seconds": 1730.019075029064,
+      "summary": "reports/validation/r1000000_cottas_1/summary.json",
+      "benchmark": "reports/validation/r1000000_cottas_1/benchmark.json",
+      "benchmark_csv": "reports/validation/r1000000_cottas_1/benchmark.csv",
+      "engines": [
+        "cottas"
+      ]
+    }
+  ],
+  "logs": [
+    "logs/progress.log",
+    "logs/wrapper.log"
+  ]
+}

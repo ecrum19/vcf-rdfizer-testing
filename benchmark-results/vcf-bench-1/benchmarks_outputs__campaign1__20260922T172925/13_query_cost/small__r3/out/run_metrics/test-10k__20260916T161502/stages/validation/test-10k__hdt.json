@@ -1,0 +1,57 @@
+{
+  "run_id": "20260916T161502",
+  "timestamp": "2026-09-16T16:15:02",
+  "stage": "validation",
+  "validation_id": "test-10k__hdt",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.hdt",
+  "rdf_format": "hdt",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/run_metrics/test-10k__20260916T161502/reports/validation/test-10k__hdt",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/run_metrics/test-10k__20260916T161502/reports/validation/test-10k__hdt/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 243.71505047986284,
+      "cottas": 2737.4047968580853,
+      "hdt": 268.9392239691224,
+      "qlever": 12.393461056984961
+    },
+    "engineSetupSeconds": {
+      "comunica": 11.93862278200686,
+      "cottas": 28.743339239852503,
+      "hdt": 6.075715848943219,
+      "qlever": 2.005703043891117
+    },
+    "oracleSeconds": 0.649480887921527
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/run_metrics/test-10k__20260916T161502/reports/validation/test-10k__hdt/benchmark.csv",
+  "input_rdf_size_bytes": 6029849,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 3318.2171491868794,
+    "user_seconds": 4629.51,
+    "sys_seconds": 268.75,
+    "max_rss_kb": 2161164
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}

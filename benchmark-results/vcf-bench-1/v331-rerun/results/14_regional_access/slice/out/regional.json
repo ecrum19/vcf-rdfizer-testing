@@ -1,0 +1,592 @@
+{
+  "arms": [
+    "cyvcf2-scan",
+    "cyvcf2-indexed",
+    "bcftools-indexed",
+    "qlever"
+  ],
+  "datasetId": "slice",
+  "disagreements": 0,
+  "executions": 3780,
+  "failures": 0,
+  "queries": [
+    "r01_region_record_count",
+    "r02_region_variant_shape_counts",
+    "r03_region_titv",
+    "r04_region_filter_distribution",
+    "r05_region_sample_genotype_counts"
+  ],
+  "rdf": "/data/rdf/HG005_GRCh38_r100000.nt.gz",
+  "regionSemantics": "A window is POS-based, 1-based and inclusive: a record belongs to it when\nSTART <= POS <= END on the named contig.\n\nThis has to be said explicitly because htslib does not mean that. A tabix or\nCSI seek returns every record whose *span* overlaps the region, so a deletion\nbeginning before START and reaching into the window comes back from\n`bcftools -r` and from cyvcf2's region iterator, while a POS filter in SPARQL\nexcludes it. Left alone, that difference would make the arms disagree on any\nwindow whose left edge cuts an indel -- and it would look like a graph defect\nrather than a coordinate convention.\n\nSo both indexed arms keep the index seek (the thing being measured) and then\ndrop records whose POS falls outside the window. The seek still does the work;\nthe post-filter only reconciles the convention, costs one integer comparison\nper returned record, and is applied by every VCF arm alike.\n",
+  "replicates": 3,
+  "representation": "expanded",
+  "scanWindowsPerSize": 3,
+  "setup": {
+    "engineSetupSeconds": {
+      "qlever": 23.30400705197826
+    },
+    "positionScanSeconds": 0.6248698360286653,
+    "rdfMaterialization": {
+      "materialized": true,
+      "ntriplesPath": "/work/regional-rdf-lo9odlns/input.nt",
+      "sourceFormat": "nt.gz",
+      "steps": [
+        {
+          "output": "/work/regional-rdf-lo9odlns/input.nt",
+          "tool": "python-gzip"
+        }
+      ],
+      "wallSeconds": 2.8715761858038604
+    },
+    "vcfIndex": {
+      "bgzipBytes": 3498705,
+      "bgzipSeconds": 0.3768008779734373,
+      "compression": "bgzip",
+      "indexBytes": 46386,
+      "indexKind": "tbi",
+      "indexKindReason": "every contig fits a .tbi",
+      "indexPath": "/work/indexed/HG005_GRCh38_r100000.vcf.gz.tbi",
+      "indexSeconds": 0.08712557796388865,
+      "indexedVcf": "/work/indexed/HG005_GRCh38_r100000.vcf.gz",
+      "sortSeconds": 0.0,
+      "source": "/data/vcf/HG005_GRCh38_r100000.vcf.gz",
+      "totalSetupSeconds": 0.46392645593732595
+    }
+  },
+  "summary": {
+    "bcftools-indexed": {
+      "r01_region_record_count": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.01744214864447713,
+          "medianSeconds": 0.004161091521382332,
+          "minSeconds": 0.0038759009912610054
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.004942991770803928,
+          "medianSeconds": 0.004381828010082245,
+          "minSeconds": 0.004070342052727938
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.007486799731850624,
+          "medianSeconds": 0.006077878875657916,
+          "minSeconds": 0.005340990144759417
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.031484963838011026,
+          "medianSeconds": 0.024631954031065106,
+          "minSeconds": 0.009537162724882364
+        }
+      },
+      "r02_region_variant_shape_counts": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.0069100381806492805,
+          "medianSeconds": 0.004422967555001378,
+          "minSeconds": 0.003921908792108297
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.008567665237933397,
+          "medianSeconds": 0.004923817003145814,
+          "minSeconds": 0.004354102071374655
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.011035400908440351,
+          "medianSeconds": 0.008399559184908867,
+          "minSeconds": 0.006820914801210165
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.05725438520312309,
+          "medianSeconds": 0.0453331156168133,
+          "minSeconds": 0.014433387201279402
+        }
+      },
+      "r03_region_titv": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.006079003680497408,
+          "medianSeconds": 0.004392101662233472,
+          "minSeconds": 0.003964344039559364
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.0073337010107934475,
+          "medianSeconds": 0.00462255603633821,
+          "minSeconds": 0.004005272872745991
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.011765845119953156,
+          "medianSeconds": 0.007320749806240201,
+          "minSeconds": 0.006063180044293404
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.035822427831590176,
+          "medianSeconds": 0.03151023085229099,
+          "minSeconds": 0.010977325029671192
+        }
+      },
+      "r04_region_filter_distribution": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.006678280886262655,
+          "medianSeconds": 0.0041955518536269665,
+          "minSeconds": 0.00386410066857934
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.005413278006017208,
+          "medianSeconds": 0.004496747627854347,
+          "minSeconds": 0.0040740324184298515
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.01104618702083826,
+          "medianSeconds": 0.006904504960402846,
+          "minSeconds": 0.00581411924213171
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.035358690191060305,
+          "medianSeconds": 0.02978108054958284,
+          "minSeconds": 0.010914556682109833
+        }
+      },
+      "r05_region_sample_genotype_counts": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.006416228599846363,
+          "medianSeconds": 0.004230177262797952,
+          "minSeconds": 0.0039124940522015095
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.005662247072905302,
+          "medianSeconds": 0.004769088001921773,
+          "minSeconds": 0.004242692608386278
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.01413802383467555,
+          "medianSeconds": 0.008862800663337111,
+          "minSeconds": 0.006980343721807003
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.05954418424516916,
+          "medianSeconds": 0.04930282034911215,
+          "minSeconds": 0.015780082903802395
+        }
+      }
+    },
+    "cyvcf2-indexed": {
+      "r01_region_record_count": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.004096999764442444,
+          "medianSeconds": 0.0032185250893235207,
+          "minSeconds": 0.0030996263958513737
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.007395238149911165,
+          "medianSeconds": 0.004414793103933334,
+          "minSeconds": 0.00375739810988307
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.017540297005325556,
+          "medianSeconds": 0.013026445405557752,
+          "minSeconds": 0.009936965070664883
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.1265353844501078,
+          "medianSeconds": 0.10247101658023894,
+          "minSeconds": 0.02817697823047638
+        }
+      },
+      "r02_region_variant_shape_counts": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.003742869943380356,
+          "medianSeconds": 0.00322397006675601,
+          "minSeconds": 0.003139202017337084
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.006750463042408228,
+          "medianSeconds": 0.004705264698714018,
+          "minSeconds": 0.003888986073434353
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.02173442207276821,
+          "medianSeconds": 0.01608081581071019,
+          "minSeconds": 0.01215318962931633
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.1561034801416099,
+          "medianSeconds": 0.13492106110788882,
+          "minSeconds": 0.036113142035901546
+        }
+      },
+      "r03_region_titv": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.003801848739385605,
+          "medianSeconds": 0.003246675943955779,
+          "minSeconds": 0.0031302333809435368
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.006988627836108208,
+          "medianSeconds": 0.004482602002099156,
+          "minSeconds": 0.003813637886196375
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.019360778387635946,
+          "medianSeconds": 0.014323866926133633,
+          "minSeconds": 0.01075220899656415
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.1389341838657856,
+          "medianSeconds": 0.11824928899295628,
+          "minSeconds": 0.031759003177285194
+        }
+      },
+      "r04_region_filter_distribution": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.004014685284346342,
+          "medianSeconds": 0.0033284013625234365,
+          "minSeconds": 0.0031306068412959576
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.0063394419848918915,
+          "medianSeconds": 0.004554176237434149,
+          "minSeconds": 0.0037999688647687435
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.019855269230902195,
+          "medianSeconds": 0.01448517618700862,
+          "minSeconds": 0.010720591992139816
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.13794097071513534,
+          "medianSeconds": 0.11756256595253944,
+          "minSeconds": 0.03129306202754378
+        }
+      },
+      "r05_region_sample_genotype_counts": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.00486314482986927,
+          "medianSeconds": 0.003295853966847062,
+          "minSeconds": 0.0031659589149057865
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.007568939123302698,
+          "medianSeconds": 0.005042527569457889,
+          "minSeconds": 0.004136828240007162
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.030440487898886204,
+          "medianSeconds": 0.018952024867758155,
+          "minSeconds": 0.013609293848276138
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.1838007802143693,
+          "medianSeconds": 0.16465724050067365,
+          "minSeconds": 0.04216346191242337
+        }
+      }
+    },
+    "cyvcf2-scan": {
+      "r01_region_record_count": {
+        "1000": {
+          "executions": 9,
+          "maxSeconds": 0.6555947600863874,
+          "medianSeconds": 0.6363486377522349,
+          "minSeconds": 0.6270988681353629
+        },
+        "100000": {
+          "executions": 9,
+          "maxSeconds": 0.6668856418691576,
+          "medianSeconds": 0.6292379950173199,
+          "minSeconds": 0.6216991189867258
+        },
+        "1000000": {
+          "executions": 9,
+          "maxSeconds": 0.6359714912250638,
+          "medianSeconds": 0.6270582070574164,
+          "minSeconds": 0.6181442667730153
+        },
+        "10000000": {
+          "executions": 9,
+          "maxSeconds": 0.6671017240732908,
+          "medianSeconds": 0.6327733448706567,
+          "minSeconds": 0.6229280168190598
+        }
+      },
+      "r02_region_variant_shape_counts": {
+        "1000": {
+          "executions": 9,
+          "maxSeconds": 0.6372782969847322,
+          "medianSeconds": 0.6322782738134265,
+          "minSeconds": 0.6265866570174694
+        },
+        "100000": {
+          "executions": 9,
+          "maxSeconds": 0.6429923949763179,
+          "medianSeconds": 0.628753290977329,
+          "minSeconds": 0.6215775622986257
+        },
+        "1000000": {
+          "executions": 9,
+          "maxSeconds": 0.6566468449309468,
+          "medianSeconds": 0.639451433904469,
+          "minSeconds": 0.6305619552731514
+        },
+        "10000000": {
+          "executions": 9,
+          "maxSeconds": 0.6836165790446103,
+          "medianSeconds": 0.6720601841807365,
+          "minSeconds": 0.6599482069723308
+        }
+      },
+      "r03_region_titv": {
+        "1000": {
+          "executions": 9,
+          "maxSeconds": 0.6476233853027225,
+          "medianSeconds": 0.6244308059103787,
+          "minSeconds": 0.616756328381598
+        },
+        "100000": {
+          "executions": 9,
+          "maxSeconds": 0.6549177756533027,
+          "medianSeconds": 0.6277746446430683,
+          "minSeconds": 0.6198327052406967
+        },
+        "1000000": {
+          "executions": 9,
+          "maxSeconds": 0.640463300049305,
+          "medianSeconds": 0.6358030741102993,
+          "minSeconds": 0.6208397266454995
+        },
+        "10000000": {
+          "executions": 9,
+          "maxSeconds": 0.6606182488612831,
+          "medianSeconds": 0.6534398808144033,
+          "minSeconds": 0.6480855559930205
+        }
+      },
+      "r04_region_filter_distribution": {
+        "1000": {
+          "executions": 9,
+          "maxSeconds": 0.64521514903754,
+          "medianSeconds": 0.6333192801102996,
+          "minSeconds": 0.6284855720587075
+        },
+        "100000": {
+          "executions": 9,
+          "maxSeconds": 0.6621028762310743,
+          "medianSeconds": 0.6417814921587706,
+          "minSeconds": 0.6289240224286914
+        },
+        "1000000": {
+          "executions": 9,
+          "maxSeconds": 0.6523649110458791,
+          "medianSeconds": 0.6357794059440494,
+          "minSeconds": 0.6294929818250239
+        },
+        "10000000": {
+          "executions": 9,
+          "maxSeconds": 0.6558792660944164,
+          "medianSeconds": 0.6452970188111067,
+          "minSeconds": 0.6412894381210208
+        }
+      },
+      "r05_region_sample_genotype_counts": {
+        "1000": {
+          "executions": 9,
+          "maxSeconds": 0.6545299920253456,
+          "medianSeconds": 0.6365964007563889,
+          "minSeconds": 0.6241110390983522
+        },
+        "100000": {
+          "executions": 9,
+          "maxSeconds": 0.638913000933826,
+          "medianSeconds": 0.631480940617621,
+          "minSeconds": 0.6204588706605136
+        },
+        "1000000": {
+          "executions": 9,
+          "maxSeconds": 0.6484985970892012,
+          "medianSeconds": 0.6392357796430588,
+          "minSeconds": 0.6291232188232243
+        },
+        "10000000": {
+          "executions": 9,
+          "maxSeconds": 0.6990067972801626,
+          "medianSeconds": 0.6860982971265912,
+          "minSeconds": 0.6751437750644982
+        }
+      }
+    },
+    "qlever": {
+      "r01_region_record_count": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 1.6904205600731075,
+          "medianSeconds": 0.0027002424467355013,
+          "minSeconds": 0.0022719940170645714
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.010221725795418024,
+          "medianSeconds": 0.002749271225184202,
+          "minSeconds": 0.002311425283551216
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.010083814151585102,
+          "medianSeconds": 0.0027954403776675463,
+          "minSeconds": 0.002289536874741316
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.01188571285456419,
+          "medianSeconds": 0.002717575989663601,
+          "minSeconds": 0.0022291182540357113
+        }
+      },
+      "r02_region_variant_shape_counts": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.05498106591403484,
+          "medianSeconds": 0.011139844544231892,
+          "minSeconds": 0.009938968811184168
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.02663211105391383,
+          "medianSeconds": 0.010794032830744982,
+          "minSeconds": 0.009905819315463305
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.0328204371035099,
+          "medianSeconds": 0.010762431658804417,
+          "minSeconds": 0.010021374095231295
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.10079000610858202,
+          "medianSeconds": 0.011105783516541123,
+          "minSeconds": 0.010211329907178879
+        }
+      },
+      "r03_region_titv": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.013734220992773771,
+          "medianSeconds": 0.010637727566063404,
+          "minSeconds": 0.009306856896728277
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.01702551357448101,
+          "medianSeconds": 0.010993669042363763,
+          "minSeconds": 0.009817823767662048
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.014480486046522856,
+          "medianSeconds": 0.01052149967290461,
+          "minSeconds": 0.009162976872175932
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.025874176062643528,
+          "medianSeconds": 0.010313072241842747,
+          "minSeconds": 0.009286523796617985
+        }
+      },
+      "r04_region_filter_distribution": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 0.058132119942456484,
+          "medianSeconds": 0.007712527411058545,
+          "minSeconds": 0.006759049836546183
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.020195777993649244,
+          "medianSeconds": 0.007740107132121921,
+          "minSeconds": 0.0069077457301318645
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.021059339866042137,
+          "medianSeconds": 0.007628054358065128,
+          "minSeconds": 0.006878703832626343
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.04630258493125439,
+          "medianSeconds": 0.008004556177183986,
+          "minSeconds": 0.0070548467338085175
+        }
+      },
+      "r05_region_sample_genotype_counts": {
+        "1000": {
+          "executions": 60,
+          "maxSeconds": 1.0133885461837053,
+          "medianSeconds": 0.016260265139862895,
+          "minSeconds": 0.014817025046795607
+        },
+        "100000": {
+          "executions": 60,
+          "maxSeconds": 0.034017584286630154,
+          "medianSeconds": 0.01553726103156805,
+          "minSeconds": 0.014461054001003504
+        },
+        "1000000": {
+          "executions": 60,
+          "maxSeconds": 0.06021320587024093,
+          "medianSeconds": 0.0158112368080765,
+          "minSeconds": 0.014390716794878244
+        },
+        "10000000": {
+          "executions": 60,
+          "maxSeconds": 0.30616586608812213,
+          "medianSeconds": 0.016253528418019414,
+          "minSeconds": 0.01425240421667695
+        }
+      }
+    }
+  },
+  "thinArms": [
+    "cyvcf2-scan"
+  ],
+  "vcf": "/data/vcf/HG005_GRCh38_r100000.vcf.gz",
+  "vcfSha256": "13f5a187a4af390cab6e609c546059188b036ca9e25577c85b6e1b9af048f4ae",
+  "windowCount": 80
+}

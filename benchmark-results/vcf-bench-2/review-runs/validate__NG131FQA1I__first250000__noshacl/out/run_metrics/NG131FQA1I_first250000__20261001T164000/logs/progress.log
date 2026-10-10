@@ -1,0 +1,17 @@
+[2026-10-01T16:40:00] Run started (mode=full)
+[2026-10-01T16:40:00] Checking Docker availability
+[2026-10-01T16:40:00] Docker availability check passed
+[2026-10-01T16:40:00] Ensuring image available: ecrum19/vcf-rdfizer:3.1.0
+[2026-10-01T16:40:00] Image ready
+[2026-10-01T16:40:00] Writeability checks passed
+[2026-10-01T16:40:00] Full pipeline started
+[2026-10-01T16:40:00] Input 1/1 started: NG131FQA1I_first250000
+[2026-10-01T16:40:03] Input 1: TSV conversion completed for NG131FQA1I_first250000
+[2026-10-01T16:40:28] Input 1: RDF conversion completed for NG131FQA1I_first250000
+[2026-10-01T16:44:15] Input 1: compression completed for NG131FQA1I_first250000
+[2026-10-01T16:44:15] Validation started: NG131FQA1I_first250000
+[2026-10-01T16:54:36] Validation failed: NG131FQA1I_first250000 (exit_code=1)
+[2026-10-01T16:54:36] Input 1/1 failed at validation for NG131FQA1I_first250000: semantic VCF/RDF validation failed for 'NG131FQA1I_first250000' (aggregate). See results: /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__noshacl/out/run_metrics/NG131FQA1I_first250000__20261001T164000/reports/validation
+[2026-10-01T16:54:36] Input 1/1 finished with failures: NG131FQA1I_first250000
+[2026-10-01T16:54:36] Full pipeline completed with failures (1/1). Report: /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__noshacl/out/run_metrics/NG131FQA1I_first250000__20261001T164000/reports/failed_inputs.csv
+[2026-10-01T16:54:36] Run finished (exit_code=1)

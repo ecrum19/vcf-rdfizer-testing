@@ -1,0 +1,29 @@
+{
+  "experiment": "12_modes_smoke",
+  "cell": "mode_index_hdt",
+  "exit_code": 0,
+  "started_epoch": 1789304758,
+  "ended_epoch": 1789304759,
+  "wrapper_wall_seconds": 1,
+  "peak_out_tree_bytes": 4096,
+  "final_out_tree_bytes": 65536,
+  "tool_commit": "025fb7d8719c6d9b46dd5870b00234042f1e675e",
+  "tool_path": "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+  "image_ref": "vcf-rdfizer:local-025fb7d",
+  "image_digest": "vcf-rdfizer@sha256:0082fe2cf42fd3c96542751046fd4c2335212bdd798bd14ef0adc54f8344c734",
+  "image_mode": "local-build",
+  "host": "vcf-bench-2",
+  "command": [
+    "python3",
+    "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+    "--mode",
+    "index",
+    "--hdt",
+    "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.hdt",
+    "--image",
+    "vcf-rdfizer:local-025fb7d",
+    "--no-build",
+    "--out",
+    "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs_calibration/12_modes_smoke/mode_index_hdt/out"
+  ]
+}

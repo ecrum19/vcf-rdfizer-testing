@@ -31,7 +31,7 @@ REPS="${BM_REPS:-3}"
 #: name:assembly, where the assembly is the one TogoVar's config generator is told.
 INPUTS=(HG005_GRCh38_r100000:GRCh38 1000G_10000r_s16:GRCh37)
 TOOLS=(vcf-rdfizer jvarkit togovar sparqling-genomics biointerchange)
-#: The SHA-256 every input must have, from BioMedSem_2026/benchmark-results/vcf-input-sizes.json.
+#: The SHA-256 every input must have, from benchmark-results/vcf-input-sizes.json.
 declare -A INPUT_SHA256=(
   [HG005_GRCh38_r100000]=13f5a187a4af390cab6e609c546059188b036ca9e25577c85b6e1b9af048f4ae
   [1000G_10000r_s16]=e8833c94f08aafedc0dd64ec9377cb96f809f48b674ef3162c284ffa57c30f1c

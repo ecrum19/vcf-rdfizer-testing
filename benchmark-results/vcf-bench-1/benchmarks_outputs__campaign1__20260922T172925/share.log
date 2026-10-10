@@ -1,0 +1,208 @@
+=== 2026-09-14T08:43:43+02:00 vcf-bench-1: share [00 04 07 08 11 12] ===
+tool  025fb7d Close the remaining coverage gaps in the new accessors
+image vcf-rdfizer:local-025fb7d
+--- calibration ---
+  calibration phaseA_convert               29.0s  host=vcf-bench-1
+  calibration phaseB_validate_aggregate   324.0s  host=vcf-bench-1
+--- share ---
+    - image vcf-rdfizer:local-025fb7d already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 00_environment.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== Environment manifest ===
+    - tool: /home/ubuntu/VCF-RDFizer/vcf_rdfizer.py (checkout)
+    - commit: 025fb7d8719c6d9b46dd5870b00234042f1e675e
+    - image:  vcf-rdfizer:local-025fb7d (local-build)
+    - digest: vcf-rdfizer@sha256:b645120b7270b1db0cef81cd0742d8cbd4a95a880606a88e4dd199fecf8c769c
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/manifest.json
+  note: not detected -> bcftools, bash
+    - system conditions -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/system_conditions.txt
+[1m==>[0m Environment captured: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/manifest.json
+
+=== 04_scaling_records.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== §3.1 records ladder (3 reps per rung) ===
+    - r10000__rep1
+    - r10000__rep2
+    - r10000__rep3
+    - r100000__rep1
+    - r100000__rep2
+    - r100000__rep3
+    - r1000000__rep1
+    - r1000000__rep2
+    - r1000000__rep3
+    - rfull__rep1
+[1m==>[0m Done. Fit slopes with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 04_scaling_records
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/fit_scaling.py 04_scaling_records --x records --y triples
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/fit_scaling.py 04_scaling_records --x triples --y wall_seconds
+
+Report these as EMPIRICAL scaling exponents over the measured range, with CIs.
+They are not algorithmic bounds and must not be generalized beyond the rungs
+actually run.
+
+=== 07_representation_axes.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== §4.2 --info-representation (paired, 3 reps) ===
+    - info__HGSVC2__structured__r1
+Terminated
+=== 2026-09-14T19:41:51+02:00 share finished ===
+=== 2026-09-14T19:42:43+02:00 vcf-bench-1: share [07 08 11 12] ===
+tool  be658a2 Merge pull request #12 from ecrum19/fix/vcf45-structured-accessors
+image vcf-rdfizer:local-025fb7d
+--- calibration ---
+  calibration phaseA_convert               29.0s  host=vcf-bench-1
+  calibration phaseB_validate_aggregate   324.0s  host=vcf-bench-1
+--- share ---
+    - image vcf-rdfizer:local-025fb7d already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 07_representation_axes.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== §4.2 --info-representation (paired, 3 reps) ===
+    - info__HGSVC2__structured__r1
+    - info__HGSVC2__raw__r1
+    - info__HGSVC2__structured__r2
+    - info__HGSVC2__raw__r2
+    - info__HGSVC2__structured__r3
+    - info__HGSVC2__raw__r3
+    - info__HG005_GRCh38_r100000__structured__r1
+    - info__HG005_GRCh38_r100000__raw__r1
+    - info__HG005_GRCh38_r100000__structured__r2
+    - info__HG005_GRCh38_r100000__raw__r2
+    - info__HG005_GRCh38_r100000__structured__r3
+    - info__HG005_GRCh38_r100000__raw__r3
+
+=== §4.2 --header-representation ===
+    - header__structured
+    - header__basic
+
+=== §4.2 --vcf-version conformance overlays ===
+    - version__4.1
+    - version__4.2
+    - version__4.3
+    - version__4.4
+    - version__4.5
+    - version__fallback_undeclared
+[1m==>[0m Done. Analyse with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 07_representation_axes
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/equivalence.py 07_representation_axes --cell-filter info__ --margin 0.10
+
+For the version cells, check metrics.csv's vcf_version and vcf_version_source
+columns: the fallback run must record 'fallback', and every explicit run must
+record 'forced'. Group any cost comparison BY VERSION; the overlays change what
+is emitted, so cross-version costs are not comparable.
+
+=== 08_robustness.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== Regenerating fixtures ===
+wrote 18 fixtures to /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures
+  version_4.1.vcf
+  version_4.2.vcf
+  version_4.3.vcf
+  version_4.4.vcf
+  version_4.5.vcf
+  version_missing_declaration.vcf
+  version_4.0_declared.vcf
+  awkward_sites_only.vcf
+  awkward_symbolic_alleles.vcf
+  awkward_breakend.vcf
+  awkward_high_ploidy.vcf
+  awkward_half_and_haploid_calls.vcf
+  awkward_filter_variants.vcf
+  awkward_missing_values.vcf
+  awkward_declared_format_absent.vcf
+  awkward_no_records.vcf
+  awkward_crlf.vcf
+  awkward_truncated.vcf.gz
+
+=== §4.3 mutation score ===
+    - running the mutation harness (this takes a few minutes)
+  score report -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/mutation_score/mutation-score.json
+    - cite the score AND the remaining-gaps list; the gaps are the honest limitation
+
+=== §4.3 round-trip identity ===
+    - roundtrip__01_convert
+    - aggregate: HG005_GRCh38_r100000.nt
+    - roundtrip__02_compress
+    - roundtrip__03_decompress
+  roundtrip: IDENTICAL
+    left  17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    right 17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/roundtrip__verdict.json
+
+=== §4.3 determinism ===
+    - determinism__a
+    - determinism__b
+  determinism: IDENTICAL
+    left  17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    right 17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/determinism__verdict.json
+
+=== §4.3 index idempotence ===
+    - index__01_build
+    - index__02_reindex
+  index idempotence: IDENTICAL
+[1m==>[0m Done. Verdicts are in /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/*__verdict.json
+
+=== 11_covering_set.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== §5.1 covering set on test-1k.vcf ===
+    - row1
+    - row2
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/stderr.log)
+benchmark error: expected success but exit was 1
+See /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row2/stderr.log
+benchmark warning: 11_covering_set.sh exited non-zero
+
+=== 12_modes_smoke.sh ===
+    - image vcf-rdfizer:local-025fb7d already built
+
+=== §5.3 --mode tsv ===
+    - mode_tsv
+
+=== §5.2 Phase A — conversion, validation OFF ===
+    - phaseA_convert
+    - aggregate: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.nt.gz
+    - hdt:       /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.hdt
+    - cottas:    /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.cottas
+
+=== §5.2 Phase B — validation against Phase A's artifacts ===
+    - phaseB_validate_aggregate
+
+=== §5.3 --mode compress / decompress / index ===
+    - mode_compress
+    - mode_decompress
+    - mode_index_hdt
+    - mode_index_cottas
+[1m==>[0m Done. Every mode the plan lists in §5.3 now has a recorded run.
+At scale, prefer --validation-engine qlever or --validate-artifacts hdt;
+--validation-engine all belongs on small inputs only, where cross-engine
+agreement is the actual deliverable (§4.1).
+
+=== Collecting ===
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+11_covering_set: 2 cells — 1 ok, 1 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+  exit 1: row2
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+
+Experiments that exited non-zero:
+  11_covering_set.sh
+Their cells are still recorded; check stderr.log under each.
+=== 2026-09-15T01:01:48+02:00 share finished ===

@@ -3,7 +3,7 @@
 
     python3 make_figures.py            # writes ../fig-*.pdf
 
-Every number is read from BioMedSem_2026/benchmark-results, never typed in,
+Every number is read from benchmark-results/, never typed in,
 so the figures can be regenerated when a campaign is replaced. All of them are
 the v3.1.0 campaign (the live trees on both hosts).
 
@@ -31,15 +31,14 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.gridspec import GridSpec  # noqa: E402
 from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator  # noqa: E402
 
+HERE = Path(__file__).resolve().parent
+OUT = HERE.parent
+# The data layer and the validation and use-case readers live with the results site's builder.
+sys.path.insert(0, str(HERE.parents[2] / "scripts"))
 from figure_data import (  # noqa: E402 - stdlib-only data layer shared with the site
     B1, HG005_WHOLE_RECORDS, QUERIES, corpus_rows, records_ladder, retrieval, sample_ladder, storage_modes,
     tidy,
 )
-
-HERE = Path(__file__).resolve().parent
-OUT = HERE.parent
-# The validation and use-case readers live with the results site's builder.
-sys.path.insert(0, str(HERE.parents[2] / "scripts"))
 import build_site_data as site  # noqa: E402
 
 # ---------------------------------------------------------------------------

@@ -729,7 +729,7 @@ async function main() {
   renderBreakEven();
   renderExplorer();
   renderHosts();
-  for (const [id, text] of [["conversionSource", "04_scaling_records, 03_sample_representation, 01_storage_mode and 05_corpus_breadth, through paper-assets/figures/figure_data.py"],
+  for (const [id, text] of [["conversionSource", "04_scaling_records, 03_sample_representation, 01_storage_mode and 05_corpus_breadth, through scripts/figure_data.py"],
     ["retrievalSource", "13_query_cost, 14_regional_access (vcf-bench-1) and 16_scale_retrieval (vcf-bench-3)"]]) {
     document.getElementById(id).textContent = `Sources: ${text}.`;
   }

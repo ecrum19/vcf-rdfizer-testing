@@ -1,0 +1,42 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__panel/out/run_metrics/panel.acmg__20261008T150749
+  Detailed logs: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__panel/out/run_metrics/panel.acmg__20261008T150749/logs/wrapper.log
+  Progress log: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__panel/out/run_metrics/panel.acmg__20261008T150749/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: panel.acmg.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 0 calls
+    * Sample RDF streaming: 20,000 variants, 0 calls
+    * Sample RDF streaming: 30,000 variants, 0 calls
+    * Sample RDF streaming: 40,000 variants, 0 calls
+    * Sample RDF streaming: 50,000 variants, 0 calls
+    * Sample RDF streaming: 60,000 variants, 0 calls
+    * Sample calls streamed: 0; FORMAT values: 0
+    * Streaming structured header RDF
+    * Header lines typed: 49; contigs: 24
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 60,000 values
+    * INFO RDF streaming: 20,000 variants, 120,000 values
+    * INFO RDF streaming: 30,000 variants, 180,000 values
+    * INFO RDF streaming: 40,000 variants, 240,000 values
+    * INFO RDF streaming: 50,000 variants, 300,000 values
+    * INFO RDF streaming: 60,000 variants, 360,000 values
+    * QUAL values streamed: 68,635; INFO values: 411,810; declarations: 6
+    * Triples produced: 6,517,672
+    * Compression ✅
+    * Output directory: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__panel/out/panel.acmg
+      - RDF aggregate: panel.acmg.nt.gz
+      - RDF (.gz): 30.19 MB (retained because it is also the selected gzip artifact)
+      - gzip (.nt.gz): 30.19 MB
+Total triples produced (full run): 6,517,672
+Conversion process finished.
+Run time (full mode): 38.09s
+Timing log: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__panel/out/run_metrics/panel.acmg__20261008T150749/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__panel/out/run_metrics/panel.acmg__20261008T150749/summary.json

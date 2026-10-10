@@ -1,0 +1,383 @@
+{
+  "tool": "sparqling-genomics",
+  "vcf": {
+    "path": "/home/ubuntu/vrdev-test/conv/run-e3743590/work/inputs/1000G_10000r_s16.vcf.gz",
+    "sha256": "073c22b59c3c8f0ccd9991d8c5e66c4f60775b85628a1079dd39b246fc0d261b",
+    "records": 10000,
+    "samples": 16
+  },
+  "graph": {
+    "path": "/home/ubuntu/vrdev-test/conv/run-e3743590/results/18_converter_comparison/normalise__sparqling-genomics__1000G_10000r_s16/out/graph.nt.gz",
+    "sha256": "34e69730ce59289dd5ea74c619121a09a346c35d7d3caef51675304b9ee02be2",
+    "triples": 180053,
+    "triplesPerRecord": 18.0053
+  },
+  "oracleSeconds": 2.643800036981702,
+  "engine": {
+    "engine": "qlever",
+    "setupSeconds": 0.5056770020164549,
+    "version": "/opt/qlever/bin/qlever-server: error while loading shared libraries: libjemalloc.so.2: cannot open shared object file: No such file or directory",
+    "mode": "on-disk index served over HTTP",
+    "indexDirectory": "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/sparqling-genomics-1000G_10000r_s16/qlever-index",
+    "indexBuildSeconds": 0.4795671380124986,
+    "memoryLimitGb": 8,
+    "port": 7019,
+    "commands": {
+      "index": [
+        "/opt/qlever/bin/qlever-index",
+        "-i",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/sparqling-genomics-1000G_10000r_s16/qlever-index/vcf-rdfizer",
+        "-f",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/sparqling-genomics-1000G_10000r_s16/graph.nt",
+        "-F",
+        "nt",
+        "-m",
+        "8G"
+      ],
+      "server": [
+        "/opt/qlever/bin/qlever-server",
+        "-i",
+        "/home/ubuntu/vrdev-test/conv/run-e3743590/work/scratch/sparqling-genomics-1000G_10000r_s16/qlever-index/vcf-rdfizer",
+        "-p",
+        "7019",
+        "-m",
+        "8G",
+        "-s",
+        "3600s"
+      ]
+    },
+    "buildStatus": "QLever binaries linked cleanly at image build time."
+  },
+  "questions": {
+    "q01_record_density_1mb": {
+      "query": "q01_record_density_1mb.rq",
+      "querySha256": "b2ed99a5a39b3b36479eb758f88ac6d18cf47d130e50466e9dc3c13786f4b99c",
+      "renderedSha256": "b2ed99a5a39b3b36479eb758f88ac6d18cf47d130e50466e9dc3c13786f4b99c",
+      "wallSeconds": 0.03474225336685777,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 1,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "chrom": "20",
+              "windowIndex": 0,
+              "recordCount": 10000
+            },
+            "actual": {
+              "chrom": "20",
+              "windowIndex": 0,
+              "recordCount": 1401
+            }
+          }
+        ]
+      }
+    },
+    "q02_variant_shape_counts": {
+      "query": "q02_variant_shape_counts.rq",
+      "querySha256": "5aa784216247d53022d29ad034dab0fb556e75bb8ef7be29ddb4fde4cfd549de",
+      "renderedSha256": "5aa784216247d53022d29ad034dab0fb556e75bb8ef7be29ddb4fde4cfd549de",
+      "wallSeconds": 0.29254944808781147,
+      "status": "MISMATCH",
+      "missingRows": 1,
+      "extraRows": 1,
+      "differingRows": 4,
+      "examples": {
+        "missingRows": [
+          {
+            "variantClass": "SYMBOLIC_OR_BREAKEND",
+            "recordCount": 13
+          }
+        ],
+        "extraRows": [
+          {
+            "variantClass": "MNV_OR_EQUAL_LENGTH_SUBSTITUTION",
+            "recordCount": 1
+          }
+        ],
+        "differingRows": [
+          {
+            "expected": {
+              "variantClass": "DELETION_SHAPE",
+              "recordCount": 245
+            },
+            "actual": {
+              "variantClass": "DELETION_SHAPE",
+              "recordCount": 81
+            }
+          },
+          {
+            "expected": {
+              "variantClass": "INSERTION_SHAPE",
+              "recordCount": 136
+            },
+            "actual": {
+              "variantClass": "INSERTION_SHAPE",
+              "recordCount": 61
+            }
+          },
+          {
+            "expected": {
+              "variantClass": "MULTIALLELIC",
+              "recordCount": 70
+            },
+            "actual": {
+              "variantClass": "MULTIALLELIC",
+              "recordCount": 19
+            }
+          },
+          {
+            "expected": {
+              "variantClass": "SNV",
+              "recordCount": 9536
+            },
+            "actual": {
+              "variantClass": "SNV",
+              "recordCount": 1239
+            }
+          }
+        ]
+      }
+    },
+    "q03_titv": {
+      "query": "q03_titv.rq",
+      "querySha256": "8f9239b8dd0bfde439ce6be12d05603ae108c8954836a88dbc82fba97fdbd77d",
+      "renderedSha256": "8f9239b8dd0bfde439ce6be12d05603ae108c8954836a88dbc82fba97fdbd77d",
+      "wallSeconds": 0.00965513614937663,
+      "status": "MISMATCH",
+      "expected": {
+        "biallelicSnvCount": 9536,
+        "transitionCount": 6677,
+        "transversionCount": 2859
+      },
+      "actual": {
+        "biallelicSnvCount": 1239,
+        "transitionCount": 866,
+        "transversionCount": 373
+      }
+    },
+    "q04_filter_distribution": {
+      "query": "q04_filter_distribution.rq",
+      "querySha256": "f1d83b390b73c9aff621deb15ce24ef474b74a6248ae04857e1d7207d02a3ecc",
+      "renderedSha256": "f1d83b390b73c9aff621deb15ce24ef474b74a6248ae04857e1d7207d02a3ecc",
+      "wallSeconds": 0.03891488537192345,
+      "status": "MISMATCH",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 1,
+      "examples": {
+        "differingRows": [
+          {
+            "expected": {
+              "filterStatus": "PASS",
+              "filterLexical": "PASS",
+              "recordCount": 10000
+            },
+            "actual": {
+              "filterStatus": "PASS",
+              "filterLexical": "PASS",
+              "recordCount": 1401
+            }
+          }
+        ]
+      }
+    },
+    "q05_sample_genotype_counts": {
+      "query": "q05_sample_genotype_counts.rq",
+      "querySha256": "de3ffddab600476634d4e6ff1c587c6ad8505d969333a89a46d123b76b379882",
+      "renderedSha256": "de3ffddab600476634d4e6ff1c587c6ad8505d969333a89a46d123b76b379882",
+      "wallSeconds": 0.05112612806260586,
+      "status": "MISMATCH",
+      "missingRows": 16,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {
+        "missingRows": [
+          {
+            "sampleId": "HG00096",
+            "genotypeClass": "HOM_REF",
+            "callCount": 9299
+          },
+          {
+            "sampleId": "HG00097",
+            "genotypeClass": "HOM_REF",
+            "callCount": 9390
+          },
+          {
+            "sampleId": "HG00099",
+            "genotypeClass": "HOM_REF",
+            "callCount": 9451
+          },
+          {
+            "sampleId": "HG00100",
+            "genotypeClass": "HOM_REF",
+            "callCount": 9441
+          },
+          {
+            "sampleId": "HG00101",
+            "genotypeClass": "HOM_REF",
+            "callCount": 9396
+          }
+        ]
+      }
+    },
+    "q06_ac_an_distribution": {
+      "query": "q06_ac_an_distribution.rq",
+      "querySha256": "c37ac635fcb4545198fe1efac399c91a5920291475ef8651a552add56bae4a36",
+      "renderedSha256": "c37ac635fcb4545198fe1efac399c91a5920291475ef8651a552add56bae4a36",
+      "wallSeconds": 0.03941422188654542,
+      "status": "MISMATCH",
+      "missingRows": 21,
+      "extraRows": 76,
+      "differingRows": 5,
+      "examples": {
+        "missingRows": [
+          {
+            "an": 32,
+            "ac": 0,
+            "siteCount": 8564
+          },
+          {
+            "an": 32,
+            "ac": 1,
+            "siteCount": 320
+          },
+          {
+            "an": 32,
+            "ac": 2,
+            "siteCount": 138
+          },
+          {
+            "an": 32,
+            "ac": 3,
+            "siteCount": 105
+          },
+          {
+            "an": 32,
+            "ac": 4,
+            "siteCount": 80
+          }
+        ],
+        "extraRows": [
+          {
+            "an": 2,
+            "ac": 1,
+            "siteCount": 326
+          },
+          {
+            "an": 4,
+            "ac": 2,
+            "siteCount": 140
+          },
+          {
+            "an": 4,
+            "ac": 3,
+            "siteCount": 2
+          },
+          {
+            "an": 6,
+            "ac": 3,
+            "siteCount": 104
+          },
+          {
+            "an": 6,
+            "ac": 4,
+            "siteCount": 8
+          }
+        ],
+        "differingRows": [
+          {
+            "expected": {
+              "an": 32,
+              "ac": 18,
+              "siteCount": 61
+            },
+            "actual": {
+              "an": 32,
+              "ac": 18,
+              "siteCount": 1
+            }
+          },
+          {
+            "expected": {
+              "an": 32,
+              "ac": 19,
+              "siteCount": 19
+            },
+            "actual": {
+              "an": 32,
+              "ac": 19,
+              "siteCount": 1
+            }
+          },
+          {
+            "expected": {
+              "an": 32,
+              "ac": 20,
+              "siteCount": 11
+            },
+            "actual": {
+              "an": 32,
+              "ac": 20,
+              "siteCount": 3
+            }
+          },
+          {
+            "expected": {
+              "an": 32,
+              "ac": 21,
+              "siteCount": 24
+            },
+            "actual": {
+              "an": 32,
+              "ac": 21,
+              "siteCount": 3
+            }
+          },
+          {
+            "expected": {
+              "an": 32,
+              "ac": 24,
+              "siteCount": 37
+            },
+            "actual": {
+              "an": 32,
+              "ac": 24,
+              "siteCount": 1
+            }
+          }
+        ]
+      }
+    },
+    "q07_file_metadata": {
+      "query": "q07_file_metadata.rq",
+      "querySha256": "2f5edd99a3b15aa111ea6a3f4d2224c48690905b9c55685d69ab2cbd3f66ff43",
+      "renderedSha256": "2f5edd99a3b15aa111ea6a3f4d2224c48690905b9c55685d69ab2cbd3f66ff43",
+      "wallSeconds": 0.0071417889557778835,
+      "status": "PASS",
+      "expected": {
+        "fileFormat": "VCFv4.1",
+        "referenceGenome": "ftp://ftp.1000genomes.ebi.ac.uk//vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz",
+        "sourceSoftware": "1000GenomesPhase3Pipeline"
+      },
+      "actual": {
+        "fileFormat": "VCFv4.1",
+        "referenceGenome": "ftp://ftp.1000genomes.ebi.ac.uk//vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz",
+        "sourceSoftware": "1000GenomesPhase3Pipeline"
+      }
+    },
+    "q08_header_line_census": {
+      "query": "q08_header_line_census.rq",
+      "querySha256": "f80142cf2468520cd244beb0141eedbf21a331597b36ddebd09ac2f11974054e",
+      "renderedSha256": "f80142cf2468520cd244beb0141eedbf21a331597b36ddebd09ac2f11974054e",
+      "wallSeconds": 0.02075802581384778,
+      "status": "PASS",
+      "missingRows": 0,
+      "extraRows": 0,
+      "differingRows": 0,
+      "examples": {}
+    }
+  }
+}

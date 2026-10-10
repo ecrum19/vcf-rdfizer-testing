@@ -34,7 +34,7 @@ service attaches, or `notfound`.
   (`resolver.py`, `23a81743…`) are byte-identical to VCF-RDFizer v3.3.1's. v3.3.1 therefore builds the
   same requests from the same derived VCFs.
 - **Replayed by the reported run.** The v3.3.1 run the paper reports replayed these files:
-  [`BioMedSem_2026/benchmark-results/vcf-bench-1/v331-rerun/`](../../../../BioMedSem_2026/benchmark-results/vcf-bench-1/v331-rerun/).
+  [`benchmark-results/vcf-bench-1/v331-rerun/`](../../../../benchmark-results/vcf-bench-1/v331-rerun/).
   - Its `inputs.bench1-myvariant.sha256` holds each file's SHA-256.
   - Each `link_myvariant__*/out/*.links.json` lists the responses it used, by request and body SHA-256.
 

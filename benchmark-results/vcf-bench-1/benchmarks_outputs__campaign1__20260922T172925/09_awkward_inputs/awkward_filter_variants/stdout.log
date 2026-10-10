@@ -1,0 +1,38 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: awkward_filter_variants.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 4; FORMAT values: 8
+    * Streaming structured header RDF
+    * Header lines typed: 8; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 4; INFO values: 4; declarations: 1
+    * Triples produced: 486
+    * Compression ✅
+    * Semantic validation (aggregate, comunica): awkward_filter_variants.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/reports/validation/awkward_filter_variants
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/stages/validation/awkward_filter_variants.json
+    * Semantic validation (hdt, comunica): awkward_filter_variants.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/reports/validation/awkward_filter_variants__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/stages/validation/awkward_filter_variants__hdt.json
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/awkward_filter_variants
+      - RDF aggregate: awkward_filter_variants.nt.gz
+      - RDF (.gz): 5.66 KB (removed after successful compression)
+      - HDT (.hdt): 6.84 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/awkward_filter_variants/awkward_filter_variants.hdt)
+Total triples produced (full run): 486
+Conversion process finished.
+Run time (full mode): 33.72s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_filter_variants/out/run_metrics/awkward_filter_variants__20260915T171018/summary.json
