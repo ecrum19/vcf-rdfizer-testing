@@ -139,13 +139,13 @@ SPDI joins assume the tested reference, normalization, and eligible allele class
 
 \section{5. RQ3: costs depend on the workload, not on one headline number}
 
-Neither route is uniformly cheaper. VCF parsing wins one-pass analyses and small regions on a tabix-indexed VCF; RDF querying wins large regions, whole-file questions asked one at a time, and, once its setup of about two minutes is paid, repeated questions. The graph route costs storage as well as time: the N-Triples QLever indexes are 21--25$\times$ the gzipped VCF. The sample representation decides how much graph there is, and triple counts alone overstate that difference.
+Neither route is uniformly cheaper. VCF parsing wins one-pass analyses and small regions on a tabix-indexed VCF; RDF querying wins large regions, whole-file questions asked one at a time, and, once its setup of about two minutes is paid, repeated questions. The graph route costs storage as well as time: the N-Triples QLever indexes are 21--25$\times$ the gzipped VCF, and the QLever index itself is about 60$\times$ the bgzipped VCF with its tabix index. The sample representation decides how much graph there is, and triple counts alone overstate that difference.
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{figs/fig-regional.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~6). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Gzip-compressed sizes of the VCF and of the N-Triples QLever indexes, also for the complete HG005 VCF. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
+\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~6). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Storage on disk, also for the complete HG005 VCF: the gzipped VCF against the gzip-framed N-Triples QLever indexes, and, once indexed for queries, the bgzipped VCF with its tabix index against the QLever index. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
 \end{figure}
 
 \begin{center}\small
@@ -156,7 +156,7 @@ Neither route is uniformly cheaper. VCF parsing wins one-pass analyses and small
 Single whole-file questions & QLever took 0.005--4.62\,s per question against 11.5--12.3\,s for a full cyvcf2 parse, on 100,000 HG005 records (17.1M triples).\\
 All thirteen in one pass & One parsing pass took 12.4\,s; QLever's queries took 17.1\,s, plus a 22.8\,s index.\\
 Repeated questions & About 11 questions to break even, measured in a three-replicate rerun: 95.7\,s to convert to gzip-framed N-Triples (HDT is not needed by QLever) and 25.0\,s to index. One scenario, not a tool constant; with the base campaign's HDT it was 44.\\
-Storage & The gzip-framed N-Triples QLever indexes are 24.7$\times$ the gzipped VCF for 100,000 records and 20.7$\times$ for the complete HG005 VCF (2.89\,GB against 139.3\,MB).\\
+Storage & The gzip-framed N-Triples QLever indexes are 24.7$\times$ the gzipped VCF for 100,000 records and 20.7$\times$ for the complete HG005 VCF (2.89\,GB against 139.3\,MB). Indexed for queries, the QLever index is 60.5$\times$ the bgzipped VCF with its tabix index for 100,000 records (214.5\,MB against 3.5\,MB) and 57.5$\times$ for the complete VCF (8.1\,GB against 140.9\,MB).\\
 Regional lookups & Tabix-indexed region queries were faster up to 100\,kb (3.2--4.6\,ms against 10.6--10.8\,ms); at 10\,Mb QLever's 10.3\,ms beat bcftools (31.5\,ms) and cyvcf2 (118.2\,ms).\\
 Sample representation & At 2,504 samples, expanded output has 432$\times$ the triples of condensed but only 69$\times$ the HDT bytes; condensed values need decoding to address one call.\\
 Optional artifacts & Converting the complete HG005 VCF with v3.1.0 took 16.07\,h, about 14.5\,h of it building HDT and COTTAS. These are optional; gzip-framed N-Triples alone occupied 2.89\,GB.\\

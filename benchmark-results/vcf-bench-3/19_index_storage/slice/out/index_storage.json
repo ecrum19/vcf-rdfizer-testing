@@ -1,0 +1,71 @@
+{
+  "dataset": "slice",
+  "vcf": {
+    "name": "HG005_GRCh38_r100000.vcf.gz",
+    "bytes": 3068400,
+    "sha256": "13f5a187a4af390cab6e609c546059188b036ca9e25577c85b6e1b9af048f4ae"
+  },
+  "ntriples": {
+    "name": "HG005_GRCh38_r100000.nt.gz",
+    "bytes": 75835698,
+    "sha256": "30c8fd15869ea9d1c179098663cab5d5d91878325c0b67914112a4f1630e62d9"
+  },
+  "vcfRoute": {
+    "inputWasBgzf": false,
+    "bgzipBytes": 3498705,
+    "bgzipSeconds": 0.346,
+    "tbiBytes": 46386,
+    "tabixSeconds": 0.098,
+    "tabixVersion": "tabix (htslib) 1.22.1",
+    "storedBytes": 3545091
+  },
+  "rdfRoute": {
+    "qleverVersion": "bfd5741",
+    "command": [
+      "/opt/qlever/bin/qlever-index",
+      "-i",
+      "/work/index-storage-slice/qlever/index",
+      "-f",
+      "<N-Triples on stdin>",
+      "-F",
+      "nt",
+      "-m",
+      "4G"
+    ],
+    "triplesParsed": 17098746,
+    "indexBytes": 214472461,
+    "indexFiles": {
+      "index.index.ops": 26573703,
+      "index.index.ops.meta": 2304,
+      "index.index.osp": 27233573,
+      "index.index.osp.meta": 2304,
+      "index.index.patterns": 1256,
+      "index.index.pos": 23608717,
+      "index.index.pos.meta": 1408,
+      "index.index.pso": 27972757,
+      "index.index.pso.meta": 1408,
+      "index.index.resource-usage-log.tsv": 851,
+      "index.index.sop": 25211880,
+      "index.index.sop.meta": 64,
+      "index.index.spo": 24970828,
+      "index.index.spo.meta": 64,
+      "index.internal.index.pos": 3690803,
+      "index.internal.index.pos.meta": 64,
+      "index.internal.index.pso": 4490612,
+      "index.internal.index.pso.meta": 64,
+      "index.meta-data.json": 751,
+      "index.vocabulary.codebooks": 18440,
+      "index.vocabulary.words.external": 22378231,
+      "index.vocabulary.words.external.offsets": 28233048,
+      "index.vocabulary.words.internal": 51051,
+      "index.vocabulary.words.internal.ids": 28280
+    },
+    "buildSeconds": 23.0,
+    "peakRssKb": 5492324
+  },
+  "queryReady": {
+    "vcfBytes": 3545091,
+    "rdfBytes": 214472461,
+    "ratio": 60.5
+  }
+}

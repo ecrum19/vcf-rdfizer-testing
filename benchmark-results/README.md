@@ -33,6 +33,7 @@ script behind each.
 | Large-graph retrieval (Figure 3a; Table S17) | v3.3.1 on v3.1.0 graphs | `vcf-bench-3/v331-rerun/results/16_scale_retrieval/`; the graphs' builds in `vcf-bench-3/benchmarks_outputs/15_scale_prepare/` and their manifests in `vcf-bench-3/scale-store-manifests/` ([README](vcf-bench-3/README.md)) |
 | Release conversion check: both releases write the same graph (Section S6.2) | v3.1.0, v3.3.1 | `vcf-bench-2/v331-rerun/bridge/` |
 | Shared-input converter comparison (Figure 5; Section S2; Tables S2–S3) | v3.3.1 | `vcf-bench-1/18_converter_comparison/` ([README](vcf-bench-1/18_converter_comparison/README.md)) |
+| Index storage: the bgzipped VCF with its tabix index against the QLever index, for the 100,000-record slice and the complete HG005 VCF (Figure 6b) | v3.3.1 | `vcf-bench-3/19_index_storage/` ([README](vcf-bench-3/19_index_storage/README.md)) |
 
 Images:
 - v3.1.0 is `ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa`
@@ -40,8 +41,8 @@ Images:
 - v3.3.1 is `ecrum19/vcf-rdfizer@sha256:3ad71b1a54612142e3be43b24e7e4a38551949cb641f4421bcae9bf051102993`
   (commit `b25fb7b`).
 
-Every v3.3.1 result outside the converter comparison comes from one rerun of
-whatever a pre-release build first produced. Each host's `v331-rerun/README.md`
+Every v3.3.1 result outside the converter comparison and the index-storage
+measurement comes from one rerun of whatever a pre-release build first produced. Each host's `v331-rerun/README.md`
 gives that host's jobs and results.
 
 ## Layout
@@ -61,6 +62,7 @@ vcf-bench-3/                       the large-graph host
   benchmarks_outputs/              experiment 15: the two large graphs, built with v3.1.0
   scale-store-manifests/           those graphs' manifests
   v331-rerun/                      the v3.3.1 rerun: large-graph retrieval
+  19_index_storage/                experiment 19: tabix and QLever index sizes, both inputs (v3.3.1)
 summary.json                       the base campaign, integrated (below)
 input-checksums.tsv                the source VCFs' SHA-256
 vcf-input-sizes.json               the source VCFs' sizes

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Index storage: what each route keeps on disk to answer queries.
+# Index storage: what each route keeps on disk to answer queries (§3.11).
 #
 # A standalone measurement, not part of the suite: run_all.sh does not run it,
 # and no profile includes it. Run it by hand, on a host that holds the graphs
