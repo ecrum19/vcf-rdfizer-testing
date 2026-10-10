@@ -49,6 +49,7 @@ gives that host's jobs and results.
 ```
 vcf-bench-1/                       the base campaign's first host
   benchmarks_outputs/              experiments 00, 01, 04, 07-13 of the v3.1.0 campaign
+  sites-only-rerun/                the driver and log of 09's sites-only cell, rerun with a conformant fixture (v3.1.0)
   v331-rerun/                      the v3.3.1 rerun: Arms 1-2, the MyVariant.info tier, regional retrieval
   18_converter_comparison/         experiment 18
 vcf-bench-2/                       the base campaign's second host
@@ -86,8 +87,8 @@ one record:
 - host provenance;
 - an integrity block.
 
-Of the 143 cells, 136 are OK, 2 recorded, 2 refused as required, and 3 skipped by
-a stated guard (Table S12).
+Of the 143 cells, 137 are OK, 1 recorded (the truncated gzip's intended refusal),
+2 refused as required, and 3 skipped by a stated guard (Table S12).
 
 ```bash
 python3 scripts/build_run_summary.py benchmark-results \
@@ -102,6 +103,14 @@ experiment's internal comparison.
 **Cite the image digest, not the tag.** Two hosts that build the same local tag
 independently get different images. `summary.json` resolves every cell's tag to
 the digest its host recorded.
+
+**One base-campaign cell is a later rerun.** `09_awkward_inputs/awkward_sites_only`
+ran again on 2026-10-10, on the same host with the same image and arguments,
+because the campaign's sites-only fixture was malformed and its paired
+validation could not run. It now converts and passes, which brings the campaign to
+78 of 78 completed validations and 1,006 equal query comparisons
+([`vcf-bench-1/sites-only-rerun/`](vcf-bench-1/sites-only-rerun/README.md)). The
+first run is on `legacy`.
 
 **A non-zero exit is not always a failure.**
 - `06` asserts two refusals: `--hdt-strategy single` beside COTTAS, and beside a

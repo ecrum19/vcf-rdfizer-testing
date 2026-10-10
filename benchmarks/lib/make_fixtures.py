@@ -36,13 +36,17 @@ HEADER_COMMON = [
     '##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">',
 ]
 
-COLUMNS = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT"
+COLUMNS = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
 
 
 def vcf(lines: list[str], samples: list[str] | None = None) -> str:
-    """Assemble a VCF from meta lines plus data rows."""
+    """Assemble a VCF from meta lines plus data rows.
+
+    FORMAT is a column only when samples follow it: the specification has no
+    FORMAT column without genotype data, and bcftools rejects one.
+    """
     samples = samples or []
-    column_line = COLUMNS + ("".join("\t" + s for s in samples) if samples else "")
+    column_line = COLUMNS + ("\tFORMAT" + "".join("\t" + s for s in samples) if samples else "")
     body = [line for line in lines if not line.startswith("#")]
     meta = [line for line in lines if line.startswith("##")]
     return "\n".join(meta + [column_line] + body) + "\n"
@@ -122,8 +126,9 @@ def awkward_fixtures() -> dict[str, tuple[str, str]]:
     """name -> (content, what a correct tool must do with it)."""
     out: dict[str, tuple[str, str]] = {}
 
+    # A real sites-only file (dbSNP, gnomAD) declares no FORMAT keys either.
     out["awkward_sites_only.vcf"] = (
-        vcf(BASE + [
+        vcf([line for line in BASE if not line.startswith("##FORMAT=")] + [
             "20\t100\t.\tA\tG\t50\tPASS\tDP=30",
             "20\t200\t.\tC\tT\t60\tPASS\tDP=25",
         ]),
