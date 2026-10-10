@@ -1,0 +1,46 @@
+{
+  "run_id": "20260926T083633",
+  "timestamp": "2026-09-26T08:36:33",
+  "stage": "validation",
+  "validation_id": "whole_qlever_1",
+  "vcf_path": "/home/ubuntu/vcf-rdfizer-testing/vcf_data/HG005_GRCh38.vcf.gz",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/scale_store/whole/HG005_GRCh38/HG005_GRCh38.nt.gz",
+  "rdf_format": "nt.gz",
+  "engine": "qlever",
+  "engines": [
+    "qlever"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/16_scale_retrieval/whole__qlever__nt_gz__core__r1/out/run_metrics/batch-HG005_GRCh38-2-inputs__20260926T083633/reports/validation/whole_qlever_1",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/16_scale_retrieval/whole__qlever__nt_gz__core__r1/out/run_metrics/batch-HG005_GRCh38-2-inputs__20260926T083633/reports/validation/whole_qlever_1/summary.json",
+  "engine_statuses": {
+    "qlever": "TIMING_ONLY"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "qlever": 635.2355975979735
+    },
+    "engineSetupSeconds": {
+      "qlever": 864.9729771560087
+    },
+    "oracleSeconds": 485.9858932629868
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/16_scale_retrieval/whole__qlever__nt_gz__core__r1/out/run_metrics/batch-HG005_GRCh38-2-inputs__20260926T083633/reports/validation/whole_qlever_1/benchmark.csv",
+  "input_rdf_size_bytes": 2885155620,
+  "exit_code": 0,
+  "status": "TIMING_ONLY",
+  "timing": {
+    "wall_seconds": 3061.5942730120005,
+    "user_seconds": 6818.55,
+    "sys_seconds": 837.28,
+    "max_rss_kb": 9304848
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  },
+  "rdf_gzip_path": "/home/ubuntu/vcf-rdfizer-testing/scale_store/whole/HG005_GRCh38/HG005_GRCh38.nt.gz"
+}

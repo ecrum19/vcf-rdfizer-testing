@@ -1,0 +1,224 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.nt.gz",
+  "output_name": "HG005_GRCh38_r100000",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 190.0633409023285,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt",
+        "output_size_bytes": 77265882,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.nt.gz"
+          ],
+          "chunk_count": 4,
+          "chunk_input_bytes": 1822177117,
+          "record_count": 11413670,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 3515648,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 536871063,
+              "record_count": 3515648,
+              "payload_bytes": 536871063
+            },
+            {
+              "chunk_id": 1,
+              "path": "chunk-00001.nt",
+              "start_record": 3515648,
+              "end_record": 6856238,
+              "start_uncompressed_byte": 536871063,
+              "end_uncompressed_byte": 1073742048,
+              "record_count": 3340590,
+              "payload_bytes": 536870985
+            },
+            {
+              "chunk_id": 2,
+              "path": "chunk-00002.nt",
+              "start_record": 6856238,
+              "end_record": 10136021,
+              "start_uncompressed_byte": 1073742048,
+              "end_uncompressed_byte": 1610612986,
+              "record_count": 3279783,
+              "payload_bytes": 536870938
+            },
+            {
+              "chunk_id": 3,
+              "path": "chunk-00003.nt",
+              "start_record": 10136021,
+              "end_record": 11413670,
+              "start_uncompressed_byte": 1610612986,
+              "end_uncompressed_byte": 1822177117,
+              "record_count": 1277649,
+              "payload_bytes": 211564131
+            }
+          ],
+          "merge_rounds": 2,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/info__HG005_GRCh38_r100000__raw__r3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt.index.v1-1",
+          "index_size_bytes": 66327789,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 11413670,
+            "decoded_triples": 11413670,
+            "expected_triples": 11413670,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 16.17813215102069,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 78.57135287905112,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 30308361,
+        "workspace_free_bytes_after": 119485632512,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119515947008,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-build-00001",
+        "stage_name": "hdt-build-00001",
+        "exit_code": 0,
+        "wall_seconds": 47.50141350296326,
+        "output_path": "/work/chunk-00001.hdt",
+        "output_size_bytes": 20359001,
+        "workspace_free_bytes_after": 119465271296,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119485636608,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-build-00002",
+        "stage_name": "hdt-build-00002",
+        "exit_code": 0,
+        "wall_seconds": 40.32880614302121,
+        "output_path": "/work/chunk-00002.hdt",
+        "output_size_bytes": 20014377,
+        "workspace_free_bytes_after": 119445250048,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119465271296,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-build-00003",
+        "stage_name": "hdt-build-00003",
+        "exit_code": 0,
+        "wall_seconds": 6.83702555205673,
+        "output_path": "/work/chunk-00003.hdt",
+        "output_size_bytes": 7247126,
+        "workspace_free_bytes_after": 119763304448,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119770558464,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-merge-r01-00000",
+        "stage_name": "hdt-merge-r01-00000",
+        "exit_code": 0,
+        "wall_seconds": 3.976394281955436,
+        "output_path": "/work/hdt-merge-r01-00000.hdt",
+        "output_size_bytes": 49719133,
+        "workspace_free_bytes_after": 119925133312,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119974871040,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-merge-r01-00001",
+        "stage_name": "hdt-merge-r01-00001",
+        "exit_code": 0,
+        "wall_seconds": 2.4300244881305844,
+        "output_path": "/work/hdt-merge-r01-00001.hdt",
+        "output_size_bytes": 26751120,
+        "workspace_free_bytes_after": 119949049856,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119975821312,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-merge-r02-00000",
+        "stage_name": "hdt-merge-r02-00000",
+        "exit_code": 0,
+        "wall_seconds": 6.01966591598466,
+        "output_path": "/work/hdt-merge-r02-00000.hdt",
+        "output_size_bytes": 77265882,
+        "workspace_free_bytes_after": 119899049984,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119976333312,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 4.398658139165491,
+        "output_path": "/data/out/HG005_GRCh38_r100000.hdt.index.v1-1",
+        "output_size_bytes": 66327789,
+        "workspace_free_bytes_after": 119909208064,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119975542784,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 16.17813215102069,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 162,
+        "workspace_free_bytes_after": 119909203968,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 119909208064,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    ],
+    "index_warnings": []
+  }
+}

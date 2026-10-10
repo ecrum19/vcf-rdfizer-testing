@@ -1,0 +1,33 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/run_metrics/1000G_10000r_s2504__20260914T102541
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/run_metrics/1000G_10000r_s2504__20260914T102541/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/run_metrics/1000G_10000r_s2504__20260914T102541/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: condensed
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: 1000G_10000r_s2504.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.1 (detected)
+    * RDF conversion ✅
+    * Streaming condensed multi-sample RDF (no expanded helper TSVs)
+    * Condensed sample RDF streaming: 10,000 variants, 10,000 vectors
+    * Condensed matrices streamed: 10,000; FORMAT vectors: 10,000; reusable samples: 2,504
+    * Streaming structured header RDF
+    * Header lines typed: 252; contigs: 86
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 120,258 values
+    * QUAL values streamed: 10,000; INFO values: 120,258; declarations: 24
+    * Triples produced: 1,452,018
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/1000G_10000r_s2504
+      - RDF aggregate: 1000G_10000r_s2504.nt.gz
+      - RDF (.gz): 7.72 MB (removed after successful compression)
+      - HDT (.hdt): 56.48 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/1000G_10000r_s2504/1000G_10000r_s2504.hdt)
+Total triples produced (full run): 1,452,018
+Conversion process finished.
+Run time (full mode): 3m 55.6s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/run_metrics/1000G_10000r_s2504__20260914T102541/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__structure/out/run_metrics/1000G_10000r_s2504__20260914T102541/summary.json

@@ -1,0 +1,2454 @@
+{
+  "invariants": {
+    "parser": [
+      {
+        "detail": "250000 == 250000",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "250000 == 250000",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "250000 == 250000",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "250000 == 250000",
+        "name": "q05_total_NG131FQA1I",
+        "status": "PASS"
+      },
+      {
+        "detail": "245511 <= 245511",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "245511 == 245511",
+        "name": "q06_eligible_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_2",
+        "status": "PASS"
+      }
+    ],
+    "sparql": [
+      {
+        "detail": "250000 == 250000",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "250000 == 250000",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "250000 == 250000",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "250000 == 250000",
+        "name": "q05_total_NG131FQA1I",
+        "status": "PASS"
+      },
+      {
+        "detail": "245511 <= 245511",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_2",
+        "status": "PASS"
+      }
+    ]
+  },
+  "queries": {
+    "q01_record_density_1mb": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q02_variant_shape_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q03_titv": {
+      "actual": {
+        "biallelicSnvCount": 201246,
+        "transitionCount": 133950,
+        "transversionCount": 67296
+      },
+      "expected": {
+        "biallelicSnvCount": 201246,
+        "transitionCount": 133950,
+        "transversionCount": 67296
+      },
+      "status": "PASS"
+    },
+    "q04_filter_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q05_sample_genotype_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q06_ac_an_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q07_file_metadata": {
+      "actual": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "file:///mnt/ssd/MegaBOLT_scheduler/reference/hg38.fa",
+        "sourceSoftware": "HaplotypeCaller"
+      },
+      "expected": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "file:///mnt/ssd/MegaBOLT_scheduler/reference/hg38.fa",
+        "sourceSoftware": "HaplotypeCaller"
+      },
+      "status": "PASS"
+    },
+    "q08_header_line_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q09_predicate_census": {
+      "differingRows": [
+        {
+          "actual": {
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "tripleCount": 11150450
+          },
+          "expected": {
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "tripleCount": 11119540
+          }
+        }
+      ],
+      "extraRows": [
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#inPhaseSet",
+          "tripleCount": 30910
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#phaseSetId",
+          "tripleCount": 30910
+        }
+      ],
+      "missingRows": [],
+      "status": "MISMATCH"
+    },
+    "q10_class_census": {
+      "differingRows": [],
+      "extraRows": [
+        {
+          "class": "https://w3id.org/vcf-core/vocab#PhaseSet",
+          "resourceCount": 30910
+        }
+      ],
+      "missingRows": [],
+      "status": "MISMATCH"
+    },
+    "q11_record_digest": {
+      "differingRows": [
+        {
+          "actual": {
+            "bucket": "00",
+            "recordCount": 988
+          },
+          "expected": {
+            "bucket": "00",
+            "recordCount": 985
+          }
+        },
+        {
+          "actual": {
+            "bucket": "01",
+            "recordCount": 980
+          },
+          "expected": {
+            "bucket": "01",
+            "recordCount": 987
+          }
+        },
+        {
+          "actual": {
+            "bucket": "02",
+            "recordCount": 935
+          },
+          "expected": {
+            "bucket": "02",
+            "recordCount": 925
+          }
+        },
+        {
+          "actual": {
+            "bucket": "03",
+            "recordCount": 987
+          },
+          "expected": {
+            "bucket": "03",
+            "recordCount": 980
+          }
+        },
+        {
+          "actual": {
+            "bucket": "04",
+            "recordCount": 1011
+          },
+          "expected": {
+            "bucket": "04",
+            "recordCount": 1009
+          }
+        },
+        {
+          "actual": {
+            "bucket": "05",
+            "recordCount": 993
+          },
+          "expected": {
+            "bucket": "05",
+            "recordCount": 990
+          }
+        },
+        {
+          "actual": {
+            "bucket": "06",
+            "recordCount": 980
+          },
+          "expected": {
+            "bucket": "06",
+            "recordCount": 976
+          }
+        },
+        {
+          "actual": {
+            "bucket": "07",
+            "recordCount": 1029
+          },
+          "expected": {
+            "bucket": "07",
+            "recordCount": 1023
+          }
+        },
+        {
+          "actual": {
+            "bucket": "08",
+            "recordCount": 988
+          },
+          "expected": {
+            "bucket": "08",
+            "recordCount": 994
+          }
+        },
+        {
+          "actual": {
+            "bucket": "09",
+            "recordCount": 959
+          },
+          "expected": {
+            "bucket": "09",
+            "recordCount": 951
+          }
+        },
+        {
+          "actual": {
+            "bucket": "0a",
+            "recordCount": 999
+          },
+          "expected": {
+            "bucket": "0a",
+            "recordCount": 998
+          }
+        },
+        {
+          "actual": {
+            "bucket": "0b",
+            "recordCount": 967
+          },
+          "expected": {
+            "bucket": "0b",
+            "recordCount": 971
+          }
+        },
+        {
+          "actual": {
+            "bucket": "0c",
+            "recordCount": 1003
+          },
+          "expected": {
+            "bucket": "0c",
+            "recordCount": 1006
+          }
+        },
+        {
+          "actual": {
+            "bucket": "0d",
+            "recordCount": 1005
+          },
+          "expected": {
+            "bucket": "0d",
+            "recordCount": 1003
+          }
+        },
+        {
+          "actual": {
+            "bucket": "0e",
+            "recordCount": 951
+          },
+          "expected": {
+            "bucket": "0e",
+            "recordCount": 957
+          }
+        },
+        {
+          "actual": {
+            "bucket": "0f",
+            "recordCount": 1008
+          },
+          "expected": {
+            "bucket": "0f",
+            "recordCount": 1009
+          }
+        },
+        {
+          "actual": {
+            "bucket": "12",
+            "recordCount": 934
+          },
+          "expected": {
+            "bucket": "12",
+            "recordCount": 932
+          }
+        },
+        {
+          "actual": {
+            "bucket": "13",
+            "recordCount": 1055
+          },
+          "expected": {
+            "bucket": "13",
+            "recordCount": 1058
+          }
+        },
+        {
+          "actual": {
+            "bucket": "14",
+            "recordCount": 979
+          },
+          "expected": {
+            "bucket": "14",
+            "recordCount": 983
+          }
+        },
+        {
+          "actual": {
+            "bucket": "15",
+            "recordCount": 909
+          },
+          "expected": {
+            "bucket": "15",
+            "recordCount": 914
+          }
+        },
+        {
+          "actual": {
+            "bucket": "16",
+            "recordCount": 976
+          },
+          "expected": {
+            "bucket": "16",
+            "recordCount": 973
+          }
+        },
+        {
+          "actual": {
+            "bucket": "17",
+            "recordCount": 954
+          },
+          "expected": {
+            "bucket": "17",
+            "recordCount": 949
+          }
+        },
+        {
+          "actual": {
+            "bucket": "18",
+            "recordCount": 969
+          },
+          "expected": {
+            "bucket": "18",
+            "recordCount": 965
+          }
+        },
+        {
+          "actual": {
+            "bucket": "19",
+            "recordCount": 947
+          },
+          "expected": {
+            "bucket": "19",
+            "recordCount": 952
+          }
+        },
+        {
+          "actual": {
+            "bucket": "1a",
+            "recordCount": 935
+          },
+          "expected": {
+            "bucket": "1a",
+            "recordCount": 939
+          }
+        },
+        {
+          "actual": {
+            "bucket": "1b",
+            "recordCount": 970
+          },
+          "expected": {
+            "bucket": "1b",
+            "recordCount": 975
+          }
+        },
+        {
+          "actual": {
+            "bucket": "1c",
+            "recordCount": 935
+          },
+          "expected": {
+            "bucket": "1c",
+            "recordCount": 933
+          }
+        },
+        {
+          "actual": {
+            "bucket": "1d",
+            "recordCount": 951
+          },
+          "expected": {
+            "bucket": "1d",
+            "recordCount": 953
+          }
+        },
+        {
+          "actual": {
+            "bucket": "20",
+            "recordCount": 985
+          },
+          "expected": {
+            "bucket": "20",
+            "recordCount": 980
+          }
+        },
+        {
+          "actual": {
+            "bucket": "21",
+            "recordCount": 955
+          },
+          "expected": {
+            "bucket": "21",
+            "recordCount": 962
+          }
+        },
+        {
+          "actual": {
+            "bucket": "22",
+            "recordCount": 1018
+          },
+          "expected": {
+            "bucket": "22",
+            "recordCount": 1016
+          }
+        },
+        {
+          "actual": {
+            "bucket": "23",
+            "recordCount": 954
+          },
+          "expected": {
+            "bucket": "23",
+            "recordCount": 955
+          }
+        },
+        {
+          "actual": {
+            "bucket": "25",
+            "recordCount": 1050
+          },
+          "expected": {
+            "bucket": "25",
+            "recordCount": 1048
+          }
+        },
+        {
+          "actual": {
+            "bucket": "26",
+            "recordCount": 960
+          },
+          "expected": {
+            "bucket": "26",
+            "recordCount": 964
+          }
+        },
+        {
+          "actual": {
+            "bucket": "28",
+            "recordCount": 992
+          },
+          "expected": {
+            "bucket": "28",
+            "recordCount": 990
+          }
+        },
+        {
+          "actual": {
+            "bucket": "2a",
+            "recordCount": 985
+          },
+          "expected": {
+            "bucket": "2a",
+            "recordCount": 986
+          }
+        },
+        {
+          "actual": {
+            "bucket": "2c",
+            "recordCount": 979
+          },
+          "expected": {
+            "bucket": "2c",
+            "recordCount": 985
+          }
+        },
+        {
+          "actual": {
+            "bucket": "2d",
+            "recordCount": 1000
+          },
+          "expected": {
+            "bucket": "2d",
+            "recordCount": 1002
+          }
+        },
+        {
+          "actual": {
+            "bucket": "2e",
+            "recordCount": 939
+          },
+          "expected": {
+            "bucket": "2e",
+            "recordCount": 951
+          }
+        },
+        {
+          "actual": {
+            "bucket": "2f",
+            "recordCount": 889
+          },
+          "expected": {
+            "bucket": "2f",
+            "recordCount": 890
+          }
+        },
+        {
+          "actual": {
+            "bucket": "31",
+            "recordCount": 1025
+          },
+          "expected": {
+            "bucket": "31",
+            "recordCount": 1020
+          }
+        },
+        {
+          "actual": {
+            "bucket": "32",
+            "recordCount": 898
+          },
+          "expected": {
+            "bucket": "32",
+            "recordCount": 893
+          }
+        },
+        {
+          "actual": {
+            "bucket": "33",
+            "recordCount": 937
+          },
+          "expected": {
+            "bucket": "33",
+            "recordCount": 940
+          }
+        },
+        {
+          "actual": {
+            "bucket": "35",
+            "recordCount": 992
+          },
+          "expected": {
+            "bucket": "35",
+            "recordCount": 994
+          }
+        },
+        {
+          "actual": {
+            "bucket": "36",
+            "recordCount": 981
+          },
+          "expected": {
+            "bucket": "36",
+            "recordCount": 983
+          }
+        },
+        {
+          "actual": {
+            "bucket": "37",
+            "recordCount": 1024
+          },
+          "expected": {
+            "bucket": "37",
+            "recordCount": 1021
+          }
+        },
+        {
+          "actual": {
+            "bucket": "38",
+            "recordCount": 1016
+          },
+          "expected": {
+            "bucket": "38",
+            "recordCount": 1018
+          }
+        },
+        {
+          "actual": {
+            "bucket": "39",
+            "recordCount": 975
+          },
+          "expected": {
+            "bucket": "39",
+            "recordCount": 979
+          }
+        },
+        {
+          "actual": {
+            "bucket": "3a",
+            "recordCount": 1010
+          },
+          "expected": {
+            "bucket": "3a",
+            "recordCount": 1012
+          }
+        },
+        {
+          "actual": {
+            "bucket": "3b",
+            "recordCount": 974
+          },
+          "expected": {
+            "bucket": "3b",
+            "recordCount": 976
+          }
+        },
+        {
+          "actual": {
+            "bucket": "3c",
+            "recordCount": 948
+          },
+          "expected": {
+            "bucket": "3c",
+            "recordCount": 951
+          }
+        },
+        {
+          "actual": {
+            "bucket": "3e",
+            "recordCount": 950
+          },
+          "expected": {
+            "bucket": "3e",
+            "recordCount": 949
+          }
+        },
+        {
+          "actual": {
+            "bucket": "3f",
+            "recordCount": 984
+          },
+          "expected": {
+            "bucket": "3f",
+            "recordCount": 987
+          }
+        },
+        {
+          "actual": {
+            "bucket": "40",
+            "recordCount": 976
+          },
+          "expected": {
+            "bucket": "40",
+            "recordCount": 974
+          }
+        },
+        {
+          "actual": {
+            "bucket": "41",
+            "recordCount": 936
+          },
+          "expected": {
+            "bucket": "41",
+            "recordCount": 932
+          }
+        },
+        {
+          "actual": {
+            "bucket": "42",
+            "recordCount": 953
+          },
+          "expected": {
+            "bucket": "42",
+            "recordCount": 949
+          }
+        },
+        {
+          "actual": {
+            "bucket": "43",
+            "recordCount": 951
+          },
+          "expected": {
+            "bucket": "43",
+            "recordCount": 956
+          }
+        },
+        {
+          "actual": {
+            "bucket": "44",
+            "recordCount": 968
+          },
+          "expected": {
+            "bucket": "44",
+            "recordCount": 970
+          }
+        },
+        {
+          "actual": {
+            "bucket": "45",
+            "recordCount": 942
+          },
+          "expected": {
+            "bucket": "45",
+            "recordCount": 939
+          }
+        },
+        {
+          "actual": {
+            "bucket": "46",
+            "recordCount": 948
+          },
+          "expected": {
+            "bucket": "46",
+            "recordCount": 946
+          }
+        },
+        {
+          "actual": {
+            "bucket": "47",
+            "recordCount": 980
+          },
+          "expected": {
+            "bucket": "47",
+            "recordCount": 978
+          }
+        },
+        {
+          "actual": {
+            "bucket": "48",
+            "recordCount": 951
+          },
+          "expected": {
+            "bucket": "48",
+            "recordCount": 947
+          }
+        },
+        {
+          "actual": {
+            "bucket": "49",
+            "recordCount": 985
+          },
+          "expected": {
+            "bucket": "49",
+            "recordCount": 989
+          }
+        },
+        {
+          "actual": {
+            "bucket": "4a",
+            "recordCount": 932
+          },
+          "expected": {
+            "bucket": "4a",
+            "recordCount": 933
+          }
+        },
+        {
+          "actual": {
+            "bucket": "4d",
+            "recordCount": 939
+          },
+          "expected": {
+            "bucket": "4d",
+            "recordCount": 936
+          }
+        },
+        {
+          "actual": {
+            "bucket": "4e",
+            "recordCount": 1008
+          },
+          "expected": {
+            "bucket": "4e",
+            "recordCount": 1005
+          }
+        },
+        {
+          "actual": {
+            "bucket": "4f",
+            "recordCount": 1009
+          },
+          "expected": {
+            "bucket": "4f",
+            "recordCount": 1003
+          }
+        },
+        {
+          "actual": {
+            "bucket": "50",
+            "recordCount": 966
+          },
+          "expected": {
+            "bucket": "50",
+            "recordCount": 971
+          }
+        },
+        {
+          "actual": {
+            "bucket": "51",
+            "recordCount": 986
+          },
+          "expected": {
+            "bucket": "51",
+            "recordCount": 985
+          }
+        },
+        {
+          "actual": {
+            "bucket": "53",
+            "recordCount": 1002
+          },
+          "expected": {
+            "bucket": "53",
+            "recordCount": 1004
+          }
+        },
+        {
+          "actual": {
+            "bucket": "54",
+            "recordCount": 1002
+          },
+          "expected": {
+            "bucket": "54",
+            "recordCount": 1005
+          }
+        },
+        {
+          "actual": {
+            "bucket": "55",
+            "recordCount": 983
+          },
+          "expected": {
+            "bucket": "55",
+            "recordCount": 981
+          }
+        },
+        {
+          "actual": {
+            "bucket": "56",
+            "recordCount": 995
+          },
+          "expected": {
+            "bucket": "56",
+            "recordCount": 997
+          }
+        },
+        {
+          "actual": {
+            "bucket": "57",
+            "recordCount": 1008
+          },
+          "expected": {
+            "bucket": "57",
+            "recordCount": 1007
+          }
+        },
+        {
+          "actual": {
+            "bucket": "59",
+            "recordCount": 995
+          },
+          "expected": {
+            "bucket": "59",
+            "recordCount": 990
+          }
+        },
+        {
+          "actual": {
+            "bucket": "5a",
+            "recordCount": 958
+          },
+          "expected": {
+            "bucket": "5a",
+            "recordCount": 965
+          }
+        },
+        {
+          "actual": {
+            "bucket": "5b",
+            "recordCount": 1003
+          },
+          "expected": {
+            "bucket": "5b",
+            "recordCount": 999
+          }
+        },
+        {
+          "actual": {
+            "bucket": "5c",
+            "recordCount": 911
+          },
+          "expected": {
+            "bucket": "5c",
+            "recordCount": 910
+          }
+        },
+        {
+          "actual": {
+            "bucket": "5d",
+            "recordCount": 967
+          },
+          "expected": {
+            "bucket": "5d",
+            "recordCount": 968
+          }
+        },
+        {
+          "actual": {
+            "bucket": "60",
+            "recordCount": 979
+          },
+          "expected": {
+            "bucket": "60",
+            "recordCount": 974
+          }
+        },
+        {
+          "actual": {
+            "bucket": "61",
+            "recordCount": 957
+          },
+          "expected": {
+            "bucket": "61",
+            "recordCount": 952
+          }
+        },
+        {
+          "actual": {
+            "bucket": "62",
+            "recordCount": 1032
+          },
+          "expected": {
+            "bucket": "62",
+            "recordCount": 1027
+          }
+        },
+        {
+          "actual": {
+            "bucket": "63",
+            "recordCount": 993
+          },
+          "expected": {
+            "bucket": "63",
+            "recordCount": 995
+          }
+        },
+        {
+          "actual": {
+            "bucket": "64",
+            "recordCount": 980
+          },
+          "expected": {
+            "bucket": "64",
+            "recordCount": 981
+          }
+        },
+        {
+          "actual": {
+            "bucket": "68",
+            "recordCount": 1025
+          },
+          "expected": {
+            "bucket": "68",
+            "recordCount": 1021
+          }
+        },
+        {
+          "actual": {
+            "bucket": "69",
+            "recordCount": 985
+          },
+          "expected": {
+            "bucket": "69",
+            "recordCount": 980
+          }
+        },
+        {
+          "actual": {
+            "bucket": "6a",
+            "recordCount": 1001
+          },
+          "expected": {
+            "bucket": "6a",
+            "recordCount": 1000
+          }
+        },
+        {
+          "actual": {
+            "bucket": "6b",
+            "recordCount": 989
+          },
+          "expected": {
+            "bucket": "6b",
+            "recordCount": 997
+          }
+        },
+        {
+          "actual": {
+            "bucket": "6c",
+            "recordCount": 985
+          },
+          "expected": {
+            "bucket": "6c",
+            "recordCount": 981
+          }
+        },
+        {
+          "actual": {
+            "bucket": "6d",
+            "recordCount": 963
+          },
+          "expected": {
+            "bucket": "6d",
+            "recordCount": 956
+          }
+        },
+        {
+          "actual": {
+            "bucket": "6e",
+            "recordCount": 1004
+          },
+          "expected": {
+            "bucket": "6e",
+            "recordCount": 1006
+          }
+        },
+        {
+          "actual": {
+            "bucket": "6f",
+            "recordCount": 959
+          },
+          "expected": {
+            "bucket": "6f",
+            "recordCount": 957
+          }
+        },
+        {
+          "actual": {
+            "bucket": "70",
+            "recordCount": 956
+          },
+          "expected": {
+            "bucket": "70",
+            "recordCount": 955
+          }
+        },
+        {
+          "actual": {
+            "bucket": "71",
+            "recordCount": 969
+          },
+          "expected": {
+            "bucket": "71",
+            "recordCount": 970
+          }
+        },
+        {
+          "actual": {
+            "bucket": "72",
+            "recordCount": 947
+          },
+          "expected": {
+            "bucket": "72",
+            "recordCount": 946
+          }
+        },
+        {
+          "actual": {
+            "bucket": "73",
+            "recordCount": 943
+          },
+          "expected": {
+            "bucket": "73",
+            "recordCount": 944
+          }
+        },
+        {
+          "actual": {
+            "bucket": "74",
+            "recordCount": 989
+          },
+          "expected": {
+            "bucket": "74",
+            "recordCount": 986
+          }
+        },
+        {
+          "actual": {
+            "bucket": "75",
+            "recordCount": 970
+          },
+          "expected": {
+            "bucket": "75",
+            "recordCount": 973
+          }
+        },
+        {
+          "actual": {
+            "bucket": "76",
+            "recordCount": 916
+          },
+          "expected": {
+            "bucket": "76",
+            "recordCount": 917
+          }
+        },
+        {
+          "actual": {
+            "bucket": "77",
+            "recordCount": 955
+          },
+          "expected": {
+            "bucket": "77",
+            "recordCount": 963
+          }
+        },
+        {
+          "actual": {
+            "bucket": "78",
+            "recordCount": 916
+          },
+          "expected": {
+            "bucket": "78",
+            "recordCount": 913
+          }
+        },
+        {
+          "actual": {
+            "bucket": "7a",
+            "recordCount": 931
+          },
+          "expected": {
+            "bucket": "7a",
+            "recordCount": 922
+          }
+        },
+        {
+          "actual": {
+            "bucket": "7b",
+            "recordCount": 924
+          },
+          "expected": {
+            "bucket": "7b",
+            "recordCount": 923
+          }
+        },
+        {
+          "actual": {
+            "bucket": "7c",
+            "recordCount": 978
+          },
+          "expected": {
+            "bucket": "7c",
+            "recordCount": 980
+          }
+        },
+        {
+          "actual": {
+            "bucket": "7e",
+            "recordCount": 958
+          },
+          "expected": {
+            "bucket": "7e",
+            "recordCount": 952
+          }
+        },
+        {
+          "actual": {
+            "bucket": "7f",
+            "recordCount": 943
+          },
+          "expected": {
+            "bucket": "7f",
+            "recordCount": 946
+          }
+        },
+        {
+          "actual": {
+            "bucket": "81",
+            "recordCount": 1013
+          },
+          "expected": {
+            "bucket": "81",
+            "recordCount": 1012
+          }
+        },
+        {
+          "actual": {
+            "bucket": "82",
+            "recordCount": 1001
+          },
+          "expected": {
+            "bucket": "82",
+            "recordCount": 997
+          }
+        },
+        {
+          "actual": {
+            "bucket": "83",
+            "recordCount": 918
+          },
+          "expected": {
+            "bucket": "83",
+            "recordCount": 922
+          }
+        },
+        {
+          "actual": {
+            "bucket": "84",
+            "recordCount": 1008
+          },
+          "expected": {
+            "bucket": "84",
+            "recordCount": 1006
+          }
+        },
+        {
+          "actual": {
+            "bucket": "85",
+            "recordCount": 895
+          },
+          "expected": {
+            "bucket": "85",
+            "recordCount": 899
+          }
+        },
+        {
+          "actual": {
+            "bucket": "86",
+            "recordCount": 953
+          },
+          "expected": {
+            "bucket": "86",
+            "recordCount": 954
+          }
+        },
+        {
+          "actual": {
+            "bucket": "87",
+            "recordCount": 964
+          },
+          "expected": {
+            "bucket": "87",
+            "recordCount": 960
+          }
+        },
+        {
+          "actual": {
+            "bucket": "88",
+            "recordCount": 960
+          },
+          "expected": {
+            "bucket": "88",
+            "recordCount": 965
+          }
+        },
+        {
+          "actual": {
+            "bucket": "89",
+            "recordCount": 953
+          },
+          "expected": {
+            "bucket": "89",
+            "recordCount": 954
+          }
+        },
+        {
+          "actual": {
+            "bucket": "8a",
+            "recordCount": 992
+          },
+          "expected": {
+            "bucket": "8a",
+            "recordCount": 991
+          }
+        },
+        {
+          "actual": {
+            "bucket": "8b",
+            "recordCount": 971
+          },
+          "expected": {
+            "bucket": "8b",
+            "recordCount": 975
+          }
+        },
+        {
+          "actual": {
+            "bucket": "8c",
+            "recordCount": 1023
+          },
+          "expected": {
+            "bucket": "8c",
+            "recordCount": 1026
+          }
+        },
+        {
+          "actual": {
+            "bucket": "8d",
+            "recordCount": 952
+          },
+          "expected": {
+            "bucket": "8d",
+            "recordCount": 950
+          }
+        },
+        {
+          "actual": {
+            "bucket": "8e",
+            "recordCount": 949
+          },
+          "expected": {
+            "bucket": "8e",
+            "recordCount": 956
+          }
+        },
+        {
+          "actual": {
+            "bucket": "8f",
+            "recordCount": 1009
+          },
+          "expected": {
+            "bucket": "8f",
+            "recordCount": 1007
+          }
+        },
+        {
+          "actual": {
+            "bucket": "90",
+            "recordCount": 923
+          },
+          "expected": {
+            "bucket": "90",
+            "recordCount": 922
+          }
+        },
+        {
+          "actual": {
+            "bucket": "91",
+            "recordCount": 1003
+          },
+          "expected": {
+            "bucket": "91",
+            "recordCount": 1001
+          }
+        },
+        {
+          "actual": {
+            "bucket": "92",
+            "recordCount": 949
+          },
+          "expected": {
+            "bucket": "92",
+            "recordCount": 952
+          }
+        },
+        {
+          "actual": {
+            "bucket": "93",
+            "recordCount": 957
+          },
+          "expected": {
+            "bucket": "93",
+            "recordCount": 949
+          }
+        },
+        {
+          "actual": {
+            "bucket": "94",
+            "recordCount": 983
+          },
+          "expected": {
+            "bucket": "94",
+            "recordCount": 979
+          }
+        },
+        {
+          "actual": {
+            "bucket": "95",
+            "recordCount": 942
+          },
+          "expected": {
+            "bucket": "95",
+            "recordCount": 940
+          }
+        },
+        {
+          "actual": {
+            "bucket": "96",
+            "recordCount": 1011
+          },
+          "expected": {
+            "bucket": "96",
+            "recordCount": 1010
+          }
+        },
+        {
+          "actual": {
+            "bucket": "98",
+            "recordCount": 1051
+          },
+          "expected": {
+            "bucket": "98",
+            "recordCount": 1047
+          }
+        },
+        {
+          "actual": {
+            "bucket": "99",
+            "recordCount": 958
+          },
+          "expected": {
+            "bucket": "99",
+            "recordCount": 964
+          }
+        },
+        {
+          "actual": {
+            "bucket": "9a",
+            "recordCount": 1035
+          },
+          "expected": {
+            "bucket": "9a",
+            "recordCount": 1036
+          }
+        },
+        {
+          "actual": {
+            "bucket": "9b",
+            "recordCount": 945
+          },
+          "expected": {
+            "bucket": "9b",
+            "recordCount": 939
+          }
+        },
+        {
+          "actual": {
+            "bucket": "9c",
+            "recordCount": 1015
+          },
+          "expected": {
+            "bucket": "9c",
+            "recordCount": 1012
+          }
+        },
+        {
+          "actual": {
+            "bucket": "9d",
+            "recordCount": 1013
+          },
+          "expected": {
+            "bucket": "9d",
+            "recordCount": 1012
+          }
+        },
+        {
+          "actual": {
+            "bucket": "9f",
+            "recordCount": 945
+          },
+          "expected": {
+            "bucket": "9f",
+            "recordCount": 944
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a0",
+            "recordCount": 971
+          },
+          "expected": {
+            "bucket": "a0",
+            "recordCount": 968
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a1",
+            "recordCount": 957
+          },
+          "expected": {
+            "bucket": "a1",
+            "recordCount": 955
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a2",
+            "recordCount": 978
+          },
+          "expected": {
+            "bucket": "a2",
+            "recordCount": 975
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a3",
+            "recordCount": 948
+          },
+          "expected": {
+            "bucket": "a3",
+            "recordCount": 952
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a4",
+            "recordCount": 1027
+          },
+          "expected": {
+            "bucket": "a4",
+            "recordCount": 1026
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a5",
+            "recordCount": 984
+          },
+          "expected": {
+            "bucket": "a5",
+            "recordCount": 985
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a6",
+            "recordCount": 987
+          },
+          "expected": {
+            "bucket": "a6",
+            "recordCount": 995
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a7",
+            "recordCount": 994
+          },
+          "expected": {
+            "bucket": "a7",
+            "recordCount": 996
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a8",
+            "recordCount": 987
+          },
+          "expected": {
+            "bucket": "a8",
+            "recordCount": 986
+          }
+        },
+        {
+          "actual": {
+            "bucket": "a9",
+            "recordCount": 941
+          },
+          "expected": {
+            "bucket": "a9",
+            "recordCount": 942
+          }
+        },
+        {
+          "actual": {
+            "bucket": "aa",
+            "recordCount": 1012
+          },
+          "expected": {
+            "bucket": "aa",
+            "recordCount": 1009
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ab",
+            "recordCount": 972
+          },
+          "expected": {
+            "bucket": "ab",
+            "recordCount": 969
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ac",
+            "recordCount": 994
+          },
+          "expected": {
+            "bucket": "ac",
+            "recordCount": 993
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ad",
+            "recordCount": 989
+          },
+          "expected": {
+            "bucket": "ad",
+            "recordCount": 995
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ae",
+            "recordCount": 943
+          },
+          "expected": {
+            "bucket": "ae",
+            "recordCount": 944
+          }
+        },
+        {
+          "actual": {
+            "bucket": "af",
+            "recordCount": 971
+          },
+          "expected": {
+            "bucket": "af",
+            "recordCount": 959
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b1",
+            "recordCount": 1014
+          },
+          "expected": {
+            "bucket": "b1",
+            "recordCount": 1017
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b2",
+            "recordCount": 946
+          },
+          "expected": {
+            "bucket": "b2",
+            "recordCount": 952
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b3",
+            "recordCount": 1024
+          },
+          "expected": {
+            "bucket": "b3",
+            "recordCount": 1020
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b4",
+            "recordCount": 917
+          },
+          "expected": {
+            "bucket": "b4",
+            "recordCount": 918
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b5",
+            "recordCount": 977
+          },
+          "expected": {
+            "bucket": "b5",
+            "recordCount": 975
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b6",
+            "recordCount": 986
+          },
+          "expected": {
+            "bucket": "b6",
+            "recordCount": 983
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b7",
+            "recordCount": 1011
+          },
+          "expected": {
+            "bucket": "b7",
+            "recordCount": 1017
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b8",
+            "recordCount": 968
+          },
+          "expected": {
+            "bucket": "b8",
+            "recordCount": 970
+          }
+        },
+        {
+          "actual": {
+            "bucket": "b9",
+            "recordCount": 1015
+          },
+          "expected": {
+            "bucket": "b9",
+            "recordCount": 1018
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ba",
+            "recordCount": 967
+          },
+          "expected": {
+            "bucket": "ba",
+            "recordCount": 963
+          }
+        },
+        {
+          "actual": {
+            "bucket": "bb",
+            "recordCount": 1025
+          },
+          "expected": {
+            "bucket": "bb",
+            "recordCount": 1026
+          }
+        },
+        {
+          "actual": {
+            "bucket": "bc",
+            "recordCount": 1017
+          },
+          "expected": {
+            "bucket": "bc",
+            "recordCount": 1015
+          }
+        },
+        {
+          "actual": {
+            "bucket": "bd",
+            "recordCount": 948
+          },
+          "expected": {
+            "bucket": "bd",
+            "recordCount": 956
+          }
+        },
+        {
+          "actual": {
+            "bucket": "bf",
+            "recordCount": 1013
+          },
+          "expected": {
+            "bucket": "bf",
+            "recordCount": 1009
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c0",
+            "recordCount": 1029
+          },
+          "expected": {
+            "bucket": "c0",
+            "recordCount": 1026
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c1",
+            "recordCount": 936
+          },
+          "expected": {
+            "bucket": "c1",
+            "recordCount": 937
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c2",
+            "recordCount": 971
+          },
+          "expected": {
+            "bucket": "c2",
+            "recordCount": 969
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c3",
+            "recordCount": 979
+          },
+          "expected": {
+            "bucket": "c3",
+            "recordCount": 981
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c4",
+            "recordCount": 985
+          },
+          "expected": {
+            "bucket": "c4",
+            "recordCount": 981
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c6",
+            "recordCount": 955
+          },
+          "expected": {
+            "bucket": "c6",
+            "recordCount": 957
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c7",
+            "recordCount": 1018
+          },
+          "expected": {
+            "bucket": "c7",
+            "recordCount": 1012
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c8",
+            "recordCount": 956
+          },
+          "expected": {
+            "bucket": "c8",
+            "recordCount": 960
+          }
+        },
+        {
+          "actual": {
+            "bucket": "c9",
+            "recordCount": 1043
+          },
+          "expected": {
+            "bucket": "c9",
+            "recordCount": 1046
+          }
+        },
+        {
+          "actual": {
+            "bucket": "cb",
+            "recordCount": 999
+          },
+          "expected": {
+            "bucket": "cb",
+            "recordCount": 1007
+          }
+        },
+        {
+          "actual": {
+            "bucket": "cc",
+            "recordCount": 972
+          },
+          "expected": {
+            "bucket": "cc",
+            "recordCount": 976
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ce",
+            "recordCount": 995
+          },
+          "expected": {
+            "bucket": "ce",
+            "recordCount": 993
+          }
+        },
+        {
+          "actual": {
+            "bucket": "cf",
+            "recordCount": 955
+          },
+          "expected": {
+            "bucket": "cf",
+            "recordCount": 959
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d1",
+            "recordCount": 1030
+          },
+          "expected": {
+            "bucket": "d1",
+            "recordCount": 1029
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d2",
+            "recordCount": 980
+          },
+          "expected": {
+            "bucket": "d2",
+            "recordCount": 976
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d3",
+            "recordCount": 1042
+          },
+          "expected": {
+            "bucket": "d3",
+            "recordCount": 1043
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d4",
+            "recordCount": 937
+          },
+          "expected": {
+            "bucket": "d4",
+            "recordCount": 946
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d5",
+            "recordCount": 1042
+          },
+          "expected": {
+            "bucket": "d5",
+            "recordCount": 1038
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d6",
+            "recordCount": 996
+          },
+          "expected": {
+            "bucket": "d6",
+            "recordCount": 986
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d7",
+            "recordCount": 1024
+          },
+          "expected": {
+            "bucket": "d7",
+            "recordCount": 1022
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d8",
+            "recordCount": 912
+          },
+          "expected": {
+            "bucket": "d8",
+            "recordCount": 920
+          }
+        },
+        {
+          "actual": {
+            "bucket": "d9",
+            "recordCount": 1000
+          },
+          "expected": {
+            "bucket": "d9",
+            "recordCount": 1007
+          }
+        },
+        {
+          "actual": {
+            "bucket": "da",
+            "recordCount": 999
+          },
+          "expected": {
+            "bucket": "da",
+            "recordCount": 998
+          }
+        },
+        {
+          "actual": {
+            "bucket": "db",
+            "recordCount": 981
+          },
+          "expected": {
+            "bucket": "db",
+            "recordCount": 982
+          }
+        },
+        {
+          "actual": {
+            "bucket": "dc",
+            "recordCount": 1020
+          },
+          "expected": {
+            "bucket": "dc",
+            "recordCount": 1018
+          }
+        },
+        {
+          "actual": {
+            "bucket": "dd",
+            "recordCount": 999
+          },
+          "expected": {
+            "bucket": "dd",
+            "recordCount": 998
+          }
+        },
+        {
+          "actual": {
+            "bucket": "de",
+            "recordCount": 962
+          },
+          "expected": {
+            "bucket": "de",
+            "recordCount": 957
+          }
+        },
+        {
+          "actual": {
+            "bucket": "df",
+            "recordCount": 1000
+          },
+          "expected": {
+            "bucket": "df",
+            "recordCount": 994
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e0",
+            "recordCount": 936
+          },
+          "expected": {
+            "bucket": "e0",
+            "recordCount": 943
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e1",
+            "recordCount": 1020
+          },
+          "expected": {
+            "bucket": "e1",
+            "recordCount": 1028
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e2",
+            "recordCount": 969
+          },
+          "expected": {
+            "bucket": "e2",
+            "recordCount": 965
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e3",
+            "recordCount": 1020
+          },
+          "expected": {
+            "bucket": "e3",
+            "recordCount": 1021
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e4",
+            "recordCount": 995
+          },
+          "expected": {
+            "bucket": "e4",
+            "recordCount": 997
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e5",
+            "recordCount": 976
+          },
+          "expected": {
+            "bucket": "e5",
+            "recordCount": 982
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e6",
+            "recordCount": 1018
+          },
+          "expected": {
+            "bucket": "e6",
+            "recordCount": 1017
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e7",
+            "recordCount": 919
+          },
+          "expected": {
+            "bucket": "e7",
+            "recordCount": 917
+          }
+        },
+        {
+          "actual": {
+            "bucket": "e8",
+            "recordCount": 963
+          },
+          "expected": {
+            "bucket": "e8",
+            "recordCount": 964
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ea",
+            "recordCount": 1004
+          },
+          "expected": {
+            "bucket": "ea",
+            "recordCount": 1005
+          }
+        },
+        {
+          "actual": {
+            "bucket": "eb",
+            "recordCount": 969
+          },
+          "expected": {
+            "bucket": "eb",
+            "recordCount": 966
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ec",
+            "recordCount": 996
+          },
+          "expected": {
+            "bucket": "ec",
+            "recordCount": 998
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ed",
+            "recordCount": 1005
+          },
+          "expected": {
+            "bucket": "ed",
+            "recordCount": 1001
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ee",
+            "recordCount": 905
+          },
+          "expected": {
+            "bucket": "ee",
+            "recordCount": 904
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ef",
+            "recordCount": 955
+          },
+          "expected": {
+            "bucket": "ef",
+            "recordCount": 956
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f0",
+            "recordCount": 1024
+          },
+          "expected": {
+            "bucket": "f0",
+            "recordCount": 1027
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f1",
+            "recordCount": 945
+          },
+          "expected": {
+            "bucket": "f1",
+            "recordCount": 948
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f2",
+            "recordCount": 974
+          },
+          "expected": {
+            "bucket": "f2",
+            "recordCount": 979
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f3",
+            "recordCount": 1005
+          },
+          "expected": {
+            "bucket": "f3",
+            "recordCount": 1017
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f4",
+            "recordCount": 960
+          },
+          "expected": {
+            "bucket": "f4",
+            "recordCount": 965
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f5",
+            "recordCount": 968
+          },
+          "expected": {
+            "bucket": "f5",
+            "recordCount": 961
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f6",
+            "recordCount": 914
+          },
+          "expected": {
+            "bucket": "f6",
+            "recordCount": 911
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f7",
+            "recordCount": 948
+          },
+          "expected": {
+            "bucket": "f7",
+            "recordCount": 945
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f8",
+            "recordCount": 999
+          },
+          "expected": {
+            "bucket": "f8",
+            "recordCount": 995
+          }
+        },
+        {
+          "actual": {
+            "bucket": "f9",
+            "recordCount": 936
+          },
+          "expected": {
+            "bucket": "f9",
+            "recordCount": 939
+          }
+        },
+        {
+          "actual": {
+            "bucket": "fa",
+            "recordCount": 993
+          },
+          "expected": {
+            "bucket": "fa",
+            "recordCount": 997
+          }
+        },
+        {
+          "actual": {
+            "bucket": "fb",
+            "recordCount": 992
+          },
+          "expected": {
+            "bucket": "fb",
+            "recordCount": 989
+          }
+        },
+        {
+          "actual": {
+            "bucket": "fc",
+            "recordCount": 980
+          },
+          "expected": {
+            "bucket": "fc",
+            "recordCount": 983
+          }
+        },
+        {
+          "actual": {
+            "bucket": "fd",
+            "recordCount": 1046
+          },
+          "expected": {
+            "bucket": "fd",
+            "recordCount": 1040
+          }
+        },
+        {
+          "actual": {
+            "bucket": "fe",
+            "recordCount": 1006
+          },
+          "expected": {
+            "bucket": "fe",
+            "recordCount": 1011
+          }
+        },
+        {
+          "actual": {
+            "bucket": "ff",
+            "recordCount": 977
+          },
+          "expected": {
+            "bucket": "ff",
+            "recordCount": 970
+          }
+        }
+      ],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "MISMATCH"
+    },
+    "q12_info_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q13_format_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    }
+  },
+  "status": "MISMATCH"
+}

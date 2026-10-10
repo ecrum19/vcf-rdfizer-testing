@@ -1,0 +1,192 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt",
+  "output_name": "test-10k",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 4.175870672799647,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.hdt",
+        "output_size_bytes": 5127665,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 98559961,
+          "record_count": 789157,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 789157,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 98559961,
+              "record_count": 789157,
+              "payload_bytes": 98559961
+            }
+          ],
+          "merge_rounds": 0,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.hdt.index.v1-1",
+          "index_size_bytes": 4012172,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 789157,
+            "decoded_triples": 789157,
+            "expected_triples": 789157,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 1.1728771212510765,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      },
+      "cottas": {
+        "exit_code": 0,
+        "wall_seconds": 28.91712500434369,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.cottas",
+        "output_size_bytes": 1030325,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out/test-10k/test-10k.nt"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 98559961,
+          "record_count": 789157,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 789157,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 98559961,
+              "record_count": 789157,
+              "payload_bytes": 98559961
+            }
+          ],
+          "merge_rounds": 0,
+          "merge_strategy": "pyarrow_streaming_k_way",
+          "merge_batch_rows": "2048",
+          "index": "spo",
+          "validation": {
+            "valid": true,
+            "source_triples": 789157,
+            "decoded_triples": 789157,
+            "expected_triples": 789157,
+            "count_match": true,
+            "validator": "pycottas.cottas2rdf",
+            "timing": {
+              "wall_seconds": 1.7977404817938805,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 3.8396969228051603,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 5127665,
+        "workspace_free_bytes_after": 76698234880,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 76703363072,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "cottas-build-00000",
+        "stage_name": "cottas-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 28.91712500434369,
+        "output_path": "/work/chunk-00000.cottas",
+        "output_size_bytes": 1030325,
+        "workspace_free_bytes_after": 76697202688,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 76698234880,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 0.33617374999448657,
+        "output_path": "/data/out/test-10k.hdt.index.v1-1",
+        "output_size_bytes": 4012172,
+        "workspace_free_bytes_after": 76791746560,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 76795764736,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 1.1728771212510765,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 156,
+        "workspace_free_bytes_after": 76791742464,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 76791746560,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "cottas-validate",
+        "stage_name": "cottas-validate",
+        "exit_code": 0,
+        "wall_seconds": 1.7977404817938805,
+        "output_path": "/work/.cottas-validate.validation.json",
+        "output_size_bytes": 168,
+        "workspace_free_bytes_after": 76791742464,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 76791746560,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    ],
+    "index_warnings": []
+  }
+}

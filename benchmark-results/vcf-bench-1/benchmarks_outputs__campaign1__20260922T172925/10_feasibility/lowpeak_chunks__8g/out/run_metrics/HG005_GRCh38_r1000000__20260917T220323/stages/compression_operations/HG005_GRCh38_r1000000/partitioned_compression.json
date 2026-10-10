@@ -1,0 +1,2141 @@
+{
+  "run_id": "20260917T220323",
+  "timestamp": "2026-09-17T22:03:23",
+  "output_name": "HG005_GRCh38_r1000000",
+  "rdf_name": "__partitioned_compression__",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__8g/out/HG005_GRCh38_r1000000",
+  "compression_methods": "hdt",
+  "index_warnings": [],
+  "auxiliary_stages": {},
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 1843.837034869939,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__8g/out/HG005_GRCh38_r1000000/HG005_GRCh38_r1000000.hdt",
+      "output_size_bytes": 1182206289,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__8g/out/HG005_GRCh38_r1000000/HG005_GRCh38_r1000000.nt.gz"
+        ],
+        "chunk_count": 207,
+        "chunk_input_bytes": 27780587073,
+        "record_count": 170935101,
+        "target_chunk_bytes": 134217728,
+        "min_chunk_bytes": 67108864,
+        "max_chunk_bytes": 268435456,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 1007358,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 134217804,
+            "record_count": 1007358,
+            "payload_bytes": 134217804
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 1007358,
+            "end_record": 2014485,
+            "start_uncompressed_byte": 134217804,
+            "end_uncompressed_byte": 268435536,
+            "record_count": 1007127,
+            "payload_bytes": 134217732
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 2014485,
+            "end_record": 3021300,
+            "start_uncompressed_byte": 268435536,
+            "end_uncompressed_byte": 402653369,
+            "record_count": 1006815,
+            "payload_bytes": 134217833
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 3021300,
+            "end_record": 4028216,
+            "start_uncompressed_byte": 402653369,
+            "end_uncompressed_byte": 536871183,
+            "record_count": 1006916,
+            "payload_bytes": 134217814
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 4028216,
+            "end_record": 5041089,
+            "start_uncompressed_byte": 536871183,
+            "end_uncompressed_byte": 671088973,
+            "record_count": 1012873,
+            "payload_bytes": 134217790
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 5041089,
+            "end_record": 6051276,
+            "start_uncompressed_byte": 671088973,
+            "end_uncompressed_byte": 805306728,
+            "record_count": 1010187,
+            "payload_bytes": 134217755
+          },
+          {
+            "chunk_id": 6,
+            "path": "chunk-00006.nt",
+            "start_record": 6051276,
+            "end_record": 7057712,
+            "start_uncompressed_byte": 805306728,
+            "end_uncompressed_byte": 939524495,
+            "record_count": 1006436,
+            "payload_bytes": 134217767
+          },
+          {
+            "chunk_id": 7,
+            "path": "chunk-00007.nt",
+            "start_record": 7057712,
+            "end_record": 8064803,
+            "start_uncompressed_byte": 939524495,
+            "end_uncompressed_byte": 1073742305,
+            "record_count": 1007091,
+            "payload_bytes": 134217810
+          },
+          {
+            "chunk_id": 8,
+            "path": "chunk-00008.nt",
+            "start_record": 8064803,
+            "end_record": 9059833,
+            "start_uncompressed_byte": 1073742305,
+            "end_uncompressed_byte": 1207960110,
+            "record_count": 995030,
+            "payload_bytes": 134217805
+          },
+          {
+            "chunk_id": 9,
+            "path": "chunk-00009.nt",
+            "start_record": 9059833,
+            "end_record": 9893149,
+            "start_uncompressed_byte": 1207960110,
+            "end_uncompressed_byte": 1342177953,
+            "record_count": 833316,
+            "payload_bytes": 134217843
+          },
+          {
+            "chunk_id": 10,
+            "path": "chunk-00010.nt",
+            "start_record": 9893149,
+            "end_record": 10721131,
+            "start_uncompressed_byte": 1342177953,
+            "end_uncompressed_byte": 1476395731,
+            "record_count": 827982,
+            "payload_bytes": 134217778
+          },
+          {
+            "chunk_id": 11,
+            "path": "chunk-00011.nt",
+            "start_record": 10721131,
+            "end_record": 11549075,
+            "start_uncompressed_byte": 1476395731,
+            "end_uncompressed_byte": 1610613495,
+            "record_count": 827944,
+            "payload_bytes": 134217764
+          },
+          {
+            "chunk_id": 12,
+            "path": "chunk-00012.nt",
+            "start_record": 11549075,
+            "end_record": 12376991,
+            "start_uncompressed_byte": 1610613495,
+            "end_uncompressed_byte": 1744831266,
+            "record_count": 827916,
+            "payload_bytes": 134217771
+          },
+          {
+            "chunk_id": 13,
+            "path": "chunk-00013.nt",
+            "start_record": 12376991,
+            "end_record": 13204843,
+            "start_uncompressed_byte": 1744831266,
+            "end_uncompressed_byte": 1879049129,
+            "record_count": 827852,
+            "payload_bytes": 134217863
+          },
+          {
+            "chunk_id": 14,
+            "path": "chunk-00014.nt",
+            "start_record": 13204843,
+            "end_record": 14032725,
+            "start_uncompressed_byte": 1879049129,
+            "end_uncompressed_byte": 2013266908,
+            "record_count": 827882,
+            "payload_bytes": 134217779
+          },
+          {
+            "chunk_id": 15,
+            "path": "chunk-00015.nt",
+            "start_record": 14032725,
+            "end_record": 14860640,
+            "start_uncompressed_byte": 2013266908,
+            "end_uncompressed_byte": 2147484800,
+            "record_count": 827915,
+            "payload_bytes": 134217892
+          },
+          {
+            "chunk_id": 16,
+            "path": "chunk-00016.nt",
+            "start_record": 14860640,
+            "end_record": 15688540,
+            "start_uncompressed_byte": 2147484800,
+            "end_uncompressed_byte": 2281702601,
+            "record_count": 827900,
+            "payload_bytes": 134217801
+          },
+          {
+            "chunk_id": 17,
+            "path": "chunk-00017.nt",
+            "start_record": 15688540,
+            "end_record": 16513232,
+            "start_uncompressed_byte": 2281702601,
+            "end_uncompressed_byte": 2415920431,
+            "record_count": 824692,
+            "payload_bytes": 134217830
+          },
+          {
+            "chunk_id": 18,
+            "path": "chunk-00018.nt",
+            "start_record": 16513232,
+            "end_record": 17334565,
+            "start_uncompressed_byte": 2415920431,
+            "end_uncompressed_byte": 2550138217,
+            "record_count": 821333,
+            "payload_bytes": 134217786
+          },
+          {
+            "chunk_id": 19,
+            "path": "chunk-00019.nt",
+            "start_record": 17334565,
+            "end_record": 18155936,
+            "start_uncompressed_byte": 2550138217,
+            "end_uncompressed_byte": 2684356011,
+            "record_count": 821371,
+            "payload_bytes": 134217794
+          },
+          {
+            "chunk_id": 20,
+            "path": "chunk-00020.nt",
+            "start_record": 18155936,
+            "end_record": 18977303,
+            "start_uncompressed_byte": 2684356011,
+            "end_uncompressed_byte": 2818573765,
+            "record_count": 821367,
+            "payload_bytes": 134217754
+          },
+          {
+            "chunk_id": 21,
+            "path": "chunk-00021.nt",
+            "start_record": 18977303,
+            "end_record": 19798652,
+            "start_uncompressed_byte": 2818573765,
+            "end_uncompressed_byte": 2952791582,
+            "record_count": 821349,
+            "payload_bytes": 134217817
+          },
+          {
+            "chunk_id": 22,
+            "path": "chunk-00022.nt",
+            "start_record": 19798652,
+            "end_record": 20620062,
+            "start_uncompressed_byte": 2952791582,
+            "end_uncompressed_byte": 3087009332,
+            "record_count": 821410,
+            "payload_bytes": 134217750
+          },
+          {
+            "chunk_id": 23,
+            "path": "chunk-00023.nt",
+            "start_record": 20620062,
+            "end_record": 21441457,
+            "start_uncompressed_byte": 3087009332,
+            "end_uncompressed_byte": 3221227110,
+            "record_count": 821395,
+            "payload_bytes": 134217778
+          },
+          {
+            "chunk_id": 24,
+            "path": "chunk-00024.nt",
+            "start_record": 21441457,
+            "end_record": 22262840,
+            "start_uncompressed_byte": 3221227110,
+            "end_uncompressed_byte": 3355444890,
+            "record_count": 821383,
+            "payload_bytes": 134217780
+          },
+          {
+            "chunk_id": 25,
+            "path": "chunk-00025.nt",
+            "start_record": 22262840,
+            "end_record": 23084151,
+            "start_uncompressed_byte": 3355444890,
+            "end_uncompressed_byte": 3489662725,
+            "record_count": 821311,
+            "payload_bytes": 134217835
+          },
+          {
+            "chunk_id": 26,
+            "path": "chunk-00026.nt",
+            "start_record": 23084151,
+            "end_record": 23905461,
+            "start_uncompressed_byte": 3489662725,
+            "end_uncompressed_byte": 3623880613,
+            "record_count": 821310,
+            "payload_bytes": 134217888
+          },
+          {
+            "chunk_id": 27,
+            "path": "chunk-00027.nt",
+            "start_record": 23905461,
+            "end_record": 24726836,
+            "start_uncompressed_byte": 3623880613,
+            "end_uncompressed_byte": 3758098384,
+            "record_count": 821375,
+            "payload_bytes": 134217771
+          },
+          {
+            "chunk_id": 28,
+            "path": "chunk-00028.nt",
+            "start_record": 24726836,
+            "end_record": 25548159,
+            "start_uncompressed_byte": 3758098384,
+            "end_uncompressed_byte": 3892316176,
+            "record_count": 821323,
+            "payload_bytes": 134217792
+          },
+          {
+            "chunk_id": 29,
+            "path": "chunk-00029.nt",
+            "start_record": 25548159,
+            "end_record": 26369446,
+            "start_uncompressed_byte": 3892316176,
+            "end_uncompressed_byte": 4026533947,
+            "record_count": 821287,
+            "payload_bytes": 134217771
+          },
+          {
+            "chunk_id": 30,
+            "path": "chunk-00030.nt",
+            "start_record": 26369446,
+            "end_record": 27190757,
+            "start_uncompressed_byte": 4026533947,
+            "end_uncompressed_byte": 4160751735,
+            "record_count": 821311,
+            "payload_bytes": 134217788
+          },
+          {
+            "chunk_id": 31,
+            "path": "chunk-00031.nt",
+            "start_record": 27190757,
+            "end_record": 28012088,
+            "start_uncompressed_byte": 4160751735,
+            "end_uncompressed_byte": 4294969552,
+            "record_count": 821331,
+            "payload_bytes": 134217817
+          },
+          {
+            "chunk_id": 32,
+            "path": "chunk-00032.nt",
+            "start_record": 28012088,
+            "end_record": 28833403,
+            "start_uncompressed_byte": 4294969552,
+            "end_uncompressed_byte": 4429187352,
+            "record_count": 821315,
+            "payload_bytes": 134217800
+          },
+          {
+            "chunk_id": 33,
+            "path": "chunk-00033.nt",
+            "start_record": 28833403,
+            "end_record": 29654775,
+            "start_uncompressed_byte": 4429187352,
+            "end_uncompressed_byte": 4563405159,
+            "record_count": 821372,
+            "payload_bytes": 134217807
+          },
+          {
+            "chunk_id": 34,
+            "path": "chunk-00034.nt",
+            "start_record": 29654775,
+            "end_record": 30476178,
+            "start_uncompressed_byte": 4563405159,
+            "end_uncompressed_byte": 4697622963,
+            "record_count": 821403,
+            "payload_bytes": 134217804
+          },
+          {
+            "chunk_id": 35,
+            "path": "chunk-00035.nt",
+            "start_record": 30476178,
+            "end_record": 31297716,
+            "start_uncompressed_byte": 4697622963,
+            "end_uncompressed_byte": 4831840742,
+            "record_count": 821538,
+            "payload_bytes": 134217779
+          },
+          {
+            "chunk_id": 36,
+            "path": "chunk-00036.nt",
+            "start_record": 31297716,
+            "end_record": 32119104,
+            "start_uncompressed_byte": 4831840742,
+            "end_uncompressed_byte": 4966058540,
+            "record_count": 821388,
+            "payload_bytes": 134217798
+          },
+          {
+            "chunk_id": 37,
+            "path": "chunk-00037.nt",
+            "start_record": 32119104,
+            "end_record": 32940465,
+            "start_uncompressed_byte": 4966058540,
+            "end_uncompressed_byte": 5100276359,
+            "record_count": 821361,
+            "payload_bytes": 134217819
+          },
+          {
+            "chunk_id": 38,
+            "path": "chunk-00038.nt",
+            "start_record": 32940465,
+            "end_record": 33761801,
+            "start_uncompressed_byte": 5100276359,
+            "end_uncompressed_byte": 5234494133,
+            "record_count": 821336,
+            "payload_bytes": 134217774
+          },
+          {
+            "chunk_id": 39,
+            "path": "chunk-00039.nt",
+            "start_record": 33761801,
+            "end_record": 34583147,
+            "start_uncompressed_byte": 5234494133,
+            "end_uncompressed_byte": 5368711916,
+            "record_count": 821346,
+            "payload_bytes": 134217783
+          },
+          {
+            "chunk_id": 40,
+            "path": "chunk-00040.nt",
+            "start_record": 34583147,
+            "end_record": 35404550,
+            "start_uncompressed_byte": 5368711916,
+            "end_uncompressed_byte": 5502929770,
+            "record_count": 821403,
+            "payload_bytes": 134217854
+          },
+          {
+            "chunk_id": 41,
+            "path": "chunk-00041.nt",
+            "start_record": 35404550,
+            "end_record": 36225863,
+            "start_uncompressed_byte": 5502929770,
+            "end_uncompressed_byte": 5637147622,
+            "record_count": 821313,
+            "payload_bytes": 134217852
+          },
+          {
+            "chunk_id": 42,
+            "path": "chunk-00042.nt",
+            "start_record": 36225863,
+            "end_record": 37047156,
+            "start_uncompressed_byte": 5637147622,
+            "end_uncompressed_byte": 5771365383,
+            "record_count": 821293,
+            "payload_bytes": 134217761
+          },
+          {
+            "chunk_id": 43,
+            "path": "chunk-00043.nt",
+            "start_record": 37047156,
+            "end_record": 37868433,
+            "start_uncompressed_byte": 5771365383,
+            "end_uncompressed_byte": 5905583144,
+            "record_count": 821277,
+            "payload_bytes": 134217761
+          },
+          {
+            "chunk_id": 44,
+            "path": "chunk-00044.nt",
+            "start_record": 37868433,
+            "end_record": 38689736,
+            "start_uncompressed_byte": 5905583144,
+            "end_uncompressed_byte": 6039800951,
+            "record_count": 821303,
+            "payload_bytes": 134217807
+          },
+          {
+            "chunk_id": 45,
+            "path": "chunk-00045.nt",
+            "start_record": 38689736,
+            "end_record": 39511107,
+            "start_uncompressed_byte": 6039800951,
+            "end_uncompressed_byte": 6174018761,
+            "record_count": 821371,
+            "payload_bytes": 134217810
+          },
+          {
+            "chunk_id": 46,
+            "path": "chunk-00046.nt",
+            "start_record": 39511107,
+            "end_record": 40332466,
+            "start_uncompressed_byte": 6174018761,
+            "end_uncompressed_byte": 6308236514,
+            "record_count": 821359,
+            "payload_bytes": 134217753
+          },
+          {
+            "chunk_id": 47,
+            "path": "chunk-00047.nt",
+            "start_record": 40332466,
+            "end_record": 41153826,
+            "start_uncompressed_byte": 6308236514,
+            "end_uncompressed_byte": 6442454312,
+            "record_count": 821360,
+            "payload_bytes": 134217798
+          },
+          {
+            "chunk_id": 48,
+            "path": "chunk-00048.nt",
+            "start_record": 41153826,
+            "end_record": 41975183,
+            "start_uncompressed_byte": 6442454312,
+            "end_uncompressed_byte": 6576672098,
+            "record_count": 821357,
+            "payload_bytes": 134217786
+          },
+          {
+            "chunk_id": 49,
+            "path": "chunk-00049.nt",
+            "start_record": 41975183,
+            "end_record": 42796555,
+            "start_uncompressed_byte": 6576672098,
+            "end_uncompressed_byte": 6710889856,
+            "record_count": 821372,
+            "payload_bytes": 134217758
+          },
+          {
+            "chunk_id": 50,
+            "path": "chunk-00050.nt",
+            "start_record": 42796555,
+            "end_record": 43617984,
+            "start_uncompressed_byte": 6710889856,
+            "end_uncompressed_byte": 6845107623,
+            "record_count": 821429,
+            "payload_bytes": 134217767
+          },
+          {
+            "chunk_id": 51,
+            "path": "chunk-00051.nt",
+            "start_record": 43617984,
+            "end_record": 44439277,
+            "start_uncompressed_byte": 6845107623,
+            "end_uncompressed_byte": 6979325460,
+            "record_count": 821293,
+            "payload_bytes": 134217837
+          },
+          {
+            "chunk_id": 52,
+            "path": "chunk-00052.nt",
+            "start_record": 44439277,
+            "end_record": 45260564,
+            "start_uncompressed_byte": 6979325460,
+            "end_uncompressed_byte": 7113543234,
+            "record_count": 821287,
+            "payload_bytes": 134217774
+          },
+          {
+            "chunk_id": 53,
+            "path": "chunk-00053.nt",
+            "start_record": 45260564,
+            "end_record": 46081829,
+            "start_uncompressed_byte": 7113543234,
+            "end_uncompressed_byte": 7247761067,
+            "record_count": 821265,
+            "payload_bytes": 134217833
+          },
+          {
+            "chunk_id": 54,
+            "path": "chunk-00054.nt",
+            "start_record": 46081829,
+            "end_record": 46903122,
+            "start_uncompressed_byte": 7247761067,
+            "end_uncompressed_byte": 7381978913,
+            "record_count": 821293,
+            "payload_bytes": 134217846
+          },
+          {
+            "chunk_id": 55,
+            "path": "chunk-00055.nt",
+            "start_record": 46903122,
+            "end_record": 47724417,
+            "start_uncompressed_byte": 7381978913,
+            "end_uncompressed_byte": 7516196645,
+            "record_count": 821295,
+            "payload_bytes": 134217732
+          },
+          {
+            "chunk_id": 56,
+            "path": "chunk-00056.nt",
+            "start_record": 47724417,
+            "end_record": 48545727,
+            "start_uncompressed_byte": 7516196645,
+            "end_uncompressed_byte": 7650414381,
+            "record_count": 821310,
+            "payload_bytes": 134217736
+          },
+          {
+            "chunk_id": 57,
+            "path": "chunk-00057.nt",
+            "start_record": 48545727,
+            "end_record": 49367027,
+            "start_uncompressed_byte": 7650414381,
+            "end_uncompressed_byte": 7784632166,
+            "record_count": 821300,
+            "payload_bytes": 134217785
+          },
+          {
+            "chunk_id": 58,
+            "path": "chunk-00058.nt",
+            "start_record": 49367027,
+            "end_record": 50188339,
+            "start_uncompressed_byte": 7784632166,
+            "end_uncompressed_byte": 7918849935,
+            "record_count": 821312,
+            "payload_bytes": 134217769
+          },
+          {
+            "chunk_id": 59,
+            "path": "chunk-00059.nt",
+            "start_record": 50188339,
+            "end_record": 51009621,
+            "start_uncompressed_byte": 7918849935,
+            "end_uncompressed_byte": 8053067833,
+            "record_count": 821282,
+            "payload_bytes": 134217898
+          },
+          {
+            "chunk_id": 60,
+            "path": "chunk-00060.nt",
+            "start_record": 51009621,
+            "end_record": 51830959,
+            "start_uncompressed_byte": 8053067833,
+            "end_uncompressed_byte": 8187285625,
+            "record_count": 821338,
+            "payload_bytes": 134217792
+          },
+          {
+            "chunk_id": 61,
+            "path": "chunk-00061.nt",
+            "start_record": 51830959,
+            "end_record": 52652263,
+            "start_uncompressed_byte": 8187285625,
+            "end_uncompressed_byte": 8321503451,
+            "record_count": 821304,
+            "payload_bytes": 134217826
+          },
+          {
+            "chunk_id": 62,
+            "path": "chunk-00062.nt",
+            "start_record": 52652263,
+            "end_record": 53473602,
+            "start_uncompressed_byte": 8321503451,
+            "end_uncompressed_byte": 8455721187,
+            "record_count": 821339,
+            "payload_bytes": 134217736
+          },
+          {
+            "chunk_id": 63,
+            "path": "chunk-00063.nt",
+            "start_record": 53473602,
+            "end_record": 54294955,
+            "start_uncompressed_byte": 8455721187,
+            "end_uncompressed_byte": 8589939000,
+            "record_count": 821353,
+            "payload_bytes": 134217813
+          },
+          {
+            "chunk_id": 64,
+            "path": "chunk-00064.nt",
+            "start_record": 54294955,
+            "end_record": 55116406,
+            "start_uncompressed_byte": 8589939000,
+            "end_uncompressed_byte": 8724156842,
+            "record_count": 821451,
+            "payload_bytes": 134217842
+          },
+          {
+            "chunk_id": 65,
+            "path": "chunk-00065.nt",
+            "start_record": 55116406,
+            "end_record": 55937817,
+            "start_uncompressed_byte": 8724156842,
+            "end_uncompressed_byte": 8858374585,
+            "record_count": 821411,
+            "payload_bytes": 134217743
+          },
+          {
+            "chunk_id": 66,
+            "path": "chunk-00066.nt",
+            "start_record": 55937817,
+            "end_record": 56759154,
+            "start_uncompressed_byte": 8858374585,
+            "end_uncompressed_byte": 8992592432,
+            "record_count": 821337,
+            "payload_bytes": 134217847
+          },
+          {
+            "chunk_id": 67,
+            "path": "chunk-00067.nt",
+            "start_record": 56759154,
+            "end_record": 57580528,
+            "start_uncompressed_byte": 8992592432,
+            "end_uncompressed_byte": 9126810296,
+            "record_count": 821374,
+            "payload_bytes": 134217864
+          },
+          {
+            "chunk_id": 68,
+            "path": "chunk-00068.nt",
+            "start_record": 57580528,
+            "end_record": 58401862,
+            "start_uncompressed_byte": 9126810296,
+            "end_uncompressed_byte": 9261028114,
+            "record_count": 821334,
+            "payload_bytes": 134217818
+          },
+          {
+            "chunk_id": 69,
+            "path": "chunk-00069.nt",
+            "start_record": 58401862,
+            "end_record": 59223212,
+            "start_uncompressed_byte": 9261028114,
+            "end_uncompressed_byte": 9395245969,
+            "record_count": 821350,
+            "payload_bytes": 134217855
+          },
+          {
+            "chunk_id": 70,
+            "path": "chunk-00070.nt",
+            "start_record": 59223212,
+            "end_record": 60044471,
+            "start_uncompressed_byte": 9395245969,
+            "end_uncompressed_byte": 9529463835,
+            "record_count": 821259,
+            "payload_bytes": 134217866
+          },
+          {
+            "chunk_id": 71,
+            "path": "chunk-00071.nt",
+            "start_record": 60044471,
+            "end_record": 60865828,
+            "start_uncompressed_byte": 9529463835,
+            "end_uncompressed_byte": 9663681646,
+            "record_count": 821357,
+            "payload_bytes": 134217811
+          },
+          {
+            "chunk_id": 72,
+            "path": "chunk-00072.nt",
+            "start_record": 60865828,
+            "end_record": 61687156,
+            "start_uncompressed_byte": 9663681646,
+            "end_uncompressed_byte": 9797899455,
+            "record_count": 821328,
+            "payload_bytes": 134217809
+          },
+          {
+            "chunk_id": 73,
+            "path": "chunk-00073.nt",
+            "start_record": 61687156,
+            "end_record": 62508507,
+            "start_uncompressed_byte": 9797899455,
+            "end_uncompressed_byte": 9932117269,
+            "record_count": 821351,
+            "payload_bytes": 134217814
+          },
+          {
+            "chunk_id": 74,
+            "path": "chunk-00074.nt",
+            "start_record": 62508507,
+            "end_record": 63329797,
+            "start_uncompressed_byte": 9932117269,
+            "end_uncompressed_byte": 10066335084,
+            "record_count": 821290,
+            "payload_bytes": 134217815
+          },
+          {
+            "chunk_id": 75,
+            "path": "chunk-00075.nt",
+            "start_record": 63329797,
+            "end_record": 64151189,
+            "start_uncompressed_byte": 10066335084,
+            "end_uncompressed_byte": 10200552881,
+            "record_count": 821392,
+            "payload_bytes": 134217797
+          },
+          {
+            "chunk_id": 76,
+            "path": "chunk-00076.nt",
+            "start_record": 64151189,
+            "end_record": 64972581,
+            "start_uncompressed_byte": 10200552881,
+            "end_uncompressed_byte": 10334770617,
+            "record_count": 821392,
+            "payload_bytes": 134217736
+          },
+          {
+            "chunk_id": 77,
+            "path": "chunk-00077.nt",
+            "start_record": 64972581,
+            "end_record": 65793913,
+            "start_uncompressed_byte": 10334770617,
+            "end_uncompressed_byte": 10468988426,
+            "record_count": 821332,
+            "payload_bytes": 134217809
+          },
+          {
+            "chunk_id": 78,
+            "path": "chunk-00078.nt",
+            "start_record": 65793913,
+            "end_record": 66615190,
+            "start_uncompressed_byte": 10468988426,
+            "end_uncompressed_byte": 10603206163,
+            "record_count": 821277,
+            "payload_bytes": 134217737
+          },
+          {
+            "chunk_id": 79,
+            "path": "chunk-00079.nt",
+            "start_record": 66615190,
+            "end_record": 67436542,
+            "start_uncompressed_byte": 10603206163,
+            "end_uncompressed_byte": 10737423971,
+            "record_count": 821352,
+            "payload_bytes": 134217808
+          },
+          {
+            "chunk_id": 80,
+            "path": "chunk-00080.nt",
+            "start_record": 67436542,
+            "end_record": 68257885,
+            "start_uncompressed_byte": 10737423971,
+            "end_uncompressed_byte": 10871641764,
+            "record_count": 821343,
+            "payload_bytes": 134217793
+          },
+          {
+            "chunk_id": 81,
+            "path": "chunk-00081.nt",
+            "start_record": 68257885,
+            "end_record": 69079184,
+            "start_uncompressed_byte": 10871641764,
+            "end_uncompressed_byte": 11005859497,
+            "record_count": 821299,
+            "payload_bytes": 134217733
+          },
+          {
+            "chunk_id": 82,
+            "path": "chunk-00082.nt",
+            "start_record": 69079184,
+            "end_record": 69900439,
+            "start_uncompressed_byte": 11005859497,
+            "end_uncompressed_byte": 11140077339,
+            "record_count": 821255,
+            "payload_bytes": 134217842
+          },
+          {
+            "chunk_id": 83,
+            "path": "chunk-00083.nt",
+            "start_record": 69900439,
+            "end_record": 70721782,
+            "start_uncompressed_byte": 11140077339,
+            "end_uncompressed_byte": 11274295167,
+            "record_count": 821343,
+            "payload_bytes": 134217828
+          },
+          {
+            "chunk_id": 84,
+            "path": "chunk-00084.nt",
+            "start_record": 70721782,
+            "end_record": 71543088,
+            "start_uncompressed_byte": 11274295167,
+            "end_uncompressed_byte": 11408512899,
+            "record_count": 821306,
+            "payload_bytes": 134217732
+          },
+          {
+            "chunk_id": 85,
+            "path": "chunk-00085.nt",
+            "start_record": 71543088,
+            "end_record": 72364438,
+            "start_uncompressed_byte": 11408512899,
+            "end_uncompressed_byte": 11542730810,
+            "record_count": 821350,
+            "payload_bytes": 134217911
+          },
+          {
+            "chunk_id": 86,
+            "path": "chunk-00086.nt",
+            "start_record": 72364438,
+            "end_record": 73185821,
+            "start_uncompressed_byte": 11542730810,
+            "end_uncompressed_byte": 11676948588,
+            "record_count": 821383,
+            "payload_bytes": 134217778
+          },
+          {
+            "chunk_id": 87,
+            "path": "chunk-00087.nt",
+            "start_record": 73185821,
+            "end_record": 74007210,
+            "start_uncompressed_byte": 11676948588,
+            "end_uncompressed_byte": 11811166379,
+            "record_count": 821389,
+            "payload_bytes": 134217791
+          },
+          {
+            "chunk_id": 88,
+            "path": "chunk-00088.nt",
+            "start_record": 74007210,
+            "end_record": 74828722,
+            "start_uncompressed_byte": 11811166379,
+            "end_uncompressed_byte": 11945384151,
+            "record_count": 821512,
+            "payload_bytes": 134217772
+          },
+          {
+            "chunk_id": 89,
+            "path": "chunk-00089.nt",
+            "start_record": 74828722,
+            "end_record": 75650160,
+            "start_uncompressed_byte": 11945384151,
+            "end_uncompressed_byte": 12079601974,
+            "record_count": 821438,
+            "payload_bytes": 134217823
+          },
+          {
+            "chunk_id": 90,
+            "path": "chunk-00090.nt",
+            "start_record": 75650160,
+            "end_record": 76471510,
+            "start_uncompressed_byte": 12079601974,
+            "end_uncompressed_byte": 12213819714,
+            "record_count": 821350,
+            "payload_bytes": 134217740
+          },
+          {
+            "chunk_id": 91,
+            "path": "chunk-00091.nt",
+            "start_record": 76471510,
+            "end_record": 77292874,
+            "start_uncompressed_byte": 12213819714,
+            "end_uncompressed_byte": 12348037472,
+            "record_count": 821364,
+            "payload_bytes": 134217758
+          },
+          {
+            "chunk_id": 92,
+            "path": "chunk-00092.nt",
+            "start_record": 77292874,
+            "end_record": 78114218,
+            "start_uncompressed_byte": 12348037472,
+            "end_uncompressed_byte": 12482255359,
+            "record_count": 821344,
+            "payload_bytes": 134217887
+          },
+          {
+            "chunk_id": 93,
+            "path": "chunk-00093.nt",
+            "start_record": 78114218,
+            "end_record": 78935549,
+            "start_uncompressed_byte": 12482255359,
+            "end_uncompressed_byte": 12616473109,
+            "record_count": 821331,
+            "payload_bytes": 134217750
+          },
+          {
+            "chunk_id": 94,
+            "path": "chunk-00094.nt",
+            "start_record": 78935549,
+            "end_record": 79756875,
+            "start_uncompressed_byte": 12616473109,
+            "end_uncompressed_byte": 12750690916,
+            "record_count": 821326,
+            "payload_bytes": 134217807
+          },
+          {
+            "chunk_id": 95,
+            "path": "chunk-00095.nt",
+            "start_record": 79756875,
+            "end_record": 80582649,
+            "start_uncompressed_byte": 12750690916,
+            "end_uncompressed_byte": 12884908713,
+            "record_count": 825774,
+            "payload_bytes": 134217797
+          },
+          {
+            "chunk_id": 96,
+            "path": "chunk-00096.nt",
+            "start_record": 80582649,
+            "end_record": 81405433,
+            "start_uncompressed_byte": 12884908713,
+            "end_uncompressed_byte": 13019126457,
+            "record_count": 822784,
+            "payload_bytes": 134217744
+          },
+          {
+            "chunk_id": 97,
+            "path": "chunk-00097.nt",
+            "start_record": 81405433,
+            "end_record": 82225642,
+            "start_uncompressed_byte": 13019126457,
+            "end_uncompressed_byte": 13153344445,
+            "record_count": 820209,
+            "payload_bytes": 134217988
+          },
+          {
+            "chunk_id": 98,
+            "path": "chunk-00098.nt",
+            "start_record": 82225642,
+            "end_record": 83045400,
+            "start_uncompressed_byte": 13153344445,
+            "end_uncompressed_byte": 13287562390,
+            "record_count": 819758,
+            "payload_bytes": 134217945
+          },
+          {
+            "chunk_id": 99,
+            "path": "chunk-00099.nt",
+            "start_record": 83045400,
+            "end_record": 83865248,
+            "start_uncompressed_byte": 13287562390,
+            "end_uncompressed_byte": 13421780261,
+            "record_count": 819848,
+            "payload_bytes": 134217871
+          },
+          {
+            "chunk_id": 100,
+            "path": "chunk-00100.nt",
+            "start_record": 83865248,
+            "end_record": 84684867,
+            "start_uncompressed_byte": 13421780261,
+            "end_uncompressed_byte": 13555998068,
+            "record_count": 819619,
+            "payload_bytes": 134217807
+          },
+          {
+            "chunk_id": 101,
+            "path": "chunk-00101.nt",
+            "start_record": 84684867,
+            "end_record": 85504633,
+            "start_uncompressed_byte": 13555998068,
+            "end_uncompressed_byte": 13690215891,
+            "record_count": 819766,
+            "payload_bytes": 134217823
+          },
+          {
+            "chunk_id": 102,
+            "path": "chunk-00102.nt",
+            "start_record": 85504633,
+            "end_record": 86324401,
+            "start_uncompressed_byte": 13690215891,
+            "end_uncompressed_byte": 13824433673,
+            "record_count": 819768,
+            "payload_bytes": 134217782
+          },
+          {
+            "chunk_id": 103,
+            "path": "chunk-00103.nt",
+            "start_record": 86324401,
+            "end_record": 87143437,
+            "start_uncompressed_byte": 13824433673,
+            "end_uncompressed_byte": 13958651441,
+            "record_count": 819036,
+            "payload_bytes": 134217768
+          },
+          {
+            "chunk_id": 104,
+            "path": "chunk-00104.nt",
+            "start_record": 87143437,
+            "end_record": 87962812,
+            "start_uncompressed_byte": 13958651441,
+            "end_uncompressed_byte": 14092869251,
+            "record_count": 819375,
+            "payload_bytes": 134217810
+          },
+          {
+            "chunk_id": 105,
+            "path": "chunk-00105.nt",
+            "start_record": 87962812,
+            "end_record": 88782269,
+            "start_uncompressed_byte": 14092869251,
+            "end_uncompressed_byte": 14227087071,
+            "record_count": 819457,
+            "payload_bytes": 134217820
+          },
+          {
+            "chunk_id": 106,
+            "path": "chunk-00106.nt",
+            "start_record": 88782269,
+            "end_record": 89598636,
+            "start_uncompressed_byte": 14227087071,
+            "end_uncompressed_byte": 14361304917,
+            "record_count": 816367,
+            "payload_bytes": 134217846
+          },
+          {
+            "chunk_id": 107,
+            "path": "chunk-00107.nt",
+            "start_record": 89598636,
+            "end_record": 90412116,
+            "start_uncompressed_byte": 14361304917,
+            "end_uncompressed_byte": 14495522728,
+            "record_count": 813480,
+            "payload_bytes": 134217811
+          },
+          {
+            "chunk_id": 108,
+            "path": "chunk-00108.nt",
+            "start_record": 90412116,
+            "end_record": 91225697,
+            "start_uncompressed_byte": 14495522728,
+            "end_uncompressed_byte": 14629740506,
+            "record_count": 813581,
+            "payload_bytes": 134217778
+          },
+          {
+            "chunk_id": 109,
+            "path": "chunk-00109.nt",
+            "start_record": 91225697,
+            "end_record": 92039186,
+            "start_uncompressed_byte": 14629740506,
+            "end_uncompressed_byte": 14763958250,
+            "record_count": 813489,
+            "payload_bytes": 134217744
+          },
+          {
+            "chunk_id": 110,
+            "path": "chunk-00110.nt",
+            "start_record": 92039186,
+            "end_record": 92852751,
+            "start_uncompressed_byte": 14763958250,
+            "end_uncompressed_byte": 14898176068,
+            "record_count": 813565,
+            "payload_bytes": 134217818
+          },
+          {
+            "chunk_id": 111,
+            "path": "chunk-00111.nt",
+            "start_record": 92852751,
+            "end_record": 93666058,
+            "start_uncompressed_byte": 14898176068,
+            "end_uncompressed_byte": 15032393819,
+            "record_count": 813307,
+            "payload_bytes": 134217751
+          },
+          {
+            "chunk_id": 112,
+            "path": "chunk-00112.nt",
+            "start_record": 93666058,
+            "end_record": 94479672,
+            "start_uncompressed_byte": 15032393819,
+            "end_uncompressed_byte": 15166611651,
+            "record_count": 813614,
+            "payload_bytes": 134217832
+          },
+          {
+            "chunk_id": 113,
+            "path": "chunk-00113.nt",
+            "start_record": 94479672,
+            "end_record": 95295627,
+            "start_uncompressed_byte": 15166611651,
+            "end_uncompressed_byte": 15300829530,
+            "record_count": 815955,
+            "payload_bytes": 134217879
+          },
+          {
+            "chunk_id": 114,
+            "path": "chunk-00114.nt",
+            "start_record": 95295627,
+            "end_record": 96109593,
+            "start_uncompressed_byte": 15300829530,
+            "end_uncompressed_byte": 15435047295,
+            "record_count": 813966,
+            "payload_bytes": 134217765
+          },
+          {
+            "chunk_id": 115,
+            "path": "chunk-00115.nt",
+            "start_record": 96109593,
+            "end_record": 96923199,
+            "start_uncompressed_byte": 15435047295,
+            "end_uncompressed_byte": 15569265067,
+            "record_count": 813606,
+            "payload_bytes": 134217772
+          },
+          {
+            "chunk_id": 116,
+            "path": "chunk-00116.nt",
+            "start_record": 96923199,
+            "end_record": 97736632,
+            "start_uncompressed_byte": 15569265067,
+            "end_uncompressed_byte": 15703482819,
+            "record_count": 813433,
+            "payload_bytes": 134217752
+          },
+          {
+            "chunk_id": 117,
+            "path": "chunk-00117.nt",
+            "start_record": 97736632,
+            "end_record": 98550247,
+            "start_uncompressed_byte": 15703482819,
+            "end_uncompressed_byte": 15837700616,
+            "record_count": 813615,
+            "payload_bytes": 134217797
+          },
+          {
+            "chunk_id": 118,
+            "path": "chunk-00118.nt",
+            "start_record": 98550247,
+            "end_record": 99363664,
+            "start_uncompressed_byte": 15837700616,
+            "end_uncompressed_byte": 15971918447,
+            "record_count": 813417,
+            "payload_bytes": 134217831
+          },
+          {
+            "chunk_id": 119,
+            "path": "chunk-00119.nt",
+            "start_record": 99363664,
+            "end_record": 100177236,
+            "start_uncompressed_byte": 15971918447,
+            "end_uncompressed_byte": 16106136198,
+            "record_count": 813572,
+            "payload_bytes": 134217751
+          },
+          {
+            "chunk_id": 120,
+            "path": "chunk-00120.nt",
+            "start_record": 100177236,
+            "end_record": 100990720,
+            "start_uncompressed_byte": 16106136198,
+            "end_uncompressed_byte": 16240353959,
+            "record_count": 813484,
+            "payload_bytes": 134217761
+          },
+          {
+            "chunk_id": 121,
+            "path": "chunk-00121.nt",
+            "start_record": 100990720,
+            "end_record": 101804383,
+            "start_uncompressed_byte": 16240353959,
+            "end_uncompressed_byte": 16374571722,
+            "record_count": 813663,
+            "payload_bytes": 134217763
+          },
+          {
+            "chunk_id": 122,
+            "path": "chunk-00122.nt",
+            "start_record": 101804383,
+            "end_record": 102618102,
+            "start_uncompressed_byte": 16374571722,
+            "end_uncompressed_byte": 16508790034,
+            "record_count": 813719,
+            "payload_bytes": 134218312
+          },
+          {
+            "chunk_id": 123,
+            "path": "chunk-00123.nt",
+            "start_record": 102618102,
+            "end_record": 103431490,
+            "start_uncompressed_byte": 16508790034,
+            "end_uncompressed_byte": 16643007796,
+            "record_count": 813388,
+            "payload_bytes": 134217762
+          },
+          {
+            "chunk_id": 124,
+            "path": "chunk-00124.nt",
+            "start_record": 103431490,
+            "end_record": 104244725,
+            "start_uncompressed_byte": 16643007796,
+            "end_uncompressed_byte": 16777225575,
+            "record_count": 813235,
+            "payload_bytes": 134217779
+          },
+          {
+            "chunk_id": 125,
+            "path": "chunk-00125.nt",
+            "start_record": 104244725,
+            "end_record": 105058297,
+            "start_uncompressed_byte": 16777225575,
+            "end_uncompressed_byte": 16911443311,
+            "record_count": 813572,
+            "payload_bytes": 134217736
+          },
+          {
+            "chunk_id": 126,
+            "path": "chunk-00126.nt",
+            "start_record": 105058297,
+            "end_record": 105871828,
+            "start_uncompressed_byte": 16911443311,
+            "end_uncompressed_byte": 17045661196,
+            "record_count": 813531,
+            "payload_bytes": 134217885
+          },
+          {
+            "chunk_id": 127,
+            "path": "chunk-00127.nt",
+            "start_record": 105871828,
+            "end_record": 106685201,
+            "start_uncompressed_byte": 17045661196,
+            "end_uncompressed_byte": 17179879351,
+            "record_count": 813373,
+            "payload_bytes": 134218155
+          },
+          {
+            "chunk_id": 128,
+            "path": "chunk-00128.nt",
+            "start_record": 106685201,
+            "end_record": 107499024,
+            "start_uncompressed_byte": 17179879351,
+            "end_uncompressed_byte": 17314097158,
+            "record_count": 813823,
+            "payload_bytes": 134217807
+          },
+          {
+            "chunk_id": 129,
+            "path": "chunk-00129.nt",
+            "start_record": 107499024,
+            "end_record": 108312866,
+            "start_uncompressed_byte": 17314097158,
+            "end_uncompressed_byte": 17448314931,
+            "record_count": 813842,
+            "payload_bytes": 134217773
+          },
+          {
+            "chunk_id": 130,
+            "path": "chunk-00130.nt",
+            "start_record": 108312866,
+            "end_record": 109126749,
+            "start_uncompressed_byte": 17448314931,
+            "end_uncompressed_byte": 17582532679,
+            "record_count": 813883,
+            "payload_bytes": 134217748
+          },
+          {
+            "chunk_id": 131,
+            "path": "chunk-00131.nt",
+            "start_record": 109126749,
+            "end_record": 109939935,
+            "start_uncompressed_byte": 17582532679,
+            "end_uncompressed_byte": 17716750469,
+            "record_count": 813186,
+            "payload_bytes": 134217790
+          },
+          {
+            "chunk_id": 132,
+            "path": "chunk-00132.nt",
+            "start_record": 109939935,
+            "end_record": 110753268,
+            "start_uncompressed_byte": 17716750469,
+            "end_uncompressed_byte": 17850968346,
+            "record_count": 813333,
+            "payload_bytes": 134217877
+          },
+          {
+            "chunk_id": 133,
+            "path": "chunk-00133.nt",
+            "start_record": 110753268,
+            "end_record": 111566314,
+            "start_uncompressed_byte": 17850968346,
+            "end_uncompressed_byte": 17985186150,
+            "record_count": 813046,
+            "payload_bytes": 134217804
+          },
+          {
+            "chunk_id": 134,
+            "path": "chunk-00134.nt",
+            "start_record": 111566314,
+            "end_record": 112379817,
+            "start_uncompressed_byte": 17985186150,
+            "end_uncompressed_byte": 18119403935,
+            "record_count": 813503,
+            "payload_bytes": 134217785
+          },
+          {
+            "chunk_id": 135,
+            "path": "chunk-00135.nt",
+            "start_record": 112379817,
+            "end_record": 113193261,
+            "start_uncompressed_byte": 18119403935,
+            "end_uncompressed_byte": 18253621744,
+            "record_count": 813444,
+            "payload_bytes": 134217809
+          },
+          {
+            "chunk_id": 136,
+            "path": "chunk-00136.nt",
+            "start_record": 113193261,
+            "end_record": 114006450,
+            "start_uncompressed_byte": 18253621744,
+            "end_uncompressed_byte": 18387839503,
+            "record_count": 813189,
+            "payload_bytes": 134217759
+          },
+          {
+            "chunk_id": 137,
+            "path": "chunk-00137.nt",
+            "start_record": 114006450,
+            "end_record": 114819633,
+            "start_uncompressed_byte": 18387839503,
+            "end_uncompressed_byte": 18522057277,
+            "record_count": 813183,
+            "payload_bytes": 134217774
+          },
+          {
+            "chunk_id": 138,
+            "path": "chunk-00138.nt",
+            "start_record": 114819633,
+            "end_record": 115632799,
+            "start_uncompressed_byte": 18522057277,
+            "end_uncompressed_byte": 18656275142,
+            "record_count": 813166,
+            "payload_bytes": 134217865
+          },
+          {
+            "chunk_id": 139,
+            "path": "chunk-00139.nt",
+            "start_record": 115632799,
+            "end_record": 116446119,
+            "start_uncompressed_byte": 18656275142,
+            "end_uncompressed_byte": 18790492907,
+            "record_count": 813320,
+            "payload_bytes": 134217765
+          },
+          {
+            "chunk_id": 140,
+            "path": "chunk-00140.nt",
+            "start_record": 116446119,
+            "end_record": 117259700,
+            "start_uncompressed_byte": 18790492907,
+            "end_uncompressed_byte": 18924710650,
+            "record_count": 813581,
+            "payload_bytes": 134217743
+          },
+          {
+            "chunk_id": 141,
+            "path": "chunk-00141.nt",
+            "start_record": 117259700,
+            "end_record": 118073250,
+            "start_uncompressed_byte": 18924710650,
+            "end_uncompressed_byte": 19058928432,
+            "record_count": 813550,
+            "payload_bytes": 134217782
+          },
+          {
+            "chunk_id": 142,
+            "path": "chunk-00142.nt",
+            "start_record": 118073250,
+            "end_record": 118886790,
+            "start_uncompressed_byte": 19058928432,
+            "end_uncompressed_byte": 19193146279,
+            "record_count": 813540,
+            "payload_bytes": 134217847
+          },
+          {
+            "chunk_id": 143,
+            "path": "chunk-00143.nt",
+            "start_record": 118886790,
+            "end_record": 119700363,
+            "start_uncompressed_byte": 19193146279,
+            "end_uncompressed_byte": 19327364021,
+            "record_count": 813573,
+            "payload_bytes": 134217742
+          },
+          {
+            "chunk_id": 144,
+            "path": "chunk-00144.nt",
+            "start_record": 119700363,
+            "end_record": 120513811,
+            "start_uncompressed_byte": 19327364021,
+            "end_uncompressed_byte": 19461581832,
+            "record_count": 813448,
+            "payload_bytes": 134217811
+          },
+          {
+            "chunk_id": 145,
+            "path": "chunk-00145.nt",
+            "start_record": 120513811,
+            "end_record": 121327199,
+            "start_uncompressed_byte": 19461581832,
+            "end_uncompressed_byte": 19595799615,
+            "record_count": 813388,
+            "payload_bytes": 134217783
+          },
+          {
+            "chunk_id": 146,
+            "path": "chunk-00146.nt",
+            "start_record": 121327199,
+            "end_record": 122140910,
+            "start_uncompressed_byte": 19595799615,
+            "end_uncompressed_byte": 19730017465,
+            "record_count": 813711,
+            "payload_bytes": 134217850
+          },
+          {
+            "chunk_id": 147,
+            "path": "chunk-00147.nt",
+            "start_record": 122140910,
+            "end_record": 122954413,
+            "start_uncompressed_byte": 19730017465,
+            "end_uncompressed_byte": 19864235212,
+            "record_count": 813503,
+            "payload_bytes": 134217747
+          },
+          {
+            "chunk_id": 148,
+            "path": "chunk-00148.nt",
+            "start_record": 122954413,
+            "end_record": 123767857,
+            "start_uncompressed_byte": 19864235212,
+            "end_uncompressed_byte": 19998453050,
+            "record_count": 813444,
+            "payload_bytes": 134217838
+          },
+          {
+            "chunk_id": 149,
+            "path": "chunk-00149.nt",
+            "start_record": 123767857,
+            "end_record": 124582811,
+            "start_uncompressed_byte": 19998453050,
+            "end_uncompressed_byte": 20132670780,
+            "record_count": 814954,
+            "payload_bytes": 134217730
+          },
+          {
+            "chunk_id": 150,
+            "path": "chunk-00150.nt",
+            "start_record": 124582811,
+            "end_record": 125396075,
+            "start_uncompressed_byte": 20132670780,
+            "end_uncompressed_byte": 20266888558,
+            "record_count": 813264,
+            "payload_bytes": 134217778
+          },
+          {
+            "chunk_id": 151,
+            "path": "chunk-00151.nt",
+            "start_record": 125396075,
+            "end_record": 126209517,
+            "start_uncompressed_byte": 20266888558,
+            "end_uncompressed_byte": 20401106407,
+            "record_count": 813442,
+            "payload_bytes": 134217849
+          },
+          {
+            "chunk_id": 152,
+            "path": "chunk-00152.nt",
+            "start_record": 126209517,
+            "end_record": 127022824,
+            "start_uncompressed_byte": 20401106407,
+            "end_uncompressed_byte": 20535324241,
+            "record_count": 813307,
+            "payload_bytes": 134217834
+          },
+          {
+            "chunk_id": 153,
+            "path": "chunk-00153.nt",
+            "start_record": 127022824,
+            "end_record": 127836290,
+            "start_uncompressed_byte": 20535324241,
+            "end_uncompressed_byte": 20669541972,
+            "record_count": 813466,
+            "payload_bytes": 134217731
+          },
+          {
+            "chunk_id": 154,
+            "path": "chunk-00154.nt",
+            "start_record": 127836290,
+            "end_record": 128649964,
+            "start_uncompressed_byte": 20669541972,
+            "end_uncompressed_byte": 20803759733,
+            "record_count": 813674,
+            "payload_bytes": 134217761
+          },
+          {
+            "chunk_id": 155,
+            "path": "chunk-00155.nt",
+            "start_record": 128649964,
+            "end_record": 129463222,
+            "start_uncompressed_byte": 20803759733,
+            "end_uncompressed_byte": 20937977527,
+            "record_count": 813258,
+            "payload_bytes": 134217794
+          },
+          {
+            "chunk_id": 156,
+            "path": "chunk-00156.nt",
+            "start_record": 129463222,
+            "end_record": 130276435,
+            "start_uncompressed_byte": 20937977527,
+            "end_uncompressed_byte": 21072195344,
+            "record_count": 813213,
+            "payload_bytes": 134217817
+          },
+          {
+            "chunk_id": 157,
+            "path": "chunk-00157.nt",
+            "start_record": 130276435,
+            "end_record": 131089791,
+            "start_uncompressed_byte": 21072195344,
+            "end_uncompressed_byte": 21206413102,
+            "record_count": 813356,
+            "payload_bytes": 134217758
+          },
+          {
+            "chunk_id": 158,
+            "path": "chunk-00158.nt",
+            "start_record": 131089791,
+            "end_record": 131903311,
+            "start_uncompressed_byte": 21206413102,
+            "end_uncompressed_byte": 21340630921,
+            "record_count": 813520,
+            "payload_bytes": 134217819
+          },
+          {
+            "chunk_id": 159,
+            "path": "chunk-00159.nt",
+            "start_record": 131903311,
+            "end_record": 132716985,
+            "start_uncompressed_byte": 21340630921,
+            "end_uncompressed_byte": 21474848752,
+            "record_count": 813674,
+            "payload_bytes": 134217831
+          },
+          {
+            "chunk_id": 160,
+            "path": "chunk-00160.nt",
+            "start_record": 132716985,
+            "end_record": 133530375,
+            "start_uncompressed_byte": 21474848752,
+            "end_uncompressed_byte": 21609066486,
+            "record_count": 813390,
+            "payload_bytes": 134217734
+          },
+          {
+            "chunk_id": 161,
+            "path": "chunk-00161.nt",
+            "start_record": 133530375,
+            "end_record": 134343863,
+            "start_uncompressed_byte": 21609066486,
+            "end_uncompressed_byte": 21743284280,
+            "record_count": 813488,
+            "payload_bytes": 134217794
+          },
+          {
+            "chunk_id": 162,
+            "path": "chunk-00162.nt",
+            "start_record": 134343863,
+            "end_record": 135157218,
+            "start_uncompressed_byte": 21743284280,
+            "end_uncompressed_byte": 21877502023,
+            "record_count": 813355,
+            "payload_bytes": 134217743
+          },
+          {
+            "chunk_id": 163,
+            "path": "chunk-00163.nt",
+            "start_record": 135157218,
+            "end_record": 135970486,
+            "start_uncompressed_byte": 21877502023,
+            "end_uncompressed_byte": 22011719853,
+            "record_count": 813268,
+            "payload_bytes": 134217830
+          },
+          {
+            "chunk_id": 164,
+            "path": "chunk-00164.nt",
+            "start_record": 135970486,
+            "end_record": 136784177,
+            "start_uncompressed_byte": 22011719853,
+            "end_uncompressed_byte": 22145937665,
+            "record_count": 813691,
+            "payload_bytes": 134217812
+          },
+          {
+            "chunk_id": 165,
+            "path": "chunk-00165.nt",
+            "start_record": 136784177,
+            "end_record": 137597377,
+            "start_uncompressed_byte": 22145937665,
+            "end_uncompressed_byte": 22280155430,
+            "record_count": 813200,
+            "payload_bytes": 134217765
+          },
+          {
+            "chunk_id": 166,
+            "path": "chunk-00166.nt",
+            "start_record": 137597377,
+            "end_record": 138410996,
+            "start_uncompressed_byte": 22280155430,
+            "end_uncompressed_byte": 22414373210,
+            "record_count": 813619,
+            "payload_bytes": 134217780
+          },
+          {
+            "chunk_id": 167,
+            "path": "chunk-00167.nt",
+            "start_record": 138410996,
+            "end_record": 139224299,
+            "start_uncompressed_byte": 22414373210,
+            "end_uncompressed_byte": 22548591089,
+            "record_count": 813303,
+            "payload_bytes": 134217879
+          },
+          {
+            "chunk_id": 168,
+            "path": "chunk-00168.nt",
+            "start_record": 139224299,
+            "end_record": 140037899,
+            "start_uncompressed_byte": 22548591089,
+            "end_uncompressed_byte": 22682808969,
+            "record_count": 813600,
+            "payload_bytes": 134217880
+          },
+          {
+            "chunk_id": 169,
+            "path": "chunk-00169.nt",
+            "start_record": 140037899,
+            "end_record": 140851461,
+            "start_uncompressed_byte": 22682808969,
+            "end_uncompressed_byte": 22817026748,
+            "record_count": 813562,
+            "payload_bytes": 134217779
+          },
+          {
+            "chunk_id": 170,
+            "path": "chunk-00170.nt",
+            "start_record": 140851461,
+            "end_record": 141664752,
+            "start_uncompressed_byte": 22817026748,
+            "end_uncompressed_byte": 22951244595,
+            "record_count": 813291,
+            "payload_bytes": 134217847
+          },
+          {
+            "chunk_id": 171,
+            "path": "chunk-00171.nt",
+            "start_record": 141664752,
+            "end_record": 142477907,
+            "start_uncompressed_byte": 22951244595,
+            "end_uncompressed_byte": 23085462475,
+            "record_count": 813155,
+            "payload_bytes": 134217880
+          },
+          {
+            "chunk_id": 172,
+            "path": "chunk-00172.nt",
+            "start_record": 142477907,
+            "end_record": 143291454,
+            "start_uncompressed_byte": 23085462475,
+            "end_uncompressed_byte": 23219680334,
+            "record_count": 813547,
+            "payload_bytes": 134217859
+          },
+          {
+            "chunk_id": 173,
+            "path": "chunk-00173.nt",
+            "start_record": 143291454,
+            "end_record": 144105029,
+            "start_uncompressed_byte": 23219680334,
+            "end_uncompressed_byte": 23353898156,
+            "record_count": 813575,
+            "payload_bytes": 134217822
+          },
+          {
+            "chunk_id": 174,
+            "path": "chunk-00174.nt",
+            "start_record": 144105029,
+            "end_record": 144918641,
+            "start_uncompressed_byte": 23353898156,
+            "end_uncompressed_byte": 23488115994,
+            "record_count": 813612,
+            "payload_bytes": 134217838
+          },
+          {
+            "chunk_id": 175,
+            "path": "chunk-00175.nt",
+            "start_record": 144918641,
+            "end_record": 145732084,
+            "start_uncompressed_byte": 23488115994,
+            "end_uncompressed_byte": 23622333850,
+            "record_count": 813443,
+            "payload_bytes": 134217856
+          },
+          {
+            "chunk_id": 176,
+            "path": "chunk-00176.nt",
+            "start_record": 145732084,
+            "end_record": 146545342,
+            "start_uncompressed_byte": 23622333850,
+            "end_uncompressed_byte": 23756551664,
+            "record_count": 813258,
+            "payload_bytes": 134217814
+          },
+          {
+            "chunk_id": 177,
+            "path": "chunk-00177.nt",
+            "start_record": 146545342,
+            "end_record": 147358618,
+            "start_uncompressed_byte": 23756551664,
+            "end_uncompressed_byte": 23890769473,
+            "record_count": 813276,
+            "payload_bytes": 134217809
+          },
+          {
+            "chunk_id": 178,
+            "path": "chunk-00178.nt",
+            "start_record": 147358618,
+            "end_record": 148172248,
+            "start_uncompressed_byte": 23890769473,
+            "end_uncompressed_byte": 24024987334,
+            "record_count": 813630,
+            "payload_bytes": 134217861
+          },
+          {
+            "chunk_id": 179,
+            "path": "chunk-00179.nt",
+            "start_record": 148172248,
+            "end_record": 148985571,
+            "start_uncompressed_byte": 24024987334,
+            "end_uncompressed_byte": 24159205095,
+            "record_count": 813323,
+            "payload_bytes": 134217761
+          },
+          {
+            "chunk_id": 180,
+            "path": "chunk-00180.nt",
+            "start_record": 148985571,
+            "end_record": 149799001,
+            "start_uncompressed_byte": 24159205095,
+            "end_uncompressed_byte": 24293423349,
+            "record_count": 813430,
+            "payload_bytes": 134218254
+          },
+          {
+            "chunk_id": 181,
+            "path": "chunk-00181.nt",
+            "start_record": 149799001,
+            "end_record": 150613266,
+            "start_uncompressed_byte": 24293423349,
+            "end_uncompressed_byte": 24427641221,
+            "record_count": 814265,
+            "payload_bytes": 134217872
+          },
+          {
+            "chunk_id": 182,
+            "path": "chunk-00182.nt",
+            "start_record": 150613266,
+            "end_record": 151426508,
+            "start_uncompressed_byte": 24427641221,
+            "end_uncompressed_byte": 24561858991,
+            "record_count": 813242,
+            "payload_bytes": 134217770
+          },
+          {
+            "chunk_id": 183,
+            "path": "chunk-00183.nt",
+            "start_record": 151426508,
+            "end_record": 152239947,
+            "start_uncompressed_byte": 24561858991,
+            "end_uncompressed_byte": 24696076807,
+            "record_count": 813439,
+            "payload_bytes": 134217816
+          },
+          {
+            "chunk_id": 184,
+            "path": "chunk-00184.nt",
+            "start_record": 152239947,
+            "end_record": 153053212,
+            "start_uncompressed_byte": 24696076807,
+            "end_uncompressed_byte": 24830294621,
+            "record_count": 813265,
+            "payload_bytes": 134217814
+          },
+          {
+            "chunk_id": 185,
+            "path": "chunk-00185.nt",
+            "start_record": 153053212,
+            "end_record": 153866741,
+            "start_uncompressed_byte": 24830294621,
+            "end_uncompressed_byte": 24964512362,
+            "record_count": 813529,
+            "payload_bytes": 134217741
+          },
+          {
+            "chunk_id": 186,
+            "path": "chunk-00186.nt",
+            "start_record": 153866741,
+            "end_record": 154680558,
+            "start_uncompressed_byte": 24964512362,
+            "end_uncompressed_byte": 25098730168,
+            "record_count": 813817,
+            "payload_bytes": 134217806
+          },
+          {
+            "chunk_id": 187,
+            "path": "chunk-00187.nt",
+            "start_record": 154680558,
+            "end_record": 155494142,
+            "start_uncompressed_byte": 25098730168,
+            "end_uncompressed_byte": 25232947971,
+            "record_count": 813584,
+            "payload_bytes": 134217803
+          },
+          {
+            "chunk_id": 188,
+            "path": "chunk-00188.nt",
+            "start_record": 155494142,
+            "end_record": 156307511,
+            "start_uncompressed_byte": 25232947971,
+            "end_uncompressed_byte": 25367165839,
+            "record_count": 813369,
+            "payload_bytes": 134217868
+          },
+          {
+            "chunk_id": 189,
+            "path": "chunk-00189.nt",
+            "start_record": 156307511,
+            "end_record": 157120770,
+            "start_uncompressed_byte": 25367165839,
+            "end_uncompressed_byte": 25501383629,
+            "record_count": 813259,
+            "payload_bytes": 134217790
+          },
+          {
+            "chunk_id": 190,
+            "path": "chunk-00190.nt",
+            "start_record": 157120770,
+            "end_record": 157934258,
+            "start_uncompressed_byte": 25501383629,
+            "end_uncompressed_byte": 25635601449,
+            "record_count": 813488,
+            "payload_bytes": 134217820
+          },
+          {
+            "chunk_id": 191,
+            "path": "chunk-00191.nt",
+            "start_record": 157934258,
+            "end_record": 158747793,
+            "start_uncompressed_byte": 25635601449,
+            "end_uncompressed_byte": 25769819284,
+            "record_count": 813535,
+            "payload_bytes": 134217835
+          },
+          {
+            "chunk_id": 192,
+            "path": "chunk-00192.nt",
+            "start_record": 158747793,
+            "end_record": 159561296,
+            "start_uncompressed_byte": 25769819284,
+            "end_uncompressed_byte": 25904037034,
+            "record_count": 813503,
+            "payload_bytes": 134217750
+          },
+          {
+            "chunk_id": 193,
+            "path": "chunk-00193.nt",
+            "start_record": 159561296,
+            "end_record": 160374714,
+            "start_uncompressed_byte": 25904037034,
+            "end_uncompressed_byte": 26038254887,
+            "record_count": 813418,
+            "payload_bytes": 134217853
+          },
+          {
+            "chunk_id": 194,
+            "path": "chunk-00194.nt",
+            "start_record": 160374714,
+            "end_record": 161188340,
+            "start_uncompressed_byte": 26038254887,
+            "end_uncompressed_byte": 26172472707,
+            "record_count": 813626,
+            "payload_bytes": 134217820
+          },
+          {
+            "chunk_id": 195,
+            "path": "chunk-00195.nt",
+            "start_record": 161188340,
+            "end_record": 162001652,
+            "start_uncompressed_byte": 26172472707,
+            "end_uncompressed_byte": 26306690588,
+            "record_count": 813312,
+            "payload_bytes": 134217881
+          },
+          {
+            "chunk_id": 196,
+            "path": "chunk-00196.nt",
+            "start_record": 162001652,
+            "end_record": 162815153,
+            "start_uncompressed_byte": 26306690588,
+            "end_uncompressed_byte": 26440908343,
+            "record_count": 813501,
+            "payload_bytes": 134217755
+          },
+          {
+            "chunk_id": 197,
+            "path": "chunk-00197.nt",
+            "start_record": 162815153,
+            "end_record": 163628957,
+            "start_uncompressed_byte": 26440908343,
+            "end_uncompressed_byte": 26575126235,
+            "record_count": 813804,
+            "payload_bytes": 134217892
+          },
+          {
+            "chunk_id": 198,
+            "path": "chunk-00198.nt",
+            "start_record": 163628957,
+            "end_record": 164443575,
+            "start_uncompressed_byte": 26575126235,
+            "end_uncompressed_byte": 26709344057,
+            "record_count": 814618,
+            "payload_bytes": 134217822
+          },
+          {
+            "chunk_id": 199,
+            "path": "chunk-00199.nt",
+            "start_record": 164443575,
+            "end_record": 165256795,
+            "start_uncompressed_byte": 26709344057,
+            "end_uncompressed_byte": 26843561891,
+            "record_count": 813220,
+            "payload_bytes": 134217834
+          },
+          {
+            "chunk_id": 200,
+            "path": "chunk-00200.nt",
+            "start_record": 165256795,
+            "end_record": 166070030,
+            "start_uncompressed_byte": 26843561891,
+            "end_uncompressed_byte": 26977779684,
+            "record_count": 813235,
+            "payload_bytes": 134217793
+          },
+          {
+            "chunk_id": 201,
+            "path": "chunk-00201.nt",
+            "start_record": 166070030,
+            "end_record": 166883449,
+            "start_uncompressed_byte": 26977779684,
+            "end_uncompressed_byte": 27111997534,
+            "record_count": 813419,
+            "payload_bytes": 134217850
+          },
+          {
+            "chunk_id": 202,
+            "path": "chunk-00202.nt",
+            "start_record": 166883449,
+            "end_record": 167696683,
+            "start_uncompressed_byte": 27111997534,
+            "end_uncompressed_byte": 27246215274,
+            "record_count": 813234,
+            "payload_bytes": 134217740
+          },
+          {
+            "chunk_id": 203,
+            "path": "chunk-00203.nt",
+            "start_record": 167696683,
+            "end_record": 168509803,
+            "start_uncompressed_byte": 27246215274,
+            "end_uncompressed_byte": 27380433109,
+            "record_count": 813120,
+            "payload_bytes": 134217835
+          },
+          {
+            "chunk_id": 204,
+            "path": "chunk-00204.nt",
+            "start_record": 168509803,
+            "end_record": 169323086,
+            "start_uncompressed_byte": 27380433109,
+            "end_uncompressed_byte": 27514650934,
+            "record_count": 813283,
+            "payload_bytes": 134217825
+          },
+          {
+            "chunk_id": 205,
+            "path": "chunk-00205.nt",
+            "start_record": 169323086,
+            "end_record": 170136590,
+            "start_uncompressed_byte": 27514650934,
+            "end_uncompressed_byte": 27648868689,
+            "record_count": 813504,
+            "payload_bytes": 134217755
+          },
+          {
+            "chunk_id": 206,
+            "path": "chunk-00206.nt",
+            "start_record": 170136590,
+            "end_record": 170935101,
+            "start_uncompressed_byte": 27648868689,
+            "end_uncompressed_byte": 27780587073,
+            "record_count": 798511,
+            "payload_bytes": 131718384
+          }
+        ],
+        "merge_rounds": 8,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/lowpeak_chunks__8g/out/HG005_GRCh38_r1000000/HG005_GRCh38_r1000000.hdt.index.v1-1",
+        "index_size_bytes": 1153777549,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 170935101,
+          "decoded_triples": 170935101,
+          "expected_triples": 170935101,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 244.93217095080763,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 170935101,
+        "decoded_triples": 170935101,
+        "expected_triples": 170935101,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "timing": {
+          "wall_seconds": 244.93217095080763,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": null
+        }
+      }
+    }
+  }
+}

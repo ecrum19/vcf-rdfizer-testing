@@ -1,0 +1,221 @@
+{
+  "run_id": "20260914T090601",
+  "timestamp": "2026-09-14T09:06:01",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out/HG005_GRCh38_r100000",
+  "output_name": "HG005_GRCh38_r100000",
+  "compression_methods": "hdt",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.nt.gz",
+  "combined_rdf_size_bytes": 75835048,
+  "index_warnings": [],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 287.535351512488,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt",
+      "output_size_bytes": 110116447,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.nt.gz"
+        ],
+        "chunk_count": 6,
+        "chunk_input_bytes": 2733539045,
+        "record_count": 17098746,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3515648,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536871063,
+            "record_count": 3515648,
+            "payload_bytes": 536871063
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3515648,
+            "end_record": 6856238,
+            "start_uncompressed_byte": 536871063,
+            "end_uncompressed_byte": 1073742048,
+            "record_count": 3340590,
+            "payload_bytes": 536870985
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 6856238,
+            "end_record": 10183685,
+            "start_uncompressed_byte": 1073742048,
+            "end_uncompressed_byte": 1610613057,
+            "record_count": 3327447,
+            "payload_bytes": 536871009
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 10183685,
+            "end_record": 13490503,
+            "start_uncompressed_byte": 1610613057,
+            "end_uncompressed_byte": 2147484447,
+            "record_count": 3306818,
+            "payload_bytes": 536871390
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 13490503,
+            "end_record": 16795822,
+            "start_uncompressed_byte": 2147484447,
+            "end_uncompressed_byte": 2684355419,
+            "record_count": 3305319,
+            "payload_bytes": 536870972
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 16795822,
+            "end_record": 17098746,
+            "start_uncompressed_byte": 2684355419,
+            "end_uncompressed_byte": 2733539045,
+            "record_count": 302924,
+            "payload_bytes": 49183626
+          }
+        ],
+        "merge_rounds": 3,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt.index.v1-1",
+        "index_size_bytes": 99493835,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 17098746,
+          "decoded_triples": 17098746,
+          "expected_triples": 17098746,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 25.1187728990335,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    }
+  },
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "",
+    "output_cottas_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": null
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/r100000__rep3/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt",
+    "output_hdt_size_bytes": 110116447,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 287.535351512488,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 17098746,
+      "decoded_triples": 17098746,
+      "expected_triples": 17098746,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 25.1187728990335,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  }
+}

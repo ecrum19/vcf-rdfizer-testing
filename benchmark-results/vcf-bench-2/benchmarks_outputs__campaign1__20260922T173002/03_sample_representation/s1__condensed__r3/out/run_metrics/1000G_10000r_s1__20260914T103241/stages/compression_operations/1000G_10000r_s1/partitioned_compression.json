@@ -1,0 +1,81 @@
+{
+  "run_id": "20260914T103241",
+  "timestamp": "2026-09-14T10:32:41",
+  "output_name": "1000G_10000r_s1",
+  "rdf_name": "__partitioned_compression__",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r3/out/1000G_10000r_s1",
+  "compression_methods": "hdt",
+  "index_warnings": [],
+  "auxiliary_stages": {},
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 10.68277832865715,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r3/out/1000G_10000r_s1/1000G_10000r_s1.hdt",
+      "output_size_bytes": 10234188,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r3/out/1000G_10000r_s1/1000G_10000r_s1.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 204943686,
+        "record_count": 1439503,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 1439503,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 204943686,
+            "record_count": 1439503,
+            "payload_bytes": 204943686
+          }
+        ],
+        "merge_rounds": 0,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s1__condensed__r3/out/1000G_10000r_s1/1000G_10000r_s1.hdt.index.v1-1",
+        "index_size_bytes": 7582663,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 1439503,
+          "decoded_triples": 1439503,
+          "expected_triples": 1439503,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 2.1802499929908663,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 1439503,
+        "decoded_triples": 1439503,
+        "expected_triples": 1439503,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "timing": {
+          "wall_seconds": 2.1802499929908663,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": null
+        }
+      }
+    }
+  }
+}

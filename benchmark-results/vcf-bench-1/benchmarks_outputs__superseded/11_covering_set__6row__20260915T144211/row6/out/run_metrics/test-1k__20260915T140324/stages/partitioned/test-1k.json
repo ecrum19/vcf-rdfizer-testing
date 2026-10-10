@@ -1,0 +1,126 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out/test-1k/test-1k.nt",
+  "output_name": "test-1k",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "cottas": {
+        "exit_code": 0,
+        "wall_seconds": 2.825102003989741,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out/test-1k/test-1k.cottas",
+        "output_size_bytes": 73203,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out/test-1k/test-1k.nt"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 4725020,
+          "record_count": 39700,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 39700,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 4725020,
+              "record_count": 39700,
+              "payload_bytes": 4725020
+            }
+          ],
+          "merge_rounds": 0,
+          "merge_strategy": "pyarrow_streaming_k_way",
+          "merge_batch_rows": "2048",
+          "index": "spo",
+          "validation": {
+            "valid": true,
+            "source_triples": 39700,
+            "decoded_triples": 39700,
+            "expected_triples": 39700,
+            "count_match": true,
+            "validator": "pycottas.cottas2rdf",
+            "timing": {
+              "wall_seconds": 1.094857030082494,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": null
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      },
+      "cottas_gzip": {
+        "stage_name": "cottas-gzip",
+        "exit_code": 0,
+        "wall_seconds": 0.005658154841512442,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/row6/out/test-1k/test-1k.cottas.gz",
+        "output_size_bytes": 68673,
+        "workspace_free_bytes_after": 108080558080,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108080627712,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null,
+        "details": {
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "cottas-build-00000",
+        "stage_name": "cottas-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 2.825102003989741,
+        "output_path": "/work/chunk-00000.cottas",
+        "output_size_bytes": 73203,
+        "workspace_free_bytes_after": 108075900928,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108075978752,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "cottas-validate",
+        "stage_name": "cottas-validate",
+        "exit_code": 0,
+        "wall_seconds": 1.094857030082494,
+        "output_path": "/work/.cottas-validate.validation.json",
+        "output_size_bytes": 165,
+        "workspace_free_bytes_after": 108080623616,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108080627712,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      },
+      {
+        "name": "cottas-gzip",
+        "stage_name": "cottas-gzip",
+        "exit_code": 0,
+        "wall_seconds": 0.005658154841512442,
+        "output_path": "/data/out/test-1k.cottas.gz",
+        "output_size_bytes": 68673,
+        "workspace_free_bytes_after": 108080558080,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 108080627712,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": null
+      }
+    ],
+    "index_warnings": []
+  }
+}
