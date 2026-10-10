@@ -37,6 +37,17 @@ commit that has all of them, for example
 
 `benchmarking_suggestions.md` moved to [`benchmarks/DESIGN.md`](benchmarks/DESIGN.md).
 
+## Moved before the Zenodo release (2026-10-10)
+
+| Old path | New path |
+| --- | --- |
+| `BioMedSem_2026/benchmark-results/` | `benchmark-results/` |
+| `BioMedSem_2026/paper-assets/figures/figure_data.py` | `scripts/figure_data.py` |
+
+Both were moved with `git mv`, so `git log --follow <new path>` shows each file's
+full history. `BioMedSem_2026/` and `tool-docs/` stay in the repository but are
+left out of the Zenodo archive (see `.gitattributes`).
+
 ## Material retained on main
 
 The current benchmark harness, fixtures, plug-in tests, ACMG use case, paper and
