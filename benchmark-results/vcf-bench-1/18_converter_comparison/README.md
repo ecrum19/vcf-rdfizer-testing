@@ -49,7 +49,7 @@ Every "differs" was traced to the converter's graph, not to the port (`compare__
   - AN covers carriers only (Q6).
   - Only the first ALT allele is written, so a multiallelic record is recognised only when a written call carries an allele index of 2 or more: 19 of the 70 are (Q2).
 - **SPARQLing Genomics, HG005 slice, Q8.** htslib adds a `PASS` FILTER definition the file does not declare: 10 FILTER lines instead of 9.
-- **BioInterchange, HG005 slice, Q7 and Q8.** Its header document (line 2 of 100,003) is not valid JSON: the tool writes strings without escaping them. No JSON-LD reader can read that line, so the header is absent from the graph (`jsonld__biointerchange__HG005_GRCh38_r100000/out/graph.nt.invalid.json`). All 100,001 record documents parse.
+- **BioInterchange, HG005 slice, Q7 and Q8.** Its header document (line 2 of 100,003) is not valid JSON: the tool writes strings without escaping them. No JSON-LD reader can read that line, so the header is absent from the graph (`jsonld__biointerchange__HG005_GRCh38_r100000/out/graph.nt.invalid.json`). Every other line parses: the 100,000 record documents (`Feature`, lines 3–100,002) and the run's `Context` and `Summary` documents (lines 1 and 100,003).
 
 "Not in graph" questions have their evidence in `benchmarks/converters/queries/<tool>/not_represented.json`.
 
