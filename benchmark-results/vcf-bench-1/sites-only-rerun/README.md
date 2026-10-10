@@ -44,3 +44,8 @@ The first run is on the `legacy` branch, at
 
 Running `09_awkward_inputs.sh` into a fresh `BM_RESULTS` with the fixtures on `main` reproduces this cell
 with the rest of the experiment; the driver here only reran the one cell in place.
+
+That was checked on 2026-10-10. On vcf-bench-1, with the same image and release commit, the harness of this
+change ran `09` into an empty results root, generating the fixtures itself. For all eleven fixtures, the exit
+code, triple count, validation status and per-query outcome matched the records here. `make_fixtures.py`
+regenerates all eighteen fixtures byte-identically on Python 3.12 and 3.14.

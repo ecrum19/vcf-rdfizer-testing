@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §4.5 — SPARQL retrieval against a VCF parser, on identical work.
+# Plan §3.8 — SPARQL retrieval against a VCF parser, on identical work.
 #
 # The question a biological researcher actually asks: if I convert my VCF to
 # RDF, what does it cost me to get an answer out compared with parsing the VCF?
@@ -41,7 +41,7 @@
 # from is the mistake to avoid.
 #
 # Also true and worth stating: conversion cost is not in either column. The
-# graph has to exist first. Quote it from §3 rather than folding it in here.
+# graph has to exist first. Quote it from §3.2 rather than folding it in here.
 #
 # Note: the query set is not selectable — the suite always runs its full set
 # (preflight + count + core). The aggregate is therefore over all of them,
@@ -71,7 +71,7 @@ run_scale() {
   fi
   local vcf; vcf="$(bm_vcf "$input")"
 
-  bm_banner "§4.5 $label scale: $(basename "$vcf")  engines=$engines"
+  bm_banner "§3.8 $label scale: $(basename "$vcf")  engines=$engines"
 
   local rep
   for rep in $(seq 1 "$REPS"); do

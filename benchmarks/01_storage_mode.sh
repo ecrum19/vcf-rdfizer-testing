@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §1 — storage mode: same compute, much less disk.
+# Plan §3.4 — storage mode: same compute, much less disk.
 #
 # Paired comparison of --rdf-storage-mode plain vs space-optimized. Everything
 # else is held fixed, including --hdt-strategy partitioned: `single` cannot read
@@ -34,7 +34,7 @@ REPS_AT_SCALE="${BM_REPS_AT_SCALE:-$REPS}"
 DEFAULT_SIZES="test-larger.vcf.gz HG005_GRCh38.vcf.gz NG1N86S6FC.vcf.gz"
 SIZES="${BM_SIZES:-$DEFAULT_SIZES}"
 
-bm_banner "§1 Storage mode (paired, $REPS reps, interleaved)"
+bm_banner "§3.4 Storage mode (paired, $REPS reps, interleaved)"
 bm_step "sizes: $SIZES"
 
 first_size="${SIZES%% *}"
@@ -71,7 +71,7 @@ bm_info "Done. Analyse with:
 
 cat <<'NOTE'
 
-Reporting reminders (§1.1):
+Reporting reminders (§3.4):
   * The disk metric is PEAK WORKSPACE, not final artifact bytes. Both modes
     emit the same triples, so a table of final sizes shows ~0% and looks like
     it refutes the claim. bench.json records peak_out_tree_bytes; the Docker

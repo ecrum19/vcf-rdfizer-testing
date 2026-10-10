@@ -4,7 +4,7 @@
 # Every comparison in this suite assumes one machine, one pinned tool, one
 # storage device and one parallelism setting. This script records what those
 # were, so numbers from different sessions can be told apart later. Comparing
-# runs without it is meaningless (plan §5.4).
+# runs without it is meaningless (plan §4.1).
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
@@ -113,7 +113,7 @@ manifest = {
         "disk": disk_free_bytes(pathlib.Path(manifest_path).parent),
     },
     "pinned_settings": {
-        # The plan requires these fixed across every comparison (§5.4). They are
+        # The plan requires these fixed across every comparison (§4.1). They are
         # recorded here so a later run can be checked against them, and because
         # a default is a policy that can change between releases: a manifest has
         # to name the mechanism that ran, not "the default".

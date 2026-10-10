@@ -23,7 +23,7 @@
 # ---------------------------------------------------------------------------
 # Generation runs on the PUBLISHED release image (default ecrum19/vcf-rdfizer:3.1.0),
 # never on a local build, so the graph is produced by the same code that
-# produced the manuscript's Figure 6 data. The query half may run a newer image
+# produced the query-cost data (§3.8). The query half may run a newer image
 # -- it needs --validation-queries, which postdates v3.1.0 -- and that
 # asymmetry is fine precisely because the two halves are separate: a newer
 # engine reading an older graph changes retrieval cost, not the graph.
@@ -45,7 +45,7 @@ bm_scale_require_pinned_image
 
 WANTED="${*:-$(bm_scale_ids)}"
 
-bm_banner "§scale generation: $WANTED  ->  $BM_SCALE_STORE"
+bm_banner "§3.10 scale generation: $WANTED  ->  $BM_SCALE_STORE"
 bm_step "image: $BM_IMAGE_REF ($(bm_image_digest))"
 
 for scale in $WANTED; do
@@ -77,7 +77,7 @@ BM_SCALE_STORE elsewhere:
   bm_step "$scale: building from $(basename "$vcf") into $store"
 
   # Same conversion configuration as 13_query_cost.sh's large cell, so a
-  # retrieval number taken here is comparable with Figure 6's rather than
+  # retrieval number taken here is comparable with 13_query_cost's rather than
   # measuring a differently-built graph. --no-shacl for the same reason it
   # gives there: the shape layer is a fixed per-run cost belonging to neither
   # side of the comparison.

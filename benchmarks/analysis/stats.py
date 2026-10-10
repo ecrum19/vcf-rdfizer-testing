@@ -4,13 +4,13 @@
 Two things are needed and nothing else:
 
 * ``paired_ratio_ci`` — a bootstrap CI on the paired ratio between two
-  configurations, for the equivalence claims in plan §1 and §2.3. Paired
+  configurations, for the equivalence claims in plan §3.4 and §3.3. Paired
   because the input and every other setting are identical within a pair; a
   ratio rather than a difference because the quantity that travels across
   input sizes is "x% slower", not "n seconds slower".
 
 * ``loglog_slope`` — an OLS slope on log-log axes with a CI, for the scaling
-  exponents in §2.2 and §3.1. The CI uses the t distribution, whose critical
+  exponents in §3.3 and §3.2. The CI uses the t distribution, whose critical
   values are tabulated here so scipy is not a dependency.
 """
 

@@ -94,8 +94,9 @@ The benchmark harness, fixtures, plug-in tests, linked-workflow definitions,
 results site, paper and supplement remain on `main`, with the run records of every
 reported result. Every script in `benchmarks/` and `scripts/` produced, computes or
 checks a reported result; `benchmarks/README.md` and the README's support-script
-table say which. `benchmarks/DESIGN.md` is the plan written before the campaign,
-kept because the scripts' comments cite its sections.
+table say which. `benchmarks/DESIGN.md` gives each experiment's design as run,
+by the paper's research questions; the plan written before the campaign is in its
+history (`git show 66f53577:benchmarks/DESIGN.md`).
 
 ## Retrieve archived files
 

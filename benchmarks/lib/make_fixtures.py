@@ -4,11 +4,11 @@
 Two families:
 
 * ``version_<v>.vcf`` — one file per supported specification version, so the
-  version-dependent emitter behaviour can be exercised (plan §4.2). The 4.4/4.5
+  version-dependent emitter behaviour can be exercised (plan §1.5). The 4.4/4.5
   files carry the features those versions add: per-ALT tuple repetition, the
   leading phase indicator, and the local-allele (LA/LR/LG) family.
 * awkward inputs — real situations that a VCF consumer meets and that a
-  converter can plausibly get wrong (plan §4.4). Each one is legal VCF, or
+  converter can plausibly get wrong (plan §1.5). Each one is legal VCF, or
   deliberately malformed in a single named way.
 
 Every fixture is tiny and readable on purpose: when one of them fails, the

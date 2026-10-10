@@ -3,7 +3,7 @@
 #
 # This is the QUERYING half. It never builds a graph: it reads the store that
 # 15_scale_prepare.sh wrote and refuses to run against a scale that is not
-# there. That refusal is the point. The manuscript's Figure 6 comes from
+# there. That refusal is the point. The query-cost results (§3.8) come from
 # 13_query_cost.sh, where every replicate re-converts the input, so three
 # replicates at 657M triples would spend ~48 h rebuilding the same graph to ask
 # 33 minutes of questions. Here the build is paid once, by a different script,
@@ -29,14 +29,14 @@
 # WHY THE DEFAULT IS THE THIRTEEN CORE QUERIES AND NOT THE WHOLE SUITE
 # ---------------------------------------------------------------------------
 # Measured on the v3.1.0 17.1M-triple cell, per artifact: the thirteen core
-# queries cost 17 s and the preflight set costs 201 s. Figure 6 reports the
+# queries cost 17 s and the preflight set costs 201 s. §3.8 reports the
 # thirteen. Running the full suite to obtain them means paying 12x for numbers
 # the figure does not contain, which at 657M triples is the difference between
 # ~33 minutes and ~7 hours.
 #
 # A subset means the tool reports TIMING_ONLY rather than a validation verdict
 # -- deliberately, see --validation-queries in the wrapper. Each selected query
-# is still compared against the cyvcf2 oracle, so the protocol that Figure 6
+# is still compared against the cyvcf2 oracle, so the protocol that §3.8
 # states ("result equality verified before any timing was compared") still
 # holds. Pass BM_SCALE_QUERIES=all to get a verdict as well, at full cost.
 #
@@ -45,7 +45,7 @@
 # ---------------------------------------------------------------------------
 # The shape layer is a fixed per-run cost belonging to neither side of a
 # retrieval comparison, so including it would blur the measurement and make
-# these numbers incomparable with Figure 6's.
+# these numbers incomparable with 13_query_cost's.
 #
 # Omitting it here was also a live defect, not just a tidiness issue. The
 # wrapper size-gates pyshacl by the PACKAGED ARTIFACT's bytes, while pyshacl's
@@ -63,12 +63,12 @@
 # correct here regardless of whether it is fixed.
 #
 # ---------------------------------------------------------------------------
-# COMPARABILITY WITH FIGURE 6
+# COMPARABILITY WITH 13_QUERY_COST (§3.8)
 # ---------------------------------------------------------------------------
-# q01..q13 are byte-identical between v3.1.0 (which produced Figure 6) and the
+# q01..q13 are byte-identical between v3.1.0 (which produced 13_query_cost's results) and the
 # image this script runs. The two preflight_missing_token_conformance queries
 # are NOT -- they were narrowed after v3.1.0 -- so preflight timings from this
-# script must not be put beside Figure 6's. The core thirteen may be.
+# script must not be put beside 13_query_cost's. The core thirteen may be.
 #
 # Usage:
 #   ./16_scale_retrieval.sh               # every prepared scale
@@ -161,7 +161,7 @@ fi
 Build one first -- it is the expensive half and it is a separate script:
   ./15_scale_prepare.sh r1000000"
 
-bm_banner "§scale retrieval: scales=$WANTED cells=$CELLS queries=$QUERIES reps=$REPS"
+bm_banner "§3.10 scale retrieval: scales=$WANTED cells=$CELLS queries=$QUERIES reps=$REPS"
 
 for scale in $WANTED; do
   if ! bm_scale_manifest_complete "$scale"; then

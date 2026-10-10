@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Plan §3.2 — corpus breadth: a stratified table, deliberately not a curve.
+# Plan §3.5 — corpus breadth: a stratified table, deliberately not a curve.
 #
 # The ten real files answer "does this handle real, heterogeneous VCFs?", not
 # "how does cost scale?". They differ in variant class, sample count, assembly,
 # caller and VCF version, so NO cross-family regression is fitted here — see
-# §3.2 for why, and say so in the manuscript. Declining to fit a model you
+# §3.5 for why, and say so in the manuscript. Declining to fit a model you
 # cannot justify reads as rigor, not as a missing result.
 #
 # One configuration, every available corpus file, one repetition each. The
@@ -32,7 +32,7 @@ consumer_wgs:60820188475559.vcf.gz
 consumer_wgs:60820188474283.vcf.gz
 "
 
-# §3.2 asks whether the tool handles real, heterogeneous VCFs. That is a
+# §3.5 asks whether the tool handles real, heterogeneous VCFs. That is a
 # COVERAGE claim about feature diversity -- INFO/FORMAT/FILTER structures,
 # variant types -- not a timing claim about file length, and nine whole corpus
 # files at expanded is the single most expensive block in the plan (days).
@@ -65,7 +65,7 @@ corpus_input() {          # echo "<path> <label-suffix>"
 ' "$target" "$MAX_RECORDS"
 }
 
-bm_banner "§3.2 corpus breadth (one config, one rep per file)"
+bm_banner "§3.5 corpus breadth (one config, one rep per file)"
 [[ -n "$MAX_RECORDS" ]] && bm_step "truncating to first $MAX_RECORDS records (whole: ${WHOLE_FILES:-none})"
 
 for entry in $CORPUS; do
@@ -77,7 +77,7 @@ for entry in $CORPUS; do
   fi
   vcf="$(bm_vcf "$input")"
 
-  # §3.2 runs everything at expanded, so a cohort-scale input cannot complete.
+  # §3.5 runs everything at expanded, so a cohort-scale input cannot complete.
   bm_skip_if_cohort_scale "$EXPERIMENT" "${family}__${stem}__too_many_samples" \
     "$vcf" expanded && continue
 
