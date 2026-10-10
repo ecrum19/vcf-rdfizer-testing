@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Describe VCF inputs structurally, for the plan §3.2 breadth table.
+"""Describe VCF inputs structurally, for the plan §3.5 breadth table.
 
 The ten corpus files are not a scaling curve — HGSVC2 is structural variants,
 1000G is a phased SNV cohort, HG004/5 are single-sample benchmarks, the five

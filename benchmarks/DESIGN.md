@@ -94,8 +94,9 @@ No HDT-strategy timing comparison was run. Below the chunk threshold
 
 **Question.** Would the validation layer notice a corrupted graph?
 
-**Design.** The tool's mutation test (`test/validation_mutations.py` in
-VCF-RDFizer) applies 113 deliberate corruptions to a small converted graph:
+**Design.** VCF-RDFizer's mutation test (`test/test_validation_mutation_unit.py`,
+with the corruptions defined in `test/validation_mutations.py`) applies 113
+deliberate corruptions to a small converted graph:
 coordinates, alleles, filters, metadata, phasing, sample indexes and
 relationships. Two controls must still pass. It counts which corruptions each
 layer detects:

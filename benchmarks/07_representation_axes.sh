@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Plan §3.6 and §1.5 — the three configurability axes the original plan omitted.
+# Plan §3.6 and §1.5 — three representation axes.
 #
-#   --info-representation   structured | raw      cost axis
-#   --header-representation structured | basic    cost axis
-#   --vcf-version           auto | 4.1 .. 4.5     robustness axis
+#   --info-representation   structured | raw      cost axis (§3.6)
+#   --header-representation structured | basic    cost axis (§3.6)
+#   --vcf-version           auto | 4.1 .. 4.5     conformance (§1.5)
 #
-# All three trade triples for queryability in the same way
-# --sample-representation does, and none of them were in the "96 configurations"
-# the plan originally counted.
+# INFO and header output trade triples for queryability, as
+# --sample-representation does. INFO is per-record, so its cost grows with
+# records rather than records x samples. The version cells convert fixtures
+# declaring VCF 4.1-4.5, and one with no declaration, which must convert
+# without claiming a version class it cannot verify.
 #
-# INFO is per-record, so its cost scales with V rather than V x S. On a
-# single-sample WGS file structuring it is plausibly MORE expensive than
-# expanded samples, which is a genuinely useful result for anyone choosing
-# settings and completes the "pay triples for queryability" story on a second
-# axis.
+# The defaults use whole files. The base campaign's biomedsem profile measured
+# INFO on the 100,000-record HG005 slice and on HGSVC2, three paired replicates
+# each, and the header on the HG005 slice (BM_INFO_INPUTS, BM_HEADER_INPUT).
 #
 # Usage: ./07_representation_axes.sh
 

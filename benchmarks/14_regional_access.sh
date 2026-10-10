@@ -13,13 +13,9 @@
 # reads a handful of BGZF blocks instead of the whole file.
 #
 # This experiment adds that arm and asks five region-restricted questions of
-# every access path. Either outcome is publishable:
-#
-#   SPARQL still wins   the retrieval claim gets stronger than it is now
-#   tabix wins          the paper says plainly that indexed VCF is the fastest
-#                       route to coordinate-bounded retrieval, and that the RDF
-#                       path's value is in joins and cross-resource questions --
-#                       which is what the Discussion argues anyway
+# every access path, on windows of 1 kb to 10 Mb (§3.9). The reported run is the
+# v3.3.1 rerun on 13's v3.1.0 graphs
+# (benchmark-results/vcf-bench-1/v331-rerun/results/14_regional_access/).
 #
 # Unlike every other experiment here, this one does not drive the wrapper CLI:
 # the wrapper has no mode for it, so the cell runs the regional runner inside

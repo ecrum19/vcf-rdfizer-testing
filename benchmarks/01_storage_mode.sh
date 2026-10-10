@@ -6,8 +6,12 @@
 # a gzip aggregate and is refused, so the strategy is a confound that has to be
 # pinned, not a second factor (§1.2).
 #
-# Three input sizes, because the point is that the disk saving GROWS with input
-# size while the time penalty stays flat. One size cannot show that.
+# By default, three input sizes with five replicates each, so the disk saving
+# can be seen growing with input size. The base campaign's biomedsem profile ran
+# two: the 100,000-record HG005 slice, three replicates per mode, and
+# test-larger.vcf.gz (269M triples) once per mode as a size check (BM_SIZES,
+# BM_REPS=3, BM_REPS_AT_SCALE=1). The disk result is peak workspace, not final
+# bytes, and time is judged against a +/-10% equivalence margin (§3.4).
 #
 # Repetitions are interleaved (p,s,p,s,...) rather than blocked, so thermal
 # drift and page-cache state cannot land preferentially on one mode.

@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
-# Plan §1.3 and §1.4 — robustness evidence, most of which already exists unused.
+# Plan §1.3 and §1.4 — fault sensitivity and reproducibility.
 #
-#   1. Mutation score        the strongest quantified claim in the repo
-#   2. Round-trip identity   compress -> decompress -> same triples
-#   3. Determinism           same input + config twice -> same digest
-#   4. Index idempotence     re-indexing changes nothing
+#   1. Mutation score        which of 113 deliberate corruptions each validation
+#                            layer detects (§1.3)
+#   2. Round-trip identity   compress -> decompress -> same triples (§1.4)
+#   3. Determinism           same input + config twice -> same triples (§1.4)
+#   4. Index idempotence     re-indexing changes nothing (§1.4)
 #
-# The mutation score is the headline. docs/vcf-coverage.md records 96/113 (85%)
-# across 60 named mutations with every gap enumerated in
-# test/validation_mutations.py. That is a quantified statement that the
-# validation suite would DETECT corruption of specific VCF elements — far
-# beyond "we ran it and it exited 0". A paper reporting 85% with the gaps listed
-# is trusted more than one reporting nothing.
+# The mutation score runs VCF-RDFizer's own mutation test on the host
+# (test/test_validation_mutation_unit.py, corruptions defined in
+# test/validation_mutations.py): once with the queries alone, and once with all
+# three shape profiles. The default-profile score is a separate rerun on the
+# same release (benchmark-results/vcf-bench-2/review-runs/).
+#
+# The other three compare sorted triple sets, never file checksums. The base
+# campaign's biomedsem profile ran them on the 100,000-record HG005 slice
+# (BM_ROBUSTNESS_INPUT; the default is test-larger.vcf.gz).
 #
 # Usage:
 #   ./08_robustness.sh              # everything
