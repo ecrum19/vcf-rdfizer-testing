@@ -7,10 +7,10 @@ driver role `bench2`.
 |---|---|---|---|
 | `bridge` | v3.3.1 converts the 100,000-record HG005 slice to N-Triples; its sorted triples are compared with the v3.1.0 N-Triples-only rerun's | 3 min | Identical: 17,098,746 triples, sorted SHA-256 `661578e7...94ed` for both (`bridge/sorted_triples.sha256`). Both releases write the same graph. |
 | `consumer_wgs` | The consumer WGS validation run (first 250,000 records of NG131FQA1I) with the v3.3.1 validator on QLever, default shapes | 1.8 h | PASS: every comparison and preflight check agrees, and SHACL reports 0 violations (`results/consumer_wgs__NG131FQA1I__first250000/out/run_metrics/*/reports/validation/`) |
-| `arm3` | Experiment 17, Arm 3: the complete HG005 VCF | 6.7 h | Both routes agree on every carrier list and record count; the clinical view holds all 3,887,810 records |
-| `arm4`, `arm4_resume` | Experiment 17, Arm 4: the complete NB72462M VCF under layered consent, four requesters | 1.8 h, then 19.1 h | Both routes agree on every carrier list and record count; every view passed its check (`results/17_use_case_acmg__layered/comparison.json`). See below |
+| `arm3` | Experiment 17, Scenario 3: the complete HG005 VCF | 6.7 h | Both routes agree on every carrier list and record count; the clinical view holds all 3,887,810 records |
+| `arm4`, `arm4_resume` | Experiment 17, Scenario 4: the complete NB72462M VCF under layered consent, four requesters | 1.8 h, then 19.1 h | Both routes agree on every carrier list and record count; every view passed its check (`results/17_use_case_acmg__layered/comparison.json`). See below |
 
-## Arm 4
+## Scenario 4
 
 The result matches the pre-release run on vcf-bench-3 in every count. That run is on the legacy branch, in
 [`vcf-bench-3/use-case/17_use_case_acmg__layered/`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results/vcf-bench-3/use-case/17_use_case_acmg__layered).
@@ -35,7 +35,7 @@ How it ran:
   `govern query compare`; see the driver. It started with 56 GB free and filled the disk while indexing the
   first view.
 - **Space cleared.** With the user's approval, space was cleared on the host; every removal is logged in
-  `~/vrdev-test/deleted-2026-10-08.txt` there. Arm 3's graphs were among them, removed after its run records
+  `~/vrdev-test/deleted-2026-10-08.txt` there. Scenario 3's graphs were among them, removed after its run records
   were copied off.
 - **Second resume** (`attempt2-arm4-resume-stopped/`, on the legacy branch). It was stopped at the start of
   govern, by request, to clear more space first.
@@ -50,7 +50,7 @@ How it ran:
 The 20 files listed in [`excluded-files.tsv`](excluded-files.tsv), with size and SHA-256. They stay on
 the host:
 - the bridge's and the consumer run's graphs;
-- Arm 3's `decisions.csv` and `records.tsv`;
-- Arm 4's converted graphs, link sets, release views, oracle graph, `decisions.csv` and `records.tsv`.
+- Scenario 3's `decisions.csv` and `records.tsv`;
+- Scenario 4's converted graphs, link sets, release views, oracle graph, `decisions.csv` and `records.tsv`.
 
-Arm 3's own graphs were removed from the host to make room for Arm 4, after its run records had been archived.
+Scenario 3's own graphs were removed from the host to make room for Scenario 4, after its run records had been archived.

@@ -214,7 +214,7 @@ its artifacts:
 
 One workflow, experiment `17`, built and run as specified in
 [`use_case/acmg/README.md`](use_case/acmg/README.md). Every stage used
-VCF-RDFizer v3.3.1. Arms 1–2 ran on vcf-bench-1 and Arms 3–4 on vcf-bench-2.
+VCF-RDFizer v3.3.1. Scenarios 1–2 ran on vcf-bench-1 and Scenarios 3–4 on vcf-bench-2.
 
 ### 2.1 The question, and two routes that must agree
 
@@ -236,17 +236,17 @@ separately. **The gate:** the sorted participant, gene, contig, position and
 allele tuples must agree for every requester before any timing is compared
 (`compare.py`).
 
-### 2.2 Four arms
+### 2.2 Four scenarios
 
-| Arm | Input | Tests |
+| Scenario | Input | Tests |
 | --- | --- | --- |
 | 1 | Gene-span slices (the ACMG regions) of five single-sample VCFs | Heterogeneous inputs |
 | 2 | 104 unrelated high-coverage 1000 Genomes participants, with population frequencies stored once in a sites-only graph | Cohort breadth, and joining a third resource |
-| 3 | The complete HG005 VCF | Complete-VCF scale; its matches must equal its Arm 1 matches |
+| 3 | The complete HG005 VCF | Complete-VCF scale; its matches must equal its Scenario 1 matches |
 | 4 | The complete NB72462M VCF, four requesters | Fine-grained release |
 
 The simulated consents combine file permissions, withdrawals, gene panels, a
-region and one named variant. Arm 4's rules each target a different kind of
+region and one named variant. Scenario 4's rules each target a different kind of
 selection, so every one of its four requesters receives a different, non-empty
 view.
 
@@ -256,7 +256,7 @@ view.
   shared with ClinVar.
 - **Gene linker** (`ensembl-genes-grch38`): links records to Ensembl genes by
   locus. The gene-panel rules select on these links.
-- **MyVariant.info tier** (Arm 1's two PGP files): confirms rsIDs against the
+- **MyVariant.info tier** (Scenario 1's two PGP files): confirms rsIDs against the
   live service. It replays the 21 responses recorded on 2026-09-28
   (`use_case/acmg/myvariant-cache/`), and `compare_myvariant.py` compares its
   links with `rsid-dbsnp`'s.
@@ -267,18 +267,18 @@ Reported in Table S7.
 
 The policy plug-in streams one release view per requester and checks it before
 use: against the policy, and against an oracle graph written directly from the
-VCF text beside the same link graphs. Every arm also compares the records each
+VCF text beside the same link graphs. Every scenario also compares the records each
 view releases with the count the conventional route releases to that requester.
 
-Release and querying run on QLever, never on an in-memory graph. Arm 4's graph
-alone holds 1.2 billion triples, so an in-memory graph could not hold every arm.
+Release and querying run on QLever, never on an in-memory graph. Scenario 4's graph
+alone holds 1.2 billion triples, so an in-memory graph could not hold every scenario.
 
 **Reported in** Section 3.2, Figure 4 and Tables S8–S9.
 
 ### 2.5 Authoring effort (`use_case/acmg/effort.py`)
 
 `effort.py` counts the non-blank, non-comment lines each route asks its author
-to write for Arm 1, with rules and data counted apart. It then applies four
+to write for Scenario 1, with rules and data counted apart. It then applies four
 changes to both routes as real edits:
 - a withdrawal;
 - a requester with a new purpose;
@@ -291,7 +291,7 @@ Table S10.
 
 ### 2.6 Stage costs
 
-Conversion and linking are paid once per arm. View writing, view checking,
+Conversion and linking are paid once per scenario. View writing, view checking,
 indexing and querying are paid per requester; the query time is the median of
 three runs. Each job ran under a memory watchdog that also recorded free disk.
 Reported in Figure S3 and Table S11.
@@ -302,7 +302,7 @@ Reported in Figure S3 and Table S11.
 
 Four questions, in the paper's order:
 1. **Semantic coverage against other converters** (§3.1).
-2. **Conversion cost on controlled ladders** that vary one dimension at a time
+2. **Conversion cost on controlled scaling series** that vary one dimension at a time
    (§3.2–§3.3), with the storage and representation options that trade disk or
    triples for queryability (§3.4–§3.7).
 3. **Retrieval cost against VCF access** (§3.8–§3.9).
@@ -317,7 +317,7 @@ single-run measurements.
 Four other executable converters (JVarkit, TogoVar, SPARQLing Genomics,
 BioInterchange) and VCF-RDFizer v3.3.1 convert two shared inputs:
 - the 100,000-record HG005 slice;
-- the 10,000-record, 16-sample rung of the sample ladder.
+- the 10,000-record, 16-sample subset of the sample-count series.
 
 Each converter runs with its most complete available options, in a pinned
 container under Docker Compose. Content questions Q1–Q8 are ported to
@@ -331,7 +331,7 @@ versions, commands and ports.
 
 ### 3.2 Record scaling (`04`)
 
-**Design.** The record ladder (§4.2): HG005 prefixes of 10,000, 100,000 and
+**Design.** The record-count series (§4.2): HG005 prefixes of 10,000, 100,000 and
 1,000,000 records with three replicates each, and the complete VCF (3,856,856
 records) once. One configuration throughout: expanded samples,
 space-optimized storage, partitioned HDT, no compression.
@@ -351,11 +351,11 @@ comparisons (§3.8) is quoted from here, never folded into query time.
 **Question.** How do the expanded and condensed sample profiles grow with
 sample count?
 
-**Design.** The sample ladder (§4.2): 10,000 records of the 1000 Genomes chr20
+**Design.** The sample-count series (§4.2): 10,000 records of the 1000 Genomes chr20
 call set at 1, 4, 16, 64, 256, 1,024 and 2,504 samples, with INFO byte-identical
-across rungs. Conversions use space-optimized storage and partitioned HDT. Three
+across subsets. Conversions use space-optimized storage and partitioned HDT. Three
 parts:
-- **Structure,** one cell per rung and profile (14 cells). The triple count is
+- **Structure,** one cell per subset and profile (14 cells). The triple count is
   deterministic, so one run gives the exact number.
 - **Timing,** three interleaved replicates per profile at 1 and at 2,504 samples
   (12 cells).
@@ -554,17 +554,17 @@ host recorded. Every cell's `bench.json` carries the tool commit and image.
 
 ### 4.2 Derived inputs (`02`)
 
-The ladders are derived from one source file each, so a fitted slope measures
+The scaling series are derived from one source file each, so a fitted slope measures
 the tool rather than differences between files:
 
-| Ladder | Source | Varies | Held fixed |
+| Series | Source | Varies | Held fixed |
 | --- | --- | --- | --- |
 | Records | `HG005_GRCh38.vcf.gz` | 10,000, 100,000, 1,000,000 leading records | One sample, caller, assembly, header |
 | Samples | `1000G_phase3_chr20.vcf.gz` | 1–2,504 samples | The same 10,000 records and INFO |
 
 - **Built with awk, not bcftools.** Cutting sample columns cannot recompute
-  INFO, so INFO is byte-identical across rungs by construction. AC and AN then
-  disagree with the remaining genotypes, so the rungs are benchmark fixtures,
+  INFO, so INFO is byte-identical across subsets by construction. AC and AN then
+  disagree with the remaining genotypes, so the subsets are benchmark fixtures,
   not biologically valid VCFs. Validation is unaffected: Q6 derives AC and AN
   from GT, and the oracle reads the same file.
 - **Provenance beside each file.** Each derived file has a provenance record
@@ -610,7 +610,7 @@ eight Spark partitions throughout.
   expanded cells on inputs with more than 1,000 sample columns.
 - **Later experiments.** `15` and `16` ran on vcf-bench-3. The v3.3.1 rerun of
   `14`, `16`, `17` and the consumer WGS validation run used one driver
-  (`run_v331.sh`) on each experiment's original host, except Arm 4, which moved
+  (`run_v331.sh`) on each experiment's original host, except Scenario 4, which moved
   to vcf-bench-2. Each job ran under a memory watchdog. `18` ran on vcf-bench-1.
 
 ### 4.5 What every run records
@@ -641,8 +641,8 @@ logs archived before this date print in their banners. Read it with
 | §1, §1.1 | Storage mode | §3.4 |
 | §1.2 | HDT-strategy constraints | §1.2 |
 | §2, §2.2–§2.4 | Sample representation | §3.3 |
-| §2.1 | Building the sample ladder | §4.2 |
-| §3, §3.1 | Record scaling (ladder building: §4.2) | §3.2 |
+| §2.1 | Building the sample-count series | §4.2 |
+| §3, §3.1 | Record scaling (building the series: §4.2) | §3.2 |
 | §3.2 | Corpus breadth | §3.5 |
 | §4.1 | Equivalence (the mechanism check: §1.2) | §1.1 |
 | §4.2 | INFO and header representation; VCF versions | §3.6; §1.5 |
