@@ -27,8 +27,8 @@ class SiteDataMatchesThePaper(unittest.TestCase):
             cls.files = sorted(p.name for p in Path(td).iterdir())
 
     def test_every_dataset_is_written(self):
-        self.assertEqual(self.files, ["campaign.json", "facts.json", "fidelity.json", "retrieval.json",
-                                      "scaling.json", "usecase.json"])
+        self.assertEqual(self.files, ["campaign.json", "converters.json", "facts.json", "fidelity.json",
+                                      "retrieval.json", "scaling.json", "usecase.json"])
 
     def test_campaign(self):
         totals = self.data["campaign"]["totals"]
@@ -84,9 +84,23 @@ class SiteDataMatchesThePaper(unittest.TestCase):
                 got = tuple(carriers[r]["rdf"] for r in ("unrestricted", "clinical", "cardio", "biobank"))
                 self.assertEqual(got, counts)
                 self.assertTrue(all(c["agree"] for c in carriers.values()))
+        # Arm 4 adds the participant's own physician as a requester (Table S9).
+        arm4 = arms["arm4"]["carriers"]
+        self.assertEqual({r: c["rdf"] for r, c in arm4.items()},
+                         {"unrestricted": 1382, "own_physician": 1382, "clinical": 1382, "cardio": 722, "biobank": 983})
+        self.assertTrue(all(c["agree"] for c in arm4.values()))
         rare = arms["arm2"]["rare"]
         self.assertEqual([rare[r]["rdf"] for r in ("unrestricted", "clinical", "cardio", "biobank")],
                          [4154, 1621, 2198, 1144])
+
+    def test_use_case_records_and_costs(self):
+        """Released records agree except Arm 2's symbolic SVs; Arm 4's once-per-arm costs (Section S5.4)."""
+        arms = self.data["usecase"]["arms"]
+        differ = {(arm, r): c["rdf"] - c["baseline"] for arm, a in arms.items()
+                  for r, c in a["records"].items() if not c["agree"]}
+        self.assertEqual(differ, {("arm2", "cardio"): 110, ("arm2", "biobank"): 58})
+        costs = arms["arm4"]["costs"]
+        self.assertEqual((round(costs["convert"] / 60, 1), round(costs["link"] / 60, 1)), (88.7, 16.5))
 
     def test_use_case_linking(self):
         arms = self.data["usecase"]["arms"]
@@ -114,6 +128,24 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         per_million = [round(row["perMillion"], 2) for row in r["costBySize"]]
         self.assertEqual(per_million, [1.13, 1.0, 0.97, 0.98])
 
+    def test_break_even(self):
+        """The minimal setup crosses over after about eleven questions; with HDT, 44 (Section S9.4)."""
+        b = self.data["retrieval"]["breakEven"]
+        self.assertEqual((round(b["conversion"], 1), round(b["index"], 1)), (95.7, 25.0))
+        self.assertEqual((round(b["scan"], 2), round(b["query"], 2)), (12.28, 1.43))
+        self.assertEqual((round(b["n_star"]), round(b["n_star_with_hdt"])), (11, 44))
+        self.assertEqual((round(min(b["per_question"].values())), round(max(b["per_question"].values()))), (10, 17))
+
+    def test_converters(self):
+        """Only VCF-RDFizer answers all eight content questions as the oracle does, on both inputs (Figure 5)."""
+        c = self.data["converters"]
+        self.assertEqual(len(c["questions"]), 8)
+        passed = {}
+        for o in c["outcomes"]:
+            passed.setdefault(o["tool"], []).append(o["status"] == "PASS")
+        self.assertEqual({t for t, ok in passed.items() if all(ok)}, {"vcf-rdfizer"})
+        self.assertEqual(len(c["outcomes"]), 5 * 2 * 8)
+
     def test_conversion_cost(self):
         s = self.data["scaling"]
         self.assertEqual([round(w, 1) for w in s["records"]["meanWall"][:3]], [40.7, 423.7, 5476.0])
@@ -139,12 +171,17 @@ class SiteDataMatchesThePaper(unittest.TestCase):
             "representationHours": "14.5", "wholeHours": "16.07", "sliceTriples": "17.1M",
             "fixtureTriples": "0.96M", "midTriples": "171M", "maxTriples": "657M", "qleverIndex": "22.8 s",
             "artifactSpread": "0.4%", "regionalExecutions": "11,160", "regionalFailures": "no",
+            "arms": "four", "armsAgree": "four", "arm4Requesters": "four", "recordArmsAgree": "Arms 1, 3 and 4",
+            "recordArmsDiffer": "Arm 2", "recordExtra": "110 and 58", "querySeconds": "171–233",
+            "converters": "four", "converterQuestions": "eight", "converterAllPass": "VCF-RDFizer",
+            "breakEven": "11", "breakEvenWithHdt": "44", "breakEvenRange": "10–17", "invariants": "1,160",
         }
         self.assertEqual({k: facts[k] for k in expected}, expected)
 
 
 # Names that contain digits but quote no result.
-NAMES = re.compile(r"1000 Genomes|HG00\d|NG131FQA1I|NB72462M|GRCh38|cyvcf2|vcf-bench-\d|[Aa]rm[ -]\d|\b\d\d_[a-z_]+")
+NAMES = re.compile(r"1000 Genomes|HG00\d|NG131FQA1I|NB72462M|GRCh38|cyvcf2|vcf-bench-\d|[Aa]rm[ -]\d|\b\d\d_[a-z_]+"
+                   r"|RQ\d|BioMedSem \d{4}")
 
 
 class PageQuotesNoNumberOfItsOwn(unittest.TestCase):

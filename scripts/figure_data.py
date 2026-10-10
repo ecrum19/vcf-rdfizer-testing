@@ -187,3 +187,55 @@ def retrieval() -> dict:
         "per_target": dict(per_target), "setup": dict(setup),
         "engine_runs": dict(engine_runs), "small_setup": dict(small_setup),
     }
+
+
+# ---------------------------------------------------------------------------
+# Setup amortization: the minimal RDF setup and the break-even (Section S9.4)
+# ---------------------------------------------------------------------------
+#: The N-Triples-only rerun on vcf-bench-2: conversion alone (convert__repN), and the query-cost
+#: run without HDT or COTTAS (validate__repN), both with v3.1.0 on the 100,000-record slice.
+NT_ONLY = RESULTS / "vcf-bench-2" / "nt-only"
+
+
+def nt_only_rerun() -> dict:
+    """Conversion wall times, QLever setup, and per-question query and parse times of the rerun."""
+    conversion = [float((d / "wall_seconds.txt").read_text()) for d in sorted(NT_ONLY.glob("convert__rep*"))]
+    sparql, parser, setup, seen = defaultdict(list), defaultdict(list), {}, set()
+    for rep in sorted(NT_ONLY.glob("validate__rep*")):
+        for path in rep.glob("out/run_metrics/*/reports/validation/*/benchmark.csv"):
+            for row in tidy(path):
+                if row["query_id"] not in dict(QUERIES) or row["status"] != "PASS" or row["engine"] != "qlever":
+                    continue
+                if (rep.name, row["query_id"]) in seen:
+                    continue
+                seen.add((rep.name, row["query_id"]))
+                sparql[row["query_id"]].append(float(row["wall_seconds"]))
+                parser[row["query_id"]].append(float(row["oracle_query_seconds"]))
+                setup.setdefault(rep.name, float(row["engine_setup_seconds"]))
+    return {"conversion": conversion, "index": list(setup.values()),
+            "sparql": dict(sparql), "parser": dict(parser)}
+
+
+def breakeven() -> dict:
+    """Setup, per-question parse and query times, and the break-even, on 100,000 HG005 records.
+
+    Everything comes from the N-Triples-only rerun: conversion to the gzip-framed N-Triples
+    that QLever indexes, QLever indexing, and the query-cost validation on them. The base
+    campaign's conversions also built HDT; that setup is kept only for comparison.
+    """
+    rerun = nt_only_rerun()
+    parser = {q: st.median(v) for q, v in rerun["parser"].items()}
+    sparql = {q: st.mean(v) for q, v in rerun["sparql"].items()}
+    conversion, index = st.mean(rerun["conversion"]), st.mean(rerun["index"])
+    setup = conversion + index
+    scan, query = st.median(parser.values()), st.mean(sparql.values())
+    # Base campaign, for comparison: the record ladder's conversion with HDT, the query-cost index.
+    campaign = retrieval()
+    with_hdt = st.mean(float(row["wrapper_wall_seconds"]) for row in tidy(B1 / "04_scaling_records" / "tidy.csv")
+                       if row["cell"].startswith("r100000__")) + campaign["ql_setup"]
+    c_scan = st.median(st.median(v) for v in campaign["oracle_q"].values())
+    c_query = st.mean(st.mean(v) for v in campaign["engine_q"].values())
+    return {"conversion": conversion, "conversion_runs": rerun["conversion"], "index": index,
+            "setup": setup, "scan": scan, "query": query, "n_star": setup / (scan - query),
+            "per_question": {q: setup / (parser[q] - sparql[q]) for q, _ in QUERIES},
+            "setup_with_hdt": with_hdt, "n_star_with_hdt": with_hdt / (c_scan - c_query)}

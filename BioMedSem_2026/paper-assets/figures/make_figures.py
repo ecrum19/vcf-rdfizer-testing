@@ -36,8 +36,8 @@ OUT = HERE.parent
 # The data layer and the validation and use-case readers live with the results site's builder.
 sys.path.insert(0, str(HERE.parents[2] / "scripts"))
 from figure_data import (  # noqa: E402 - stdlib-only data layer shared with the site
-    B1, HG005_WHOLE_RECORDS, QUERIES, corpus_rows, records_ladder, retrieval, sample_ladder, storage_modes,
-    tidy,
+    B1, HG005_WHOLE_RECORDS, QUERIES, breakeven, corpus_rows, records_ladder, retrieval, sample_ladder,
+    storage_modes, tidy,
 )
 import build_site_data as site  # noqa: E402
 
@@ -298,55 +298,6 @@ def fig_scaling() -> None:
 # ---------------------------------------------------------------------------
 # Figure: when converting pays off (supplement)
 # ---------------------------------------------------------------------------
-#: The N-Triples-only rerun on vcf-bench-2: conversion alone (convert__repN), and the query-cost
-#: run without HDT or COTTAS (validate__repN), both with v3.1.0 on the 100,000-record slice.
-NT_ONLY = site.RESULTS / "vcf-bench-2" / "nt-only"
-
-
-def nt_only_rerun() -> dict:
-    """Conversion wall times, QLever setup, and per-question query and parse times of the rerun."""
-    conversion = [float((d / "wall_seconds.txt").read_text()) for d in sorted(NT_ONLY.glob("convert__rep*"))]
-    sparql, parser, setup, seen = defaultdict(list), defaultdict(list), {}, set()
-    for rep in sorted(NT_ONLY.glob("validate__rep*")):
-        for path in rep.glob("out/run_metrics/*/reports/validation/*/benchmark.csv"):
-            for row in tidy(path):
-                if row["query_id"] not in dict(QUERIES) or row["status"] != "PASS" or row["engine"] != "qlever":
-                    continue
-                if (rep.name, row["query_id"]) in seen:
-                    continue
-                seen.add((rep.name, row["query_id"]))
-                sparql[row["query_id"]].append(float(row["wall_seconds"]))
-                parser[row["query_id"]].append(float(row["oracle_query_seconds"]))
-                setup.setdefault(rep.name, float(row["engine_setup_seconds"]))
-    return {"conversion": conversion, "index": list(setup.values()),
-            "sparql": dict(sparql), "parser": dict(parser)}
-
-
-def breakeven() -> dict:
-    """Setup, per-question parse and query times, and the break-even, on 100,000 HG005 records.
-
-    Everything comes from the N-Triples-only rerun: conversion to the gzip-framed N-Triples
-    that QLever indexes, QLever indexing, and the query-cost validation on them. The base
-    campaign's conversions also built HDT; that setup is kept only for comparison.
-    """
-    rerun = nt_only_rerun()
-    parser = {q: st.median(v) for q, v in rerun["parser"].items()}
-    sparql = {q: st.mean(v) for q, v in rerun["sparql"].items()}
-    conversion, index = st.mean(rerun["conversion"]), st.mean(rerun["index"])
-    setup = conversion + index
-    scan, query = st.median(parser.values()), st.mean(sparql.values())
-    # Base campaign, for comparison: the record ladder's conversion with HDT, the query-cost index.
-    campaign = retrieval()
-    with_hdt = st.mean(float(row["wrapper_wall_seconds"]) for row in tidy(B1_LADDER)
-                       if row["cell"].startswith("r100000__")) + campaign["ql_setup"]
-    c_scan = st.median(st.median(v) for v in campaign["oracle_q"].values())
-    c_query = st.mean(st.mean(v) for v in campaign["engine_q"].values())
-    return {"conversion": conversion, "conversion_runs": rerun["conversion"], "index": index,
-            "setup": setup, "scan": scan, "query": query, "n_star": setup / (scan - query),
-            "per_question": {q: setup / (parser[q] - sparql[q]) for q, _ in QUERIES},
-            "setup_with_hdt": with_hdt, "n_star_with_hdt": with_hdt / (c_scan - c_query)}
-
-
 #: Gzipped VCF inputs, measured on the hosts; the run records hold uncompressed sizes only.
 VCF_INPUT_SIZES = site.RESULTS / "vcf-input-sizes.json"
 
@@ -1037,7 +988,7 @@ REQUESTERS = [("unrestricted", "All (no policy)"), ("own_physician", "Participan
               ("clinical", "Clinical care (CC)"), ("cardio", "Cardiovascular research (DS)"),
               ("biobank", "General research (GRU)")]
 #: Arm 4 (layered rules on one complete VCF), outside the site's arms: its v3.3.1 rerun on vcf-bench-2.
-ARM4 = site.V331["vcf-bench-2"] / "17_use_case_acmg__layered"
+ARM4 = site.ARMS["arm4"]
 
 
 def arm_genome_triples(arm: Path) -> int:
@@ -1138,49 +1089,9 @@ def triples_label(n: float) -> str:
     return f"{n / 1e9:.2f}B" if n >= 1e9 else millions(n)
 
 
-def stage_costs(arm: Path) -> dict:
-    """Seconds per stage: one value for the once-per-arm stages, one per requester otherwise.
-
-    The view is the govern cell. The harness checks a view between that cell and
-    the next requester's, so a check is the gap between consecutive govern cells;
-    the last requester's gap also holds other work and is not used. Index and
-    query are the query cell's setup and median replicate.
-    """
-    def bench(cell):
-        return site.load(cell / "bench.json")
-
-    def cells(prefix):
-        return [c for c in site.reported_cells(arm, prefix) if (c / "bench.json").exists()]
-
-    govern = sorted(cells("govern"), key=lambda c: bench(c)["started_epoch"])
-    out = {"convert": [site.wall(cells("convert"))], "link": [site.wall(cells("link"))],
-           "view": [], "check": [], "index": [], "query": [], "empty": set()}
-    for i, cell in enumerate(govern):
-        requester = cell.name.split("__", 1)[1]
-        out["view"].append((requester, bench(cell)["wrapper_wall_seconds"]))
-        if i + 1 < len(govern):
-            out["check"].append((requester, bench(govern[i + 1])["started_epoch"] - bench(cell)["ended_epoch"]))
-        summary = site.load(cell / "out" / "summary.json")
-        out.setdefault("released", {})[requester] = (summary["records_released"], summary["triples_released"])
-        if summary["records_released"] == 0:
-            out["empty"].add(requester)
-    for timing in sorted(arm.glob("query/*/timing.json")):
-        requester = timing.parent.name
-        data = site.load(timing)
-        replicates = data["replicates"]
-        replicates = replicates["carriers"] if isinstance(replicates, dict) else replicates
-        if requester == "unrestricted":
-            out["unrestricted"] = (data["setup_seconds"], st.median(replicates))
-            continue
-        out["index"].append((requester, data["setup_seconds"]))
-        out["query"].append((requester, st.median(replicates)))
-    out["triples"] = site.load(arm / "query" / "unrestricted" / "timing.json")["triples"]
-    return out
-
-
 def fig_usecase_costs() -> None:
     """Time before the first answer, and each query, against the size of the arm's graph."""
-    arms = [(name, stage_costs(path)) for name, path in COST_ARMS]
+    arms = [(name, site.stage_costs(path)) for name, path in COST_ARMS]
     sizes, setup, query = [], [], []
     for _name, costs in arms:
         pick = lambda key: dict(costs[key])[FIRST_ANSWER]  # noqa: E731
