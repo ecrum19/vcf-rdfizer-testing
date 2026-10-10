@@ -13,17 +13,17 @@ The generated RDF and the input VCFs are not here; see [What is not here](#what-
 
 | Manuscript result | Release | Records |
 | --- | --- | --- |
-| Base campaign: fidelity and validation (RQ1), record and sample scaling, storage, corpus breadth, configuration coverage, query cost (Figures 2, 5, S5–S8) | v3.1.0 | `vcf-bench-1/benchmarks_outputs/`, `vcf-bench-2/benchmarks_outputs/`; integrated in `summary.json` |
-| Default-profile mutation rerun (Figure 2b) | v3.1.0 | `vcf-bench-2/review-runs/mutation__*` ([README](vcf-bench-2/review-runs/README.md)) |
-| Consumer WGS validation run (Figure 2a) | v3.3.1 | `vcf-bench-2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
-| Minimal RDF setup and the repeated-question crossover (Figure 5a) | v3.1.0 | `vcf-bench-2/nt-only/` ([README](vcf-bench-2/nt-only/README.md)) |
-| Linked workflow, Arms 1–3, record comparison, stage costs (Figures 3, S4) | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/`, `…__cohort/`; `vcf-bench-2/v331-rerun/results/17_use_case_acmg__wgs/` |
-| Linked workflow, Arm 4 | v3.3.1 | `vcf-bench-2/v331-rerun/` once its rerun is archived; until then `vcf-bench-3/use-case/17_use_case_acmg__layered/` |
+| Base campaign: fidelity and validation (RQ1), record and sample scaling, storage, corpus breadth, configuration coverage, query cost (Figures 3, 6, S4–S7) | v3.1.0 | `vcf-bench-1/benchmarks_outputs/`, `vcf-bench-2/benchmarks_outputs/`; integrated in `summary.json` |
+| Default-profile mutation rerun (Figure 3b) | v3.1.0 | `vcf-bench-2/review-runs/mutation__*` ([README](vcf-bench-2/review-runs/README.md)) |
+| Consumer WGS validation run (Figure 3a) | v3.3.1 | `vcf-bench-2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
+| Minimal RDF setup and the repeated-question crossover (Figure 6a) | v3.1.0 | `vcf-bench-2/nt-only/` ([README](vcf-bench-2/nt-only/README.md)) |
+| Linked workflow, Arms 1–3, record comparison, stage costs (Figures 4, S3) | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/`, `…__cohort/`; `vcf-bench-2/v331-rerun/results/17_use_case_acmg__wgs/` |
+| Linked workflow, Arm 4 (Figures 4, S3) | v3.3.1 | `vcf-bench-2/v331-rerun/results/17_use_case_acmg__layered/` ([README](vcf-bench-2/v331-rerun/README.md)) |
 | MyVariant.info tier | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/link_myvariant__*`, `tier1_vs_tier3_myvariant.json` |
-| Regional retrieval (Figures 5c, S9; Table S18) | v3.3.1 | `vcf-bench-1/v331-rerun/results/14_regional_access/` |
-| Large-graph retrieval (Figure 2a; Table S17) | v3.3.1 on v3.1.0 graphs | `vcf-bench-3/v331-rerun/results/16_scale_retrieval/`; the graphs' manifests in `vcf-bench-3/scale-store-manifests/` ([README](vcf-bench-3/README.md)) |
+| Regional retrieval (Figures 6c, S8; Table S18) | v3.3.1 | `vcf-bench-1/v331-rerun/results/14_regional_access/` |
+| Large-graph retrieval (Figure 3a; Table S17) | v3.3.1 on v3.1.0 graphs | `vcf-bench-3/v331-rerun/results/16_scale_retrieval/`; the graphs' manifests in `vcf-bench-3/scale-store-manifests/` ([README](vcf-bench-3/README.md)) |
 | Release conversion check (both releases write the same graph) | v3.1.0, v3.3.1 | `vcf-bench-2/v331-rerun/bridge/` |
-| Shared-input converter comparison (Figure 4, Section S2) | v3.3.1 | `vcf-bench-1/18_converter_comparison/` ([README](vcf-bench-1/18_converter_comparison/README.md)) |
+| Shared-input converter comparison (Figure 5, Section S2) | v3.3.1 | `vcf-bench-1/18_converter_comparison/` ([README](vcf-bench-1/18_converter_comparison/README.md)) |
 
 Images:
 - v3.1.0 is `ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa`

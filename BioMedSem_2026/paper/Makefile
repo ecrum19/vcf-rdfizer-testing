@@ -7,8 +7,8 @@ PAPER     = current_short
 BUILD_DIR = .build/$(PAPER)
 LATEXMK   = latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error
 FIGURE_DIR = $(if $(wildcard figures),figures,../paper-assets)
-# Main text: vcf-core-minimal, fig-validation, fig-usecase-matches, fig-converters, and fig-regional;
-# the rest are the supplement's.
+# Main text: vcf-core-minimal, vcf2rdf-v3, fig-validation, fig-usecase-matches, fig-converters, and
+# fig-regional; the rest are the supplement's.
 FIGURES = $(addprefix $(FIGURE_DIR)/,vcf2rdf-v3.pdf vcf-core-minimal.pdf fig-validation.pdf fig-converters.pdf fig-usecase-matches.pdf \
 	fig-usecase-costs.pdf fig-samples.pdf fig-retrieval.pdf fig-regional.pdf \
 	vcf-core-classes.pdf fig-linking-framework.pdf fig-scaling.pdf fig-representations.pdf \
@@ -16,7 +16,7 @@ FIGURES = $(addprefix $(FIGURE_DIR)/,vcf2rdf-v3.pdf vcf-core-minimal.pdf fig-val
 SOURCES   = $(PAPER).tex supplementary.tex reference.bib template/sn-jnl.cls \
 	template/bst/sn-mathphys-num.bst $(FIGURES) Makefile .latexmkrc
 
-.PHONY: all manuscript $(PAPER).pdf paper.pdf supplementary.pdf bundle clean distclean
+.PHONY: all manuscript $(PAPER).pdf paper.pdf supplementary.pdf bundle figures-tiff clean distclean
 
 all: paper.pdf supplementary.pdf
 
@@ -45,10 +45,17 @@ supplementary.pdf: $(PAPER).pdf
 bundle: all
 	python3 package.py
 
+# High-resolution TIFFs of every figure, named by figure number (Fig1.tif, FigS1.tif, ...), for
+# the publisher; needs Ghostscript and the repository's paper-assets/figures/export_tiff.py.
+figures-tiff: $(PAPER).pdf
+	python3 ../paper-assets/figures/export_tiff.py --aux-dir "$(BUILD_DIR)" \
+		--figures-dir "$(FIGURE_DIR)" --out figures-tiff $(PAPER).tex supplementary.tex
+
 # Remove intermediates while preserving the exported PDF.
 clean:
 	rm -rf .build
 
-# Remove intermediates and the exported PDF.
+# Remove intermediates, the exported PDFs and the TIFFs.
 distclean: clean
 	rm -f $(PAPER).pdf paper.pdf supplementary.pdf
+	rm -rf figures-tiff
