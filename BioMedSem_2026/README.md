@@ -19,19 +19,19 @@ The diagrams are standalone TikZ sources beside their PDFs.
 | Figure | File | Source |
 | --- | --- | --- |
 | 1 | `vcf-core-minimal.pdf` | `vcf-core-minimal.tex` |
-| 2 | `fig-validation.pdf` | `make_figures.py` |
-| 3 | `fig-usecase-matches.pdf` | `make_figures.py` |
-| 4 | `fig-converters.pdf` | `make_figures.py` |
-| 5 | `fig-regional.pdf` | `make_figures.py` |
+| 2 | `vcf2rdf-v3.pdf` | `vcf2rdf-v3.tex` |
+| 3 | `fig-validation.pdf` | `make_figures.py` |
+| 4 | `fig-usecase-matches.pdf` | `make_figures.py` |
+| 5 | `fig-converters.pdf` | `make_figures.py` |
+| 6 | `fig-regional.pdf` | `make_figures.py` |
 | S1 | `vcf-core-classes.pdf` | `vcf-core-classes.tex` |
-| S2 | `vcf2rdf-v3.pdf` | `vcf2rdf-v3.tex` |
-| S3 | `fig-linking-framework.pdf` | `fig-linking-framework.tex` |
-| S4 | `fig-usecase-costs.pdf` | `make_figures.py` |
-| S5 | `fig-scaling.pdf` | `make_figures.py` |
-| S6 | `fig-samples.pdf` | `make_figures.py` |
-| S7 | `fig-representations.pdf` | `make_figures.py` |
-| S8 | `fig-retrieval.pdf` | `make_figures.py` |
-| S9 | `fig-retrieval-detail.pdf` | `make_figures.py` |
+| S2 | `fig-linking-framework.pdf` | `fig-linking-framework.tex` |
+| S3 | `fig-usecase-costs.pdf` | `make_figures.py` |
+| S4 | `fig-scaling.pdf` | `make_figures.py` |
+| S5 | `fig-samples.pdf` | `make_figures.py` |
+| S6 | `fig-representations.pdf` | `make_figures.py` |
+| S7 | `fig-retrieval.pdf` | `make_figures.py` |
+| S8 | `fig-retrieval-detail.pdf` | `make_figures.py` |
 
 To redraw the data figures (Python 3 with Matplotlib), from the repository root:
 
@@ -41,6 +41,12 @@ python3 BioMedSem_2026/paper-assets/figures/make_figures.py
 
 The figures carry no creation timestamp, so an unchanged figure is redrawn
 byte for byte. To rebuild a diagram, run `pdflatex <name>.tex` in `paper-assets/`.
+
+For a publisher that wants raster files, `make -C BioMedSem_2026/paper figures-tiff` writes
+every figure as an LZW-compressed TIFF, 4,016 px wide (600 dpi across a 170 mm page), to
+`paper/figures-tiff/`. The files are named by figure number (`Fig1.tif`, …, `FigS8.tif`),
+and `figures.tsv` maps each one to its source. The export needs Ghostscript
+(`paper-assets/figures/export_tiff.py`).
 
 ## Building the documents
 
