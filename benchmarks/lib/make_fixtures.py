@@ -21,6 +21,7 @@ Usage:
 from __future__ import annotations
 
 import gzip
+import io
 import json
 import pathlib
 import sys
@@ -274,7 +275,14 @@ def main() -> int:
                 for pos in range(100, 1100, 10)],
         samples=["SAMPLE_A"],
     )
-    full = gzip.compress(good.encode())
+    # GzipFile with mtime=0 writes the same header on every Python version, so
+    # the fixture is byte-identical wherever it is regenerated. gzip.compress
+    # is not: on 3.12 it stamps the current time by default, and with mtime=0
+    # it lets zlib write the header, whose OS byte differs from 3.14's.
+    buffer = io.BytesIO()
+    with gzip.GzipFile(fileobj=buffer, mode="wb", compresslevel=9, mtime=0) as stream:
+        stream.write(good.encode())
+    full = buffer.getvalue()
     truncated = out_dir / "awkward_truncated.vcf.gz"
     truncated.write_bytes(full[: max(1, len(full) // 2)])
     expectation = (
