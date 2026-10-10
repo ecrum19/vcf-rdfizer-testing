@@ -5,8 +5,9 @@
 # behaviour. BOTH outcomes are acceptable results: converted, or refused with a
 # clear diagnostic. A crash or a silently wrong graph is not.
 #
-# This is what supports "does MANY useful VCF things", and it is honest about
-# the edges — which is more convincing than a table of successes.
+# It also converts a 100-record fixture and links it with the three
+# demonstration linkers (gene-demo, rsid-dbsnp, rsid-ensembl), and records a
+# skip for the custom-mapping cell unless BM_CUSTOM_RULES names a rules file.
 #
 # Every fixture carries its own expectation in benchmarks/fixtures/FIXTURES.json
 # (written by lib/make_fixtures.py). The analysis pairs observed against
