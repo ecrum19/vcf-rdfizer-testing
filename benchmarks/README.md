@@ -24,7 +24,7 @@ Figure and table numbers are the manuscript's (main text) and the supplement's
 (prefix S). Records are under `benchmark-results/`; `b1`, `b2` and `b3` are the
 hosts `vcf-bench-1`, `-2` and `-3`.
 
-### Base campaign: `00`–`13`, VCF-RDFizer v3.1.0
+### Core benchmark: `00`–`13`, VCF-RDFizer v3.1.0
 
 143 cells in 12 experiment families (Table S12). `00` and `02` prepare the
 others and are not counted. Every family ran whole on one host.
@@ -84,7 +84,7 @@ an experiment, directly. Each driver is archived with its records.
 | Minimal RDF setup and the repeated-question crossover: `13_query_cost`'s large input converted to N-Triples only (Figure 6a) | RQ3, §3.8 | `run_nt_only.sh` | `b2/nt-only/` |
 | Consumer WGS validation run: the first 250,000 NG131FQA1I records, validated on QLever with batched default shapes (Figure 3a; Section S4.2) | RQ1, §1.7 | `run_v331.sh`, job `consumer_wgs` | `b2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
 | Release conversion check: v3.3.1 and v3.1.0 write the same sorted triples for 100,000 HG005 records (Section S6.2) | RQ3, §3.10 | `run_v331.sh`, job `bridge` | `b2/v331-rerun/bridge/` |
-| `09`'s sites-only cell, rerun on 2026-10-10 because the campaign's fixture declared a FORMAT column without samples and its paired validation could not run (Section S7; Table S15) | RQ1, §1.5 | `rerun_sites_only.sh`: `bm_run` with `09`'s arguments, v3.1.0 | `b1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/`; driver and log in `b1/sites-only-rerun/` |
+| `09`'s sites-only cell, rerun on 2026-10-10 because the core benchmark's fixture declared a FORMAT column without samples and its paired validation could not run (Section S7; Table S15) | RQ1, §1.5 | `rerun_sites_only.sh`: `bm_run` with `09`'s arguments, v3.1.0 | `b1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/`; driver and log in `b1/sites-only-rerun/` |
 
 ## Supporting code
 
@@ -127,7 +127,7 @@ awk. By default the harness builds an image from the tool checkout, tags it
 published releases instead, as the reported runs did:
 
 ```bash
-export BM_IMAGE_VERSION=3.1.0     # the base campaign (00-13), and 15
+export BM_IMAGE_VERSION=3.1.0     # the core benchmark (00-13), and 15
 export BM_IMAGE_VERSION=3.3.1     # 14, 16, 17 and 18
 ```
 
@@ -149,13 +149,13 @@ time: two concurrent runs invalidate every timing and memory number. Detach long
 runs (`systemd-run --user --scope`, or `nohup`); Ctrl-C on the wrapper leaves its
 container running.
 
-**The `biomedsem` profile** sets the defaults the base campaign used; an
+**The `biomedsem` profile** sets the defaults the core benchmark used; an
 explicit environment variable still wins. It:
 - runs three replicates at the cheapest size and the larger sizes once
   (`BM_REPS=3`, `BM_REPS_AT_SCALE=1`);
 - truncates each corpus file to its first 250,000 records, keeping the header
   (`BM_CORPUS_MAX_RECORDS`), with one file converted whole (`BM_CORPUS_WHOLE`; the
-  campaign set `HG005_GRCh38.vcf.gz`);
+  core benchmark set `HG005_GRCh38.vcf.gz`);
 - uses the 1,000,000-record HG005 subset for feasibility, and the 100,000-record subset
   for robustness, INFO and header costs, and query cost;
 - validates on all four SPARQL engines in `06` (`BM_EQUIV_ENGINES=all`) and on

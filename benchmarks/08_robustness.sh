@@ -13,8 +13,8 @@
 # three shape profiles. The default-profile score is a separate rerun on the
 # same release (benchmark-results/vcf-bench-2/review-runs/).
 #
-# The other three compare sorted triple sets, never file checksums. The base
-# campaign's biomedsem profile ran them on the 100,000-record HG005 slice
+# The other three compare sorted triple sets, never file checksums. The core
+# benchmark's biomedsem profile ran them on the 100,000-record HG005 slice
 # (BM_ROBUSTNESS_INPUT; the default is test-larger.vcf.gz).
 #
 # Usage:

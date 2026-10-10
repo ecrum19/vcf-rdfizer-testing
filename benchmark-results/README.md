@@ -23,7 +23,7 @@ script behind each.
 
 | Manuscript result | Release | Records |
 | --- | --- | --- |
-| Base campaign: fidelity and validation, record and sample scaling, storage, corpus breadth, configuration coverage, query cost (Figures 3, 6, S4–S7; Tables S6, S12, S14–S15) | v3.1.0 | `vcf-bench-1/benchmarks_outputs/`, `vcf-bench-2/benchmarks_outputs/`; integrated in `summary.json` |
+| Core benchmark: fidelity and validation, record and sample scaling, storage, corpus breadth, configuration coverage, query cost (Figures 3, 6, S4–S7; Tables S6, S12, S14–S15) | v3.1.0 | `vcf-bench-1/benchmarks_outputs/`, `vcf-bench-2/benchmarks_outputs/`; integrated in `summary.json` |
 | Default-profile mutation rerun (Figure 3b) | v3.1.0 | `vcf-bench-2/review-runs/` ([README](vcf-bench-2/review-runs/README.md)) |
 | Minimal RDF setup and the repeated-question crossover (Figure 6a) | v3.1.0 | `vcf-bench-2/nt-only/` ([README](vcf-bench-2/nt-only/README.md)) |
 | Consumer WGS validation run (Figure 3a; Section S4.2) | v3.3.1 | `vcf-bench-2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
@@ -48,13 +48,13 @@ gives that host's jobs and results.
 ## Layout
 
 ```
-vcf-bench-1/                       the base campaign's first host
-  benchmarks_outputs/              experiments 00, 01, 04, 07-13 of the v3.1.0 campaign
+vcf-bench-1/                       the core benchmark's first host
+  benchmarks_outputs/              experiments 00, 01, 04, 07-13 of the v3.1.0 core benchmark
   sites-only-rerun/                the driver and log of 09's sites-only cell, rerun with a conformant fixture (v3.1.0)
   v331-rerun/                      the v3.3.1 rerun: Scenarios 1-2, the MyVariant.info tier, regional retrieval
   18_converter_comparison/         experiment 18
-vcf-bench-2/                       the base campaign's second host
-  benchmarks_outputs/              experiments 00, 03, 05, 06 of the v3.1.0 campaign
+vcf-bench-2/                       the core benchmark's second host
+  benchmarks_outputs/              experiments 00, 03, 05, 06 of the v3.1.0 core benchmark
   review-runs/                     the default-profile mutation rerun (v3.1.0)
   nt-only/                         the N-Triples-only rerun (v3.1.0)
   v331-rerun/                      the v3.3.1 rerun: Scenarios 3-4, the consumer WGS validation run, the release check
@@ -63,7 +63,7 @@ vcf-bench-3/                       the large-graph host
   scale-store-manifests/           those graphs' manifests
   v331-rerun/                      the v3.3.1 rerun: large-graph retrieval
   19_index_storage/                experiment 19: tabix and QLever index sizes, both inputs (v3.3.1)
-summary.json                       the base campaign, integrated (below)
+summary.json                       the core benchmark, integrated (below)
 input-checksums.tsv                the source VCFs' SHA-256
 vcf-input-sizes.json               the source VCFs' sizes
 ```
@@ -81,7 +81,7 @@ Every cell holds:
 ## summary.json
 
 [`scripts/build_run_summary.py`](../scripts/build_run_summary.py) integrates the
-base campaign's cells (experiments 00–13 in the `benchmarks_outputs` trees) into
+core benchmark's cells (experiments 00–13 in the `benchmarks_outputs` trees) into
 one record:
 - one record per cell (143), each tagged with its host, experiment, tool commit
   and resolved image digest;
@@ -106,10 +106,10 @@ experiment's internal comparison.
 independently get different images. `summary.json` resolves every cell's tag to
 the digest its host recorded.
 
-**One base-campaign cell is a later rerun.** `09_awkward_inputs/awkward_sites_only`
+**One core-benchmark cell is a later rerun.** `09_awkward_inputs/awkward_sites_only`
 ran again on 2026-10-10, on the same host with the same image and arguments,
-because the campaign's sites-only fixture was malformed and its paired
-validation could not run. It now converts and passes, which brings the campaign to
+because the core benchmark's sites-only fixture was malformed and its paired
+validation could not run. It now converts and passes, which brings the core benchmark to
 78 of 78 completed validations and 1,006 equal query comparisons
 ([`vcf-bench-1/sites-only-rerun/`](vcf-bench-1/sites-only-rerun/README.md)). The
 first run is on `legacy`.
@@ -133,7 +133,7 @@ Store did not finish that query (supplement, defects table) and are on `legacy`.
 ## What is not here
 
 - **The generated RDF:** about 196 GB of `.nt`, `.hdt` and `.cottas` from the
-  campaign, plus the later experiments' graphs and release views. Every cell
+  core benchmark, plus the later experiments' graphs and release views. Every cell
   records the command, commit and image digest that produced it, so any artifact
   can be rebuilt; the large-graph manifests record the SHA-256 of every artifact.
 - **Large files of the v3.3.1 rerun:** its graphs, derived VCFs, per-record

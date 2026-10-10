@@ -96,7 +96,7 @@ fi
 
 # An engine that will not finish is worth refusing rather than discovering
 # after six hours. comunica-sparql-file holds the graph in memory; on the 0.96M
-# fixture it already needed 11.7-12.5 s of setup, and nothing in the campaign
+# fixture it already needed 11.7-12.5 s of setup, and nothing in the core benchmark
 # has run it above 17.1M. The threshold is a documented judgement, not a
 # measurement, so it is overridable -- and a refusal is RECORDED as a cell, so
 # "we did not run it" stays visible in the dataset instead of looking like an

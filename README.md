@@ -39,7 +39,7 @@ commit and image digest that rebuild it.
 
 ## Software versions
 
-The base campaign (experiments `00`–`13`) ran VCF-RDFizer **v3.1.0**: image
+The core benchmark (experiments `00`–`13`) ran VCF-RDFizer **v3.1.0**: image
 `ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa`,
 commit `d3b34d5`.
 
@@ -82,7 +82,7 @@ script, release, host, configuration and records. In outline:
 ```bash
 bash scripts/download_test_data.sh                       # the ten input VCFs
 BM_IMAGE_VERSION=3.1.0 bash benchmarks/00_environment.sh
-BM_IMAGE_VERSION=3.1.0 bash benchmarks/run_all.sh biomedsem      # the base campaign
+BM_IMAGE_VERSION=3.1.0 bash benchmarks/run_all.sh biomedsem      # the core benchmark
 BM_IMAGE_VERSION=3.3.1 bash benchmarks/17_use_case_acmg.sh       # e.g. the linked workflow
 bash benchmarks/18_converter_comparison.sh                       # the converter comparison
 ```
@@ -133,7 +133,7 @@ python3 -m http.server 8765 --directory site
 | `scripts/download_test_data.sh` | Downloads the ten public VCF inputs and normalizes their names |
 | `scripts/install_vcf_rdfizer_ubuntu.sh` | Installs Docker and, optionally, the VCF-RDFizer CLI on Ubuntu (`--docker-only`; `VCF_RDFIZER_VERSION=3.1.0` selects a release) |
 | `scripts/report_system_conditions.py` | Records host and software details; called by `benchmarks/00_environment.sh` |
-| `scripts/build_run_summary.py` | Integrates the base campaign's run records into `summary.json` |
+| `scripts/build_run_summary.py` | Integrates the core benchmark's run records into `summary.json` |
 | `scripts/combine_benchmark_metrics.py` | Extracts per-run measurements; imported by `build_run_summary.py` |
 | `scripts/build_site_data.py` | Builds the results site's data from the run records (standard library only) |
 | `scripts/test_build_site_data.py` | Pins the site's numbers to the paper's |

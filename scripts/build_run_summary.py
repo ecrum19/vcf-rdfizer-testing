@@ -3,7 +3,7 @@
 
 combine_benchmark_metrics.py answers "what did this run measure". It knows
 nothing about which host ran it, which experiment and cell it belongs to, which
-tool commit produced it, or whether it was later superseded -- and this campaign
+tool commit produced it, or whether it was later superseded -- and the core benchmark
 has all four, because it ran split across two VMs, moved experiments between
 them mid-flight, changed tool commit twice, and re-ran two experiments after
 fixing bugs the first runs exposed.
@@ -18,11 +18,11 @@ the branches apart:
   partial     interrupted before bench.json was written
   calibration the identical cell each host ran so the two can be compared
   archive     an older tool's data, kept separate because its labels collide
-  prerelease  the first campaign, on development commits, set aside when the
+  prerelease  the first full run, on development commits, set aside when the
               whole suite was re-run on the v3.1.0 release ("__campaign1__")
-  supplementary  a targeted run added after a campaign to measure what it did
+  supplementary  a targeted run added after the core benchmark to measure what it did
               not ("__supplement_"), e.g. the sample ladder's COTTAS bytes;
-              reported where it is used, never counted as campaign cells
+              reported where it is used, never counted as core-benchmark cells
 
 Only `live` feeds the reported numbers. On main, `live` is the only branch left:
 the other trees moved to the repository's legacy branch, where this script still
@@ -49,7 +49,7 @@ from combine_benchmark_metrics import build_combined_metrics_for_run  # noqa: E4
 
 SCHEMA_VERSION = "biomedsem-1.0"
 
-#: Which branch of the campaign a tree belongs to. Order matters: the first
+#: Which branch of the run records a tree belongs to. Order matters: the first
 #: matching marker wins, and "benchmarks_outputs" alone must be tested last
 #: because every other name starts with it.
 TREE_KINDS = (
@@ -67,7 +67,7 @@ TREE_KINDS = (
 )
 
 
-#: The base campaign is experiments 00-13 in a host's benchmarks_outputs* trees. Everything
+#: The core benchmark is experiments 00-13 in a host's benchmarks_outputs* trees. Everything
 #: else under benchmark-results/ (the v3.3.1 rerun, the N-Triples-only rerun, the converter
 #: comparison, the large-graph builds) is reported on its own and is not counted here.
 CAMPAIGN_TREE = "benchmarks_outputs"
@@ -155,7 +155,7 @@ def relative_to_root(value: Any, prefix: str) -> Any:
 
 
 def collect_cells(root: Path) -> list[dict[str, Any]]:
-    """One record per base-campaign cell, wherever it lives, with its branch recorded."""
+    """One record per core-benchmark cell, wherever it lives, with its branch recorded."""
     cells: list[dict[str, Any]] = []
     # rglob rather than a fixed depth: the stalled archives nest an extra level
     # (<tree>/<archive>/<experiment>/<cell>), and a fixed glob silently skipped

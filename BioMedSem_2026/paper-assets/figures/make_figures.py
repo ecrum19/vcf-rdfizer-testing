@@ -4,8 +4,8 @@
     python3 make_figures.py            # writes ../fig-*.pdf
 
 Every number is read from benchmark-results/, never typed in,
-so the figures can be regenerated when a campaign is replaced. All of them are
-the v3.1.0 campaign (the live trees on both hosts).
+so the figures can be regenerated when a run is replaced. All of them are
+the v3.1.0 core benchmark (the live trees on both hosts).
 
 Colour: two categorical hues (blue, orange) plus gray for context, validated
 together on the white page with the dataviz palette validator. Figures are
@@ -950,7 +950,7 @@ def fig_validation() -> None:
     # A validation that stopped before any engine answered compared nothing.
     completed = sum(n for engines, n in v["enginesAnswering"].items() if engines != "0")
     valid = [
-        ("Base campaign: query comparisons", f"{completed} validation runs, up to 17.1M triples",
+        ("Core benchmark: query comparisons", f"{completed} validation runs, up to 17.1M triples",
          v["comparisons"]["PASS"],
          sum(n for status, n in v["comparisons"].items() if not status.startswith("NOT_APPLICABLE"))),
         ("HDT and COTTAS decoding", "decoded triple count of each artifact", decoded, decode_total),

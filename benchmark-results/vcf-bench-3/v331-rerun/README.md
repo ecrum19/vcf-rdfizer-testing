@@ -11,7 +11,7 @@ v3.1.0 graphs in `scale_store/`. The two releases write the same graph: see vcf-
 | 1,000,000 HG005 records, native HDT (24 GB heap) | 1 | 3.6 h | Did not complete (exit 1) |
 | 1,000,000 HG005 records, native COTTAS (24 GB heap) | 1 | 29 min | Did not complete (exit 1) |
 
-The native paths' failures match the base campaign's, which the paper reports. Per-cell records are in
+The native paths' failures match the core benchmark's, which the paper reports. Per-cell records are in
 `results/16_scale_retrieval/`. Its `retrieval.csv` and `retrieval-raw.json`, which the figures and the paper
 read, were built from those cells with
 `python3 benchmarks/analysis/scale_retrieval.py 16_scale_retrieval --results benchmark-results/vcf-bench-3/v331-rerun/results`.

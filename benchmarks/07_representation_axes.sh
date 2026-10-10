@@ -11,7 +11,7 @@
 # declaring VCF 4.1-4.5, and one with no declaration, which must convert
 # without claiming a version class it cannot verify.
 #
-# The defaults use whole files. The base campaign's biomedsem profile measured
+# The defaults use whole files. The core benchmark's biomedsem profile measured
 # INFO on the 100,000-record HG005 slice and on HGSVC2, three paired replicates
 # each, and the header on the HG005 slice (BM_INFO_INPUTS, BM_HEADER_INPUT).
 #

@@ -5,7 +5,7 @@
 
 Standard library only, and no network: everything is read from
 benchmark-results/ and benchmarks/use_case/acmg, which hold only the reported
-runs: the v3.1.0 campaign, the additional v3.1.0 runs, and the v3.3.1 rerun.
+runs: the v3.1.0 core benchmark, the additional v3.1.0 runs, and the v3.3.1 rerun.
 Superseded, stalled and failed attempts are on the repository's legacy branch. The
 values behind the paper's figures come from the same module make_figures.py
 uses (scripts/figure_data.py), so the site and the paper cannot
@@ -34,7 +34,7 @@ RESULTS = fd.RESULTS
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
 #: The rerun with the published v3.3.1 of every result a pre-release build first produced, per host.
 #: The use-case arms, regional and large-graph retrieval, and the consumer WGS validation run are
-#: read from here; the v3.1.0 campaign and the v3.1.0 mutation rerun are not rerun.
+#: read from here; the v3.1.0 core benchmark and the v3.1.0 mutation rerun are not rerun.
 V331 = {host: RESULTS / host / "v331-rerun" / "results" for host in ("vcf-bench-1", "vcf-bench-2", "vcf-bench-3")}
 ACMG = ROOT / "benchmarks" / "use_case" / "acmg"
 REPO_URL = "https://github.com/ecrum19/vcf-rdfizer-testing"
@@ -49,7 +49,7 @@ def rel(path: Path | str) -> str:
 
 
 def live_report_dirs() -> list[Path]:
-    """Every validation report in the live campaign trees of both hosts."""
+    """Every validation report in the core benchmark's live trees on both hosts."""
     dirs = []
     for host in ("vcf-bench-1", "vcf-bench-2"):
         pattern = RESULTS / host / "benchmarks_outputs" / "**" / "reports" / "validation" / "*" / "summary.json"
@@ -58,7 +58,7 @@ def live_report_dirs() -> list[Path]:
 
 
 # ---------------------------------------------------------------------------
-# Campaign
+# Core benchmark
 # ---------------------------------------------------------------------------
 def campaign() -> dict:
     summary = fd.summary()
@@ -96,7 +96,7 @@ def campaign() -> dict:
 # Fidelity
 # ---------------------------------------------------------------------------
 def validation_counts() -> dict:
-    """Pass/total for every layer of the campaign's validation evidence."""
+    """Pass/total for every layer of the core benchmark's validation evidence."""
     comparisons, invariants, rapper, engines = Counter(), Counter(), Counter(), Counter()
     shacl = []
     reports = live_report_dirs()
@@ -682,7 +682,7 @@ def facts(d: dict) -> dict[str, str]:
     out["converterInputs"] = words(len(conv["inputs"]))
     out["converterAllPass"] = listing([names[t] for t, ok in outcomes.items() if all(ok)])
 
-    # Setup amortization: the minimal RDF setup, and the campaign's HDT-inclusive one
+    # Setup amortization: the minimal RDF setup, and the core benchmark's HDT-inclusive one
     be = retrieval["breakEven"]
     out["breakEven"] = f"{be['n_star']:.0f}"
     out["breakEvenWithHdt"] = f"{be['n_star_with_hdt']:.0f}"

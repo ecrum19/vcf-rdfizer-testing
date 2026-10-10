@@ -1,6 +1,6 @@
 # vcf-bench-3: large-graph retrieval
 
-Not part of the base campaign (Supplementary Table S12). This host ran the
+Not part of the core benchmark (Supplementary Table S12). This host ran the
 two-phase large-graph experiment: `15_scale_prepare.sh` built two graphs once,
 and `16_scale_retrieval.sh` queried them. The manuscript reports the retrieval
 from the v3.3.1 rerun on those graphs (Figure 3a, Table S17).
@@ -23,7 +23,7 @@ failed before the memory fixes are on the
 | `whole` | 657,425,805 | `HG005_GRCh38.vcf.gz` | 14.25 h | nt.gz 2.7 GB, hdt 4.3 GB, cottas 1.4 GB |
 
 Both were converted by the published `ecrum19/vcf-rdfizer:3.1.0`
-(`sha256:1904e96d…`), the image that produced the base campaign, so retrieval
+(`sha256:1904e96d…`), the image that produced the core benchmark, so retrieval
 here measures the same pipeline. The complete VCF's triple count reproduces
 vcf-bench-2's independent v3.1.0 run exactly. v3.3.1 writes the same graph
 (vcf-bench-2's `bridge` job), so the v3.1.0 graphs stand for v3.3.1's.

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Rerun experiment 09's sites-only cell with the corrected fixture, on
-# vcf-bench-1, with the base campaign's release and arguments (2026-10-10).
+# vcf-bench-1, with the core benchmark's release and arguments (2026-10-10).
 #
 # Run from the host's harness checkout (~/vcf-rdfizer-testing, harness 3b36985d,
-# the commit the campaign ran), after replacing
+# the commit the core benchmark ran), after replacing
 # benchmarks/fixtures/awkward_sites_only.vcf with the corrected fixture
 # (SHA-256 6e872d68...; written by lib/make_fixtures.py on main).
 set -euo pipefail
@@ -16,7 +16,7 @@ mkdir -p "$superseded"
 mv benchmarks_outputs/09_awkward_inputs/awkward_sites_only "$superseded/"
 
 # The host's tool checkout had moved past the release, so run the release
-# commit from its own worktree; bench.json then records d3b34d5 as the campaign did.
+# commit from its own worktree; bench.json then records d3b34d5 as the core benchmark did.
 git -C ~/VCF-RDFizer worktree add --detach ~/VCF-RDFizer-d3b34d5 d3b34d5
 
 cd benchmarks

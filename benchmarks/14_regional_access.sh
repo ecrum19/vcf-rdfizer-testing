@@ -94,7 +94,7 @@ THIN_ARMS="${BM_REGIONAL_THIN_ARMS:-cyvcf2-scan}"
 # The image.
 #
 # The regional runner and the tabix package ship in the image, not in this
-# harness, and VCF-RDFizer v3.1.0 has neither. A campaign pinned to v3.1.0
+# harness, and VCF-RDFizer v3.1.0 has neither. A benchmark run pinned to v3.1.0
 # therefore cannot run this experiment as it stands. BM_REGIONAL_IMAGE lets
 # this experiment alone use an image that has them, while every other
 # experiment stays on the session's image; bench.json then records THIS

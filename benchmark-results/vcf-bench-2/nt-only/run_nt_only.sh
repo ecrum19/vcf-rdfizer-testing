@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # N-Triples-only rerun of the 100,000-record HG005 slice with VCF-RDFizer v3.1.0
-# (d3b34d5, image ecrum19/vcf-rdfizer:3.1.0), the base campaign's release.
+# (d3b34d5, image ecrum19/vcf-rdfizer:3.1.0), the core benchmark's release.
 #   A  convert__repN : conversion only, as 13_query_cost/large minus HDT, COTTAS and
 #                      validation; its wall time is the setup QLever needs.
 #   B  validate__repN: 13_query_cost/large minus HDT and COTTAS, so QLever indexes the

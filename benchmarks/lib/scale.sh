@@ -126,7 +126,7 @@ for suffix, kind in ((".nt.gz", "nt.gz"), (".hdt", "hdt"), (".cottas", "cottas")
             "sha256": sha256(path),
         }
 
-# Triple count from the run record, so the manifest and the campaign's own
+# Triple count from the run record, so the manifest and the run's own
 # metrics can never disagree.
 triples = bench.get("output_triples")
 if triples is None:

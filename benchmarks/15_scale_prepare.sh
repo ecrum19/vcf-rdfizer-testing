@@ -11,7 +11,7 @@
 # ---------------------------------------------------------------------------
 # WHY THE STORE LIVES OUTSIDE benchmarks_outputs
 # ---------------------------------------------------------------------------
-# $BM_RESULTS gets archived, moved and pruned between campaigns -- freeing disk
+# $BM_RESULTS gets archived, moved and pruned between benchmark runs -- freeing disk
 # by deleting out/<dataset>/ is a normal thing to do there, and it has been done
 # in this project before. A 16 h artifact must not be inside a tree anyone would
 # reasonably clear. BM_SCALE_STORE defaults to a sibling of vcf_data instead.
@@ -34,7 +34,7 @@
 #   BM_SCALE_REPRS=hdt ./15_scale_prepare.sh whole
 #
 # Idempotent: a scale whose manifest is already complete is skipped, so an
-# interrupted campaign is resumed by re-running the same command.
+# interrupted run is resumed by re-running the same command.
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib/scale.sh"

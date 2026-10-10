@@ -12,7 +12,7 @@
 # exactly what makes HGSVC2 incomparable, since sequence-resolved SV alleles
 # mean many bytes per record.
 #
-# The base campaign's biomedsem profile converted the first 250,000 records of
+# The core benchmark's biomedsem profile converted the first 250,000 records of
 # each file (BM_CORPUS_MAX_RECORDS) and HG005_GRCh38.vcf.gz whole
 # (BM_CORPUS_WHOLE). The 1000 Genomes call set's expanded cell is skipped by the
 # cohort-scale guard, so eight truncated files and HG005 were measured.

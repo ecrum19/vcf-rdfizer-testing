@@ -48,7 +48,7 @@
 # (preflight + count + core). The aggregate is therefore over all of them,
 # which is a fairer basis than a hand-picked subset anyway.
 #
-# The base campaign's biomedsem profile ran test-10k.vcf (0.96M triples) on
+# The core benchmark's biomedsem profile ran test-10k.vcf (0.96M triples) on
 # every engine and the 100,000-record HG005 slice (17.1M triples) on QLever,
 # three replicates each, without SHACL (BM_QUERY_SMALL, BM_QUERY_LARGE). The
 # minimal-setup crossover adds the N-Triples-only rerun
