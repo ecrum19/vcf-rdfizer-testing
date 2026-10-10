@@ -1016,11 +1016,11 @@ def fig_usecase_matches() -> None:
     """
     arms = site.usecase()["arms"]
     panels = [
-        ("Arm 1", "five gene-span slices", arms["arm1"]["carriers"], arm_genome_triples(site.ARMS["arm1"])),
-        ("Arm 2", "cohort of 104", arms["arm2"]["carriers"], arm_genome_triples(site.ARMS["arm2"])),
-        ("Arm 2", "panel AF < 0.01", arms["arm2"]["rare"], None),
-        ("Arm 3: HG005", "complete VCF", arms["arm3"]["carriers"], arm_genome_triples(site.ARMS["arm3"])),
-        ("Arm 4: NB72462M", "complete VCF", carriers(site.load(ARM4 / "comparison.json")), arm_genome_triples(ARM4)),
+        ("Scenario 1", "five gene-span slices", arms["arm1"]["carriers"], arm_genome_triples(site.ARMS["arm1"])),
+        ("Scenario 2", "cohort of 104", arms["arm2"]["carriers"], arm_genome_triples(site.ARMS["arm2"])),
+        ("Scenario 2", "panel AF < 0.01", arms["arm2"]["rare"], None),
+        ("Scenario 3", "complete HG005 VCF", arms["arm3"]["carriers"], arm_genome_triples(site.ARMS["arm3"])),
+        ("Scenario 4", "complete NB72462M VCF", carriers(site.load(ARM4 / "comparison.json")), arm_genome_triples(ARM4)),
     ]
     short = {"unrestricted": "All", "own_physician": "OP", "clinical": "CC",
              "cardio": "DS", "biobank": "GRU"}
@@ -1072,12 +1072,12 @@ def millions(n: float) -> str:
 # ---------------------------------------------------------------------------
 # Figure: stage costs of the linked workflow
 # ---------------------------------------------------------------------------
-#: The four arms in order of graph size.
+#: The four scenarios in order of graph size (the site's data keys call them arms).
 COST_ARMS = [
-    ("Arm 1: five gene-span slices", site.ARMS["arm1"]),
-    ("Arm 2: cohort of 104", site.ARMS["arm2"]),
-    ("Arm 3: complete HG005 VCF", site.ARMS["arm3"]),
-    ("Arm 4: complete NB72462M VCF", ARM4),
+    ("Scenario 1: five gene-span slices", site.ARMS["arm1"]),
+    ("Scenario 2: cohort of 104", site.ARMS["arm2"]),
+    ("Scenario 3: complete HG005 VCF", site.ARMS["arm3"]),
+    ("Scenario 4: complete NB72462M VCF", ARM4),
 ]
 STAGES = [("convert", "Convert"), ("link", "Link"),
           ("view", "Write view"), ("check", "Check view"), ("index", "Index view"), ("query", "Query")]
@@ -1112,7 +1112,7 @@ def fig_usecase_costs() -> None:
                     color=INK_2, fontsize=6.5)
     for x, y in zip(xs, query):
         dot(ax, x, y, ORANGE, size=5.5)
-    ax.annotate(f"{min(query) / 60:.1f}--{max(query) / 60:.1f} min in every arm".replace("--", "\u2013"),
+    ax.annotate(f"{min(query) / 60:.1f}--{max(query) / 60:.1f} min in every scenario".replace("--", "\u2013"),
                 (1.5, st.mean(query[1:3])), textcoords="offset points", xytext=(0, -12), ha="center",
                 color=INK_2, fontsize=6.5)
     ax.set_xticks(xs)

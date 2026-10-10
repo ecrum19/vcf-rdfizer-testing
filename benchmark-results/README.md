@@ -27,8 +27,8 @@ script behind each.
 | Default-profile mutation rerun (Figure 3b) | v3.1.0 | `vcf-bench-2/review-runs/` ([README](vcf-bench-2/review-runs/README.md)) |
 | Minimal RDF setup and the repeated-question crossover (Figure 6a) | v3.1.0 | `vcf-bench-2/nt-only/` ([README](vcf-bench-2/nt-only/README.md)) |
 | Consumer WGS validation run (Figure 3a; Section S4.2) | v3.3.1 | `vcf-bench-2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
-| Linked workflow, Arms 1–2, with the MyVariant.info tier (Figures 4, S3; Tables S7–S11) | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/`, `…__cohort/` ([README](vcf-bench-1/v331-rerun/README.md)) |
-| Linked workflow, Arms 3–4 (Figures 4, S3; Tables S7–S11) | v3.3.1 | `vcf-bench-2/v331-rerun/results/17_use_case_acmg__wgs/`, `…__layered/` ([README](vcf-bench-2/v331-rerun/README.md)) |
+| Linked workflow, Scenarios 1–2, with the MyVariant.info tier (Figures 4, S3; Tables S7–S11) | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/`, `…__cohort/` ([README](vcf-bench-1/v331-rerun/README.md)) |
+| Linked workflow, Scenarios 3–4 (Figures 4, S3; Tables S7–S11) | v3.3.1 | `vcf-bench-2/v331-rerun/results/17_use_case_acmg__wgs/`, `…__layered/` ([README](vcf-bench-2/v331-rerun/README.md)) |
 | Regional retrieval (Figures 6c, S8a–b; Table S18) | v3.3.1 | `vcf-bench-1/v331-rerun/results/14_regional_access/` |
 | Large-graph retrieval (Figure 3a; Table S17) | v3.3.1 on v3.1.0 graphs | `vcf-bench-3/v331-rerun/results/16_scale_retrieval/`; the graphs' builds in `vcf-bench-3/benchmarks_outputs/15_scale_prepare/` and their manifests in `vcf-bench-3/scale-store-manifests/` ([README](vcf-bench-3/README.md)) |
 | Release conversion check: both releases write the same graph (Section S6.2) | v3.1.0, v3.3.1 | `vcf-bench-2/v331-rerun/bridge/` |
@@ -50,13 +50,13 @@ gives that host's jobs and results.
 vcf-bench-1/                       the base campaign's first host
   benchmarks_outputs/              experiments 00, 01, 04, 07-13 of the v3.1.0 campaign
   sites-only-rerun/                the driver and log of 09's sites-only cell, rerun with a conformant fixture (v3.1.0)
-  v331-rerun/                      the v3.3.1 rerun: Arms 1-2, the MyVariant.info tier, regional retrieval
+  v331-rerun/                      the v3.3.1 rerun: Scenarios 1-2, the MyVariant.info tier, regional retrieval
   18_converter_comparison/         experiment 18
 vcf-bench-2/                       the base campaign's second host
   benchmarks_outputs/              experiments 00, 03, 05, 06 of the v3.1.0 campaign
   review-runs/                     the default-profile mutation rerun (v3.1.0)
   nt-only/                         the N-Triples-only rerun (v3.1.0)
-  v331-rerun/                      the v3.3.1 rerun: Arms 3-4, the consumer WGS validation run, the release check
+  v331-rerun/                      the v3.3.1 rerun: Scenarios 3-4, the consumer WGS validation run, the release check
 vcf-bench-3/                       the large-graph host
   benchmarks_outputs/              experiment 15: the two large graphs, built with v3.1.0
   scale-store-manifests/           those graphs' manifests
