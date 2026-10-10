@@ -539,6 +539,32 @@ tool's command line has no mode for it. They ran from the v3.3.1 rerun:
 
 **Reported in** Figure 3a and Table S17.
 
+### 3.11 Index storage (`19`)
+
+**Question.** Once each workflow is ready to answer questions, how much does it
+keep on disk?
+
+**Design.** One cell per input, the 100,000-record HG005 slice and the complete
+VCF, on vcf-bench-3, in the v3.3.1 image:
+- **VCF workflow:** the VCF compressed with bgzip, which tabix requires, plus its
+  tabix index. The complete VCF is already BGZF and is indexed as it is; the
+  slice is plain gzip and is recompressed first, as `14` does.
+- **RDF workflow:** the QLever index built from the tool's gzip-framed N-Triples,
+  with the validator's arguments (`-F nt -m 4G`): `13`'s graph for the slice,
+  the scale store's for the complete VCF. Once built it answers queries without
+  the N-Triples or the VCF, so it is all the workflow keeps.
+
+The `.tbi` alone is only offsets into the VCF, so it is never compared with the
+QLever index on its own. The N-Triples are streamed into QLever's builder rather
+than decompressed to disk, which leaves the index unchanged. Both indexes are
+deleted after measuring.
+
+**Result.** The QLever index took 60.5 times the storage of the bgzipped VCF and
+its tabix index for the slice (214.5 MB against 3.5 MB), and 57.5 times for the
+complete VCF (8.1 GB against 140.9 MB).
+
+**Reported in** Section 3.3, Figure 6b, and Section S9.3.
+
 ---
 
 ## 4. Execution, shared by every experiment

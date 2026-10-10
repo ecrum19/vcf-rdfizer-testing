@@ -300,17 +300,28 @@ def fig_scaling() -> None:
 # ---------------------------------------------------------------------------
 #: Gzipped VCF inputs, measured on the hosts; the run records hold uncompressed sizes only.
 VCF_INPUT_SIZES = site.RESULTS / "vcf-input-sizes.json"
+#: 19_index_storage: the bgzipped VCF with its tabix index, and the QLever index, per input.
+INDEX_STORAGE = site.RESULTS / "vcf-bench-3" / "19_index_storage"
 
 
-def ingest_sizes() -> list[tuple[str, int, int]]:
-    """(label, gzipped VCF bytes, gzip-framed N-Triples bytes that QLever ingested)."""
+def ingest_sizes() -> list[dict]:
+    """Per input: the gzipped VCF and the gzip-framed N-Triples that QLever ingested, and what
+    each workflow keeps to answer queries (the bgzipped VCF plus its .tbi; the QLever index)."""
     vcf = site.load(VCF_INPUT_SIZES)["files"]
     slice_nt = st.median(int(row["combined_rdf_size_bytes"]) for row in tidy(B1 / "13_query_cost" / "tidy.csv")
                          if row["cell"].startswith("large"))
     whole_nt = site.load(site.RESULTS / "vcf-bench-3" / "scale-store-manifests"
                          / "whole.manifest.json")["artifacts"]["nt.gz"]["bytes"]
-    return [("100,000\nHG005 records", vcf["HG005_GRCh38_r100000.vcf.gz"]["bytes"], slice_nt),
-            ("Complete\nHG005 VCF", vcf["HG005_GRCh38.vcf.gz"]["bytes"], whole_nt)]
+    rows = []
+    for scale, label, name, nt_bytes in (("slice", "100,000\nHG005 records", "HG005_GRCh38_r100000.vcf.gz", slice_nt),
+                                         ("whole", "Complete\nHG005 VCF", "HG005_GRCh38.vcf.gz", whole_nt)):
+        indexed = site.load(INDEX_STORAGE / scale / "out" / "index_storage.json")
+        if indexed["vcf"]["sha256"] != vcf[name]["sha256"]:
+            raise SystemExit(f"19_index_storage/{scale} indexed a different VCF than {name}")
+        rows.append({"label": label, "vcf": vcf[name]["bytes"], "nt": nt_bytes,
+                     "vcf_indexed": indexed["queryReady"]["vcfBytes"],
+                     "rdf_indexed": indexed["queryReady"]["rdfBytes"]})
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -707,30 +718,46 @@ def fig_regional() -> None:
     ax.set_ylabel("Cumulative time (min)")
     ax.set_title("(a) Repeated questions, setup included")
 
-    # (b) what QLever ingests against the gzipped VCF ------------------------
+    # (b) storage per workflow: the gzipped files, then what each keeps indexed -----
+    # Colour is the workflow (VCF gray, RDF blue); the pair is the stage. "gzip": the
+    # gzipped VCF against the gzip-framed N-Triples QLever ingests. "indexed": the
+    # bgzipped VCF plus its tabix index against the QLever index, which answers
+    # queries without the N-Triples (19_index_storage).
     ax = fig.add_subplot(top[0, 1])
     style_axes(ax, "y")
-    fmt = lambda v: f"{v / 1e9:.2f} GB" if v >= 1e9 else f"{v / 1e6:.1f} MB"  # noqa: E731
-    for x, (label, vcf_bytes, nt_bytes) in enumerate(sizes):
-        for dx, value, color in ((-0.19, vcf_bytes, GRAY), (0.19, nt_bytes, BLUE)):
-            ax.bar(x + dx, value / 1e6, width=0.34, color=color, zorder=2)
-            ax.text(x + dx, value / 1e6 * 1.18, fmt(value), color=INK_2, fontsize=5.7, ha="center", va="bottom")
-        ax.text(x, nt_bytes / 1e6 * 5.2, f"{nt_bytes / vcf_bytes:.1f}×", color=INK, fontsize=6.6,
-                ha="center", va="bottom", fontweight="bold")
+    fmt = lambda v: f"{v / 1e9:.1f} GB" if v >= 1e9 else f"{v / 1e6:.1f} MB"  # noqa: E731
+    stages = (("gzip", "vcf", "nt"), ("indexed", "vcf_indexed", "rdf_indexed"))
+    ticks, tick_labels = [], []
+    for i, row in enumerate(sizes):
+        for j, (stage, vcf_key, rdf_key) in enumerate(stages):
+            x = i * 2.35 + j * 1.0
+            ticks.append(x)
+            tick_labels.append(stage)
+            for dx, value, color in ((-0.2, row[vcf_key], GRAY), (0.2, row[rdf_key], BLUE)):
+                ax.bar(x + dx, value / 1e6, width=0.36, color=color, zorder=2)
+                ax.annotate(fmt(value), (x + dx, value / 1e6), xytext=(0, 2), textcoords="offset points",
+                            color=INK_2, fontsize=5.2, rotation=90, ha="center", va="bottom")
+            # Above the RDF bar's rotated size label, however long it is.
+            clearance = 2 + len(fmt(row[rdf_key])) * 5.2 * 0.62 + 3
+            ax.annotate(f"{row[rdf_key] / row[vcf_key]:.1f}×", (x, row[rdf_key] / 1e6), xytext=(0, clearance),
+                        textcoords="offset points", color=INK, fontsize=6.4, ha="center", va="bottom",
+                        fontweight="bold")
+        ax.text(i * 2.35 + 0.5, -0.15, row["label"].replace("\n", " "), transform=ax.get_xaxis_transform(),
+                color=INK, fontsize=6.2, ha="center", va="top")
     ax.set_yscale("log")
-    ax.set_ylim(0.6, 3e5)
+    ax.set_ylim(0.6, 3e6)
     ax.yaxis.set_major_locator(FixedLocator([1, 10, 100, 1000, 10000]))
     ax.yaxis.set_minor_locator(NullLocator())
     ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v / 1000:g} GB" if v >= 1000 else f"{v:g} MB"))
-    ax.set_xticks(range(len(sizes)))
-    ax.set_xticklabels([label for label, *_ in sizes], fontsize=6.2)
-    ax.set_xlim(-0.6, len(sizes) - 0.4)
-    ax.tick_params(axis="x", length=0)
-    ax.set_ylabel("Size, gzip-compressed")
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF"),
-                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="N-Triples for QLever")],
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(tick_labels, fontsize=5.9, color=INK_2)
+    ax.set_xlim(-0.55, (len(sizes) - 1) * 2.35 + 1.55)
+    ax.tick_params(axis="x", length=0, pad=2)
+    ax.set_ylabel("Size on disk")
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF workflow"),
+                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF workflow")],
               loc="upper left", fontsize=5.9, handlelength=1.0, borderaxespad=0.3, frameon=False)
-    ax.set_title("(b) Gzipped VCF and N-Triples sizes")
+    ax.set_title("(b) Storage, gzipped and indexed")
 
     # (c) regional time by window size --------------------------------------
     ax = fig.add_subplot(low[0, 0])
@@ -801,7 +828,10 @@ def fig_regional() -> None:
     print(f"  N-Triples conversion {b['conversion']:.1f} s (runs {[round(x, 1) for x in b['conversion_runs']]}) + index "
           f"{b['index']:.1f} s = {b['setup']:.1f} s; break-even {b['n_star']:.1f} "
           f"(with HDT: {b['setup_with_hdt']:.1f} s, {b['n_star_with_hdt']:.1f}); scan {b['scan']:.2f} s, query {b['query']:.3f} s")
-    print("  sizes:", [(l.replace(chr(10), ' '), v, n, round(n / v, 1)) for l, v, n in sizes])
+    for row in sizes:
+        print(f"  sizes, {row['label'].replace(chr(10), ' ')}: gzip VCF {row['vcf']:,} / N-Triples {row['nt']:,}"
+              f" = {row['nt'] / row['vcf']:.1f}x; indexed VCF+tbi {row['vcf_indexed']:,}"
+              f" / QLever {row['rdf_indexed']:,} = {row['rdf_indexed'] / row['vcf_indexed']:.1f}x")
     print(f"  whole file per question {min(per_question):.1f}-{max(per_question):.0f}x; batch {batch:.2f}x")
 
 

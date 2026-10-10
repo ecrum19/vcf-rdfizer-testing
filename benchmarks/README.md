@@ -50,7 +50,7 @@ others and are not counted. Every family ran whole on one host.
 `benchmark-results/summary.json`, and refuses an archive in which a family spans
 two hosts.
 
-### Later experiments: `14`–`18`, VCF-RDFizer v3.3.1
+### Later experiments: `14`–`19`, VCF-RDFizer v3.3.1
 
 These are outside `run_all.sh` and its profiles; each is run by name. The
 reported runs of `14`, `16` and `17` come from one rerun with v3.3.1, driven by
@@ -63,6 +63,7 @@ reported runs of `14`, `16` and `17` come from one rerun with v3.3.1, driven by
 | `16_scale_retrieval.sh` | RQ1, §1.7; RQ3, §3.10 | The thirteen questions on those graphs: QLever from N-Triples, HDT and COTTAS, and the native HDT and COTTAS engines | Figure 3a; Table S17 | `b3/v331-rerun/results/16_scale_retrieval/` |
 | `17_use_case_acmg.sh` | RQ2, §2 | The linked workflow: carriers of ClinVar-classified variants in the 81 ACMG SF v3.2 genes, with simulated consent, by an RDF workflow and a conventional bcftools workflow that must agree. Scenario 1: five gene-span slices; Scenario 2: 104 1000 Genomes participants; Scenario 3: the complete HG005 VCF; Scenario 4: the complete NB72462M VCF under layered consent. See [`use_case/acmg/README.md`](use_case/acmg/README.md) | Section 3.2; Figures 4, S3; Tables S7–S11 | `b1/v331-rerun/results/17_use_case_acmg/` (Scenario 1, with the MyVariant.info tier) and `…__cohort/` (Scenario 2); `b2/v331-rerun/results/17_use_case_acmg__wgs/` (Scenario 3) and `…__layered/` (Scenario 4) |
 | `18_converter_comparison.sh` | RQ3, §3.1 | JVarkit, TogoVar, SPARQLing Genomics, BioInterchange and VCF-RDFizer on two shared inputs, in pinned containers, with questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md) | Section 3.3; Figure 5; Section S2; Tables S2–S3 | `b1/18_converter_comparison/` |
+| `19_index_storage.sh` | RQ3, §3.11 | What each workflow keeps on disk to answer queries: the bgzipped VCF and its tabix index, against the QLever index built from the tool's N-Triples, for the 100,000-record slice (`13`'s graph) and the complete HG005 VCF (the scale store's) | Section 3.3; Figure 6b; Section S9.3 | `b3/19_index_storage/` |
 
 `15` and `16` are two halves of one experiment. `13` reconverts its input on
 every replicate, which is affordable at 17.1M triples but not at 657M: three

@@ -1,0 +1,71 @@
+{
+  "dataset": "whole",
+  "vcf": {
+    "name": "HG005_GRCh38.vcf.gz",
+    "bytes": 139334496,
+    "sha256": "42a86ee9bf1ea1b8e4ee6a352fc24d7a52b9030c62ee56baeb978e3dff475cf4"
+  },
+  "ntriples": {
+    "name": "HG005_GRCh38.nt.gz",
+    "bytes": 2885155620,
+    "sha256": "ed0b45870da3a9cef1dcd5acc3ebd49f7107d315f72b2df2f445830b9fe43f48"
+  },
+  "vcfRoute": {
+    "inputWasBgzf": true,
+    "bgzipBytes": 139334496,
+    "bgzipSeconds": 0.0,
+    "tbiBytes": 1607258,
+    "tabixSeconds": 3.168,
+    "tabixVersion": "tabix (htslib) 1.22.1",
+    "storedBytes": 140941754
+  },
+  "rdfRoute": {
+    "qleverVersion": "bfd5741",
+    "command": [
+      "/opt/qlever/bin/qlever-index",
+      "-i",
+      "/work/index-storage-whole/qlever/index",
+      "-f",
+      "<N-Triples on stdin>",
+      "-F",
+      "nt",
+      "-m",
+      "4G"
+    ],
+    "triplesParsed": 657425805,
+    "indexBytes": 8107236139,
+    "indexFiles": {
+      "index.index.ops": 1012255069,
+      "index.index.ops.meta": 17696,
+      "index.index.osp": 1038100926,
+      "index.index.osp.meta": 17696,
+      "index.index.patterns": 1328,
+      "index.index.pos": 898720159,
+      "index.index.pos.meta": 1408,
+      "index.index.pso": 1105082108,
+      "index.index.pso.meta": 1408,
+      "index.index.resource-usage-log.tsv": 31819,
+      "index.index.sop": 981430304,
+      "index.index.sop.meta": 64,
+      "index.index.spo": 971409006,
+      "index.index.spo.meta": 64,
+      "index.internal.index.pos": 141902303,
+      "index.internal.index.pos.meta": 64,
+      "index.internal.index.pso": 172608851,
+      "index.internal.index.pso.meta": 64,
+      "index.meta-data.json": 758,
+      "index.vocabulary.codebooks": 589832,
+      "index.vocabulary.words.external": 714409186,
+      "index.vocabulary.words.external.offsets": 1067805784,
+      "index.vocabulary.words.internal": 1782394,
+      "index.vocabulary.words.internal.ids": 1067848
+    },
+    "buildSeconds": 863.2,
+    "peakRssKb": 9197164
+  },
+  "queryReady": {
+    "vcfBytes": 140941754,
+    "rdfBytes": 8107236139,
+    "ratio": 57.5
+  }
+}
