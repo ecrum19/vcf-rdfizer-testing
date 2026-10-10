@@ -6,6 +6,11 @@ scripts, design notes and figures. The current tests and paper are maintained
 on [`main`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/main).
 The ECCB paper's previously untracked template files are included here as well.
 
+Run records retired from `main` on 2026-10-10, when `main` was reduced to
+what the BioMedSem 2026 manuscript reports, are under `benchmark-results/`, at
+the paths they had on `main`. [`benchmark-results/README.md`](benchmark-results/README.md) says what
+each one is and which statement in the supplement still cites it.
+
 The documentation below is retained as historical context for these files.
 
 # Test Data (VCF Inputs)

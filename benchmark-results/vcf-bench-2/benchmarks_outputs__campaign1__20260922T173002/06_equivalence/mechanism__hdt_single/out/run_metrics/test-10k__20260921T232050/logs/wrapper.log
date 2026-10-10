@@ -1,0 +1,705 @@
+
+[2026-09-21T23:20:50] $ docker version
+Client: Docker Engine - Community
+ Version:           29.7.2
+ API version:       1.55
+ Go version:        go1.26.5
+ Git commit:        a7dcaa6
+ Built:             Wed Aug  5 18:28:53 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.7.2
+  API version:      1.55 (minimum version 1.40)
+  Go version:       go1.26.5
+  Git commit:       6a43e3d
+  Built:            Wed Aug  5 18:28:53 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.3
+  GitCommit:        aad11006b869517fcd3009450b6f82da282e1a9b
+ runc:
+  Version:          1.4.3
+  GitCommit:        v1.4.3-0-gbb14dabe
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+[exit 0]
+
+[2026-09-21T23:20:50] $ docker image inspect vcf-rdfizer:local-3b2b0a1
+[
+    {
+        "Id": "sha256:068ae101bce3df5933b9d6fee8895e4dee42e88eafe31f9a9b3eded64f45bbb3",
+        "RepoTags": [
+            "vcf-rdfizer:local-3b2b0a1"
+        ],
+        "RepoDigests": [
+            "vcf-rdfizer@sha256:068ae101bce3df5933b9d6fee8895e4dee42e88eafe31f9a9b3eded64f45bbb3"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-21T16:24:46.132555415+02:00",
+        "Config": {
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-11.0.32+9",
+                "RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "HDTC_BIN=/usr/local/bin/hdtc",
+                "HDT_INDEX_MEMORY_LIMIT=512M",
+                "HDT_MERGE_MEMORY_LIMIT=512M",
+                "COTTAS_MERGE_BATCH_ROWS=2048",
+                "RDF2HDT_BIN=/usr/local/bin/rdf2hdt",
+                "HDT2RDF_BIN=/usr/local/bin/hdt2rdf",
+                "COTTAS_PYTHON_BIN=/opt/pycottas-venv/bin/python",
+                "QLEVER_INDEX_BUILDER_BIN=/opt/qlever/bin/qlever-index",
+                "QLEVER_SERVER_BIN=/opt/qlever/bin/qlever-server",
+                "LD_LIBRARY_PATH=/usr/local/lib"
+            ],
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.created": "2026-09-12T10:25:59.825539+00:00",
+                "org.opencontainers.image.description": "The Ubuntu container image maintained by Canonical\n\nUbuntu is a Debian-based Linux operating system that runs from the desktop to the cloud, to all your internet connected things.\nIt is the world's most popular operating system across public clouds and OpenStack clouds.\nIt is the number one platform for containers; from Docker to Kubernetes to LXD, Ubuntu can run your containers at scale.\nFast, secure and simple, Ubuntu powers millions of PCs worldwide.\n",
+                "org.opencontainers.image.title": "ubuntu",
+                "org.opencontainers.image.version": "26.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 826696863,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:485d137fd3bfb545f1b417ea708e2281594be7a334e8a85ab75c5332db6089e9",
+                "sha256:598e8330e2e633ea6b06bbf1e8b80c275553b7c1de53899af154d1f480a7eefa",
+                "sha256:26e0c5f2f2ea6a0602ff01033d767d81371ca2a1ac10ed18b5501c40e247a427",
+                "sha256:fba3fa5bb248907b3d98f94f7aaef38c77d0bb26f509eb1b65b13fedbdca6cf4",
+                "sha256:714e1749d314bced589b41523ac008f83fe9b0e20c4688b974e7f1ea4cf11705",
+                "sha256:36df17dfc7739f0a33bdeadb2c57284d052e9e824db76a771ebc9d354779bdd9",
+                "sha256:d594589c10cca57cbfeb0ef50dfcdcb45e83e2653da09dc98405ce1d2adf22ba",
+                "sha256:222f45d4f31efd1faa4021898b59dafd3b22e42271b92b111317349cd3beab6b",
+                "sha256:6519694eec29bba81ad7af836392043afc247eda6a89092746579c530e6bab96",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:46cdfcbeb463fd8c22a1a44dd5f1a0a4c9ceea5b39484a50fee99d741a8aa024",
+                "sha256:8808a9865f05c986f02be10e89bc8c578ed6afa96cdcf633084831b82187d75f",
+                "sha256:aef63bbf5e653ee8e7b295396f92d7cf7a6c2299a2731a8c2c598488620254a2",
+                "sha256:27a9ef3f941f7d15177c35867f6c7331065768ae83f526df8be7ebb9b231db51",
+                "sha256:ddc0d6adc886f8fb979fdbefb4467feb2f3ef49e338ffe2376e0e500ea743864",
+                "sha256:9e98e131ff1adc70cfe297cde47e9177953ad3901659b2ee59c0acc7523990d4",
+                "sha256:771dfd88f68a26151e8d8a0bd4ddd7cc023dc4fadc62de892d2f02c676a5b15a",
+                "sha256:b5379c970bcbd19f3a8f4a20368e56abe908585c0bd97f7a2d66098c7ca64620",
+                "sha256:ae0eb19ebd85b65b58fb43c4d8ba4abac9a65092c4989485560c9d0313dc4ac7",
+                "sha256:32b91153962140a152a6f3156507d2b371c26971ee002664638cdf376641a967",
+                "sha256:a7c75326d14677f45129da24b27cf8e936d4f5a3a491dc2a876e8c6ef1fe980c",
+                "sha256:10b514cb91134ff1901bab007f0c88ce99a33270d65b35111be256fa4b94b78d",
+                "sha256:241ba39382eef4841b664f366ba162a5545c3e63a75818cb7e3809bfb2d236b4",
+                "sha256:fceea81600dff83f2c7f64da88275abe97b40d60a96aef221232a76bb1b390fd",
+                "sha256:6936f25184a676000fd6e8372b681815bc29e916e8d9a879ccded7079926d417",
+                "sha256:2ddbda9fb5d362a97911821e244e95f8c005a3717cd2376b05edff71638b47ed",
+                "sha256:366e690dc10370c486afffcb5726211cb1e5ae896e6e9c5f451878e7f1833117",
+                "sha256:0568b4d39e6a465346df2c10e958fdac78caae45234da5ef70123ca160d8f562",
+                "sha256:7c06c21efe5e326a4fa82a4511d9172ee57a0c27610b920a238c6ff948141a31",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-21T14:25:15.34060895Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:068ae101bce3df5933b9d6fee8895e4dee42e88eafe31f9a9b3eded64f45bbb3",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "p0nlk7w56xcurjf5dq2lolgni",
+                    "CreatedAt": "2026-09-21T16:25:32.023040124+02:00"
+                }
+            ]
+        }
+    }
+]
+[exit 0]
+
+[2026-09-21T23:20:50] $ docker run --rm --label vcf-rdfizer.run=20260921T232050-1662413 --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/test/test_vcf_files:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/.intermediate/tsv:/data/tsv -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050:/data/metrics vcf-rdfizer:local-3b2b0a1 bash -lc 'set -euo pipefail; rm -f /data/metrics/timings/tsv/test-10k.txt; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/metrics/timings/tsv/test-10k.txt -- bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/test-10k.vcf /data/tsv; else { time -p bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/test-10k.vcf /data/tsv; } > /data/metrics/timings/tsv/test-10k.txt 2>&1; fi'
+✅ Wrote: /data/tsv/test-10k.records.tsv
+✅ Wrote: /data/tsv/test-10k.header_lines.tsv
+✅ Wrote: /data/tsv/test-10k.file_metadata.tsv
+[exit 0]
+
+[2026-09-21T23:20:51] $ docker run --rm --label vcf-rdfizer.run=20260921T232050-1662413 --user 1000:1000 -v /home/ubuntu/VCF-RDFizer/test/test_vcf_files:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/_generated_rules:/data/rules:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/.intermediate/tsv:/data/tsv:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out:/data/out -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050:/data/metrics -w /data/rules -e JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar -e IN=/data/rules/test-10k.rules.ttl -e OUT_DIR=/data/out -e OUT_NAME=test-10k -e RDF_STORAGE_MODE=plain -e SPARK_PARTITIONS=8 -e RUN_ID=20260921T232050 -e TIMESTAMP=2026-09-21T23:20:50 -e TSV_EXIT_CODE=0 -e TSV_WALL_SECONDS=0.500895 -e TSV_USER_SECONDS=0.070000 -e TSV_SYS_SECONDS=0.010000 -e TSV_MAX_RSS_KB=7680 -e TSV_OUTPUT_SIZE_BYTES=806370 -e 'TSV_OUTPUT_PATH=/data/tsv/test-10k.records.tsv|/data/tsv/test-10k.header_lines.tsv|/data/tsv/test-10k.file_metadata.tsv' -e IN_VCF=/data/in/test-10k.vcf -e LOGDIR=/data/metrics -e PROGRESS_FILE=/data/metrics/.progress/rmlstreamer-test-10k.jsonl vcf-rdfizer:local-3b2b0a1 bash /opt/vcf-rdfizer/run_conversion.sh
+21:20:51,904 INFO  io.rml.framework.Main$                                        - Mapping file: /data/rules/test-10k.rules.ttl
+Job name: RMLStreamer
+Base IRI: /
+Parallelise over local task slots: true
+Maximum parallelism: None
+Post processor: None
+Checkpoint interval: /
+Auto Watermark interval: 50
+Output method: File
+Output file: /data/out/test-10k/.rmlstreamer-parts-test-10k-1
+Kafka broker list: /
+Kafka topic: /
+Kafka topic partition id: /
+Output TCP socket: /
+Function description locations: None
+Discard output: false
+21:20:52,511 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,520 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,521 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,523 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,524 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,526 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,527 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,528 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,529 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,531 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,532 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+21:20:52,534 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+Number of standard stream triple maps: 12
+Total extracted std triple maps: 12
+Number of standard stream triple maps: 0
+Total extracted std triple maps: 0
+21:20:52,617 INFO  io.rml.framework.Main$                                        - Dataset Job Found.
+21:20:52,675 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+21:20:52,688 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+21:20:52,689 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+21:20:52,690 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+21:20:52,691 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+21:20:56,978 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - Log file environment variable 'log.file' is not set.
+21:20:56,979 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - JobManager log files are unavailable in the web dashboard. Log file location not found in environment variable 'log.file' or configuration key 'web.log.path'.
+21:20:57,713 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,722 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,720 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,720 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,719 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,714 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,714 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,746 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,743 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,730 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,766 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,786 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,805 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,801 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,800 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,826 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,786 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,841 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,823 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,822 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,821 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,869 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,868 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,867 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,911 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,915 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,919 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,919 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,926 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,955 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,977 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,955 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,955 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,992 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:57,999 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:58,025 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:58,047 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:58,056 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:58,059 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+21:20:58,066 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+WARNING: metrics header mismatch; backed up to /data/metrics/metrics_csv_bak_20260921T232050.csv and creating new metrics file.
+Done.
+JSON: /data/metrics/stages/conversion/test-10k.json
+CSV:  /data/metrics/metrics.csv
+[exit 0]
+
+[2026-09-21T23:21:08] $ docker run --rm --label vcf-rdfizer.run=20260921T232050-1662413 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k:/data/out vcf-rdfizer:local-3b2b0a1 bash -lc 'set -euo pipefail; rm -f /data/out/.test-10k.hdt.time; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/out/.test-10k.hdt.time -- bash -lc '"'"'set -euo pipefail; rm -f /data/out/test-10k.hdt; HDT_BIN="${RDF2HDT_BIN:-$(command -v rdf2hdt || true)}"; if [[ -z "$HDT_BIN" ]]; then for candidate in /usr/local/bin/rdf2hdt /opt/hdt-cpp/bin/rdf2hdt; do [[ -x "$candidate" ]] && HDT_BIN="$candidate" && break; done; fi; if [[ -z "$HDT_BIN" || ! -x "$HDT_BIN" ]]; then echo "Missing rdf2hdt binary in container" >&2; exit 127; fi; "$HDT_BIN" /data/in/test-10k.nt /data/out/test-10k.hdt'"'"'; else { time -p bash -lc '"'"'set -euo pipefail; rm -f /data/out/test-10k.hdt; HDT_BIN="${RDF2HDT_BIN:-$(command -v rdf2hdt || true)}"; if [[ -z "$HDT_BIN" ]]; then for candidate in /usr/local/bin/rdf2hdt /opt/hdt-cpp/bin/rdf2hdt; do [[ -x "$candidate" ]] && HDT_BIN="$candidate" && break; done; fi; if [[ -z "$HDT_BIN" || ! -x "$HDT_BIN" ]]; then echo "Missing rdf2hdt binary in container" >&2; exit 127; fi; "$HDT_BIN" /data/in/test-10k.nt /data/out/test-10k.hdt'"'"'; } > /data/out/.test-10k.hdt.time 2>&1; fi'
+[exit 0]
+
+[2026-09-21T23:21:13] $ docker run --rm --label vcf-rdfizer.run=20260921T232050-1662413 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k:/data/in:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k:/data/out vcf-rdfizer:local-3b2b0a1 bash -lc 'set -euo pipefail; rm -f /data/out/.test-10k.hdt-validation.time; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/out/.test-10k.hdt-validation.time -- bash -lc '"'"'set -euo pipefail; rm -f /data/out/.test-10k.hdt.validation.json; PYTHON_BIN="${COTTAS_PYTHON_BIN:-$(command -v python3 || true)}"; if [[ -z "$PYTHON_BIN" || ! -x "$PYTHON_BIN" ]]; then  echo "Missing Python executable in container" >&2; exit 127; fi; VALIDATOR="/opt/vcf-rdfizer/validate_compression.py"; if [[ ! -f "$VALIDATOR" ]]; then  echo "Missing compression validator in container" >&2; exit 127; fi; "$PYTHON_BIN" "$VALIDATOR" --source /data/in/test-10k.nt --artifact /data/out/test-10k.hdt --format hdt --result-path /data/out/.test-10k.hdt.validation.json --expected-triples 958919'"'"'; else { time -p bash -lc '"'"'set -euo pipefail; rm -f /data/out/.test-10k.hdt.validation.json; PYTHON_BIN="${COTTAS_PYTHON_BIN:-$(command -v python3 || true)}"; if [[ -z "$PYTHON_BIN" || ! -x "$PYTHON_BIN" ]]; then  echo "Missing Python executable in container" >&2; exit 127; fi; VALIDATOR="/opt/vcf-rdfizer/validate_compression.py"; if [[ ! -f "$VALIDATOR" ]]; then  echo "Missing compression validator in container" >&2; exit 127; fi; "$PYTHON_BIN" "$VALIDATOR" --source /data/in/test-10k.nt --artifact /data/out/test-10k.hdt --format hdt --result-path /data/out/.test-10k.hdt.validation.json --expected-triples 958919'"'"'; } > /data/out/.test-10k.hdt-validation.time 2>&1; fi'
+[exit 0]
+
+[2026-09-21T23:21:16] $ docker run --rm --label vcf-rdfizer.run=20260921T232050-1662413 --user 1000:1000 --init -v /home/ubuntu/VCF-RDFizer/test/test_vcf_files:/data/vcf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k:/data/rdf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/reports/validation/test-10k:/data/validation -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050:/data/metrics vcf-rdfizer:local-3b2b0a1 /usr/bin/time -v -o /data/metrics/timings/validation/test-10k.txt -- /opt/pycottas-venv/bin/python /opt/vcf-rdfizer/validation/validation_runner.py --vcf /data/vcf/test-10k.vcf --rdf /data/rdf/test-10k.nt --rdf-format nt --engine comunica,qlever,hdt,cottas --query-timeout 1800 --validation-time-budget 14400 --representation expanded --info-representation structured --header-representation structured --results-dir /data/validation --dataset-id test-10k --filter-oracle auto --scratch-dir /work --progress-path /data/metrics/.progress/validation-test-10k.jsonl
+[test-10k] preparing comunica engine
+[test-10k] running expanded/preflight_record_cardinality (comunica)
+[test-10k] running expanded/preflight_position_datatype (comunica)
+[test-10k] running expanded/preflight_missing_token_conformance (comunica)
+[test-10k] running expanded/preflight_representation_profile (comunica)
+[test-10k] running expanded/preflight_sample_gt_inventory (comunica)
+[test-10k] running expanded/preflight_blank_nodes (comunica)
+[test-10k] running expanded/preflight_empty_values (comunica)
+[test-10k] running expanded/preflight_distinct_triple_count (comunica)
+[test-10k] running expanded/preflight_record_cardinality_count (comunica)
+[test-10k] running expanded/preflight_position_datatype_count (comunica)
+[test-10k] running expanded/preflight_missing_token_conformance_count (comunica)
+[test-10k] running expanded/preflight_representation_profile_count (comunica)
+[test-10k] running expanded/preflight_blank_nodes_count (comunica)
+[test-10k] running expanded/preflight_empty_values_count (comunica)
+[test-10k] running expanded/q01_record_density_1mb (comunica)
+[test-10k] running expanded/q02_variant_shape_counts (comunica)
+[test-10k] running expanded/q03_titv (comunica)
+[test-10k] running expanded/q04_filter_distribution (comunica)
+[test-10k] running expanded/q05_sample_genotype_counts (comunica)
+[test-10k] running expanded/q06_ac_an_distribution (comunica)
+[test-10k] running expanded/q07_file_metadata (comunica)
+[test-10k] running expanded/q08_header_line_census (comunica)
+[test-10k] running expanded/q09_predicate_census (comunica)
+[test-10k] running expanded/q10_class_census (comunica)
+[test-10k] running expanded/q11_record_digest (comunica)
+[test-10k] running expanded/q12_info_value_digest (comunica)
+[test-10k] running expanded/q13_format_value_digest (comunica)
+[test-10k] preparing qlever engine
+[test-10k] running expanded/preflight_record_cardinality (qlever)
+[test-10k] running expanded/preflight_position_datatype (qlever)
+[test-10k] running expanded/preflight_missing_token_conformance (qlever)
+[test-10k] running expanded/preflight_representation_profile (qlever)
+[test-10k] running expanded/preflight_sample_gt_inventory (qlever)
+[test-10k] running expanded/preflight_blank_nodes (qlever)
+[test-10k] running expanded/preflight_empty_values (qlever)
+[test-10k] running expanded/preflight_distinct_triple_count (qlever)
+[test-10k] running expanded/preflight_record_cardinality_count (qlever)
+[test-10k] running expanded/preflight_position_datatype_count (qlever)
+[test-10k] running expanded/preflight_missing_token_conformance_count (qlever)
+[test-10k] running expanded/preflight_representation_profile_count (qlever)
+[test-10k] running expanded/preflight_blank_nodes_count (qlever)
+[test-10k] running expanded/preflight_empty_values_count (qlever)
+[test-10k] running expanded/q01_record_density_1mb (qlever)
+[test-10k] running expanded/q02_variant_shape_counts (qlever)
+[test-10k] running expanded/q03_titv (qlever)
+[test-10k] running expanded/q04_filter_distribution (qlever)
+[test-10k] running expanded/q05_sample_genotype_counts (qlever)
+[test-10k] running expanded/q06_ac_an_distribution (qlever)
+[test-10k] running expanded/q07_file_metadata (qlever)
+[test-10k] running expanded/q08_header_line_census (qlever)
+[test-10k] running expanded/q09_predicate_census (qlever)
+[test-10k] running expanded/q10_class_census (qlever)
+[test-10k] running expanded/q11_record_digest (qlever)
+[test-10k] running expanded/q12_info_value_digest (qlever)
+[test-10k] running expanded/q13_format_value_digest (qlever)
+[test-10k] preparing hdt engine
+[test-10k] running expanded/preflight_record_cardinality (hdt)
+[test-10k] running expanded/preflight_position_datatype (hdt)
+[test-10k] running expanded/preflight_missing_token_conformance (hdt)
+[test-10k] running expanded/preflight_representation_profile (hdt)
+[test-10k] running expanded/preflight_sample_gt_inventory (hdt)
+[test-10k] running expanded/preflight_blank_nodes (hdt)
+[test-10k] running expanded/preflight_empty_values (hdt)
+[test-10k] running expanded/preflight_distinct_triple_count (hdt)
+[test-10k] running expanded/preflight_record_cardinality_count (hdt)
+[test-10k] running expanded/preflight_position_datatype_count (hdt)
+[test-10k] running expanded/preflight_missing_token_conformance_count (hdt)
+[test-10k] running expanded/preflight_representation_profile_count (hdt)
+[test-10k] running expanded/preflight_blank_nodes_count (hdt)
+[test-10k] running expanded/preflight_empty_values_count (hdt)
+[test-10k] running expanded/q01_record_density_1mb (hdt)
+[test-10k] running expanded/q02_variant_shape_counts (hdt)
+[test-10k] running expanded/q03_titv (hdt)
+[test-10k] running expanded/q04_filter_distribution (hdt)
+[test-10k] running expanded/q05_sample_genotype_counts (hdt)
+[test-10k] running expanded/q06_ac_an_distribution (hdt)
+[test-10k] running expanded/q07_file_metadata (hdt)
+[test-10k] running expanded/q08_header_line_census (hdt)
+[test-10k] running expanded/q09_predicate_census (hdt)
+[test-10k] running expanded/q10_class_census (hdt)
+[test-10k] running expanded/q11_record_digest (hdt)
+[test-10k] running expanded/q12_info_value_digest (hdt)
+[test-10k] running expanded/q13_format_value_digest (hdt)
+[test-10k] preparing cottas engine
+[test-10k] running expanded/preflight_record_cardinality (cottas)
+[test-10k] running expanded/preflight_position_datatype (cottas)
+[test-10k] running expanded/preflight_missing_token_conformance (cottas)
+[test-10k] running expanded/preflight_representation_profile (cottas)
+[test-10k] running expanded/preflight_sample_gt_inventory (cottas)
+[test-10k] running expanded/preflight_blank_nodes (cottas)
+[test-10k] running expanded/preflight_empty_values (cottas)
+[test-10k] running expanded/preflight_distinct_triple_count (cottas)
+[test-10k] running expanded/preflight_record_cardinality_count (cottas)
+[test-10k] running expanded/preflight_position_datatype_count (cottas)
+[test-10k] running expanded/preflight_missing_token_conformance_count (cottas)
+[test-10k] running expanded/preflight_representation_profile_count (cottas)
+[test-10k] running expanded/preflight_blank_nodes_count (cottas)
+[test-10k] running expanded/preflight_empty_values_count (cottas)
+[test-10k] running expanded/q01_record_density_1mb (cottas)
+[test-10k] running expanded/q02_variant_shape_counts (cottas)
+[test-10k] running expanded/q03_titv (cottas)
+[test-10k] running expanded/q04_filter_distribution (cottas)
+[test-10k] running expanded/q05_sample_genotype_counts (cottas)
+[test-10k] running expanded/q06_ac_an_distribution (cottas)
+[test-10k] running expanded/q07_file_metadata (cottas)
+[test-10k] running expanded/q08_header_line_census (cottas)
+[test-10k] running expanded/q09_predicate_census (cottas)
+[test-10k] running expanded/q10_class_census (cottas)
+[test-10k] running expanded/q11_record_digest (cottas)
+[test-10k] running expanded/q12_info_value_digest (cottas)
+[test-10k] running expanded/q13_format_value_digest (cottas)
+{
+  "datasetId": "test-10k",
+  "representation": "expanded",
+  "status": "PASS",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "engineStatuses": {
+    "comunica": "PASS",
+    "qlever": "PASS",
+    "hdt": "PASS",
+    "cottas": "PASS"
+  },
+  "engineAgreement": true,
+  "sourceFormat": "nt",
+  "strictConformance": false,
+  "shacl": null,
+  "mappingPolicy": "strict",
+  "recordCount": 9986,
+  "sampleCount": 1,
+  "gtRecordCount": 9986,
+  "preflight": {
+    "preflight_duplicate_triples": {
+      "status": "PASS",
+      "parsedTripleCount": 958919,
+      "distinctTripleCount": 958919,
+      "duplicateTripleCount": 0
+    },
+    "preflight_record_cardinality": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_position_datatype": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_missing_token_conformance": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "plainDotCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_representation_profile": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "note": null
+    },
+    "preflight_sample_gt_inventory": {
+      "status": "PASS",
+      "expected": {
+        "sampleCallCount": 9986,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 9986
+      },
+      "actual": {
+        "sampleCallCount": 9986,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 9986
+      }
+    },
+    "preflight_blank_nodes": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_empty_values": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_distinct_triple_count": {
+      "status": "PASS",
+      "rows": 1
+    }
+  },
+  "comparisonStatus": "PASS",
+  "benchmark": {
+    "oracleSeconds": 0.7059975769370794,
+    "engineQuerySeconds": {
+      "comunica": 301.1030966867693,
+      "qlever": 14.788808659650385,
+      "hdt": 310.7288509919308,
+      "cottas": 1302.279227849096
+    },
+    "engineSetupSeconds": {
+      "comunica": 14.796140596270561,
+      "qlever": 2.5665737907402217,
+      "hdt": 13.931588360108435,
+      "cottas": 59.423367228824645
+    }
+  },
+  "results": {
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json",
+    "comparison": "/data/validation/comparison.json",
+    "benchmark": "/data/validation/benchmark.csv"
+  },
+  "temporaryRdf": {
+    "decompressedInsideContainer": false,
+    "persisted": false,
+    "cleanupConfirmed": true
+  }
+}
+[exit 0]
+
+[2026-09-21T23:55:04] $ docker run --rm --label vcf-rdfizer.run=20260921T232050-1662413 --user 1000:1000 --init -v /home/ubuntu/VCF-RDFizer/test/test_vcf_files:/data/vcf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k:/data/rdf:ro -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050/reports/validation/test-10k__hdt:/data/validation -v /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/run_metrics/test-10k__20260921T232050:/data/metrics vcf-rdfizer:local-3b2b0a1 /usr/bin/time -v -o /data/metrics/timings/validation/test-10k__hdt.txt -- /opt/pycottas-venv/bin/python /opt/vcf-rdfizer/validation/validation_runner.py --vcf /data/vcf/test-10k.vcf --rdf /data/rdf/test-10k.hdt --rdf-format hdt --engine comunica,qlever,hdt,cottas --query-timeout 1800 --validation-time-budget 14400 --representation expanded --info-representation structured --header-representation structured --results-dir /data/validation --dataset-id test-10k__hdt --filter-oracle auto --scratch-dir /work --progress-path /data/metrics/.progress/validation-test-10k__hdt.jsonl
+[test-10k__hdt] preparing comunica engine
+[test-10k__hdt] running expanded/preflight_record_cardinality (comunica)
+[test-10k__hdt] running expanded/preflight_position_datatype (comunica)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance (comunica)
+[test-10k__hdt] running expanded/preflight_representation_profile (comunica)
+[test-10k__hdt] running expanded/preflight_sample_gt_inventory (comunica)
+[test-10k__hdt] running expanded/preflight_blank_nodes (comunica)
+[test-10k__hdt] running expanded/preflight_empty_values (comunica)
+[test-10k__hdt] running expanded/preflight_distinct_triple_count (comunica)
+[test-10k__hdt] running expanded/preflight_record_cardinality_count (comunica)
+[test-10k__hdt] running expanded/preflight_position_datatype_count (comunica)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance_count (comunica)
+[test-10k__hdt] running expanded/preflight_representation_profile_count (comunica)
+[test-10k__hdt] running expanded/preflight_blank_nodes_count (comunica)
+[test-10k__hdt] running expanded/preflight_empty_values_count (comunica)
+[test-10k__hdt] running expanded/q01_record_density_1mb (comunica)
+[test-10k__hdt] running expanded/q02_variant_shape_counts (comunica)
+[test-10k__hdt] running expanded/q03_titv (comunica)
+[test-10k__hdt] running expanded/q04_filter_distribution (comunica)
+[test-10k__hdt] running expanded/q05_sample_genotype_counts (comunica)
+[test-10k__hdt] running expanded/q06_ac_an_distribution (comunica)
+[test-10k__hdt] running expanded/q07_file_metadata (comunica)
+[test-10k__hdt] running expanded/q08_header_line_census (comunica)
+[test-10k__hdt] running expanded/q09_predicate_census (comunica)
+[test-10k__hdt] running expanded/q10_class_census (comunica)
+[test-10k__hdt] running expanded/q11_record_digest (comunica)
+[test-10k__hdt] running expanded/q12_info_value_digest (comunica)
+[test-10k__hdt] running expanded/q13_format_value_digest (comunica)
+[test-10k__hdt] preparing qlever engine
+[test-10k__hdt] running expanded/preflight_record_cardinality (qlever)
+[test-10k__hdt] running expanded/preflight_position_datatype (qlever)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance (qlever)
+[test-10k__hdt] running expanded/preflight_representation_profile (qlever)
+[test-10k__hdt] running expanded/preflight_sample_gt_inventory (qlever)
+[test-10k__hdt] running expanded/preflight_blank_nodes (qlever)
+[test-10k__hdt] running expanded/preflight_empty_values (qlever)
+[test-10k__hdt] running expanded/preflight_distinct_triple_count (qlever)
+[test-10k__hdt] running expanded/preflight_record_cardinality_count (qlever)
+[test-10k__hdt] running expanded/preflight_position_datatype_count (qlever)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance_count (qlever)
+[test-10k__hdt] running expanded/preflight_representation_profile_count (qlever)
+[test-10k__hdt] running expanded/preflight_blank_nodes_count (qlever)
+[test-10k__hdt] running expanded/preflight_empty_values_count (qlever)
+[test-10k__hdt] running expanded/q01_record_density_1mb (qlever)
+[test-10k__hdt] running expanded/q02_variant_shape_counts (qlever)
+[test-10k__hdt] running expanded/q03_titv (qlever)
+[test-10k__hdt] running expanded/q04_filter_distribution (qlever)
+[test-10k__hdt] running expanded/q05_sample_genotype_counts (qlever)
+[test-10k__hdt] running expanded/q06_ac_an_distribution (qlever)
+[test-10k__hdt] running expanded/q07_file_metadata (qlever)
+[test-10k__hdt] running expanded/q08_header_line_census (qlever)
+[test-10k__hdt] running expanded/q09_predicate_census (qlever)
+[test-10k__hdt] running expanded/q10_class_census (qlever)
+[test-10k__hdt] running expanded/q11_record_digest (qlever)
+[test-10k__hdt] running expanded/q12_info_value_digest (qlever)
+[test-10k__hdt] running expanded/q13_format_value_digest (qlever)
+[test-10k__hdt] preparing hdt engine
+[test-10k__hdt] running expanded/preflight_record_cardinality (hdt)
+[test-10k__hdt] running expanded/preflight_position_datatype (hdt)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance (hdt)
+[test-10k__hdt] running expanded/preflight_representation_profile (hdt)
+[test-10k__hdt] running expanded/preflight_sample_gt_inventory (hdt)
+[test-10k__hdt] running expanded/preflight_blank_nodes (hdt)
+[test-10k__hdt] running expanded/preflight_empty_values (hdt)
+[test-10k__hdt] running expanded/preflight_distinct_triple_count (hdt)
+[test-10k__hdt] running expanded/preflight_record_cardinality_count (hdt)
+[test-10k__hdt] running expanded/preflight_position_datatype_count (hdt)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance_count (hdt)
+[test-10k__hdt] running expanded/preflight_representation_profile_count (hdt)
+[test-10k__hdt] running expanded/preflight_blank_nodes_count (hdt)
+[test-10k__hdt] running expanded/preflight_empty_values_count (hdt)
+[test-10k__hdt] running expanded/q01_record_density_1mb (hdt)
+[test-10k__hdt] running expanded/q02_variant_shape_counts (hdt)
+[test-10k__hdt] running expanded/q03_titv (hdt)
+[test-10k__hdt] running expanded/q04_filter_distribution (hdt)
+[test-10k__hdt] running expanded/q05_sample_genotype_counts (hdt)
+[test-10k__hdt] running expanded/q06_ac_an_distribution (hdt)
+[test-10k__hdt] running expanded/q07_file_metadata (hdt)
+[test-10k__hdt] running expanded/q08_header_line_census (hdt)
+[test-10k__hdt] running expanded/q09_predicate_census (hdt)
+[test-10k__hdt] running expanded/q10_class_census (hdt)
+[test-10k__hdt] running expanded/q11_record_digest (hdt)
+[test-10k__hdt] running expanded/q12_info_value_digest (hdt)
+[test-10k__hdt] running expanded/q13_format_value_digest (hdt)
+[test-10k__hdt] preparing cottas engine
+[test-10k__hdt] running expanded/preflight_record_cardinality (cottas)
+[test-10k__hdt] running expanded/preflight_position_datatype (cottas)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance (cottas)
+[test-10k__hdt] running expanded/preflight_representation_profile (cottas)
+[test-10k__hdt] running expanded/preflight_sample_gt_inventory (cottas)
+[test-10k__hdt] running expanded/preflight_blank_nodes (cottas)
+[test-10k__hdt] running expanded/preflight_empty_values (cottas)
+[test-10k__hdt] running expanded/preflight_distinct_triple_count (cottas)
+[test-10k__hdt] running expanded/preflight_record_cardinality_count (cottas)
+[test-10k__hdt] running expanded/preflight_position_datatype_count (cottas)
+[test-10k__hdt] running expanded/preflight_missing_token_conformance_count (cottas)
+[test-10k__hdt] running expanded/preflight_representation_profile_count (cottas)
+[test-10k__hdt] running expanded/preflight_blank_nodes_count (cottas)
+[test-10k__hdt] running expanded/preflight_empty_values_count (cottas)
+[test-10k__hdt] running expanded/q01_record_density_1mb (cottas)
+[test-10k__hdt] running expanded/q02_variant_shape_counts (cottas)
+[test-10k__hdt] running expanded/q03_titv (cottas)
+[test-10k__hdt] running expanded/q04_filter_distribution (cottas)
+[test-10k__hdt] running expanded/q05_sample_genotype_counts (cottas)
+[test-10k__hdt] running expanded/q06_ac_an_distribution (cottas)
+[test-10k__hdt] running expanded/q07_file_metadata (cottas)
+[test-10k__hdt] running expanded/q08_header_line_census (cottas)
+[test-10k__hdt] running expanded/q09_predicate_census (cottas)
+[test-10k__hdt] running expanded/q10_class_census (cottas)
+[test-10k__hdt] running expanded/q11_record_digest (cottas)
+[test-10k__hdt] running expanded/q12_info_value_digest (cottas)
+[test-10k__hdt] running expanded/q13_format_value_digest (cottas)
+{
+  "datasetId": "test-10k__hdt",
+  "representation": "expanded",
+  "status": "PASS",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "engineStatuses": {
+    "comunica": "PASS",
+    "qlever": "PASS",
+    "hdt": "PASS",
+    "cottas": "PASS"
+  },
+  "engineAgreement": true,
+  "sourceFormat": "hdt",
+  "strictConformance": false,
+  "shacl": null,
+  "mappingPolicy": "strict",
+  "recordCount": 9986,
+  "sampleCount": 1,
+  "gtRecordCount": 9986,
+  "preflight": {
+    "preflight_duplicate_triples": {
+      "status": "PASS",
+      "parsedTripleCount": 958919,
+      "distinctTripleCount": 958919,
+      "duplicateTripleCount": 0
+    },
+    "preflight_record_cardinality": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_position_datatype": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_missing_token_conformance": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "plainDotCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_representation_profile": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "note": null
+    },
+    "preflight_sample_gt_inventory": {
+      "status": "PASS",
+      "expected": {
+        "sampleCallCount": 9986,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 9986
+      },
+      "actual": {
+        "sampleCallCount": 9986,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 9986
+      }
+    },
+    "preflight_blank_nodes": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_empty_values": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_distinct_triple_count": {
+      "status": "PASS",
+      "rows": 1
+    }
+  },
+  "comparisonStatus": "PASS",
+  "benchmark": {
+    "oracleSeconds": 0.6788813062012196,
+    "engineQuerySeconds": {
+      "comunica": 279.1008428130299,
+      "qlever": 13.657701230142266,
+      "hdt": 295.5697203655727,
+      "cottas": 1217.492554711178
+    },
+    "engineSetupSeconds": {
+      "comunica": 14.909756671637297,
+      "qlever": 2.3748455508612096,
+      "hdt": 8.085841496940702,
+      "cottas": 47.094717686995864
+    }
+  },
+  "results": {
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json",
+    "comparison": "/data/validation/comparison.json",
+    "benchmark": "/data/validation/benchmark.csv"
+  },
+  "temporaryRdf": {
+    "decompressedInsideContainer": true,
+    "persisted": false,
+    "cleanupConfirmed": true
+  }
+}
+[exit 0]

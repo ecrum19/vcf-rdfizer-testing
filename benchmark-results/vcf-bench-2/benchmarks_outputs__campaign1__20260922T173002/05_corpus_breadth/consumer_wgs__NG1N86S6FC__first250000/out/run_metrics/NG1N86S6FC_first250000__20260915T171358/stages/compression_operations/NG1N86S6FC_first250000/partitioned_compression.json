@@ -1,0 +1,309 @@
+{
+  "run_id": "20260915T171358",
+  "timestamp": "2026-09-15T17:13:58",
+  "output_name": "NG1N86S6FC_first250000",
+  "rdf_name": "__partitioned_compression__",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000",
+  "compression_methods": "hdt,cottas",
+  "index_warnings": [],
+  "auxiliary_stages": {},
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 724.0596344142687,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.hdt",
+      "output_size_bytes": 222661860,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.nt.gz"
+        ],
+        "chunk_count": 9,
+        "chunk_input_bytes": 4789764032,
+        "record_count": 30523340,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3679677,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536871057,
+            "record_count": 3679677,
+            "payload_bytes": 536871057
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3679677,
+            "end_record": 6857242,
+            "start_uncompressed_byte": 536871057,
+            "end_uncompressed_byte": 1073741976,
+            "record_count": 3177565,
+            "payload_bytes": 536870919
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 6857242,
+            "end_record": 10014260,
+            "start_uncompressed_byte": 1073741976,
+            "end_uncompressed_byte": 1610612932,
+            "record_count": 3157018,
+            "payload_bytes": 536870956
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 10014260,
+            "end_record": 13195163,
+            "start_uncompressed_byte": 1610612932,
+            "end_uncompressed_byte": 2147483950,
+            "record_count": 3180903,
+            "payload_bytes": 536871018
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 13195163,
+            "end_record": 16737307,
+            "start_uncompressed_byte": 2147483950,
+            "end_uncompressed_byte": 2684354963,
+            "record_count": 3542144,
+            "payload_bytes": 536871013
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 16737307,
+            "end_record": 20270765,
+            "start_uncompressed_byte": 2684354963,
+            "end_uncompressed_byte": 3221225935,
+            "record_count": 3533458,
+            "payload_bytes": 536870972
+          },
+          {
+            "chunk_id": 6,
+            "path": "chunk-00006.nt",
+            "start_record": 20270765,
+            "end_record": 23779888,
+            "start_uncompressed_byte": 3221225935,
+            "end_uncompressed_byte": 3758097008,
+            "record_count": 3509123,
+            "payload_bytes": 536871073
+          },
+          {
+            "chunk_id": 7,
+            "path": "chunk-00007.nt",
+            "start_record": 23779888,
+            "end_record": 27289527,
+            "start_uncompressed_byte": 3758097008,
+            "end_uncompressed_byte": 4294967963,
+            "record_count": 3509639,
+            "payload_bytes": 536870955
+          },
+          {
+            "chunk_id": 8,
+            "path": "chunk-00008.nt",
+            "start_record": 27289527,
+            "end_record": 30523340,
+            "start_uncompressed_byte": 4294967963,
+            "end_uncompressed_byte": 4789764032,
+            "record_count": 3233813,
+            "payload_bytes": 494796069
+          }
+        ],
+        "merge_rounds": 4,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.hdt.index.v1-1",
+        "index_size_bytes": 187834116,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 30523340,
+          "decoded_triples": 30523340,
+          "expected_triples": 30523340,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 49.697294214973226,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 30523340,
+        "decoded_triples": 30523340,
+        "expected_triples": 30523340,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "timing": {
+          "wall_seconds": 49.697294214973226,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": null
+        }
+      }
+    },
+    "cottas": {
+      "exit_code": 0,
+      "wall_seconds": 1396.3023378984071,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.cottas",
+      "output_size_bytes": 75647779,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/consumer_wgs__NG1N86S6FC__first250000/out/NG1N86S6FC_first250000/NG1N86S6FC_first250000.nt.gz"
+        ],
+        "chunk_count": 9,
+        "chunk_input_bytes": 4789764032,
+        "record_count": 30523340,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 3679677,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 536871057,
+            "record_count": 3679677,
+            "payload_bytes": 536871057
+          },
+          {
+            "chunk_id": 1,
+            "path": "chunk-00001.nt",
+            "start_record": 3679677,
+            "end_record": 6857242,
+            "start_uncompressed_byte": 536871057,
+            "end_uncompressed_byte": 1073741976,
+            "record_count": 3177565,
+            "payload_bytes": 536870919
+          },
+          {
+            "chunk_id": 2,
+            "path": "chunk-00002.nt",
+            "start_record": 6857242,
+            "end_record": 10014260,
+            "start_uncompressed_byte": 1073741976,
+            "end_uncompressed_byte": 1610612932,
+            "record_count": 3157018,
+            "payload_bytes": 536870956
+          },
+          {
+            "chunk_id": 3,
+            "path": "chunk-00003.nt",
+            "start_record": 10014260,
+            "end_record": 13195163,
+            "start_uncompressed_byte": 1610612932,
+            "end_uncompressed_byte": 2147483950,
+            "record_count": 3180903,
+            "payload_bytes": 536871018
+          },
+          {
+            "chunk_id": 4,
+            "path": "chunk-00004.nt",
+            "start_record": 13195163,
+            "end_record": 16737307,
+            "start_uncompressed_byte": 2147483950,
+            "end_uncompressed_byte": 2684354963,
+            "record_count": 3542144,
+            "payload_bytes": 536871013
+          },
+          {
+            "chunk_id": 5,
+            "path": "chunk-00005.nt",
+            "start_record": 16737307,
+            "end_record": 20270765,
+            "start_uncompressed_byte": 2684354963,
+            "end_uncompressed_byte": 3221225935,
+            "record_count": 3533458,
+            "payload_bytes": 536870972
+          },
+          {
+            "chunk_id": 6,
+            "path": "chunk-00006.nt",
+            "start_record": 20270765,
+            "end_record": 23779888,
+            "start_uncompressed_byte": 3221225935,
+            "end_uncompressed_byte": 3758097008,
+            "record_count": 3509123,
+            "payload_bytes": 536871073
+          },
+          {
+            "chunk_id": 7,
+            "path": "chunk-00007.nt",
+            "start_record": 23779888,
+            "end_record": 27289527,
+            "start_uncompressed_byte": 3758097008,
+            "end_uncompressed_byte": 4294967963,
+            "record_count": 3509639,
+            "payload_bytes": 536870955
+          },
+          {
+            "chunk_id": 8,
+            "path": "chunk-00008.nt",
+            "start_record": 27289527,
+            "end_record": 30523340,
+            "start_uncompressed_byte": 4294967963,
+            "end_uncompressed_byte": 4789764032,
+            "record_count": 3233813,
+            "payload_bytes": 494796069
+          }
+        ],
+        "merge_rounds": 1,
+        "merge_strategy": "pyarrow_streaming_k_way",
+        "merge_batch_rows": "2048",
+        "index": "spo",
+        "validation": {
+          "valid": true,
+          "source_triples": 30523340,
+          "decoded_triples": 30523340,
+          "expected_triples": 30523340,
+          "count_match": true,
+          "validator": "pycottas.cottas2rdf",
+          "timing": {
+            "wall_seconds": 30.07643708307296,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": null
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      },
+      "validation": {
+        "valid": true,
+        "source_triples": 30523340,
+        "decoded_triples": 30523340,
+        "expected_triples": 30523340,
+        "count_match": true,
+        "validator": "pycottas.cottas2rdf",
+        "timing": {
+          "wall_seconds": 30.07643708307296,
+          "user_seconds": null,
+          "sys_seconds": null,
+          "max_rss_kb": null
+        }
+      }
+    }
+  }
+}

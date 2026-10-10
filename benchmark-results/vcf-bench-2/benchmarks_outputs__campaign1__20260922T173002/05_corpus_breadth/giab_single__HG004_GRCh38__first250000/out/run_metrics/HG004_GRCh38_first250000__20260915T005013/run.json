@@ -1,0 +1,54 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20260915T005013",
+  "timestamp": "2026-09-15T00:50:13",
+  "mode": "full",
+  "source_label": "HG004_GRCh38_first250000",
+  "output_root": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/giab_single__HG004_GRCh38__first250000/out",
+  "metrics_directory": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/giab_single__HG004_GRCh38__first250000/out/run_metrics/HG004_GRCh38_first250000__20260915T005013",
+  "inputs": [
+    {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/vcf_data/derived/HG004_GRCh38_first250000.vcf.gz",
+      "file_name": "HG004_GRCh38_first250000.vcf.gz",
+      "size_bytes": 7801287
+    }
+  ],
+  "options": {
+    "link": [],
+    "linking_options": null,
+    "requested_image": "vcf-rdfizer:local-025fb7d",
+    "requested_image_version": null,
+    "sample_representation": "expanded",
+    "info_representation": "structured",
+    "header_representation": "structured",
+    "vcf_version": "auto",
+    "rdf_storage_mode": "space-optimized",
+    "compression_methods": [
+      "hdt",
+      "cottas"
+    ],
+    "hdt_strategy": "partitioned",
+    "chunk_target_bytes": 536870912,
+    "chunk_min_bytes": 134217728,
+    "chunk_max_bytes": 1073741824,
+    "spark_partitions": 8,
+    "run_validation": false,
+    "validation_artifacts": null,
+    "validation_engine": [
+      "comunica"
+    ],
+    "validation_strict_conformance": false,
+    "validation_shacl_shapes": null,
+    "validation_shacl_ontology": null,
+    "validation_engine_options": null,
+    "filter_oracle": "auto",
+    "quiet": false,
+    "no_progress": false,
+    "index_format": null,
+    "decompression_format": null,
+    "validation_representation": null,
+    "validation_rdf_gzip": null
+  },
+  "resolved_image": "vcf-rdfizer:local-025fb7d",
+  "image_version_requested": false
+}

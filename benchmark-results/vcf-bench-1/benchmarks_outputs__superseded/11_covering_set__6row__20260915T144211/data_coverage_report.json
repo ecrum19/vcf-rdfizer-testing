@@ -1,0 +1,182 @@
+{
+  "experiment": "11_covering_set",
+  "cells": 6,
+  "value_coverage": {
+    "sample_representation": [
+      "condensed",
+      "expanded"
+    ],
+    "info_representation": [
+      "raw",
+      "structured"
+    ],
+    "rdf_storage_mode": [
+      "plain",
+      "space-optimized"
+    ],
+    "rdf_compression": [
+      "brotli",
+      "gzip"
+    ],
+    "representations": [
+      "cottas",
+      "hdt",
+      "hdt,cottas"
+    ],
+    "artifact_compression": [
+      "brotli",
+      "gzip"
+    ],
+    "hdt_strategy": [
+      "auto",
+      "partitioned",
+      "single"
+    ]
+  },
+  "untested_factors": [],
+  "pair_gaps": [
+    {
+      "left": "sample_representation",
+      "right": "representations",
+      "missing": [
+        {
+          "left": "condensed",
+          "right": "hdt,cottas"
+        },
+        {
+          "left": "expanded",
+          "right": "cottas"
+        }
+      ]
+    },
+    {
+      "left": "sample_representation",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "expanded",
+          "right": "single"
+        }
+      ]
+    },
+    {
+      "left": "info_representation",
+      "right": "rdf_storage_mode",
+      "missing": [
+        {
+          "left": "raw",
+          "right": "space-optimized"
+        },
+        {
+          "left": "structured",
+          "right": "plain"
+        }
+      ]
+    },
+    {
+      "left": "info_representation",
+      "right": "representations",
+      "missing": [
+        {
+          "left": "raw",
+          "right": "hdt,cottas"
+        },
+        {
+          "left": "structured",
+          "right": "hdt"
+        }
+      ]
+    },
+    {
+      "left": "info_representation",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "structured",
+          "right": "single"
+        }
+      ]
+    },
+    {
+      "left": "rdf_storage_mode",
+      "right": "representations",
+      "missing": [
+        {
+          "left": "plain",
+          "right": "hdt,cottas"
+        },
+        {
+          "left": "space-optimized",
+          "right": "hdt"
+        }
+      ]
+    },
+    {
+      "left": "rdf_storage_mode",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "space-optimized",
+          "right": "single"
+        }
+      ]
+    },
+    {
+      "left": "rdf_compression",
+      "right": "representations",
+      "missing": [
+        {
+          "left": "brotli",
+          "right": "cottas"
+        },
+        {
+          "left": "gzip",
+          "right": "hdt"
+        }
+      ]
+    },
+    {
+      "left": "rdf_compression",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "gzip",
+          "right": "single"
+        }
+      ]
+    },
+    {
+      "left": "representations",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "cottas",
+          "right": "single"
+        },
+        {
+          "left": "hdt",
+          "right": "partitioned"
+        },
+        {
+          "left": "hdt,cottas",
+          "right": "auto"
+        },
+        {
+          "left": "hdt,cottas",
+          "right": "single"
+        }
+      ]
+    },
+    {
+      "left": "artifact_compression",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "gzip",
+          "right": "single"
+        }
+      ]
+    }
+  ],
+  "note": "Some gaps are REQUIRED, not defects: --hdt-strategy single is refused beside space-optimized and beside cottas, so those pairs cannot exist. Check each gap against plan \u00a71.2 before adding a row."
+}

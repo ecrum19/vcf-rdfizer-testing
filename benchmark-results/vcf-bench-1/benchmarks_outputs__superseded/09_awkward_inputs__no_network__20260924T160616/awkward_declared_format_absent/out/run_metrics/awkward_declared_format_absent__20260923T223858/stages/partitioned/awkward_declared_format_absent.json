@@ -1,0 +1,146 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_declared_format_absent/out/awkward_declared_format_absent/awkward_declared_format_absent.nt.gz",
+  "output_name": "awkward_declared_format_absent",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 0.021355377044528723,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 19200,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_declared_format_absent/out/awkward_declared_format_absent/awkward_declared_format_absent.hdt",
+        "output_size_bytes": 6131,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_declared_format_absent/out/awkward_declared_format_absent/awkward_declared_format_absent.nt.gz"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 44186,
+          "record_count": 293,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunk_stream_seconds": 0.0008459743112325668,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 293,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 44186,
+              "record_count": 293,
+              "payload_bytes": 44186,
+              "write_seconds": 0.0006010946817696095
+            }
+          ],
+          "merge_rounds": 0,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_declared_format_absent/out/awkward_declared_format_absent/awkward_declared_format_absent.hdt.index.v1-1",
+          "index_size_bytes": 789,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 293,
+            "decoded_triples": 293,
+            "expected_triples": 293,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 0.05634713498875499,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": 19200
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 0.0054871938191354275,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 6131,
+        "workspace_tree_bytes_before": 44186,
+        "workspace_tree_bytes_after": 50317,
+        "workspace_free_bytes_after": 63289163776,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 63289171968,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 19200,
+        "max_rss_source": "rusage_children_highwater"
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 0.015868183225393295,
+        "output_path": "/data/out/awkward_declared_format_absent.hdt.index.v1-1",
+        "output_size_bytes": 789,
+        "workspace_tree_bytes_before": 0,
+        "workspace_tree_bytes_after": 0,
+        "workspace_free_bytes_after": 63289200640,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 63289208832,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 19200,
+        "max_rss_source": "rusage_children_highwater"
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 0.05634713498875499,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 147,
+        "workspace_tree_bytes_before": 0,
+        "workspace_tree_bytes_after": 147,
+        "workspace_free_bytes_after": 63289196544,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 63289200640,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 19200,
+        "max_rss_source": "rusage_children_highwater"
+      }
+    ],
+    "index_warnings": [],
+    "build_profile": {
+      "chunk_stream_seconds": 0.0008459743112325668,
+      "chunk_count": 1,
+      "chunk_input_bytes": 44186,
+      "by_stage_kind": {
+        "hdt-chunk-build": {
+          "stage_count": 1,
+          "wall_seconds": 0.0054871938191354275,
+          "max_rss_kb": 19200
+        },
+        "hdt-index": {
+          "stage_count": 1,
+          "wall_seconds": 0.015868183225393295,
+          "max_rss_kb": 19200
+        },
+        "hdt-validate": {
+          "stage_count": 1,
+          "wall_seconds": 0.05634713498875499,
+          "max_rss_kb": 19200
+        }
+      },
+      "merge_rounds": {},
+      "peak_volume_workspace_bytes": 50317,
+      "max_rss_kb": 19200
+    }
+  }
+}

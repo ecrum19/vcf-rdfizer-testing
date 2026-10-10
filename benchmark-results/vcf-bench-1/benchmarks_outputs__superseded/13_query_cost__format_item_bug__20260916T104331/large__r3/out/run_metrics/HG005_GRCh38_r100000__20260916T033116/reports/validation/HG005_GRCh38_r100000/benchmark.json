@@ -1,0 +1,210 @@
+{
+  "engines": {
+    "qlever": {
+      "artifactOrigin": null,
+      "artifactSizeBytes": null,
+      "queries": {
+        "preflight_blank_nodes": {
+          "status": "PASS",
+          "wallSeconds": 0.7307874520774931
+        },
+        "preflight_blank_nodes_count": {
+          "status": "PASS",
+          "wallSeconds": 0.6214922019280493
+        },
+        "preflight_distinct_triple_count": {
+          "status": "PASS",
+          "wallSeconds": 0.17441036901436746
+        },
+        "preflight_empty_values": {
+          "status": "PASS",
+          "wallSeconds": 98.19119528797455
+        },
+        "preflight_empty_values_count": {
+          "status": "PASS",
+          "wallSeconds": 95.40030367998406
+        },
+        "preflight_missing_token_conformance": {
+          "status": "PASS",
+          "wallSeconds": 104.37946285912767
+        },
+        "preflight_missing_token_conformance_count": {
+          "status": "PASS",
+          "wallSeconds": 0.3104738858528435
+        },
+        "preflight_position_datatype": {
+          "status": "PASS",
+          "wallSeconds": 0.08020097087137401
+        },
+        "preflight_position_datatype_count": {
+          "status": "PASS",
+          "wallSeconds": 0.07807994191534817
+        },
+        "preflight_record_cardinality": {
+          "status": "PASS",
+          "wallSeconds": 0.7351844739168882
+        },
+        "preflight_record_cardinality_count": {
+          "status": "PASS",
+          "wallSeconds": 0.3788386401720345
+        },
+        "preflight_representation_profile": {
+          "status": "PASS",
+          "wallSeconds": 0.005080871982499957
+        },
+        "preflight_representation_profile_count": {
+          "status": "PASS",
+          "wallSeconds": 0.00260372506454587
+        },
+        "preflight_sample_gt_inventory": {
+          "status": "PASS",
+          "wallSeconds": 1.0070465609896928
+        },
+        "q01_record_density_1mb": {
+          "status": "PASS",
+          "wallSeconds": 0.05251294397749007
+        },
+        "q02_variant_shape_counts": {
+          "status": "PASS",
+          "wallSeconds": 0.5543176019564271
+        },
+        "q03_titv": {
+          "status": "PASS",
+          "wallSeconds": 0.10311496607027948
+        },
+        "q04_filter_distribution": {
+          "status": "PASS",
+          "wallSeconds": 0.23961243592202663
+        },
+        "q05_sample_genotype_counts": {
+          "status": "PASS",
+          "wallSeconds": 1.7968390269670635
+        },
+        "q06_ac_an_distribution": {
+          "status": "PASS",
+          "wallSeconds": 3.2925041138660163
+        },
+        "q07_file_metadata": {
+          "status": "PASS",
+          "wallSeconds": 0.00955115188844502
+        },
+        "q08_header_line_census": {
+          "status": "PASS",
+          "wallSeconds": 0.006540457950904965
+        },
+        "q09_predicate_census": {
+          "status": "PASS",
+          "wallSeconds": 0.20832230895757675
+        },
+        "q10_class_census": {
+          "status": "PASS",
+          "wallSeconds": 0.8706894640345126
+        },
+        "q11_record_digest": {
+          "status": "PASS",
+          "wallSeconds": 1.8376731760799885
+        },
+        "q12_info_value_digest": {
+          "status": "PASS",
+          "wallSeconds": 4.692133484175429
+        },
+        "q13_format_value_digest": {
+          "status": "PASS",
+          "wallSeconds": 3.73310774192214
+        }
+      },
+      "querySeconds": 319.4920797946397,
+      "setupSeconds": 22.919276602799073,
+      "slowestQuery": "preflight_missing_token_conformance",
+      "status": "MISMATCH"
+    }
+  },
+  "oracle": {
+    "censusSeconds": 0.00017740600742399693,
+    "perQuerySeconds": {
+      "preflight_blank_nodes": 10.197832655860111,
+      "preflight_blank_nodes_count": 10.197832655860111,
+      "preflight_distinct_triple_count": 10.197832655860111,
+      "preflight_empty_values": 10.197832655860111,
+      "preflight_empty_values_count": 10.197832655860111,
+      "preflight_missing_token_conformance": 10.197832655860111,
+      "preflight_missing_token_conformance_count": 10.197832655860111,
+      "preflight_position_datatype": 10.197832655860111,
+      "preflight_position_datatype_count": 10.197832655860111,
+      "preflight_record_cardinality": 10.197832655860111,
+      "preflight_record_cardinality_count": 10.197832655860111,
+      "preflight_representation_profile": 10.197832655860111,
+      "preflight_representation_profile_count": 10.197832655860111,
+      "preflight_sample_gt_inventory": 10.197832655860111,
+      "q01_record_density_1mb": 10.197832655860111,
+      "q02_variant_shape_counts": 10.197832655860111,
+      "q03_titv": 10.197832655860111,
+      "q04_filter_distribution": 10.197832655860111,
+      "q05_sample_genotype_counts": 10.960753882071003,
+      "q06_ac_an_distribution": 10.960753882071003,
+      "q07_file_metadata": 10.197832655860111,
+      "q08_header_line_census": 10.197832655860111,
+      "q09_predicate_census": 10.197832655860111,
+      "q10_class_census": 10.197832655860111,
+      "q11_record_digest": 10.197832655860111,
+      "q12_info_value_digest": 10.197832655860111,
+      "q13_format_value_digest": 10.960753882071003
+    },
+    "phases": {
+      "assemblySeconds": 2.240398138994351,
+      "censusSeconds": 0.00017740600742399693,
+      "readerOpenSeconds": 0.006296793930232525,
+      "sampleBlockSeconds": 0.7629212262108922,
+      "scanSeconds": 8.71405894914642
+    },
+    "sampleLevelQueries": [
+      "q05_sample_genotype_counts",
+      "q06_ac_an_distribution",
+      "q13_format_value_digest"
+    ],
+    "totalSeconds": 11.108148972969502,
+    "vcfParseSeconds": 11.107967803953215
+  },
+  "preparation": {
+    "materializationSeconds": 2.8719988390803337,
+    "shaclSeconds": null
+  },
+  "queryIds": [
+    "preflight_record_cardinality",
+    "preflight_position_datatype",
+    "preflight_missing_token_conformance",
+    "preflight_representation_profile",
+    "preflight_sample_gt_inventory",
+    "preflight_blank_nodes",
+    "preflight_empty_values",
+    "preflight_distinct_triple_count",
+    "preflight_record_cardinality_count",
+    "preflight_position_datatype_count",
+    "preflight_missing_token_conformance_count",
+    "preflight_representation_profile_count",
+    "preflight_blank_nodes_count",
+    "preflight_empty_values_count",
+    "q01_record_density_1mb",
+    "q02_variant_shape_counts",
+    "q03_titv",
+    "q04_filter_distribution",
+    "q05_sample_genotype_counts",
+    "q06_ac_an_distribution",
+    "q07_file_metadata",
+    "q08_header_line_census",
+    "q09_predicate_census",
+    "q10_class_census",
+    "q11_record_digest",
+    "q12_info_value_digest",
+    "q13_format_value_digest"
+  ],
+  "totals": {
+    "engineQuerySeconds": {
+      "qlever": 319.4920797946397
+    },
+    "engineSetupSeconds": {
+      "qlever": 22.919276602799073
+    },
+    "oracleSeconds": 11.108148972969502
+  }
+}

@@ -1,0 +1,19 @@
+[2026-09-15T17:12:34] Run started (mode=full)
+[2026-09-15T17:12:34] Checking Docker availability
+[2026-09-15T17:12:34] Docker availability check passed
+[2026-09-15T17:12:34] Ensuring image available: vcf-rdfizer:local-a3679e1
+[2026-09-15T17:12:34] Image ready
+[2026-09-15T17:12:34] Writeability checks passed
+[2026-09-15T17:12:34] Full pipeline started
+[2026-09-15T17:12:34] Input 1/1 started: awkward_no_records
+[2026-09-15T17:12:34] Input 1: TSV conversion completed for awkward_no_records
+[2026-09-15T17:12:47] Input 1: RDF conversion completed for awkward_no_records
+[2026-09-15T17:12:48] Input 1: compression completed for awkward_no_records
+[2026-09-15T17:12:48] Validation started: awkward_no_records
+[2026-09-15T17:12:58] Validation failed: awkward_no_records (exit_code=1)
+[2026-09-15T17:12:58] Validation started: awkward_no_records__hdt
+[2026-09-15T17:13:08] Validation failed: awkward_no_records__hdt (exit_code=1)
+[2026-09-15T17:13:08] Input 1/1 failed at validation for awkward_no_records: semantic VCF/RDF validation failed for 'awkward_no_records' (aggregate, hdt). See results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234/reports/validation
+[2026-09-15T17:13:08] Input 1/1 finished with failures: awkward_no_records
+[2026-09-15T17:13:08] Full pipeline completed with failures (1/1). Report: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_no_records/out/run_metrics/awkward_no_records__20260915T171234/reports/failed_inputs.csv
+[2026-09-15T17:13:08] Run finished (exit_code=1)

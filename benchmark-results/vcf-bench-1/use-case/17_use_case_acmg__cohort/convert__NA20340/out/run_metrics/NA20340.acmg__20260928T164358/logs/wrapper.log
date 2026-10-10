@@ -1,0 +1,232 @@
+
+[2026-09-28T16:43:58] $ docker version
+Client: Docker Engine - Community
+ Version:           29.7.2
+ API version:       1.55
+ Go version:        go1.26.5
+ Git commit:        a7dcaa6
+ Built:             Wed Aug  5 18:28:53 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.7.2
+  API version:      1.55 (minimum version 1.40)
+  Go version:       go1.26.5
+  Git commit:       6a43e3d
+  Built:            Wed Aug  5 18:28:53 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.3
+  GitCommit:        aad11006b869517fcd3009450b6f82da282e1a9b
+ runc:
+  Version:          1.4.3
+  GitCommit:        v1.4.3-0-gbb14dabe
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+[exit 0]
+
+[2026-09-28T16:43:58] $ docker image inspect ecrum19/vcf-rdfizer:3.2.0
+[
+    {
+        "Id": "sha256:b7793bde503d1ebfc6e9a07d5cafda5e876f1a3e8d13263caf4f30bc6bf1e95d",
+        "RepoTags": [
+            "ecrum19/vcf-rdfizer:3.2.0"
+        ],
+        "RepoDigests": [
+            "ecrum19/vcf-rdfizer@sha256:b7793bde503d1ebfc6e9a07d5cafda5e876f1a3e8d13263caf4f30bc6bf1e95d"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-25T16:31:59.424468643Z",
+        "Config": {
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-11.0.32+9",
+                "RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "HDTC_BIN=/usr/local/bin/hdtc",
+                "HDT_INDEX_MEMORY_LIMIT=512M",
+                "HDT_MERGE_MEMORY_LIMIT=512M",
+                "COTTAS_MERGE_BATCH_ROWS=2048",
+                "RDF2HDT_BIN=/usr/local/bin/rdf2hdt",
+                "HDT2RDF_BIN=/usr/local/bin/hdt2rdf",
+                "COTTAS_PYTHON_BIN=/opt/pycottas-venv/bin/python",
+                "QLEVER_INDEX_BUILDER_BIN=/opt/qlever/bin/qlever-index",
+                "QLEVER_SERVER_BIN=/opt/qlever/bin/qlever-server",
+                "LD_LIBRARY_PATH=/usr/local/lib"
+            ],
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.created": "2026-09-25T16:25:20.561Z",
+                "org.opencontainers.image.description": "A Python tool for the semantic conversion of VCF to serialized RDF and various compressed formats (HDT, COTTAS, GZ, BR).",
+                "org.opencontainers.image.licenses": "MIT",
+                "org.opencontainers.image.revision": "f266db5ecdea0f5839df7c2c26cbc4aed1678278",
+                "org.opencontainers.image.source": "https://github.com/ecrum19/VCF-RDFizer",
+                "org.opencontainers.image.title": "VCF-RDFizer",
+                "org.opencontainers.image.url": "https://github.com/ecrum19/VCF-RDFizer",
+                "org.opencontainers.image.version": "3.2.0"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 829169693,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:485d137fd3bfb545f1b417ea708e2281594be7a334e8a85ab75c5332db6089e9",
+                "sha256:598e8330e2e633ea6b06bbf1e8b80c275553b7c1de53899af154d1f480a7eefa",
+                "sha256:26e0c5f2f2ea6a0602ff01033d767d81371ca2a1ac10ed18b5501c40e247a427",
+                "sha256:fba3fa5bb248907b3d98f94f7aaef38c77d0bb26f509eb1b65b13fedbdca6cf4",
+                "sha256:714e1749d314bced589b41523ac008f83fe9b0e20c4688b974e7f1ea4cf11705",
+                "sha256:36df17dfc7739f0a33bdeadb2c57284d052e9e824db76a771ebc9d354779bdd9",
+                "sha256:567767d69fa80eb6098756f42d560040c912b6f39cdf77156d60bdfd828de81b",
+                "sha256:7a5a9b2d46a22088f9f17d49334f675cbf35bcb17f69494785e4b6a197783858",
+                "sha256:3c48d28b0b976a9db0b323393564dcf8c7c9c5c1943387294580c725e08282bc",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:022b0001ba7c4f8e67cf1d0ed1deaad47a521676687486fd303302228feddd9a",
+                "sha256:f695ad49a52cf27bf3024df4702e197b3ccd0b1d401dfaf7b98cc9554296b87a",
+                "sha256:7846a53f38eaf7ce856923a2d37c1fb5f631eb90c660b68745a246cd80326b85",
+                "sha256:565797c5d4bc270896d88a8738c517a3aae8d6376f57d533daa3cc8def89fa99",
+                "sha256:19412120384814403126331861a7871883bc872cab8d587ad9e4a86a0ca12042",
+                "sha256:b70303936a1e42461fcadc9d86866843fa1299991db5a4ff7a2ca0d8299e6b3b",
+                "sha256:4a07a75d3a3d3a4a3311d77ce6d6713a6ce5667aa20878ba9ff187ae95adfa25",
+                "sha256:d1489c034fae5aa4bfb7984b30c4630cd8f004bc4970cee4677c75f11409d9a0",
+                "sha256:66b99b511f1991849e7fc2d0845bc50d40fcb96cfa6828be93648a8e2e7ea6cb",
+                "sha256:74e01e39d16d951b1309788cb0e6a1b04e3aeda0948a783d209ce7a27a8a36b8",
+                "sha256:5d44a8a83a19f090ec9b83659bcd7d66f12d43a83c79e4c7b29627fcc3196d53",
+                "sha256:9762df72391b7b849c80ebe8f43d68f6bca2ad58b727272e114ea1a9c2fb4ab8",
+                "sha256:ef31cabf3de818ed903adfb351d6215f0714ebe352bb43fffc54ea90ed09c506",
+                "sha256:a35dad51827d5f705191c9672cbc74d4357142348fba2028085d12a4f6f40499",
+                "sha256:ad4e2262f42f72a29d2052690379803f1425a5bd35a999817287393b4f4d5ba9",
+                "sha256:72822a0fad14c79b121f4336137243d52479e3c0aa418825e9744ebddff9f7ed",
+                "sha256:e05290b721f233c28cad3dadbb814ac21330058358a166a79da04fd583fc82f6",
+                "sha256:85c381f464d61c4e0f3a6444083987da12ca30de58951dc4a24c8fb71ac089a7",
+                "sha256:6201e12e3153f7c9f72cb0e31af077b86bc6c0eefc3f4459d26726b0cd08789a",
+                "sha256:01b7ed642ada604f13d009e3ac66d052d29dfa4bd152652e8f79f09add50d777",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-26T07:51:14.571312796Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:b7793bde503d1ebfc6e9a07d5cafda5e876f1a3e8d13263caf4f30bc6bf1e95d",
+            "size": 1609
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "docker.io/ecrum19/vcf-rdfizer"
+                }
+            ]
+        }
+    }
+]
+[exit 0]
+
+[2026-09-28T16:43:58] $ docker run --rm --label vcf-rdfizer.run=20260928T164358-3360562 --user 1000:1000 -v /home/ubuntu/vrdev-test/acmg-run/derived_cohort:/data/in:ro -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/.intermediate/tsv:/data/tsv -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/run_metrics/NA20340.acmg__20260928T164358:/data/metrics ecrum19/vcf-rdfizer:3.2.0 bash -lc 'set -euo pipefail; rm -f /data/metrics/timings/tsv/NA20340.acmg.txt; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/metrics/timings/tsv/NA20340.acmg.txt -- bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/NA20340.acmg.vcf /data/tsv; else { time -p bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/NA20340.acmg.vcf /data/tsv; } > /data/metrics/timings/tsv/NA20340.acmg.txt 2>&1; fi'
+✅ Wrote: /data/tsv/NA20340.acmg.records.tsv
+✅ Wrote: /data/tsv/NA20340.acmg.header_lines.tsv
+✅ Wrote: /data/tsv/NA20340.acmg.file_metadata.tsv
+[exit 0]
+
+[2026-09-28T16:43:59] $ docker run --rm --label vcf-rdfizer.run=20260928T164358-3360562 --user 1000:1000 -v /home/ubuntu/vrdev-test/acmg-run/derived_cohort:/data/in:ro -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/run_metrics/NA20340.acmg__20260928T164358/_generated_rules:/data/rules:ro -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/.intermediate/tsv:/data/tsv:ro -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out:/data/out -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/run_metrics/NA20340.acmg__20260928T164358:/data/metrics -w /data/rules -e JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar -e IN=/data/rules/NA20340.acmg.rules.ttl -e OUT_DIR=/data/out -e OUT_NAME=NA20340.acmg -e RDF_STORAGE_MODE=plain -e SPARK_PARTITIONS= -e RUN_ID=20260928T164358 -e TIMESTAMP=2026-09-28T16:43:58 -e TSV_EXIT_CODE=0 -e TSV_WALL_SECONDS=0.500765 -e TSV_USER_SECONDS=0.060000 -e TSV_SYS_SECONDS=0.010000 -e TSV_MAX_RSS_KB=7680 -e TSV_OUTPUT_SIZE_BYTES=864560 -e 'TSV_OUTPUT_PATH=/data/tsv/NA20340.acmg.records.tsv|/data/tsv/NA20340.acmg.header_lines.tsv|/data/tsv/NA20340.acmg.file_metadata.tsv' -e IN_VCF=/data/in/NA20340.acmg.vcf -e LOGDIR=/data/metrics -e PROGRESS_FILE=/data/metrics/.progress/rmlstreamer-NA20340.acmg.jsonl ecrum19/vcf-rdfizer:3.2.0 bash /opt/vcf-rdfizer/run_conversion.sh
+14:43:59,694 INFO  io.rml.framework.Main$                                        - Mapping file: /data/rules/NA20340.acmg.rules.ttl
+Job name: RMLStreamer
+Base IRI: /
+Parallelise over local task slots: true
+Maximum parallelism: None
+Post processor: None
+Checkpoint interval: /
+Auto Watermark interval: 50
+Output method: File
+Output file: /data/out/NA20340.acmg/.rmlstreamer-parts-NA20340.acmg-1
+Kafka broker list: /
+Kafka topic: /
+Kafka topic partition id: /
+Output TCP socket: /
+Function description locations: None
+Discard output: false
+14:44:00,188 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,194 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,195 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,197 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,198 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,198 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,199 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,200 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,201 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,203 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,204 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+14:44:00,205 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+Number of standard stream triple maps: 12
+Total extracted std triple maps: 12
+Number of standard stream triple maps: 0
+Total extracted std triple maps: 0
+14:44:00,271 INFO  io.rml.framework.Main$                                        - Dataset Job Found.
+14:44:00,317 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+14:44:00,327 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+14:44:00,328 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+14:44:00,329 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+14:44:00,329 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+14:44:03,824 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - Log file environment variable 'log.file' is not set.
+14:44:03,824 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - JobManager log files are unavailable in the web dashboard. Log file location not found in environment variable 'log.file' or configuration key 'web.log.path'.
+14:44:04,485 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,489 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,493 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,491 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,490 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,490 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,490 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,493 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,500 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,502 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,534 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,536 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,538 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,547 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,569 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,595 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,616 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,630 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,633 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,652 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,656 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,656 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,661 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,682 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,705 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,708 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,725 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,735 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,786 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,808 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,828 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,834 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,841 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,849 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,843 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,843 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,857 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,861 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,868 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+14:44:04,877 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+WARNING: metrics header mismatch; backed up to /data/metrics/metrics_csv_bak_20260928T164358.csv and creating new metrics file.
+Done.
+JSON: /data/metrics/stages/conversion/NA20340.acmg.json
+CSV:  /data/metrics/metrics.csv
+[exit 0]
+
+[2026-09-28T16:44:14] $ docker run --rm --label vcf-rdfizer.run=20260928T164358-3360562 --user 1000:1000 -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/NA20340.acmg:/data/in:ro -v /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__NA20340/out/NA20340.acmg:/data/out ecrum19/vcf-rdfizer:3.2.0 bash -lc 'set -euo pipefail; rm -f /data/out/.NA20340.acmg.gzip.time; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/out/.NA20340.acmg.gzip.time -- bash -lc '"'"'set -euo pipefail; rm -f /data/out/NA20340.acmg.nt.gz; gzip -c /data/in/NA20340.acmg.nt > /data/out/NA20340.acmg.nt.gz'"'"'; else { time -p bash -lc '"'"'set -euo pipefail; rm -f /data/out/NA20340.acmg.nt.gz; gzip -c /data/in/NA20340.acmg.nt > /data/out/NA20340.acmg.nt.gz'"'"'; } > /data/out/.NA20340.acmg.gzip.time 2>&1; fi'
+[exit 0]

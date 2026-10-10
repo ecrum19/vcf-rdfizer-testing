@@ -1,0 +1,42 @@
+=== 2026-09-15T13:52:51+02:00 vcf-bench-1: re-run 11_covering_set ===
+tool  a3679e1 Pin pip in CI instead of installing whatever released most recently
+image vcf-rdfizer:local-a3679e1
+    - image vcf-rdfizer:local-a3679e1 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 11_covering_set.sh ===
+    - image vcf-rdfizer:local-a3679e1 already built
+
+=== §5.1 covering set on test-1k.vcf ===
+    - row1
+    - row2
+    - row3
+    - row4
+    - row5
+    - row6
+[1m==>[0m Done. Verify coverage with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py coverage 11_covering_set
+
+datasets.py coverage re-derives, from the recorded command lines, that every
+option value appears and every option pair is covered — so an edit to the table
+that breaks coverage is caught rather than assumed.
+
+=== Collecting ===
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+11_covering_set: 6 cells — 6 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/provenance.vcf-bench-1.a3679e1.json
+  tool   a3679e1 Pin pip in CI instead of installing whatever released most recently
+  image  sha256:b645120b7270b1db0 created 2026-09-13T19:17:20
+=== 2026-09-15T14:05:02+02:00 re-run finished ===

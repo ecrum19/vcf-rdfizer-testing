@@ -1,0 +1,736 @@
+{
+  "anchoring": "each window starts at a randomly chosen record position",
+  "positionScanSeconds": 0.6129655139520764,
+  "regionSemantics": "A window is POS-based, 1-based and inclusive: a record belongs to it when\nSTART <= POS <= END on the named contig.\n\nThis has to be said explicitly because htslib does not mean that. A tabix or\nCSI seek returns every record whose *span* overlaps the region, so a deletion\nbeginning before START and reaching into the window comes back from\n`bcftools -r` and from cyvcf2's region iterator, while a POS filter in SPARQL\nexcludes it. Left alone, that difference would make the arms disagree on any\nwindow whose left edge cuts an indel -- and it would look like a graph defect\nrather than a coordinate convention.\n\nSo both indexed arms keep the index seek (the thing being measured) and then\ndrop records whose POS falls outside the window. The seek still does the work;\nthe post-filter only reconciles the convention, costs one integer comparison\nper returned record, and is applied by every VCF arm alike.\n",
+  "seed": 20260923,
+  "sizes": [
+    1000,
+    100000,
+    1000000,
+    10000000
+  ],
+  "totalRecords": 100000,
+  "windows": [
+    {
+      "anchor_pos": 23894831,
+      "chrom": "chr1",
+      "end": 23895830,
+      "records_in_window": 10,
+      "size": 1000,
+      "start": 23894831,
+      "window_id": "w1000_00"
+    },
+    {
+      "anchor_pos": 37268328,
+      "chrom": "chr1",
+      "end": 37269327,
+      "records_in_window": 1,
+      "size": 1000,
+      "start": 37268328,
+      "window_id": "w1000_01"
+    },
+    {
+      "anchor_pos": 42471294,
+      "chrom": "chr1",
+      "end": 42472293,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 42471294,
+      "window_id": "w1000_02"
+    },
+    {
+      "anchor_pos": 19972624,
+      "chrom": "chr1",
+      "end": 19973623,
+      "records_in_window": 4,
+      "size": 1000,
+      "start": 19972624,
+      "window_id": "w1000_03"
+    },
+    {
+      "anchor_pos": 65925426,
+      "chrom": "chr1",
+      "end": 65926425,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 65925426,
+      "window_id": "w1000_04"
+    },
+    {
+      "anchor_pos": 54878472,
+      "chrom": "chr1",
+      "end": 54879471,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 54878472,
+      "window_id": "w1000_05"
+    },
+    {
+      "anchor_pos": 54724268,
+      "chrom": "chr1",
+      "end": 54725267,
+      "records_in_window": 9,
+      "size": 1000,
+      "start": 54724268,
+      "window_id": "w1000_06"
+    },
+    {
+      "anchor_pos": 50226603,
+      "chrom": "chr1",
+      "end": 50227602,
+      "records_in_window": 3,
+      "size": 1000,
+      "start": 50226603,
+      "window_id": "w1000_07"
+    },
+    {
+      "anchor_pos": 5558122,
+      "chrom": "chr1",
+      "end": 5559121,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 5558122,
+      "window_id": "w1000_08"
+    },
+    {
+      "anchor_pos": 21979241,
+      "chrom": "chr1",
+      "end": 21980240,
+      "records_in_window": 15,
+      "size": 1000,
+      "start": 21979241,
+      "window_id": "w1000_09"
+    },
+    {
+      "anchor_pos": 58250107,
+      "chrom": "chr1",
+      "end": 58251106,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 58250107,
+      "window_id": "w1000_10"
+    },
+    {
+      "anchor_pos": 33820268,
+      "chrom": "chr1",
+      "end": 33821267,
+      "records_in_window": 1,
+      "size": 1000,
+      "start": 33820268,
+      "window_id": "w1000_11"
+    },
+    {
+      "anchor_pos": 74268898,
+      "chrom": "chr1",
+      "end": 74269897,
+      "records_in_window": 4,
+      "size": 1000,
+      "start": 74268898,
+      "window_id": "w1000_12"
+    },
+    {
+      "anchor_pos": 58011340,
+      "chrom": "chr1",
+      "end": 58012339,
+      "records_in_window": 3,
+      "size": 1000,
+      "start": 58011340,
+      "window_id": "w1000_13"
+    },
+    {
+      "anchor_pos": 55322618,
+      "chrom": "chr1",
+      "end": 55323617,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 55322618,
+      "window_id": "w1000_14"
+    },
+    {
+      "anchor_pos": 58597811,
+      "chrom": "chr1",
+      "end": 58598810,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 58597811,
+      "window_id": "w1000_15"
+    },
+    {
+      "anchor_pos": 61942877,
+      "chrom": "chr1",
+      "end": 61943876,
+      "records_in_window": 1,
+      "size": 1000,
+      "start": 61942877,
+      "window_id": "w1000_16"
+    },
+    {
+      "anchor_pos": 74952903,
+      "chrom": "chr1",
+      "end": 74953902,
+      "records_in_window": 2,
+      "size": 1000,
+      "start": 74952903,
+      "window_id": "w1000_17"
+    },
+    {
+      "anchor_pos": 10920022,
+      "chrom": "chr1",
+      "end": 10921021,
+      "records_in_window": 7,
+      "size": 1000,
+      "start": 10920022,
+      "window_id": "w1000_18"
+    },
+    {
+      "anchor_pos": 54064366,
+      "chrom": "chr1",
+      "end": 54065365,
+      "records_in_window": 1,
+      "size": 1000,
+      "start": 54064366,
+      "window_id": "w1000_19"
+    },
+    {
+      "anchor_pos": 76042312,
+      "chrom": "chr1",
+      "end": 76142311,
+      "records_in_window": 132,
+      "size": 100000,
+      "start": 76042312,
+      "window_id": "w100000_00"
+    },
+    {
+      "anchor_pos": 26177705,
+      "chrom": "chr1",
+      "end": 26277704,
+      "records_in_window": 141,
+      "size": 100000,
+      "start": 26177705,
+      "window_id": "w100000_01"
+    },
+    {
+      "anchor_pos": 76668322,
+      "chrom": "chr1",
+      "end": 76768321,
+      "records_in_window": 131,
+      "size": 100000,
+      "start": 76668322,
+      "window_id": "w100000_02"
+    },
+    {
+      "anchor_pos": 64797067,
+      "chrom": "chr1",
+      "end": 64897066,
+      "records_in_window": 153,
+      "size": 100000,
+      "start": 64797067,
+      "window_id": "w100000_03"
+    },
+    {
+      "anchor_pos": 66848110,
+      "chrom": "chr1",
+      "end": 66948109,
+      "records_in_window": 83,
+      "size": 100000,
+      "start": 66848110,
+      "window_id": "w100000_04"
+    },
+    {
+      "anchor_pos": 58175965,
+      "chrom": "chr1",
+      "end": 58275964,
+      "records_in_window": 181,
+      "size": 100000,
+      "start": 58175965,
+      "window_id": "w100000_05"
+    },
+    {
+      "anchor_pos": 41567443,
+      "chrom": "chr1",
+      "end": 41667442,
+      "records_in_window": 142,
+      "size": 100000,
+      "start": 41567443,
+      "window_id": "w100000_06"
+    },
+    {
+      "anchor_pos": 23625875,
+      "chrom": "chr1",
+      "end": 23725874,
+      "records_in_window": 143,
+      "size": 100000,
+      "start": 23625875,
+      "window_id": "w100000_07"
+    },
+    {
+      "anchor_pos": 69897964,
+      "chrom": "chr1",
+      "end": 69997963,
+      "records_in_window": 77,
+      "size": 100000,
+      "start": 69897964,
+      "window_id": "w100000_08"
+    },
+    {
+      "anchor_pos": 63664508,
+      "chrom": "chr1",
+      "end": 63764507,
+      "records_in_window": 287,
+      "size": 100000,
+      "start": 63664508,
+      "window_id": "w100000_09"
+    },
+    {
+      "anchor_pos": 15518874,
+      "chrom": "chr1",
+      "end": 15618873,
+      "records_in_window": 146,
+      "size": 100000,
+      "start": 15518874,
+      "window_id": "w100000_10"
+    },
+    {
+      "anchor_pos": 23996836,
+      "chrom": "chr1",
+      "end": 24096835,
+      "records_in_window": 343,
+      "size": 100000,
+      "start": 23996836,
+      "window_id": "w100000_11"
+    },
+    {
+      "anchor_pos": 56566795,
+      "chrom": "chr1",
+      "end": 56666794,
+      "records_in_window": 139,
+      "size": 100000,
+      "start": 56566795,
+      "window_id": "w100000_12"
+    },
+    {
+      "anchor_pos": 24058646,
+      "chrom": "chr1",
+      "end": 24158645,
+      "records_in_window": 214,
+      "size": 100000,
+      "start": 24058646,
+      "window_id": "w100000_13"
+    },
+    {
+      "anchor_pos": 3105927,
+      "chrom": "chr1",
+      "end": 3205926,
+      "records_in_window": 226,
+      "size": 100000,
+      "start": 3105927,
+      "window_id": "w100000_14"
+    },
+    {
+      "anchor_pos": 54865968,
+      "chrom": "chr1",
+      "end": 54965967,
+      "records_in_window": 181,
+      "size": 100000,
+      "start": 54865968,
+      "window_id": "w100000_15"
+    },
+    {
+      "anchor_pos": 58852100,
+      "chrom": "chr1",
+      "end": 58952099,
+      "records_in_window": 79,
+      "size": 100000,
+      "start": 58852100,
+      "window_id": "w100000_16"
+    },
+    {
+      "anchor_pos": 77570681,
+      "chrom": "chr1",
+      "end": 77670680,
+      "records_in_window": 81,
+      "size": 100000,
+      "start": 77570681,
+      "window_id": "w100000_17"
+    },
+    {
+      "anchor_pos": 66388887,
+      "chrom": "chr1",
+      "end": 66488886,
+      "records_in_window": 196,
+      "size": 100000,
+      "start": 66388887,
+      "window_id": "w100000_18"
+    },
+    {
+      "anchor_pos": 5319806,
+      "chrom": "chr1",
+      "end": 5419805,
+      "records_in_window": 87,
+      "size": 100000,
+      "start": 5319806,
+      "window_id": "w100000_19"
+    },
+    {
+      "anchor_pos": 42846822,
+      "chrom": "chr1",
+      "end": 43846821,
+      "records_in_window": 1112,
+      "size": 1000000,
+      "start": 42846822,
+      "window_id": "w1000000_00"
+    },
+    {
+      "anchor_pos": 9034070,
+      "chrom": "chr1",
+      "end": 10034069,
+      "records_in_window": 1143,
+      "size": 1000000,
+      "start": 9034070,
+      "window_id": "w1000000_01"
+    },
+    {
+      "anchor_pos": 54809885,
+      "chrom": "chr1",
+      "end": 55809884,
+      "records_in_window": 1670,
+      "size": 1000000,
+      "start": 54809885,
+      "window_id": "w1000000_02"
+    },
+    {
+      "anchor_pos": 55795141,
+      "chrom": "chr1",
+      "end": 56795140,
+      "records_in_window": 1824,
+      "size": 1000000,
+      "start": 55795141,
+      "window_id": "w1000000_03"
+    },
+    {
+      "anchor_pos": 11734309,
+      "chrom": "chr1",
+      "end": 12734308,
+      "records_in_window": 950,
+      "size": 1000000,
+      "start": 11734309,
+      "window_id": "w1000000_04"
+    },
+    {
+      "anchor_pos": 28814643,
+      "chrom": "chr1",
+      "end": 29814642,
+      "records_in_window": 1348,
+      "size": 1000000,
+      "start": 28814643,
+      "window_id": "w1000000_05"
+    },
+    {
+      "anchor_pos": 47354520,
+      "chrom": "chr1",
+      "end": 48354519,
+      "records_in_window": 1253,
+      "size": 1000000,
+      "start": 47354520,
+      "window_id": "w1000000_06"
+    },
+    {
+      "anchor_pos": 35782931,
+      "chrom": "chr1",
+      "end": 36782930,
+      "records_in_window": 868,
+      "size": 1000000,
+      "start": 35782931,
+      "window_id": "w1000000_07"
+    },
+    {
+      "anchor_pos": 5611726,
+      "chrom": "chr1",
+      "end": 6611725,
+      "records_in_window": 1261,
+      "size": 1000000,
+      "start": 5611726,
+      "window_id": "w1000000_08"
+    },
+    {
+      "anchor_pos": 17930348,
+      "chrom": "chr1",
+      "end": 18930347,
+      "records_in_window": 1491,
+      "size": 1000000,
+      "start": 17930348,
+      "window_id": "w1000000_09"
+    },
+    {
+      "anchor_pos": 58656617,
+      "chrom": "chr1",
+      "end": 59656616,
+      "records_in_window": 1262,
+      "size": 1000000,
+      "start": 58656617,
+      "window_id": "w1000000_10"
+    },
+    {
+      "anchor_pos": 20579658,
+      "chrom": "chr1",
+      "end": 21579657,
+      "records_in_window": 1246,
+      "size": 1000000,
+      "start": 20579658,
+      "window_id": "w1000000_11"
+    },
+    {
+      "anchor_pos": 66774094,
+      "chrom": "chr1",
+      "end": 67774093,
+      "records_in_window": 1548,
+      "size": 1000000,
+      "start": 66774094,
+      "window_id": "w1000000_12"
+    },
+    {
+      "anchor_pos": 53330427,
+      "chrom": "chr1",
+      "end": 54330426,
+      "records_in_window": 1337,
+      "size": 1000000,
+      "start": 53330427,
+      "window_id": "w1000000_13"
+    },
+    {
+      "anchor_pos": 34457222,
+      "chrom": "chr1",
+      "end": 35457221,
+      "records_in_window": 1194,
+      "size": 1000000,
+      "start": 34457222,
+      "window_id": "w1000000_14"
+    },
+    {
+      "anchor_pos": 6173132,
+      "chrom": "chr1",
+      "end": 7173131,
+      "records_in_window": 906,
+      "size": 1000000,
+      "start": 6173132,
+      "window_id": "w1000000_15"
+    },
+    {
+      "anchor_pos": 34054184,
+      "chrom": "chr1",
+      "end": 35054183,
+      "records_in_window": 1668,
+      "size": 1000000,
+      "start": 34054184,
+      "window_id": "w1000000_16"
+    },
+    {
+      "anchor_pos": 15193776,
+      "chrom": "chr1",
+      "end": 16193775,
+      "records_in_window": 1521,
+      "size": 1000000,
+      "start": 15193776,
+      "window_id": "w1000000_17"
+    },
+    {
+      "anchor_pos": 43583485,
+      "chrom": "chr1",
+      "end": 44583484,
+      "records_in_window": 1108,
+      "size": 1000000,
+      "start": 43583485,
+      "window_id": "w1000000_18"
+    },
+    {
+      "anchor_pos": 58570714,
+      "chrom": "chr1",
+      "end": 59570713,
+      "records_in_window": 1451,
+      "size": 1000000,
+      "start": 58570714,
+      "window_id": "w1000000_19"
+    },
+    {
+      "anchor_pos": 36023355,
+      "chrom": "chr1",
+      "end": 46023354,
+      "records_in_window": 11510,
+      "size": 10000000,
+      "start": 36023355,
+      "window_id": "w10000000_00"
+    },
+    {
+      "anchor_pos": 57527385,
+      "chrom": "chr1",
+      "end": 67527384,
+      "records_in_window": 14820,
+      "size": 10000000,
+      "start": 57527385,
+      "window_id": "w10000000_01"
+    },
+    {
+      "anchor_pos": 63680811,
+      "chrom": "chr1",
+      "end": 73680810,
+      "records_in_window": 13676,
+      "size": 10000000,
+      "start": 63680811,
+      "window_id": "w10000000_02"
+    },
+    {
+      "anchor_pos": 53679378,
+      "chrom": "chr1",
+      "end": 63679377,
+      "records_in_window": 14787,
+      "size": 10000000,
+      "start": 53679378,
+      "window_id": "w10000000_03"
+    },
+    {
+      "anchor_pos": 60690498,
+      "chrom": "chr1",
+      "end": 70690497,
+      "records_in_window": 14398,
+      "size": 10000000,
+      "start": 60690498,
+      "window_id": "w10000000_04"
+    },
+    {
+      "anchor_pos": 47428546,
+      "chrom": "chr1",
+      "end": 57428545,
+      "records_in_window": 11289,
+      "size": 10000000,
+      "start": 47428546,
+      "window_id": "w10000000_05"
+    },
+    {
+      "anchor_pos": 22030736,
+      "chrom": "chr1",
+      "end": 32030735,
+      "records_in_window": 12991,
+      "size": 10000000,
+      "start": 22030736,
+      "window_id": "w10000000_06"
+    },
+    {
+      "anchor_pos": 34252401,
+      "chrom": "chr1",
+      "end": 44252400,
+      "records_in_window": 11717,
+      "size": 10000000,
+      "start": 34252401,
+      "window_id": "w10000000_07"
+    },
+    {
+      "anchor_pos": 58528508,
+      "chrom": "chr1",
+      "end": 68528507,
+      "records_in_window": 14502,
+      "size": 10000000,
+      "start": 58528508,
+      "window_id": "w10000000_08"
+    },
+    {
+      "anchor_pos": 51917411,
+      "chrom": "chr1",
+      "end": 61917410,
+      "records_in_window": 13900,
+      "size": 10000000,
+      "start": 51917411,
+      "window_id": "w10000000_09"
+    },
+    {
+      "anchor_pos": 17106918,
+      "chrom": "chr1",
+      "end": 27106917,
+      "records_in_window": 14199,
+      "size": 10000000,
+      "start": 17106918,
+      "window_id": "w10000000_10"
+    },
+    {
+      "anchor_pos": 43275553,
+      "chrom": "chr1",
+      "end": 53275552,
+      "records_in_window": 9415,
+      "size": 10000000,
+      "start": 43275553,
+      "window_id": "w10000000_11"
+    },
+    {
+      "anchor_pos": 75394691,
+      "chrom": "chr1",
+      "end": 85394690,
+      "records_in_window": 3288,
+      "size": 10000000,
+      "start": 75394691,
+      "window_id": "w10000000_12"
+    },
+    {
+      "anchor_pos": 40866716,
+      "chrom": "chr1",
+      "end": 50866715,
+      "records_in_window": 10786,
+      "size": 10000000,
+      "start": 40866716,
+      "window_id": "w10000000_13"
+    },
+    {
+      "anchor_pos": 54182280,
+      "chrom": "chr1",
+      "end": 64182279,
+      "records_in_window": 14941,
+      "size": 10000000,
+      "start": 54182280,
+      "window_id": "w10000000_14"
+    },
+    {
+      "anchor_pos": 22053178,
+      "chrom": "chr1",
+      "end": 32053177,
+      "records_in_window": 12910,
+      "size": 10000000,
+      "start": 22053178,
+      "window_id": "w10000000_15"
+    },
+    {
+      "anchor_pos": 65680356,
+      "chrom": "chr1",
+      "end": 75680355,
+      "records_in_window": 13295,
+      "size": 10000000,
+      "start": 65680356,
+      "window_id": "w10000000_16"
+    },
+    {
+      "anchor_pos": 30270070,
+      "chrom": "chr1",
+      "end": 40270069,
+      "records_in_window": 12583,
+      "size": 10000000,
+      "start": 30270070,
+      "window_id": "w10000000_17"
+    },
+    {
+      "anchor_pos": 42283662,
+      "chrom": "chr1",
+      "end": 52283661,
+      "records_in_window": 9628,
+      "size": 10000000,
+      "start": 42283662,
+      "window_id": "w10000000_18"
+    },
+    {
+      "anchor_pos": 61622305,
+      "chrom": "chr1",
+      "end": 71622304,
+      "records_in_window": 14407,
+      "size": 10000000,
+      "start": 61622305,
+      "window_id": "w10000000_19"
+    }
+  ],
+  "windowsPerSize": 20
+}

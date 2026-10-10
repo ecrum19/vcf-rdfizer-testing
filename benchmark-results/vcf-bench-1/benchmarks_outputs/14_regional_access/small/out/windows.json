@@ -1,0 +1,736 @@
+{
+  "anchoring": "each window starts at a randomly chosen record position",
+  "positionScanSeconds": 0.024981464724987745,
+  "regionSemantics": "A window is POS-based, 1-based and inclusive: a record belongs to it when\nSTART <= POS <= END on the named contig.\n\nThis has to be said explicitly because htslib does not mean that. A tabix or\nCSI seek returns every record whose *span* overlaps the region, so a deletion\nbeginning before START and reaching into the window comes back from\n`bcftools -r` and from cyvcf2's region iterator, while a POS filter in SPARQL\nexcludes it. Left alone, that difference would make the arms disagree on any\nwindow whose left edge cuts an indel -- and it would look like a graph defect\nrather than a coordinate convention.\n\nSo both indexed arms keep the index seek (the thing being measured) and then\ndrop records whose POS falls outside the window. The seek still does the work;\nthe post-filter only reconciles the convention, costs one integer comparison\nper returned record, and is applied by every VCF arm alike.\n",
+  "seed": 20260923,
+  "sizes": [
+    1000,
+    100000,
+    1000000,
+    10000000
+  ],
+  "totalRecords": 9986,
+  "windows": [
+    {
+      "anchor_pos": 53546,
+      "chrom": "2",
+      "end": 54545,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 53546,
+      "window_id": "w1000_00"
+    },
+    {
+      "anchor_pos": 79858,
+      "chrom": "2",
+      "end": 80857,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 79858,
+      "window_id": "w1000_01"
+    },
+    {
+      "anchor_pos": 90739,
+      "chrom": "1",
+      "end": 91738,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 90739,
+      "window_id": "w1000_02"
+    },
+    {
+      "anchor_pos": 44394,
+      "chrom": "2",
+      "end": 45393,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 44394,
+      "window_id": "w1000_03"
+    },
+    {
+      "anchor_pos": 7981,
+      "chrom": "1",
+      "end": 8980,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 7981,
+      "window_id": "w1000_04"
+    },
+    {
+      "anchor_pos": 110863,
+      "chrom": "1",
+      "end": 111862,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 110863,
+      "window_id": "w1000_05"
+    },
+    {
+      "anchor_pos": 104311,
+      "chrom": "1",
+      "end": 105310,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 104311,
+      "window_id": "w1000_06"
+    },
+    {
+      "anchor_pos": 14091,
+      "chrom": "1",
+      "end": 15090,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 14091,
+      "window_id": "w1000_07"
+    },
+    {
+      "anchor_pos": 48996,
+      "chrom": "2",
+      "end": 49995,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 48996,
+      "window_id": "w1000_08"
+    },
+    {
+      "anchor_pos": 120145,
+      "chrom": "1",
+      "end": 121144,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 120145,
+      "window_id": "w1000_09"
+    },
+    {
+      "anchor_pos": 73436,
+      "chrom": "2",
+      "end": 74435,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 73436,
+      "window_id": "w1000_10"
+    },
+    {
+      "anchor_pos": 41547,
+      "chrom": "1",
+      "end": 42546,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 41547,
+      "window_id": "w1000_11"
+    },
+    {
+      "anchor_pos": 112670,
+      "chrom": "2",
+      "end": 113669,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 112670,
+      "window_id": "w1000_12"
+    },
+    {
+      "anchor_pos": 121328,
+      "chrom": "2",
+      "end": 122327,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 121328,
+      "window_id": "w1000_13"
+    },
+    {
+      "anchor_pos": 128114,
+      "chrom": "2",
+      "end": 129113,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 128114,
+      "window_id": "w1000_14"
+    },
+    {
+      "anchor_pos": 56237,
+      "chrom": "1",
+      "end": 57236,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 56237,
+      "window_id": "w1000_15"
+    },
+    {
+      "anchor_pos": 65883,
+      "chrom": "1",
+      "end": 66882,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 65883,
+      "window_id": "w1000_16"
+    },
+    {
+      "anchor_pos": 13298,
+      "chrom": "2",
+      "end": 14297,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 13298,
+      "window_id": "w1000_17"
+    },
+    {
+      "anchor_pos": 32252,
+      "chrom": "2",
+      "end": 33251,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 32252,
+      "window_id": "w1000_18"
+    },
+    {
+      "anchor_pos": 96953,
+      "chrom": "1",
+      "end": 97952,
+      "records_in_window": 39,
+      "size": 1000,
+      "start": 96953,
+      "window_id": "w1000_19"
+    },
+    {
+      "anchor_pos": 120002,
+      "chrom": "2",
+      "end": 220001,
+      "records_in_window": 417,
+      "size": 100000,
+      "start": 120002,
+      "window_id": "w100000_00"
+    },
+    {
+      "anchor_pos": 88763,
+      "chrom": "1",
+      "end": 188762,
+      "records_in_window": 1618,
+      "size": 100000,
+      "start": 88763,
+      "window_id": "w100000_01"
+    },
+    {
+      "anchor_pos": 52857,
+      "chrom": "1",
+      "end": 152856,
+      "records_in_window": 2999,
+      "size": 100000,
+      "start": 52857,
+      "window_id": "w100000_02"
+    },
+    {
+      "anchor_pos": 52324,
+      "chrom": "2",
+      "end": 152323,
+      "records_in_window": 3020,
+      "size": 100000,
+      "start": 52324,
+      "window_id": "w100000_03"
+    },
+    {
+      "anchor_pos": 34592,
+      "chrom": "2",
+      "end": 134591,
+      "records_in_window": 3702,
+      "size": 100000,
+      "start": 34592,
+      "window_id": "w100000_04"
+    },
+    {
+      "anchor_pos": 53975,
+      "chrom": "1",
+      "end": 153974,
+      "records_in_window": 2956,
+      "size": 100000,
+      "start": 53975,
+      "window_id": "w100000_05"
+    },
+    {
+      "anchor_pos": 116323,
+      "chrom": "1",
+      "end": 216322,
+      "records_in_window": 558,
+      "size": 100000,
+      "start": 116323,
+      "window_id": "w100000_06"
+    },
+    {
+      "anchor_pos": 54378,
+      "chrom": "2",
+      "end": 154377,
+      "records_in_window": 2941,
+      "size": 100000,
+      "start": 54378,
+      "window_id": "w100000_07"
+    },
+    {
+      "anchor_pos": 7188,
+      "chrom": "2",
+      "end": 107187,
+      "records_in_window": 3847,
+      "size": 100000,
+      "start": 7188,
+      "window_id": "w100000_08"
+    },
+    {
+      "anchor_pos": 111448,
+      "chrom": "2",
+      "end": 211447,
+      "records_in_window": 746,
+      "size": 100000,
+      "start": 111448,
+      "window_id": "w100000_09"
+    },
+    {
+      "anchor_pos": 122134,
+      "chrom": "2",
+      "end": 222133,
+      "records_in_window": 335,
+      "size": 100000,
+      "start": 122134,
+      "window_id": "w100000_10"
+    },
+    {
+      "anchor_pos": 4159,
+      "chrom": "1",
+      "end": 104158,
+      "records_in_window": 3847,
+      "size": 100000,
+      "start": 4159,
+      "window_id": "w100000_11"
+    },
+    {
+      "anchor_pos": 13740,
+      "chrom": "2",
+      "end": 113739,
+      "records_in_window": 3847,
+      "size": 100000,
+      "start": 13740,
+      "window_id": "w100000_12"
+    },
+    {
+      "anchor_pos": 91324,
+      "chrom": "2",
+      "end": 191323,
+      "records_in_window": 1520,
+      "size": 100000,
+      "start": 91324,
+      "window_id": "w100000_13"
+    },
+    {
+      "anchor_pos": 21254,
+      "chrom": "2",
+      "end": 121253,
+      "records_in_window": 3847,
+      "size": 100000,
+      "start": 21254,
+      "window_id": "w100000_14"
+    },
+    {
+      "anchor_pos": 111279,
+      "chrom": "1",
+      "end": 211278,
+      "records_in_window": 752,
+      "size": 100000,
+      "start": 111279,
+      "window_id": "w100000_15"
+    },
+    {
+      "anchor_pos": 113957,
+      "chrom": "1",
+      "end": 213956,
+      "records_in_window": 649,
+      "size": 100000,
+      "start": 113957,
+      "window_id": "w100000_16"
+    },
+    {
+      "anchor_pos": 26389,
+      "chrom": "1",
+      "end": 126388,
+      "records_in_window": 3847,
+      "size": 100000,
+      "start": 26389,
+      "window_id": "w100000_17"
+    },
+    {
+      "anchor_pos": 62074,
+      "chrom": "2",
+      "end": 162073,
+      "records_in_window": 2645,
+      "size": 100000,
+      "start": 62074,
+      "window_id": "w100000_18"
+    },
+    {
+      "anchor_pos": 99683,
+      "chrom": "1",
+      "end": 199682,
+      "records_in_window": 1198,
+      "size": 100000,
+      "start": 99683,
+      "window_id": "w100000_19"
+    },
+    {
+      "anchor_pos": 77700,
+      "chrom": "2",
+      "end": 1077699,
+      "records_in_window": 2044,
+      "size": 1000000,
+      "start": 77700,
+      "window_id": "w1000000_00"
+    },
+    {
+      "anchor_pos": 14260,
+      "chrom": "2",
+      "end": 1014259,
+      "records_in_window": 4484,
+      "size": 1000000,
+      "start": 14260,
+      "window_id": "w1000000_01"
+    },
+    {
+      "anchor_pos": 39428,
+      "chrom": "2",
+      "end": 1039427,
+      "records_in_window": 3516,
+      "size": 1000000,
+      "start": 39428,
+      "window_id": "w1000000_02"
+    },
+    {
+      "anchor_pos": 121614,
+      "chrom": "2",
+      "end": 1121613,
+      "records_in_window": 355,
+      "size": 1000000,
+      "start": 121614,
+      "window_id": "w1000000_03"
+    },
+    {
+      "anchor_pos": 45980,
+      "chrom": "2",
+      "end": 1045979,
+      "records_in_window": 3264,
+      "size": 1000000,
+      "start": 45980,
+      "window_id": "w1000000_04"
+    },
+    {
+      "anchor_pos": 74320,
+      "chrom": "2",
+      "end": 1074319,
+      "records_in_window": 2174,
+      "size": 1000000,
+      "start": 74320,
+      "window_id": "w1000000_05"
+    },
+    {
+      "anchor_pos": 75477,
+      "chrom": "1",
+      "end": 1075476,
+      "records_in_window": 2129,
+      "size": 1000000,
+      "start": 75477,
+      "window_id": "w1000000_06"
+    },
+    {
+      "anchor_pos": 15729,
+      "chrom": "1",
+      "end": 1015728,
+      "records_in_window": 4427,
+      "size": 1000000,
+      "start": 15729,
+      "window_id": "w1000000_07"
+    },
+    {
+      "anchor_pos": 74268,
+      "chrom": "2",
+      "end": 1074267,
+      "records_in_window": 2176,
+      "size": 1000000,
+      "start": 74268,
+      "window_id": "w1000000_08"
+    },
+    {
+      "anchor_pos": 33643,
+      "chrom": "1",
+      "end": 1033642,
+      "records_in_window": 3738,
+      "size": 1000000,
+      "start": 33643,
+      "window_id": "w1000000_09"
+    },
+    {
+      "anchor_pos": 92507,
+      "chrom": "1",
+      "end": 1092506,
+      "records_in_window": 1474,
+      "size": 1000000,
+      "start": 92507,
+      "window_id": "w1000000_10"
+    },
+    {
+      "anchor_pos": 121211,
+      "chrom": "1",
+      "end": 1121210,
+      "records_in_window": 370,
+      "size": 1000000,
+      "start": 121211,
+      "window_id": "w1000000_11"
+    },
+    {
+      "anchor_pos": 77765,
+      "chrom": "1",
+      "end": 1077764,
+      "records_in_window": 2041,
+      "size": 1000000,
+      "start": 77765,
+      "window_id": "w1000000_12"
+    },
+    {
+      "anchor_pos": 118494,
+      "chrom": "2",
+      "end": 1118493,
+      "records_in_window": 475,
+      "size": 1000000,
+      "start": 118494,
+      "window_id": "w1000000_13"
+    },
+    {
+      "anchor_pos": 92143,
+      "chrom": "1",
+      "end": 1092142,
+      "records_in_window": 1488,
+      "size": 1000000,
+      "start": 92143,
+      "window_id": "w1000000_14"
+    },
+    {
+      "anchor_pos": 125423,
+      "chrom": "1",
+      "end": 1125422,
+      "records_in_window": 208,
+      "size": 1000000,
+      "start": 125423,
+      "window_id": "w1000000_15"
+    },
+    {
+      "anchor_pos": 99852,
+      "chrom": "2",
+      "end": 1099851,
+      "records_in_window": 1192,
+      "size": 1000000,
+      "start": 99852,
+      "window_id": "w1000000_16"
+    },
+    {
+      "anchor_pos": 49334,
+      "chrom": "2",
+      "end": 1049333,
+      "records_in_window": 3135,
+      "size": 1000000,
+      "start": 49334,
+      "window_id": "w1000000_17"
+    },
+    {
+      "anchor_pos": 74801,
+      "chrom": "1",
+      "end": 1074800,
+      "records_in_window": 2155,
+      "size": 1000000,
+      "start": 74801,
+      "window_id": "w1000000_18"
+    },
+    {
+      "anchor_pos": 121003,
+      "chrom": "1",
+      "end": 1121002,
+      "records_in_window": 378,
+      "size": 1000000,
+      "start": 121003,
+      "window_id": "w1000000_19"
+    },
+    {
+      "anchor_pos": 105481,
+      "chrom": "1",
+      "end": 10105480,
+      "records_in_window": 975,
+      "size": 10000000,
+      "start": 105481,
+      "window_id": "w10000000_00"
+    },
+    {
+      "anchor_pos": 37257,
+      "chrom": "1",
+      "end": 10037256,
+      "records_in_window": 3599,
+      "size": 10000000,
+      "start": 37257,
+      "window_id": "w10000000_01"
+    },
+    {
+      "anchor_pos": 92130,
+      "chrom": "2",
+      "end": 10092129,
+      "records_in_window": 1489,
+      "size": 10000000,
+      "start": 92130,
+      "window_id": "w10000000_02"
+    },
+    {
+      "anchor_pos": 25557,
+      "chrom": "1",
+      "end": 10025556,
+      "records_in_window": 4049,
+      "size": 10000000,
+      "start": 25557,
+      "window_id": "w10000000_03"
+    },
+    {
+      "anchor_pos": 46604,
+      "chrom": "2",
+      "end": 10046603,
+      "records_in_window": 3240,
+      "size": 10000000,
+      "start": 46604,
+      "window_id": "w10000000_04"
+    },
+    {
+      "anchor_pos": 49477,
+      "chrom": "1",
+      "end": 10049476,
+      "records_in_window": 3129,
+      "size": 10000000,
+      "start": 49477,
+      "window_id": "w10000000_05"
+    },
+    {
+      "anchor_pos": 6499,
+      "chrom": "1",
+      "end": 10006498,
+      "records_in_window": 4782,
+      "size": 10000000,
+      "start": 6499,
+      "window_id": "w10000000_06"
+    },
+    {
+      "anchor_pos": 47280,
+      "chrom": "2",
+      "end": 10047279,
+      "records_in_window": 3214,
+      "size": 10000000,
+      "start": 47280,
+      "window_id": "w10000000_07"
+    },
+    {
+      "anchor_pos": 88724,
+      "chrom": "2",
+      "end": 10088723,
+      "records_in_window": 1620,
+      "size": 10000000,
+      "start": 88724,
+      "window_id": "w10000000_08"
+    },
+    {
+      "anchor_pos": 69692,
+      "chrom": "2",
+      "end": 10069691,
+      "records_in_window": 2352,
+      "size": 10000000,
+      "start": 69692,
+      "window_id": "w10000000_09"
+    },
+    {
+      "anchor_pos": 51271,
+      "chrom": "1",
+      "end": 10051270,
+      "records_in_window": 3060,
+      "size": 10000000,
+      "start": 51271,
+      "window_id": "w10000000_10"
+    },
+    {
+      "anchor_pos": 116349,
+      "chrom": "1",
+      "end": 10116348,
+      "records_in_window": 557,
+      "size": 10000000,
+      "start": 116349,
+      "window_id": "w10000000_11"
+    },
+    {
+      "anchor_pos": 121471,
+      "chrom": "1",
+      "end": 10121470,
+      "records_in_window": 360,
+      "size": 10000000,
+      "start": 121471,
+      "window_id": "w10000000_12"
+    },
+    {
+      "anchor_pos": 115582,
+      "chrom": "2",
+      "end": 10115581,
+      "records_in_window": 587,
+      "size": 10000000,
+      "start": 115582,
+      "window_id": "w10000000_13"
+    },
+    {
+      "anchor_pos": 74138,
+      "chrom": "2",
+      "end": 10074137,
+      "records_in_window": 2181,
+      "size": 10000000,
+      "start": 74138,
+      "window_id": "w10000000_14"
+    },
+    {
+      "anchor_pos": 50231,
+      "chrom": "1",
+      "end": 10050230,
+      "records_in_window": 3100,
+      "size": 10000000,
+      "start": 50231,
+      "window_id": "w10000000_15"
+    },
+    {
+      "anchor_pos": 20669,
+      "chrom": "1",
+      "end": 10020668,
+      "records_in_window": 4237,
+      "size": 10000000,
+      "start": 20669,
+      "window_id": "w10000000_16"
+    },
+    {
+      "anchor_pos": 66273,
+      "chrom": "1",
+      "end": 10066272,
+      "records_in_window": 2483,
+      "size": 10000000,
+      "start": 66273,
+      "window_id": "w10000000_17"
+    },
+    {
+      "anchor_pos": 57745,
+      "chrom": "1",
+      "end": 10057744,
+      "records_in_window": 2811,
+      "size": 10000000,
+      "start": 57745,
+      "window_id": "w10000000_18"
+    },
+    {
+      "anchor_pos": 102907,
+      "chrom": "1",
+      "end": 10102906,
+      "records_in_window": 1074,
+      "size": 10000000,
+      "start": 102907,
+      "window_id": "w10000000_19"
+    }
+  ],
+  "windowsPerSize": 20
+}

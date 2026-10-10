@@ -1,0 +1,1312 @@
+{
+  "invariants": {
+    "parser": [
+      {
+        "detail": "986 == 986",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q05_total_HG002",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 <= 986",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q06_eligible_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      }
+    ],
+    "sparql": [
+      {
+        "detail": "986 == 986",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 == 986",
+        "name": "q05_total_HG002",
+        "status": "PASS"
+      },
+      {
+        "detail": "986 <= 986",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      }
+    ]
+  },
+  "queries": {
+    "q01_record_density_1mb": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q02_variant_shape_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q03_titv": {
+      "actual": {
+        "biallelicSnvCount": 986,
+        "transitionCount": 986,
+        "transversionCount": 0
+      },
+      "expected": {
+        "biallelicSnvCount": 986,
+        "transitionCount": 986,
+        "transversionCount": 0
+      },
+      "status": "PASS"
+    },
+    "q04_filter_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q05_sample_genotype_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q06_ac_an_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q07_file_metadata": {
+      "actual": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "/CLC_References/homo_sapiens/sequence/hg38_no_alt_analysis_set/Homo_sapiens_sequence_hg38_no_alt_analysis_set",
+        "sourceSoftware": "CLC Genomics Grid Worker 20.9.9 Beta 1 build 209900"
+      },
+      "expected": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "/CLC_References/homo_sapiens/sequence/hg38_no_alt_analysis_set/Homo_sapiens_sequence_hg38_no_alt_analysis_set",
+        "sourceSoftware": "CLC Genomics Grid Worker 20.9.9 Beta 1 build 209900"
+      },
+      "status": "PASS"
+    },
+    "q08_header_line_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q09_predicate_census": {
+      "differingRows": [
+        {
+          "actual": {
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "tripleCount": 7948
+          },
+          "expected": {
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "tripleCount": 14853
+          }
+        },
+        {
+          "actual": {
+            "predicate": "https://w3id.org/vcf-core/vocab#declaredBy",
+            "tripleCount": 3944
+          },
+          "expected": {
+            "predicate": "https://w3id.org/vcf-core/vocab#declaredBy",
+            "tripleCount": 6902
+          }
+        },
+        {
+          "actual": {
+            "predicate": "https://w3id.org/vcf-core/vocab#fieldIndex",
+            "tripleCount": 1972
+          },
+          "expected": {
+            "predicate": "https://w3id.org/vcf-core/vocab#fieldIndex",
+            "tripleCount": 4930
+          }
+        }
+      ],
+      "extraRows": [],
+      "missingRows": [
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#alleleIndex",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#alleleKind",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#alleleValue",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#chromosome",
+          "tripleCount": 986
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#fieldValue",
+          "tripleCount": 2958
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#fieldValueDecimal",
+          "tripleCount": 986
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#fieldValueInteger",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#forAllele",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#hasAltAllele",
+          "tripleCount": 986
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#hasInfoValue",
+          "tripleCount": 2958
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#hasReferenceAllele",
+          "tripleCount": 986
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#hasValueItem",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#itemValue",
+          "tripleCount": 1972
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#valueIndex",
+          "tripleCount": 1972
+        }
+      ],
+      "status": "MISMATCH"
+    },
+    "q10_class_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [
+        {
+          "class": "https://w3id.org/vcf-core/vocab#AltAllele",
+          "resourceCount": 986
+        },
+        {
+          "class": "https://w3id.org/vcf-core/vocab#FieldValueItem",
+          "resourceCount": 1972
+        },
+        {
+          "class": "https://w3id.org/vcf-core/vocab#InfoFieldDefinition",
+          "resourceCount": 3
+        },
+        {
+          "class": "https://w3id.org/vcf-core/vocab#InfoFieldValue",
+          "resourceCount": 2958
+        },
+        {
+          "class": "https://w3id.org/vcf-core/vocab#ReferenceAllele",
+          "resourceCount": 986
+        }
+      ],
+      "status": "MISMATCH"
+    },
+    "q11_record_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q12_info_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [
+        {
+          "bucket": "00",
+          "valueCount": 12
+        },
+        {
+          "bucket": "01",
+          "valueCount": 11
+        },
+        {
+          "bucket": "02",
+          "valueCount": 11
+        },
+        {
+          "bucket": "03",
+          "valueCount": 12
+        },
+        {
+          "bucket": "04",
+          "valueCount": 11
+        },
+        {
+          "bucket": "05",
+          "valueCount": 13
+        },
+        {
+          "bucket": "06",
+          "valueCount": 10
+        },
+        {
+          "bucket": "07",
+          "valueCount": 12
+        },
+        {
+          "bucket": "08",
+          "valueCount": 9
+        },
+        {
+          "bucket": "09",
+          "valueCount": 16
+        },
+        {
+          "bucket": "0a",
+          "valueCount": 15
+        },
+        {
+          "bucket": "0b",
+          "valueCount": 11
+        },
+        {
+          "bucket": "0c",
+          "valueCount": 18
+        },
+        {
+          "bucket": "0d",
+          "valueCount": 14
+        },
+        {
+          "bucket": "0e",
+          "valueCount": 12
+        },
+        {
+          "bucket": "0f",
+          "valueCount": 17
+        },
+        {
+          "bucket": "10",
+          "valueCount": 7
+        },
+        {
+          "bucket": "11",
+          "valueCount": 16
+        },
+        {
+          "bucket": "12",
+          "valueCount": 14
+        },
+        {
+          "bucket": "13",
+          "valueCount": 13
+        },
+        {
+          "bucket": "14",
+          "valueCount": 13
+        },
+        {
+          "bucket": "15",
+          "valueCount": 10
+        },
+        {
+          "bucket": "16",
+          "valueCount": 14
+        },
+        {
+          "bucket": "17",
+          "valueCount": 13
+        },
+        {
+          "bucket": "18",
+          "valueCount": 15
+        },
+        {
+          "bucket": "19",
+          "valueCount": 14
+        },
+        {
+          "bucket": "1a",
+          "valueCount": 10
+        },
+        {
+          "bucket": "1b",
+          "valueCount": 10
+        },
+        {
+          "bucket": "1c",
+          "valueCount": 18
+        },
+        {
+          "bucket": "1d",
+          "valueCount": 15
+        },
+        {
+          "bucket": "1e",
+          "valueCount": 16
+        },
+        {
+          "bucket": "1f",
+          "valueCount": 12
+        },
+        {
+          "bucket": "20",
+          "valueCount": 11
+        },
+        {
+          "bucket": "21",
+          "valueCount": 10
+        },
+        {
+          "bucket": "22",
+          "valueCount": 9
+        },
+        {
+          "bucket": "23",
+          "valueCount": 10
+        },
+        {
+          "bucket": "24",
+          "valueCount": 9
+        },
+        {
+          "bucket": "25",
+          "valueCount": 16
+        },
+        {
+          "bucket": "26",
+          "valueCount": 14
+        },
+        {
+          "bucket": "27",
+          "valueCount": 17
+        },
+        {
+          "bucket": "28",
+          "valueCount": 12
+        },
+        {
+          "bucket": "29",
+          "valueCount": 11
+        },
+        {
+          "bucket": "2a",
+          "valueCount": 12
+        },
+        {
+          "bucket": "2b",
+          "valueCount": 9
+        },
+        {
+          "bucket": "2c",
+          "valueCount": 8
+        },
+        {
+          "bucket": "2d",
+          "valueCount": 8
+        },
+        {
+          "bucket": "2e",
+          "valueCount": 7
+        },
+        {
+          "bucket": "2f",
+          "valueCount": 13
+        },
+        {
+          "bucket": "30",
+          "valueCount": 11
+        },
+        {
+          "bucket": "31",
+          "valueCount": 15
+        },
+        {
+          "bucket": "32",
+          "valueCount": 12
+        },
+        {
+          "bucket": "33",
+          "valueCount": 15
+        },
+        {
+          "bucket": "34",
+          "valueCount": 6
+        },
+        {
+          "bucket": "35",
+          "valueCount": 9
+        },
+        {
+          "bucket": "36",
+          "valueCount": 9
+        },
+        {
+          "bucket": "37",
+          "valueCount": 11
+        },
+        {
+          "bucket": "38",
+          "valueCount": 12
+        },
+        {
+          "bucket": "39",
+          "valueCount": 12
+        },
+        {
+          "bucket": "3a",
+          "valueCount": 8
+        },
+        {
+          "bucket": "3b",
+          "valueCount": 10
+        },
+        {
+          "bucket": "3c",
+          "valueCount": 9
+        },
+        {
+          "bucket": "3d",
+          "valueCount": 15
+        },
+        {
+          "bucket": "3e",
+          "valueCount": 10
+        },
+        {
+          "bucket": "3f",
+          "valueCount": 12
+        },
+        {
+          "bucket": "40",
+          "valueCount": 13
+        },
+        {
+          "bucket": "41",
+          "valueCount": 13
+        },
+        {
+          "bucket": "42",
+          "valueCount": 15
+        },
+        {
+          "bucket": "43",
+          "valueCount": 8
+        },
+        {
+          "bucket": "44",
+          "valueCount": 10
+        },
+        {
+          "bucket": "45",
+          "valueCount": 10
+        },
+        {
+          "bucket": "46",
+          "valueCount": 16
+        },
+        {
+          "bucket": "47",
+          "valueCount": 12
+        },
+        {
+          "bucket": "48",
+          "valueCount": 10
+        },
+        {
+          "bucket": "49",
+          "valueCount": 20
+        },
+        {
+          "bucket": "4a",
+          "valueCount": 12
+        },
+        {
+          "bucket": "4b",
+          "valueCount": 12
+        },
+        {
+          "bucket": "4c",
+          "valueCount": 18
+        },
+        {
+          "bucket": "4d",
+          "valueCount": 11
+        },
+        {
+          "bucket": "4e",
+          "valueCount": 15
+        },
+        {
+          "bucket": "4f",
+          "valueCount": 16
+        },
+        {
+          "bucket": "50",
+          "valueCount": 8
+        },
+        {
+          "bucket": "51",
+          "valueCount": 11
+        },
+        {
+          "bucket": "52",
+          "valueCount": 12
+        },
+        {
+          "bucket": "53",
+          "valueCount": 20
+        },
+        {
+          "bucket": "54",
+          "valueCount": 16
+        },
+        {
+          "bucket": "55",
+          "valueCount": 9
+        },
+        {
+          "bucket": "56",
+          "valueCount": 17
+        },
+        {
+          "bucket": "57",
+          "valueCount": 9
+        },
+        {
+          "bucket": "58",
+          "valueCount": 10
+        },
+        {
+          "bucket": "59",
+          "valueCount": 18
+        },
+        {
+          "bucket": "5a",
+          "valueCount": 10
+        },
+        {
+          "bucket": "5b",
+          "valueCount": 11
+        },
+        {
+          "bucket": "5c",
+          "valueCount": 13
+        },
+        {
+          "bucket": "5d",
+          "valueCount": 19
+        },
+        {
+          "bucket": "5e",
+          "valueCount": 18
+        },
+        {
+          "bucket": "5f",
+          "valueCount": 13
+        },
+        {
+          "bucket": "60",
+          "valueCount": 5
+        },
+        {
+          "bucket": "61",
+          "valueCount": 9
+        },
+        {
+          "bucket": "62",
+          "valueCount": 11
+        },
+        {
+          "bucket": "63",
+          "valueCount": 14
+        },
+        {
+          "bucket": "64",
+          "valueCount": 9
+        },
+        {
+          "bucket": "65",
+          "valueCount": 9
+        },
+        {
+          "bucket": "66",
+          "valueCount": 20
+        },
+        {
+          "bucket": "67",
+          "valueCount": 9
+        },
+        {
+          "bucket": "68",
+          "valueCount": 11
+        },
+        {
+          "bucket": "69",
+          "valueCount": 6
+        },
+        {
+          "bucket": "6a",
+          "valueCount": 17
+        },
+        {
+          "bucket": "6b",
+          "valueCount": 3
+        },
+        {
+          "bucket": "6c",
+          "valueCount": 16
+        },
+        {
+          "bucket": "6d",
+          "valueCount": 9
+        },
+        {
+          "bucket": "6e",
+          "valueCount": 10
+        },
+        {
+          "bucket": "6f",
+          "valueCount": 3
+        },
+        {
+          "bucket": "70",
+          "valueCount": 8
+        },
+        {
+          "bucket": "71",
+          "valueCount": 17
+        },
+        {
+          "bucket": "72",
+          "valueCount": 16
+        },
+        {
+          "bucket": "73",
+          "valueCount": 12
+        },
+        {
+          "bucket": "74",
+          "valueCount": 12
+        },
+        {
+          "bucket": "75",
+          "valueCount": 7
+        },
+        {
+          "bucket": "76",
+          "valueCount": 8
+        },
+        {
+          "bucket": "77",
+          "valueCount": 13
+        },
+        {
+          "bucket": "78",
+          "valueCount": 7
+        },
+        {
+          "bucket": "79",
+          "valueCount": 4
+        },
+        {
+          "bucket": "7a",
+          "valueCount": 10
+        },
+        {
+          "bucket": "7b",
+          "valueCount": 10
+        },
+        {
+          "bucket": "7c",
+          "valueCount": 12
+        },
+        {
+          "bucket": "7d",
+          "valueCount": 9
+        },
+        {
+          "bucket": "7e",
+          "valueCount": 11
+        },
+        {
+          "bucket": "7f",
+          "valueCount": 14
+        },
+        {
+          "bucket": "80",
+          "valueCount": 7
+        },
+        {
+          "bucket": "81",
+          "valueCount": 10
+        },
+        {
+          "bucket": "82",
+          "valueCount": 15
+        },
+        {
+          "bucket": "83",
+          "valueCount": 13
+        },
+        {
+          "bucket": "84",
+          "valueCount": 16
+        },
+        {
+          "bucket": "85",
+          "valueCount": 10
+        },
+        {
+          "bucket": "86",
+          "valueCount": 6
+        },
+        {
+          "bucket": "87",
+          "valueCount": 13
+        },
+        {
+          "bucket": "88",
+          "valueCount": 9
+        },
+        {
+          "bucket": "89",
+          "valueCount": 13
+        },
+        {
+          "bucket": "8a",
+          "valueCount": 10
+        },
+        {
+          "bucket": "8b",
+          "valueCount": 9
+        },
+        {
+          "bucket": "8c",
+          "valueCount": 12
+        },
+        {
+          "bucket": "8d",
+          "valueCount": 10
+        },
+        {
+          "bucket": "8e",
+          "valueCount": 15
+        },
+        {
+          "bucket": "8f",
+          "valueCount": 14
+        },
+        {
+          "bucket": "90",
+          "valueCount": 14
+        },
+        {
+          "bucket": "91",
+          "valueCount": 11
+        },
+        {
+          "bucket": "92",
+          "valueCount": 13
+        },
+        {
+          "bucket": "93",
+          "valueCount": 14
+        },
+        {
+          "bucket": "94",
+          "valueCount": 15
+        },
+        {
+          "bucket": "95",
+          "valueCount": 16
+        },
+        {
+          "bucket": "96",
+          "valueCount": 10
+        },
+        {
+          "bucket": "97",
+          "valueCount": 12
+        },
+        {
+          "bucket": "98",
+          "valueCount": 8
+        },
+        {
+          "bucket": "99",
+          "valueCount": 13
+        },
+        {
+          "bucket": "9a",
+          "valueCount": 12
+        },
+        {
+          "bucket": "9b",
+          "valueCount": 4
+        },
+        {
+          "bucket": "9c",
+          "valueCount": 13
+        },
+        {
+          "bucket": "9d",
+          "valueCount": 12
+        },
+        {
+          "bucket": "9e",
+          "valueCount": 11
+        },
+        {
+          "bucket": "9f",
+          "valueCount": 9
+        },
+        {
+          "bucket": "a0",
+          "valueCount": 12
+        },
+        {
+          "bucket": "a1",
+          "valueCount": 11
+        },
+        {
+          "bucket": "a2",
+          "valueCount": 12
+        },
+        {
+          "bucket": "a3",
+          "valueCount": 14
+        },
+        {
+          "bucket": "a4",
+          "valueCount": 8
+        },
+        {
+          "bucket": "a5",
+          "valueCount": 11
+        },
+        {
+          "bucket": "a6",
+          "valueCount": 9
+        },
+        {
+          "bucket": "a7",
+          "valueCount": 11
+        },
+        {
+          "bucket": "a8",
+          "valueCount": 12
+        },
+        {
+          "bucket": "a9",
+          "valueCount": 13
+        },
+        {
+          "bucket": "aa",
+          "valueCount": 8
+        },
+        {
+          "bucket": "ab",
+          "valueCount": 14
+        },
+        {
+          "bucket": "ac",
+          "valueCount": 9
+        },
+        {
+          "bucket": "ad",
+          "valueCount": 8
+        },
+        {
+          "bucket": "ae",
+          "valueCount": 7
+        },
+        {
+          "bucket": "af",
+          "valueCount": 12
+        },
+        {
+          "bucket": "b0",
+          "valueCount": 9
+        },
+        {
+          "bucket": "b1",
+          "valueCount": 9
+        },
+        {
+          "bucket": "b2",
+          "valueCount": 13
+        },
+        {
+          "bucket": "b3",
+          "valueCount": 12
+        },
+        {
+          "bucket": "b4",
+          "valueCount": 9
+        },
+        {
+          "bucket": "b5",
+          "valueCount": 9
+        },
+        {
+          "bucket": "b6",
+          "valueCount": 9
+        },
+        {
+          "bucket": "b7",
+          "valueCount": 14
+        },
+        {
+          "bucket": "b8",
+          "valueCount": 12
+        },
+        {
+          "bucket": "b9",
+          "valueCount": 11
+        },
+        {
+          "bucket": "ba",
+          "valueCount": 12
+        },
+        {
+          "bucket": "bb",
+          "valueCount": 10
+        },
+        {
+          "bucket": "bc",
+          "valueCount": 11
+        },
+        {
+          "bucket": "bd",
+          "valueCount": 7
+        },
+        {
+          "bucket": "be",
+          "valueCount": 9
+        },
+        {
+          "bucket": "bf",
+          "valueCount": 13
+        },
+        {
+          "bucket": "c0",
+          "valueCount": 14
+        },
+        {
+          "bucket": "c1",
+          "valueCount": 15
+        },
+        {
+          "bucket": "c2",
+          "valueCount": 15
+        },
+        {
+          "bucket": "c3",
+          "valueCount": 11
+        },
+        {
+          "bucket": "c4",
+          "valueCount": 13
+        },
+        {
+          "bucket": "c5",
+          "valueCount": 10
+        },
+        {
+          "bucket": "c6",
+          "valueCount": 10
+        },
+        {
+          "bucket": "c7",
+          "valueCount": 9
+        },
+        {
+          "bucket": "c8",
+          "valueCount": 11
+        },
+        {
+          "bucket": "c9",
+          "valueCount": 4
+        },
+        {
+          "bucket": "ca",
+          "valueCount": 11
+        },
+        {
+          "bucket": "cb",
+          "valueCount": 8
+        },
+        {
+          "bucket": "cc",
+          "valueCount": 9
+        },
+        {
+          "bucket": "cd",
+          "valueCount": 12
+        },
+        {
+          "bucket": "ce",
+          "valueCount": 9
+        },
+        {
+          "bucket": "cf",
+          "valueCount": 13
+        },
+        {
+          "bucket": "d0",
+          "valueCount": 10
+        },
+        {
+          "bucket": "d1",
+          "valueCount": 10
+        },
+        {
+          "bucket": "d2",
+          "valueCount": 13
+        },
+        {
+          "bucket": "d3",
+          "valueCount": 18
+        },
+        {
+          "bucket": "d4",
+          "valueCount": 15
+        },
+        {
+          "bucket": "d5",
+          "valueCount": 18
+        },
+        {
+          "bucket": "d6",
+          "valueCount": 12
+        },
+        {
+          "bucket": "d7",
+          "valueCount": 15
+        },
+        {
+          "bucket": "d8",
+          "valueCount": 10
+        },
+        {
+          "bucket": "d9",
+          "valueCount": 10
+        },
+        {
+          "bucket": "da",
+          "valueCount": 13
+        },
+        {
+          "bucket": "db",
+          "valueCount": 13
+        },
+        {
+          "bucket": "dc",
+          "valueCount": 7
+        },
+        {
+          "bucket": "dd",
+          "valueCount": 16
+        },
+        {
+          "bucket": "de",
+          "valueCount": 10
+        },
+        {
+          "bucket": "df",
+          "valueCount": 14
+        },
+        {
+          "bucket": "e0",
+          "valueCount": 11
+        },
+        {
+          "bucket": "e1",
+          "valueCount": 20
+        },
+        {
+          "bucket": "e2",
+          "valueCount": 8
+        },
+        {
+          "bucket": "e3",
+          "valueCount": 7
+        },
+        {
+          "bucket": "e4",
+          "valueCount": 5
+        },
+        {
+          "bucket": "e5",
+          "valueCount": 9
+        },
+        {
+          "bucket": "e6",
+          "valueCount": 8
+        },
+        {
+          "bucket": "e7",
+          "valueCount": 15
+        },
+        {
+          "bucket": "e8",
+          "valueCount": 4
+        },
+        {
+          "bucket": "e9",
+          "valueCount": 10
+        },
+        {
+          "bucket": "ea",
+          "valueCount": 11
+        },
+        {
+          "bucket": "eb",
+          "valueCount": 15
+        },
+        {
+          "bucket": "ec",
+          "valueCount": 8
+        },
+        {
+          "bucket": "ed",
+          "valueCount": 11
+        },
+        {
+          "bucket": "ee",
+          "valueCount": 13
+        },
+        {
+          "bucket": "ef",
+          "valueCount": 10
+        },
+        {
+          "bucket": "f0",
+          "valueCount": 7
+        },
+        {
+          "bucket": "f1",
+          "valueCount": 14
+        },
+        {
+          "bucket": "f2",
+          "valueCount": 9
+        },
+        {
+          "bucket": "f3",
+          "valueCount": 9
+        },
+        {
+          "bucket": "f4",
+          "valueCount": 9
+        },
+        {
+          "bucket": "f5",
+          "valueCount": 13
+        },
+        {
+          "bucket": "f6",
+          "valueCount": 13
+        },
+        {
+          "bucket": "f7",
+          "valueCount": 7
+        },
+        {
+          "bucket": "f8",
+          "valueCount": 14
+        },
+        {
+          "bucket": "f9",
+          "valueCount": 11
+        },
+        {
+          "bucket": "fa",
+          "valueCount": 12
+        },
+        {
+          "bucket": "fb",
+          "valueCount": 13
+        },
+        {
+          "bucket": "fc",
+          "valueCount": 18
+        },
+        {
+          "bucket": "fd",
+          "valueCount": 16
+        },
+        {
+          "bucket": "fe",
+          "valueCount": 9
+        },
+        {
+          "bucket": "ff",
+          "valueCount": 10
+        }
+      ],
+      "status": "MISMATCH"
+    },
+    "q13_format_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    }
+  },
+  "status": "MISMATCH"
+}

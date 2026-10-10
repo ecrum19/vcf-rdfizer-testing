@@ -1,0 +1,32 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG00120/out/run_metrics/HG00120.acmg__20260928T165328
+  Detailed logs: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG00120/out/run_metrics/HG00120.acmg__20260928T165328/logs/wrapper.log
+  Progress log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG00120/out/run_metrics/HG00120.acmg__20260928T165328/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: HG00120.acmg.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample calls streamed: 10,157; FORMAT values: 10,157
+    * Streaming structured header RDF
+    * Header lines typed: 43; contigs: 24
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 0 values
+    * QUAL values streamed: 10,157; INFO values: 0; declarations: 0
+    * Triples produced: 599,496
+    * Compression ✅
+    * Output directory: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG00120/out/HG00120.acmg
+      - RDF aggregate: HG00120.acmg.nt
+      - N-Triples (.nt): 76.82 MB (removed after successful compression)
+      - gzip (.nt.gz): 2.78 MB
+Total triples produced (full run): 599,496
+Conversion process finished.
+Run time (full mode): 16.57s
+Timing log: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG00120/out/run_metrics/HG00120.acmg__20260928T165328/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__cohort/convert__HG00120/out/run_metrics/HG00120.acmg__20260928T165328/summary.json
