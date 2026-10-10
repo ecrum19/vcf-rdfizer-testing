@@ -306,7 +306,7 @@ INDEX_STORAGE = site.RESULTS / "vcf-bench-3" / "19_index_storage"
 
 def ingest_sizes() -> list[dict]:
     """Per input: the gzipped VCF and the gzip-framed N-Triples that QLever ingested, and what
-    each route keeps to answer queries (the bgzipped VCF plus its .tbi; the QLever index)."""
+    each workflow keeps to answer queries (the bgzipped VCF plus its .tbi; the QLever index)."""
     vcf = site.load(VCF_INPUT_SIZES)["files"]
     slice_nt = st.median(int(row["combined_rdf_size_bytes"]) for row in tidy(B1 / "13_query_cost" / "tidy.csv")
                          if row["cell"].startswith("large"))
@@ -718,8 +718,8 @@ def fig_regional() -> None:
     ax.set_ylabel("Cumulative time (min)")
     ax.set_title("(a) Repeated questions, setup included")
 
-    # (b) storage per route: the gzipped files, then what each keeps indexed -----
-    # Colour is the route (VCF gray, RDF blue); the pair is the stage. "gzip": the
+    # (b) storage per workflow: the gzipped files, then what each keeps indexed -----
+    # Colour is the workflow (VCF gray, RDF blue); the pair is the stage. "gzip": the
     # gzipped VCF against the gzip-framed N-Triples QLever ingests. "indexed": the
     # bgzipped VCF plus its tabix index against the QLever index, which answers
     # queries without the N-Triples (19_index_storage).
@@ -754,8 +754,8 @@ def fig_regional() -> None:
     ax.set_xlim(-0.55, (len(sizes) - 1) * 2.35 + 1.55)
     ax.tick_params(axis="x", length=0, pad=2)
     ax.set_ylabel("Size on disk")
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF route"),
-                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF route")],
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF workflow"),
+                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF workflow")],
               loc="upper left", fontsize=5.9, handlelength=1.0, borderaxespad=0.3, frameon=False)
     ax.set_title("(b) Storage, gzipped and indexed")
 

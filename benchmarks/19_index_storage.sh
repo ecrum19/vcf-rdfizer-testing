@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Index storage: what each route keeps on disk to answer queries (§3.11).
+# Index storage: what each workflow keeps on disk to answer queries (§3.11).
 #
 # A standalone measurement, not part of the suite: run_all.sh does not run it,
 # and no profile includes it. Run it by hand, on a host that holds the graphs
 # the other experiments converted.
 #
-# The VCF route answers a question from the VCF compressed with bgzip, which
-# tabix requires, plus its tabix index (.tbi). The RDF route answers it from a
+# The VCF workflow answers a question from the VCF compressed with bgzip, which
+# tabix requires, plus its tabix index (.tbi). The RDF workflow answers it from a
 # QLever index built from the tool's gzip-framed N-Triples; once built, the
 # index needs neither the N-Triples nor the VCF. So the like-for-like storage
 # comparison is the bgzipped VCF plus its .tbi against the QLever index. The

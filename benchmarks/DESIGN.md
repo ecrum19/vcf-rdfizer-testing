@@ -541,18 +541,18 @@ tool's command line has no mode for it. They ran from the v3.3.1 rerun:
 
 ### 3.11 Index storage (`19`)
 
-**Question.** Once each route is ready to answer questions, how much does it
+**Question.** Once each workflow is ready to answer questions, how much does it
 keep on disk?
 
 **Design.** One cell per input, the 100,000-record HG005 slice and the complete
 VCF, on vcf-bench-3, in the v3.3.1 image:
-- **VCF route:** the VCF compressed with bgzip, which tabix requires, plus its
+- **VCF workflow:** the VCF compressed with bgzip, which tabix requires, plus its
   tabix index. The complete VCF is already BGZF and is indexed as it is; the
   slice is plain gzip and is recompressed first, as `14` does.
-- **RDF route:** the QLever index built from the tool's gzip-framed N-Triples,
+- **RDF workflow:** the QLever index built from the tool's gzip-framed N-Triples,
   with the validator's arguments (`-F nt -m 4G`): `13`'s graph for the slice,
   the scale store's for the complete VCF. Once built it answers queries without
-  the N-Triples or the VCF, so it is all the route keeps.
+  the N-Triples or the VCF, so it is all the workflow keeps.
 
 The `.tbi` alone is only offsets into the VCF, so it is never compared with the
 QLever index on its own. The N-Triples are streamed into QLever's builder rather

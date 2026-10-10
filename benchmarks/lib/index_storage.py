@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure what each route keeps on disk to answer queries: one input.
+"""Measure what each workflow keeps on disk to answer queries: one input.
 
 Runs inside a VCF-RDFizer image (it needs bgzip, tabix and QLever's index
 builder; v3.3.1 has all three), called by 19_index_storage.sh. Standard library
@@ -7,14 +7,14 @@ only, so it runs on the image's own python3.
 
     index_storage.py --vcf IN.vcf.gz --nt IN.nt.gz --scratch DIR --out DIR
 
-The VCF route: the VCF compressed with bgzip, which tabix requires, and its
+The VCF workflow: the VCF compressed with bgzip, which tabix requires, and its
 tabix index. A VCF that is already BGZF is indexed as it is; a plain-gzip one
 is recompressed with bgzip at its default level first.
 
-The RDF route: the QLever index built from the tool's gzip-framed N-Triples,
+The RDF workflow: the QLever index built from the tool's gzip-framed N-Triples,
 with the arguments VCF-RDFizer's validator uses (`-F nt -m 4G`). The index
 answers queries without the N-Triples or the VCF, so it is the whole of what
-the route keeps. The N-Triples are streamed into the builder rather than
+the workflow keeps. The N-Triples are streamed into the builder rather than
 decompressed to disk first: for the complete HG005 VCF they would take about
 100 GB, and where the input comes from does not change the index.
 
