@@ -97,14 +97,14 @@ function table(columns, rows) {
 // Each chart: title, help (the ⓘ), optional caption, spec(t) and rows() for its table.
 const CHARTS = {
   mutationScores: {
-    title: "Injected faults detected, by validation layer",
-    help: "{faults} targeted corruptions (wrong allele, coordinate, FILTER token, metadata, blank nodes, flipped phasing, corrupted sample index) were injected into a graph. Each bar counts how many the validation layer detected: the comparison queries alone, with the default SHACL profile, and with all three profiles.",
+    title: "Detection of injected faults by validation layer",
+    help: "{faults} targeted changes to coordinates, alleles, filters, metadata, phasing, sample indexes and relationships were injected into a converted graph. Bars give the number detected by the source-comparison queries alone, with the default SHACL profile, and with all shape profiles.",
     rows: () => {
       const s = D.fidelity.mutation.scores;
       return [
-        { layer: "Queries only", detected: s.queries.detected, total: s.queries.total },
-        { layer: "+ default shapes (core)", detected: s.core.detected, total: s.core.total },
-        { layer: "+ all three shape profiles", detected: s.full.detected, total: s.full.total },
+        { layer: "Source-comparison queries", detected: s.queries.detected, total: s.queries.total },
+        { layer: "Queries and default SHACL profile", detected: s.core.detected, total: s.core.total },
+        { layer: "Queries and all shape profiles", detected: s.full.detected, total: s.full.total },
       ];
     },
     columns: [{ key: "layer", label: "Layer" }, { key: "detected", label: "Detected", num: true }, { key: "total", label: "Injected", num: true }],
@@ -126,22 +126,22 @@ const CHARTS = {
   },
 
   mutationClasses: {
-    title: "The {faultClasses} fault classes the queries cannot see",
-    help: "Each row is a mutation class the comparison queries miss entirely. Cells show how many of its mutations each shape profile catches. The default profile checks cardinality and datatypes, so it catches none; the full set adds value agreement and uniqueness.",
-    caption: "The full profile set self-joins the graph, so {campaignVersion} runs it only on request and only on small inputs.",
+    title: "The {faultClasses} mutation classes not detected by the source-comparison queries",
+    help: "Each row is a mutation class that the source-comparison queries do not detect. Cells give the number of its mutations detected by each shape profile. The default profile checks cardinality and datatypes and detects none of them; the full profile set adds uniqueness and value-agreement constraints.",
+    caption: "The full profile set requires self-joins over the graph; {campaignVersion} applies it only on request and only to small inputs.",
     rows: () => D.fidelity.mutation.missedByQueries.flatMap((m) => [
-      { class: m.class.replace(/_/g, " "), profile: "Default (core)", caught: m.core, mutations: m.mutations },
-      { class: m.class.replace(/_/g, " "), profile: "All three profiles", caught: m.full, mutations: m.mutations },
+      { class: m.class.replace(/_/g, " "), profile: "Default profile", caught: m.core, mutations: m.mutations },
+      { class: m.class.replace(/_/g, " "), profile: "All shape profiles", caught: m.full, mutations: m.mutations },
     ]),
-    columns: [{ key: "class", label: "Mutation class" }, { key: "profile", label: "Shapes" }, { key: "caught", label: "Caught", num: true }, { key: "mutations", label: "Mutations", num: true }],
+    columns: [{ key: "class", label: "Mutation class" }, { key: "profile", label: "Shape profile" }, { key: "caught", label: "Detected", num: true }, { key: "mutations", label: "Mutations", num: true }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 300,
         transform: [{ calculate: "datum.caught / datum.mutations", as: "share" }],
         encoding: {
           y: { field: "class", type: "nominal", title: null },
-          x: { field: "profile", type: "nominal", title: null, sort: ["Default (core)", "All three profiles"], axis: { orient: "top", labelAngle: 0 } },
-          tooltip: [{ field: "class", title: "Class" }, { field: "profile", title: "Shapes" }, { field: "caught", title: "Caught" }, { field: "mutations", title: "Mutations" }],
+          x: { field: "profile", type: "nominal", title: null, sort: ["Default profile", "All shape profiles"], axis: { orient: "top", labelAngle: 0 } },
+          tooltip: [{ field: "class", title: "Mutation class" }, { field: "profile", title: "Shape profile" }, { field: "caught", title: "Detected" }, { field: "mutations", title: "Mutations" }],
         },
         layer: [
           { mark: { type: "rect", stroke: t.surface, strokeWidth: 2, cornerRadius: 3 },
@@ -158,7 +158,7 @@ const CHARTS = {
 
   matches: {
     title: "Matches each requester may receive, by arm",
-    help: "Participant–variant–gene matches to a ClinVar classification in an {geneList} gene that each requester may receive under the simulated consents, with the share of the unrestricted answer. The RDF route and the conventional route returned identical match sets in every cell. Only Arm 4 has the participant's own physician as a requester.",
+    help: "Participant–variant–gene matches to a ClinVar classification in an {geneList} gene that each requester may receive under the simulated consents, with the share of the unrestricted answer. The RDF and conventional workflows returned identical match sets in every cell. Only Arm 4 includes the participant's own physician as a requester.",
     rows: () => {
       const out = [];
       for (const [arm, data] of Object.entries(D.usecase.arms)) {
@@ -176,8 +176,8 @@ const CHARTS = {
       }
       return out;
     },
-    columns: [{ key: "arm", label: "Arm" }, { key: "requester", label: "Requester" }, { key: "matches", label: "RDF route", num: true, format: (v) => num(v) },
-      { key: "conventional", label: "Conventional route", num: true, format: (v) => num(v) }, { key: "agree", label: "Match sets" }],
+    columns: [{ key: "arm", label: "Arm" }, { key: "requester", label: "Requester" }, { key: "matches", label: "RDF workflow", num: true, format: (v) => num(v) },
+      { key: "conventional", label: "Conventional workflow", num: true, format: (v) => num(v) }, { key: "agree", label: "Match sets" }],
     spec(t, rows, width) {
       // A phone gets the paper's short labels (Figure 4) and counts only, so the five columns stay legible.
       const narrow = width < 600;
@@ -187,8 +187,8 @@ const CHARTS = {
           y: { field: narrow ? "armShort" : "arm", type: "nominal", sort: null, title: null, axis: { labelLimit: 260 } },
           x: { field: narrow ? "requesterShort" : "requester", type: "nominal", sort: narrow ? Object.values(REQUESTER_SHORT) : REQUESTER_ORDER,
                title: null, axis: { orient: "top", labelAngle: 0, labelLimit: 150 } },
-          tooltip: [{ field: "arm", title: "Arm" }, { field: "requester", title: "Requester" }, { field: "matches", title: "RDF route", format: "," },
-            { field: "conventional", title: "Conventional route", format: "," }, { field: "agree", title: "Match sets" }, { field: "share", title: "Share of unrestricted", format: ".0%" }],
+          tooltip: [{ field: "arm", title: "Arm" }, { field: "requester", title: "Requester" }, { field: "matches", title: "RDF workflow", format: "," },
+            { field: "conventional", title: "Conventional workflow", format: "," }, { field: "agree", title: "Match sets" }, { field: "share", title: "Share of unrestricted", format: ".0%" }],
         },
         layer: [
           { mark: { type: "rect", stroke: t.surface, strokeWidth: 2, cornerRadius: 3 },
@@ -207,7 +207,7 @@ const CHARTS = {
 
   participants: {
     title: "Arm 1: matches per participant and requester",
-    help: "How the per-file consents shape each answer: {consents}. The cohort rule keeps the {restrictedGenes} cancer genes for clinical care.",
+    help: "Per-file consents determine each answer: {consents}. The cohort rule restricts the {restrictedGenes} cancer-predisposition genes to clinical care.",
     rows: () => {
       const g = D.usecase.arms.arm1.grid;
       return Object.entries(g.rows).flatMap(([requester, counts]) =>
@@ -235,28 +235,28 @@ const CHARTS = {
   },
 
   effort: {
-    title: "Lines each change adds and removes",
-    help: "Four realistic changes were applied to both routes as real edits, then both were re-run on a fixture and had to release the same records. Bars right of zero are lines added, left of zero lines removed, summed over the files each route touches.",
-    caption: "Rules written in the first place, data excluded: RDF route {rdfRules}; conventional route {baselineRules}.",
+    title: "Lines added and removed by each applied change",
+    help: "Four changes were applied to both workflows as edits; after each, both workflows were rerun on a fixture and had to release the same records. Bars to the right of zero are lines added and to the left lines removed (non-blank, non-comment lines), summed over the files each workflow changes.",
+    caption: "Initially authored rules, excluding data: RDF workflow {rdfRules}; conventional workflow {baselineRules}.",
     rows: () => D.usecase.effort.scenarios.flatMap((s) => ["rdf", "baseline"].flatMap((route) => {
       const files = Object.entries(s.edits[route]);
       const added = files.reduce((a, [, e]) => a + e.added, 0);
       const removed = files.reduce((a, [, e]) => a + e.removed, 0);
       const touched = files.filter(([, e]) => e.added || e.removed).map(([f, e]) => `${f} +${e.added}/−${e.removed}`).join("; ");
-      const label = route === "rdf" ? "RDF route" : "Conventional route";
+      const label = route === "rdf" ? "RDF workflow" : "Conventional workflow";
       return [{ scenario: s.summary, route: label, kind: "added", lines: added, files: touched },
               { scenario: s.summary, route: label, kind: "removed", lines: -removed, files: touched }];
     })),
-    columns: [{ key: "scenario", label: "Change" }, { key: "route", label: "Route" }, { key: "kind", label: "" }, { key: "lines", label: "Lines", num: true, format: (v) => num(Math.abs(v)) }, { key: "files", label: "Files" }],
+    columns: [{ key: "scenario", label: "Change" }, { key: "route", label: "Workflow" }, { key: "kind", label: "" }, { key: "lines", label: "Lines", num: true, format: (v) => num(Math.abs(v)) }, { key: "files", label: "Files" }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 260,
         encoding: {
           y: { field: "scenario", type: "nominal", sort: null, title: null, axis: { labelLimit: 320 } },
-          yOffset: { field: "route", sort: ["RDF route", "Conventional route"] },
+          yOffset: { field: "route", sort: ["RDF workflow", "Conventional workflow"] },
           x: { field: "lines", type: "quantitative", title: "Lines removed ← → lines added" },
-          color: { field: "route", type: "nominal", scale: { domain: ["RDF route", "Conventional route"], range: [t.series[0], t.series[1]] }, title: null },
-          tooltip: [{ field: "scenario", title: "Change" }, { field: "route" }, { field: "kind" }, { field: "files", title: "Files" }],
+          color: { field: "route", type: "nominal", scale: { domain: ["RDF workflow", "Conventional workflow"], range: [t.series[0], t.series[1]] }, title: null },
+          tooltip: [{ field: "scenario", title: "Change" }, { field: "route", title: "Workflow" }, { field: "kind", title: "Lines" }, { field: "files", title: "Files" }],
         },
         layer: [
           { mark: { type: "bar", height: { band: 0.8 } } },
@@ -270,11 +270,11 @@ const CHARTS = {
   },
 
   usecaseCost: {
-    title: "Stage costs of the RDF route, by arm",
-    help: "The clinical-care requester (CC), present in every arm, followed to its answer. Convert and link are paid once per arm and include ClinVar; writing, checking and indexing the release view, and the query (median of {queryReplicates} runs), are paid per requester. The data table lists every requester.",
-    caption: "Most of the cost falls before the first query, and grows with the arm's graph; the query itself stays near the fixed cost of the ClinVar join.",
+    title: "Stage costs of the RDF workflow by arm",
+    help: "Shown for the clinical-care requester (CC), which is present in every arm. Conversion and linking are performed once per arm and include ClinVar; release-view writing, validation and indexing, and the query (median of {queryReplicates} runs), are performed per requester. The data table lists every requester.",
+    caption: "Most linked-workflow cost occurs before the first query and increases with the arm's graph size, whereas query time remains close to the fixed cost of the ClinVar join.",
     rows: () => {
-      const stages = [["convert", "Convert"], ["link", "Link"], ["view", "Write view"], ["check", "Check view"], ["index", "Index view"], ["query", "Query"]];
+      const stages = [["convert", "Conversion"], ["link", "Linking"], ["view", "View writing"], ["check", "View validation"], ["index", "View indexing"], ["query", "Query"]];
       return Object.entries(D.usecase.arms).flatMap(([arm, data]) => {
         const c = data.costs;
         return Object.entries(c.requesters).flatMap(([requester, r]) => stages.map(([key, stage]) => ({
@@ -290,7 +290,7 @@ const CHARTS = {
       return {
         data: { values: shown }, height: 300,
         encoding: {
-          y: { field: "stage", type: "nominal", sort: ["Convert", "Link", "Write view", "Check view", "Index view", "Query"], title: null },
+          y: { field: "stage", type: "nominal", sort: ["Conversion", "Linking", "View writing", "View validation", "View indexing", "Query"], title: null },
           yOffset: { field: "arm", sort: null },
           x: { field: "seconds", type: "quantitative", scale: { type: "log" }, title: "Seconds (log scale)",
                axis: { values: [10, 100, 1000, 10000], format: "," } },
@@ -306,14 +306,14 @@ const CHARTS = {
   },
 
   converters: {
-    title: "Content questions each converter's graph answers as the oracle does",
-    help: "Each cell is one content question on one input, ported to the converter's vocabulary and compared with the same source-derived oracle, normalization and QLever build. A cell differs only because the graph lacks or transforms the information.",
+    title: "Agreement of each converter's graph with the source-derived oracle",
+    help: "Each cell is one content question on one input, translated to the converter's vocabulary and compared with the same source-derived oracle, normalization, comparator and QLever build used for VCF-RDFizer. A question is reported as not represented when the graph lacks the required information.",
     ownWidth: true,
     rows: () => {
       const tools = Object.fromEntries(D.converters.tools.map((x) => [x.id, x.name]));
       const inputs = Object.fromEntries(D.converters.inputs.map((x) => [x.id, x.label]));
       const questions = Object.fromEntries(D.converters.questions.map((x) => [x.id, x.label]));
-      const outcome = { PASS: "Answers as the oracle does", MISMATCH: "Answers differently", NOT_REPRESENTED: "Not in the graph" };
+      const outcome = { PASS: "Matches the oracle", MISMATCH: "Differs from the oracle", NOT_REPRESENTED: "Not represented" };
       return D.converters.outcomes.map((o) => ({
         tool: tools[o.tool] || o.tool, input: inputs[o.input] || o.input, question: questions[o.question].split(" ")[0],
         questionLabel: questions[o.question], outcome: outcome[o.status] || o.status,
@@ -340,9 +340,9 @@ const CHARTS = {
           layer: [
             { mark: { type: "rect", stroke: t.surface, strokeWidth: 2, cornerRadius: 3 },
               encoding: { color: { field: "outcome", type: "nominal", title: null,
-                scale: { domain: ["Answers as the oracle does", "Answers differently", "Not in the graph"], range: [t.series[0], t.series[1], t.grid] } } } },
+                scale: { domain: ["Matches the oracle", "Differs from the oracle", "Not represented"], range: [t.series[0], t.series[1], t.grid] } } } },
             { mark: { type: "text", fontWeight: 700, fontSize: 13 },
-              encoding: { text: { field: "mark" }, color: { condition: { test: "datum.outcome == 'Not in the graph'", value: t.muted }, value: t.onSeqStrong } } },
+              encoding: { text: { field: "mark" }, color: { condition: { test: "datum.outcome == 'Not represented'", value: t.muted }, value: t.onSeqStrong } } },
           ],
         },
         resolve: { scale: { x: "shared", y: "shared" } },
@@ -351,11 +351,11 @@ const CHARTS = {
   },
 
   records: {
-    title: "Growth with records: memory stays flat",
+    title: "Record scaling of conversion cost",
     help: "Each line is one measure of conversion on the HG005 ladder ({ladder} records, {ladderReplicates} replicates each, then the complete {wholeRecords}-record VCF), relative to its value on the smallest input. Medians of the replicates.",
     rows: () => {
       const r = D.scaling.records;
-      const measures = { triples: "Triples", wall: "Wall time", disk: "Peak disk", rss: "Peak memory (mapping)" };
+      const measures = { triples: "Triples", wall: "End-to-end time", disk: "Peak workspace", rss: "Mapping-stage resident memory" };
       return r.rungs.flatMap((n, i) => Object.entries(measures).map(([k, label]) => ({
         records: n, measure: label, growth: r.median[k][i] / r.median[k][0],
         value: k === "wall" ? secs(r.median[k][i]) : k === "triples" ? millions(r.median[k][i])
@@ -370,7 +370,7 @@ const CHARTS = {
           x: { field: "records", type: "quantitative", scale: { type: "log" }, title: "Records (HG005)",
                axis: { values: D.scaling.records.rungs, labelExpr: `datum.value == ${D.scaling.records.wholeFileRecords} ? '${D.facts.wholeRecords} (complete)' : format(datum.value, '~s')` } },
           y: { field: "growth", type: "quantitative", scale: { type: "log" }, title: "Growth relative to the smallest input" },
-          color: { field: "measure", type: "nominal", title: null, sort: ["Triples", "Wall time", "Peak disk", "Peak memory (mapping)"] },
+          color: { field: "measure", type: "nominal", title: null, sort: ["Triples", "End-to-end time", "Peak workspace", "Mapping-stage resident memory"] },
           tooltip: [{ field: "measure" }, { field: "records", format: "," }, { field: "value" }, { field: "growth", title: "× smallest", format: ".1f" }],
         },
         layer: [{ mark: "line" }, { mark: "point" }],
@@ -379,11 +379,11 @@ const CHARTS = {
   },
 
   samples: {
-    title: "Two sample profiles: triples against bytes",
-    help: "The same {sampleRecords} 1000 Genomes records re-emitted against {samplesMin} to {samplesMax} sample columns. Switch the measure: the condensed profile's triples barely grow, but its stored bytes do, because per-sample values move into vector literals rather than disappearing.",
+    title: "Sample representation: triples and stored bytes",
+    help: "The same {sampleRecords} 1000 Genomes records converted with {samplesMin} to {samplesMax} sample columns under both profiles. Select a measure: condensed triple counts remain nearly constant while its stored bytes grow, because per-sample values are encoded in vector literals.",
     rows: () => {
       const s = D.scaling.samples;
-      const measures = { triples: "Triples", nt: "gzip N-Triples (bytes)", hdt: "HDT (bytes)" };
+      const measures = { triples: "Triples", nt: "Gzip-framed N-Triples (bytes)", hdt: "HDT (bytes)" };
       const out = [];
       for (const [profile, label] of [["expanded", "Expanded"], ["condensed", "Condensed"]]) {
         s[profile].x.forEach((n, i) => {
@@ -391,7 +391,7 @@ const CHARTS = {
         });
       }
       s.condensed.x.forEach((n, i) => {
-        for (const m of ["gzip N-Triples (bytes)", "HDT (bytes)"]) out.push({ samples: n, profile: "Input VCF", measure: m, value: s.condensed.vcf[i] });
+        for (const m of ["Gzip-framed N-Triples (bytes)", "HDT (bytes)"]) out.push({ samples: n, profile: "Input VCF", measure: m, value: s.condensed.vcf[i] });
       });
       return out;
     },
@@ -400,7 +400,7 @@ const CHARTS = {
       return {
         data: { values: rows }, height: 280,
         params: [{ name: "measure", value: "Triples",
-          bind: { input: "select", options: ["Triples", "gzip N-Triples (bytes)", "HDT (bytes)"], name: "Measure " } }],
+          bind: { input: "select", options: ["Triples", "Gzip-framed N-Triples (bytes)", "HDT (bytes)"], name: "Measure " } }],
         transform: [{ filter: "datum.measure == measure" }],
         encoding: {
           x: { field: "samples", type: "quantitative", scale: { type: "log" }, title: fill("Sample columns ({sampleRecords} records)"), axis: { values: D.scaling.samples.expanded.x } },
@@ -415,8 +415,8 @@ const CHARTS = {
   },
 
   storage: {
-    title: "Peak disk by storage mode",
-    help: "Paired runs of the plain and space-optimized storage modes on the same inputs. Both produce identical triples and final artifacts; space-optimized mode only lowers the temporary disk peak, at {spaceTimeCost} more time.",
+    title: "Peak workspace by storage mode",
+    help: "Paired runs of the plain and space-optimized storage modes on the same inputs. Both produce identical triples and final artifact sizes; space-optimized storage reduces only the peak transient workspace, with a {spaceTimeCost} increase in time.",
     rows: () => {
       const names = { slice: "HG005 slice", larger: "test-larger" };
       return Object.entries(D.scaling.storage).flatMap(([key, modes]) => Object.entries(modes).map(([mode, m]) => ({
@@ -424,14 +424,14 @@ const CHARTS = {
         gb: m.peakBytes / 1e9, time: secs(m.wallSeconds),
       })));
     },
-    columns: [{ key: "input", label: "Input" }, { key: "mode", label: "Mode" }, { key: "gb", label: "Peak disk (GB)", num: true, format: (v) => num(v, 2) }, { key: "time", label: "Wall time", num: true }],
+    columns: [{ key: "input", label: "Input" }, { key: "mode", label: "Storage mode" }, { key: "gb", label: "Peak workspace (GB)", num: true, format: (v) => num(v, 2) }, { key: "time", label: "End-to-end time", num: true }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 130,
         encoding: {
           y: { field: "input", type: "nominal", title: null },
-          x: { field: "gb", type: "quantitative", scale: { type: "log" }, title: "Peak disk workspace (GB, log)", axis: { values: [0.1, 1, 10, 100], format: "~g" } },
-          tooltip: [{ field: "input" }, { field: "mode" }, { field: "gb", title: "Peak GB", format: ".2f" }, { field: "time", title: "Wall time" }],
+          x: { field: "gb", type: "quantitative", scale: { type: "log" }, title: "Peak workspace (GB, log scale)", axis: { values: [0.1, 1, 10, 100], format: "~g" } },
+          tooltip: [{ field: "input", title: "Input" }, { field: "mode", title: "Storage mode" }, { field: "gb", title: "Peak workspace (GB)", format: ".2f" }, { field: "time", title: "End-to-end time" }],
         },
         layer: [
           { mark: { type: "rule", color: t.grid, strokeWidth: 3 }, encoding: { detail: { field: "input" } } },
@@ -442,21 +442,21 @@ const CHARTS = {
   },
 
   representations: {
-    title: "Artifact size relative to the gzip N-Triples",
-    help: "For each corpus input (first {corpusRecords} records; HG005 complete), the size of the HDT and COTTAS artifacts built from the same graph, divided by the stored gzip N-Triples. Hover for build times.",
+    title: "Artifact size relative to gzip-framed N-Triples",
+    help: "For each corpus input (first {corpusRecords} records; HG005 complete), the size of the HDT and COTTAS artifacts built from the same graph, divided by the size of the gzip-framed N-Triples. Hover for construction times.",
     rows: () => D.scaling.corpus.flatMap((r) => {
       const input = `${r.name.replace("(whole)", "(complete)")} · ${millions(r.triples)}`;
       return [{ input, artifact: "COTTAS", ratio: r.cottas / r.nt, build: secs(r.cottas_s) },
               { input, artifact: "HDT", ratio: r.hdt / r.nt, build: secs(r.hdt_s) }];
     }),
-    columns: [{ key: "input", label: "Input" }, { key: "artifact", label: "Artifact" }, { key: "ratio", label: "× N-Triples", num: true, format: (v) => num(v, 2) }, { key: "build", label: "Build time", num: true }],
+    columns: [{ key: "input", label: "Input" }, { key: "artifact", label: "Artifact" }, { key: "ratio", label: "× N-Triples", num: true, format: (v) => num(v, 2) }, { key: "build", label: "Construction time", num: true }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 260,
         encoding: {
           y: { field: "input", type: "nominal", sort: null, title: null },
-          x: { field: "ratio", type: "quantitative", scale: { domain: [0, 2] }, title: "Size ÷ stored gzip N-Triples" },
-          tooltip: [{ field: "input" }, { field: "artifact" }, { field: "ratio", title: "× N-Triples", format: ".2f" }, { field: "build", title: "Build time" }],
+          x: { field: "ratio", type: "quantitative", scale: { domain: [0, 2] }, title: "Size ÷ gzip-framed N-Triples" },
+          tooltip: [{ field: "input", title: "Input" }, { field: "artifact", title: "Artifact" }, { field: "ratio", title: "× N-Triples", format: ".2f" }, { field: "build", title: "Construction time" }],
         },
         layer: [
           { mark: { type: "rule", color: t.axis, strokeDash: [4, 3] }, encoding: { x: { datum: 1 }, y: null } },
@@ -468,48 +468,48 @@ const CHARTS = {
   },
 
   perQuestion: {
-    title: "Per question: SPARQL (QLever) against parsing the VCF (cyvcf2)",
-    help: "Each question answered on the {sliceTriples}-triple HG005 graph ({sliceRecords} records), mean of {engineReplicates} replicates. cyvcf2 must scan the VCF whichever question it is. QLever's times exclude its one-time {qleverIndex} index build; the last row compares the whole {questions}-question batch, where one parser pass answers everything.",
+    title: "Individual questions: indexed QLever queries and full cyvcf2 parses",
+    help: "Each question on the {sliceTriples}-triple graph of {sliceRecords} HG005 records, mean of {engineReplicates} replicates. Each cyvcf2 answer requires a full parse of the VCF. QLever times exclude the {qleverIndex} index build. The last row compares the {questions}-question batch, which one cyvcf2 pass answers.",
     rows: () => {
       const r = D.retrieval;
       const rows = r.perQuestion.map((q) => ({ question: q.label, sparql: q.sparql, parser: q.parser, speedup: q.parser / q.sparql }));
-      rows.push({ question: `All ${r.perQuestion.length}, one batch`, sparql: r.batch.sparql, parser: r.batch.parser, speedup: r.batch.parser / r.batch.sparql });
+      rows.push({ question: fill("{questions}-question batch").replace(/^./, (c) => c.toUpperCase()), sparql: r.batch.sparql, parser: r.batch.parser, speedup: r.batch.parser / r.batch.sparql });
       return rows;
     },
-    columns: [{ key: "question", label: "Question" }, { key: "sparql", label: "QLever", num: true, format: (v) => secs(v) }, { key: "parser", label: "cyvcf2", num: true, format: (v) => secs(v) },
-      { key: "speedup", label: "Speed-up", num: true, format: (v) => `${num(v, v >= 10 ? 0 : 1)}×` }],
+    columns: [{ key: "question", label: "Question" }, { key: "sparql", label: "Indexed QLever query", num: true, format: (v) => secs(v) }, { key: "parser", label: "Full cyvcf2 parse", num: true, format: (v) => secs(v) },
+      { key: "speedup", label: "Parse time ÷ query time", num: true, format: (v) => `${num(v, v >= 10 ? 0 : 1)}×` }],
     spec(t, rows) {
-      const long = rows.flatMap((r) => [{ ...r, side: "SPARQL (QLever)", seconds: r.sparql }, { ...r, side: "VCF scan (cyvcf2)", seconds: r.parser }]);
+      const long = rows.flatMap((r) => [{ ...r, side: "Indexed QLever query", seconds: r.sparql }, { ...r, side: "Full cyvcf2 parse", seconds: r.parser }]);
       return {
         data: { values: long }, height: 360,
         encoding: {
           y: { field: "question", type: "nominal", sort: null, title: null },
           x: { field: "seconds", type: "quantitative", scale: { type: "log" }, title: "Seconds (log scale)",
                axis: { values: [0.001, 0.01, 0.1, 1, 10, 100], format: "~g" } },
-          tooltip: [{ field: "question" }, { field: "sparql", title: "QLever (s)", format: ".3f" }, { field: "parser", title: "cyvcf2 (s)", format: ".2f" }, { field: "speedup", title: "Speed-up", format: ",.1f" }],
+          tooltip: [{ field: "question", title: "Question" }, { field: "sparql", title: "Indexed QLever query (s)", format: ".3f" }, { field: "parser", title: "Full cyvcf2 parse (s)", format: ".2f" }, { field: "speedup", title: "Parse time ÷ query time", format: ",.1f" }],
         },
         layer: [
           { mark: { type: "rule", color: t.grid, strokeWidth: 3 }, encoding: { detail: { field: "question" } } },
-          { mark: "point", encoding: { color: { field: "side", type: "nominal", title: null, scale: { domain: ["SPARQL (QLever)", "VCF scan (cyvcf2)"], range: [t.series[0], t.context] } } } },
+          { mark: "point", encoding: { color: { field: "side", type: "nominal", title: null, scale: { domain: ["Indexed QLever query", "Full cyvcf2 parse"], range: [t.series[0], t.context] } } } },
         ],
       };
     },
   },
 
   engines: {
-    title: "The engine sets the cost",
-    help: "The {questions} questions on the {fixtureTriples}-triple graph under each SPARQL engine: mean of {engineRuns} runs ({engineArtifacts} artifacts in each of {engineReplicates} replicates), with the range. All engines agreed in every run.",
+    title: "Query time by SPARQL engine",
+    help: "Total time for the {questions} questions on the {fixtureTriples}-triple fixture graph under each SPARQL engine: mean of {engineRuns} runs ({engineArtifacts} artifacts in each of {engineReplicates} replicates), with the range. All engines returned the same answers in every run.",
     rows: () => Object.entries(D.retrieval.engines).map(([engine, e]) => ({
-      engine: { qlever: "QLever", comunica: "Comunica", cottas: "COTTAS engine", hdt: "HDT engine" }[engine] || engine,
+      engine: { qlever: "QLever", comunica: "Comunica (N-Triples)", cottas: "Comunica (COTTAS, DuckDB)", hdt: "Comunica (HDT)" }[engine] || engine,
       mean: e.mean, min: e.min, max: e.max, runs: e.runs,
     })).sort((a, b) => a.mean - b.mean),
-    columns: [{ key: "engine", label: "Engine" }, { key: "mean", label: "Mean", num: true, format: (v) => secs(v) }, { key: "min", label: "Min", num: true, format: (v) => secs(v) }, { key: "max", label: "Max", num: true, format: (v) => secs(v) }],
+    columns: [{ key: "engine", label: "Engine" }, { key: "mean", label: "Mean", num: true, format: (v) => secs(v) }, { key: "min", label: "Minimum", num: true, format: (v) => secs(v) }, { key: "max", label: "Maximum", num: true, format: (v) => secs(v) }],
     spec(t, rows) {
       return {
         data: { values: rows }, height: 150,
         encoding: {
           y: { field: "engine", type: "nominal", sort: null, title: null },
-          tooltip: [{ field: "engine" }, { field: "mean", format: ".1f", title: "Mean (s)" }, { field: "min", format: ".1f" }, { field: "max", format: ".1f" }],
+          tooltip: [{ field: "engine", title: "Engine" }, { field: "mean", format: ".1f", title: "Mean (s)" }, { field: "min", format: ".1f", title: "Minimum (s)" }, { field: "max", format: ".1f", title: "Maximum (s)" }],
         },
         layer: [
           { mark: { type: "bar", color: t.series[0], height: 16 }, encoding: { x: { field: "mean", type: "quantitative", title: `${D.facts.qRange} total (s)` } } },
@@ -522,39 +522,46 @@ const CHARTS = {
   },
 
   costBySize: {
-    title: "QLever cost per million triples, to {maxTriples} triples",
-    help: "The {questions} questions' QLever time (sum of per-question medians) divided by the graph's size in millions of triples. The data table lists the host each graph ran on.",
+    title: "QLever query time per million triples, up to {maxTriples} triples",
+    help: "QLever time for the {questions} questions (sum of per-question medians) divided by the graph size in millions of triples. The data table lists the host on which each graph was queried.",
     rows: () => D.retrieval.costBySize.map((r) => ({
       graph: { small: "Fixture", large: "HG005 slice", whole: "Complete HG005 VCF" }[r.graph] || r.graph.replace(/^r(\d+)$/, (_, n) => `${num(Number(n) / 1e6)}M records`),
       triples: r.triples, seconds: r.seconds, perMillion: r.perMillion, host: r.host })),
     columns: [{ key: "graph", label: "Graph" }, { key: "triples", label: "Triples", num: true, format: (v) => num(v) }, { key: "seconds", label: "All questions", num: true, format: (v) => secs(v) },
-      { key: "perMillion", label: "s per million", num: true, format: (v) => num(v, 2) }, { key: "host", label: "Host" }],
+      { key: "perMillion", label: "Seconds per million triples", num: true, format: (v) => num(v, 2) }, { key: "host", label: "Host" }],
     spec(t, rows) {
+      const ranked = [...rows].sort((a, b) => a.triples - b.triples).map((r, rank) => ({ ...r, rank }));
       return {
-        data: { values: rows }, height: 220,
+        data: { values: ranked }, height: 220,
         encoding: {
           x: { field: "triples", type: "quantitative", scale: { type: "log", domain: [5e5, 1.5e9] }, title: "Triples (log scale)", axis: { values: [1e6, 1e7, 1e8, 1e9], format: "~s" } },
           y: { field: "perMillion", type: "quantitative", scale: { zero: true }, title: "Seconds per million triples" },
-          tooltip: [{ field: "graph" }, { field: "triples", format: "," }, { field: "seconds", format: ".1f", title: "Seconds" }, { field: "perMillion", format: ".2f", title: "s per million" }, { field: "host" }],
+          tooltip: [{ field: "graph", title: "Graph" }, { field: "triples", format: ",", title: "Triples" }, { field: "seconds", format: ".1f", title: "Seconds" }, { field: "perMillion", format: ".2f", title: "Seconds per million triples" }, { field: "host", title: "Host" }],
         },
         layer: [
           { mark: { type: "line", color: t.series[0] } },
           { mark: { type: "point", color: t.series[0] } },
-          { mark: { type: "text", dy: -14, color: t.muted }, encoding: { text: { field: "graph" } } },
+          // Labels alternate above and below the line, and the largest graph's is right-aligned, so
+          // neighbouring labels do not collide in a narrow card.
+          { mark: { type: "text", dy: -14, color: t.muted }, transform: [{ filter: "datum.rank % 2 == 0" }], encoding: { text: { field: "graph" } } },
+          { mark: { type: "text", dy: 16, color: t.muted }, transform: [{ filter: `datum.rank % 2 == 1 && datum.rank < ${rows.length - 1}` }],
+            encoding: { text: { field: "graph" } } },
+          { mark: { type: "text", dy: 16, dx: 6, align: "right", color: t.muted }, transform: [{ filter: `datum.rank % 2 == 1 && datum.rank == ${rows.length - 1}` }],
+            encoding: { text: { field: "graph" } } },
         ],
       };
     },
   },
 
   regional: {
-    title: "Region-restricted questions: SPARQL against indexed VCF access",
-    help: "Median over {regionalQuestions} region questions of each question's median across {regionalWindows} windows ({regionalScanWindows} for the unindexed scan) and {regionalReplicates} replicates. Every arm answers the same POS-based window, and across both graphs {regionalExecutions} executions produced {regionalFailures} failures and {regionalDisagreements} disagreements. Switch the graph to compare the smaller fixture.",
+    title: "Regional queries: QLever and tabix-indexed VCF access",
+    help: "Median over {regionalQuestions} regional questions of each question's median across {regionalWindows} windows ({regionalScanWindows} for full parses of the unindexed VCF) and {regionalReplicates} replicates. All execution paths apply the same POS-based selection; across both graphs, {regionalExecutions} executions produced {regionalFailures} failures and {regionalDisagreements} disagreements. Select a graph to compare the smaller fixture.",
     rows: () => {
-      const arms = { qlever: "QLever (SPARQL)", "cyvcf2-indexed": "cyvcf2, indexed", "bcftools-indexed": "bcftools, indexed", "cyvcf2-scan": "cyvcf2, unindexed scan" };
+      const arms = { qlever: "QLever (RDF)", "cyvcf2-indexed": "cyvcf2 + tabix", "bcftools-indexed": "bcftools + tabix", "cyvcf2-scan": "cyvcf2, full parse" };
       return Object.values(D.retrieval.regional).flatMap((data) => Object.entries(data.ms).flatMap(([arm, sizes]) =>
         Object.entries(sizes).map(([size, ms]) => ({ graph: `${num(data.records)} records`, arm: arms[arm] || arm, window: Number(size), ms }))));
     },
-    columns: [{ key: "graph", label: "Graph" }, { key: "arm", label: "Arm" }, { key: "window", label: "Window (bp)", num: true, format: (v) => num(v) }, { key: "ms", label: "Median (ms)", num: true, format: (v) => num(v, 1) }],
+    columns: [{ key: "graph", label: "Graph" }, { key: "arm", label: "Execution path" }, { key: "window", label: "Window (bp)", num: true, format: (v) => num(v) }, { key: "ms", label: "Median (ms)", num: true, format: (v) => num(v, 1) }],
     spec(t, rows) {
       const graphs = Object.values(D.retrieval.regional).sort((a, b) => b.records - a.records).map((g) => `${num(g.records)} records`);
       return {
@@ -562,11 +569,11 @@ const CHARTS = {
         params: [{ name: "graph", value: graphs[0], bind: { input: "select", options: graphs, name: "Graph " } }],
         transform: [{ filter: "datum.graph == graph" }],
         encoding: {
-          x: { field: "window", type: "quantitative", scale: { type: "log" }, title: "Window size (bp, log)", axis: { values: [1e3, 1e5, 1e6, 1e7], format: "~s" } },
-          y: { field: "ms", type: "quantitative", scale: { type: "log" }, title: "Milliseconds (log)" },
+          x: { field: "window", type: "quantitative", scale: { type: "log" }, title: "Window size (bp, log scale)", axis: { values: [1e3, 1e5, 1e6, 1e7], format: "~s" } },
+          y: { field: "ms", type: "quantitative", scale: { type: "log" }, title: "Milliseconds (log scale)" },
           color: { field: "arm", type: "nominal", title: null,
-                   sort: ["QLever (SPARQL)", "cyvcf2, indexed", "bcftools, indexed", "cyvcf2, unindexed scan"] },
-          tooltip: [{ field: "arm" }, { field: "window", format: "," }, { field: "ms", format: ".1f", title: "ms" }],
+                   sort: ["QLever (RDF)", "bcftools + tabix", "cyvcf2 + tabix", "cyvcf2, full parse"] },
+          tooltip: [{ field: "arm", title: "Execution path" }, { field: "window", format: ",", title: "Window (bp)" }, { field: "ms", format: ".1f", title: "Median (ms)" }],
         },
         layer: [{ mark: "line" }, { mark: "point" }],
       };
@@ -628,12 +635,12 @@ function renderKpis() {
   const ownPassed = D.converters.questions.filter((q) => D.converters.outcomes
     .filter((o) => o.tool === "vcf-rdfizer" && o.question === q.id).every((o) => o.status === "PASS")).length;
   const kpis = [
-    ["RQ1", `${num(v.comparisons.PASS)} / ${num(Object.values(v.comparisons).reduce((a, b) => a + b, 0))}`, "paired SPARQL–VCF comparisons exactly equal; the rest verified not applicable"],
-    ["RQ1", `${m.queries.detected} · ${m.core.detected} · ${m.full.detected}`, `of ${m.full.total} injected faults detected: questions · + default shapes · + all shapes`],
-    ["RQ2", `${agreeing} / ${arms.length} arms`, "identical match sets from the RDF and conventional routes, for every requester"],
-    ["RQ3", `${ownPassed} / ${D.converters.questions.length}`, fill("content questions answered as the oracle does on both inputs, by {converterAllPass} alone among the converters compared")],
-    ["RQ3", `${millions(largest)} triples`, "largest graph queried; QLever's cost stays linear"],
-    ["RQ3", `≈ ${D.facts.breakEven} questions`, fill("before converting the {sliceRecords}-record slice pays off, with the minimal setup")],
+    ["RQ1", `${num(v.comparisons.PASS)} / ${num(v.comparisons.PASS)}`, fill("applicable SPARQL results agreed exactly with their source-derived counterparts; {comparisonsOther} more verified not applicable")],
+    ["RQ1", `${m.queries.detected} · ${m.core.detected} · ${m.full.detected}`, `of ${m.full.total} injected faults detected: source-comparison queries · with the default SHACL profile · with all shape profiles`],
+    ["RQ2", `${agreeing} / ${arms.length} arms`, "with identical requester-specific match sets from the RDF and conventional workflows"],
+    ["RQ3", `${ownPassed} / ${D.converters.questions.length}`, fill("content questions matched the source-derived oracle on both inputs; {converterAllPass} was the only converter to match all")],
+    ["RQ3", `${millions(largest)} triples`, "largest graph queried; QLever query time remained approximately linear in graph size"],
+    ["RQ3", `≈ ${D.facts.breakEven} questions`, fill("break-even of the minimal RDF setup for the {sliceRecords}-record HG005 slice")],
   ];
   document.getElementById("kpiGrid").innerHTML = kpis
     .map(([tag, value, label]) => `<div class="kpi"><div class="kpi-tag">${esc(tag)}</div><div class="value">${esc(value)}</div><div class="label">${esc(label)}</div></div>`).join("");
@@ -644,13 +651,13 @@ function renderEvidence() {
   const m = D.fidelity.mutation.scores;
   const total = (c) => Object.values(c).reduce((a, b) => a + b, 0);
   const rows = [
-    { check: "N-Triples syntax (rapper)", passed: `${v.rapper.PASS ?? 0} / ${total(v.rapper)}`, what: "The serialization parses" },
-    { check: `Paired SPARQL vs cyvcf2 (${D.facts.qRange})`, passed: `${v.comparisons.PASS} / ${total(v.comparisons)}`, what: "Exact equality of normalized results; the rest are verified not applicable" },
-    { check: "Cross-check invariants", passed: `${v.invariants.PASS} / ${total(v.invariants)}`, what: "E.g. transitions + transversions = biallelic SNVs" },
-    { check: "Engines answering", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} with ${k}`).join(", "), what: "Agreement is a real comparison only where several engines answered" },
-    { check: "Native decode and triple count", passed: `${(v.decode["hdt:pass"] ?? 0) + (v.decode["cottas:pass"] ?? 0)} pass`, what: `${v.decode["hdt:pass"] ?? 0} HDT and ${v.decode["cottas:pass"] ?? 0} COTTAS artifacts decode back to the source count` },
-    { check: "Default SHACL profile", passed: `${v.shacl.validations} runs, ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples, ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} each` },
-    { check: "Injected faults (queries / + core / + full)", passed: `${m.queries.detected} / ${m.core.detected} / ${m.full.detected} of ${m.full.total}`, what: "A suite that cannot fail proves nothing by passing" },
+    { check: "N-Triples syntax (rapper)", passed: `${v.rapper.PASS ?? 0} / ${total(v.rapper)}`, what: "The serialization is syntactically valid N-Triples" },
+    { check: `Source-comparison queries (${D.facts.qRange})`, passed: `${v.comparisons.PASS} / ${total(v.comparisons)}`, what: "Normalized SPARQL results equal the source-derived answers; the remainder are verified not applicable" },
+    { check: "Consistency invariants", passed: `${v.invariants.PASS} / ${total(v.invariants)}`, what: "Internal consistency checks, for example transitions plus transversions equal biallelic SNVs" },
+    { check: "Engines per validation run", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} runs with ${k}`).join(", "), what: "Cross-engine agreement is tested in the runs answered by several engines" },
+    { check: "Native decoding", passed: `${(v.decode["hdt:pass"] ?? 0) + (v.decode["cottas:pass"] ?? 0)} pass`, what: `${v.decode["hdt:pass"] ?? 0} HDT and ${v.decode["cottas:pass"] ?? 0} COTTAS artifacts decode to the triple count of the source graph` },
+    { check: "Default SHACL profile", passed: `${v.shacl.validations} runs, ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples, ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} per run` },
+    { check: "Injected faults (queries / + default profile / + all profiles)", passed: `${m.queries.detected} / ${m.core.detected} / ${m.full.detected} of ${m.full.total}`, what: "Sensitivity of the validation layer to deliberate corruptions" },
   ];
   document.getElementById("evidenceTable").innerHTML = table(
     [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "What it establishes" }], rows);
@@ -658,10 +665,10 @@ function renderEvidence() {
   const verdict = (s) => `<span class="status ${s === "PASS" ? "pass" : "fail"}">${esc(s === "PASS" ? "equal" : "mismatch")}</span>`;
   const sh = real.shacl;
   document.getElementById("realGenomeTable").innerHTML =
-    `<p class="table-meta">${num(real.triples)} triples on QLever, checked by the corrected validator. ` +
-    `The default shapes were checked in ${num(sh.batches)} record batches over ${sh.minutes} min: ${num(sh.violations)} violations, ${num(sh.advisories)} non-blocking recommendations.</p>` +
+    `<p class="table-meta">${num(real.triples)} triples, validated on QLever with the ${esc(D.facts.useCaseVersion)} validator. ` +
+    `Default shapes were validated in ${num(sh.batches)} record batches (${sh.minutes} min): ${num(sh.violations)} violations and ${num(sh.advisories)} non-blocking recommendations.</p>` +
     table([{ key: "query", label: "Question", format: (q) => pretty(q) },
-      { key: "status", label: "Graph and VCF", html: (r) => verdict(r.status) }], real.queries);
+      { key: "status", label: "SPARQL result and source-derived answer", html: (r) => verdict(r.status) }], real.queries);
   document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, the campaign's validation reports and <code>08_robustness/mutation_score*</code>.`;
 }
 
@@ -676,7 +683,7 @@ function renderLinking() {
     { key: "linker", label: "Linker" },
     ...Object.keys(arms).map((arm) => ({ key: arm, label: `Arm ${arm.slice(3)} VCFs`, num: true, format: cell })),
     { key: "clinvar", label: "ClinVar", num: true, format: cell },
-  ], rows) + `<p class="table-meta">${esc(fill("Linked calls of eligible calls; the gene linker counts calls in a gene span from {ensembl}. The MyVariant.info tier confirmed {myvariantShare} of the {myvariantGenomes} PGP files' rsID links, replaying the {myvariantRequests} responses recorded for the paper."))}</p>`;
+  ], rows) + `<p class="table-meta">${esc(fill("Linked records of eligible records; the gene linker counts records within a gene span from {ensembl}. The MyVariant.info tier confirmed {myvariantShare} of the rsID links in the {myvariantGenomes} PGP files, replaying the {myvariantRequests} recorded service responses."))}</p>`;
   document.getElementById("usecaseSource").innerHTML = `Sources: ${Object.values(arms).map((a) => `<code>${esc(a.source)}</code>`).join(", ")} and <code>benchmarks/use_case/acmg</code>.`;
 }
 
@@ -689,17 +696,17 @@ function renderRecords() {
   document.getElementById("recordsTable").innerHTML = table([
     { key: "arm", label: "Arm" }, { key: "requester", label: "Requester" },
     { key: "rdf", label: "RDF release view", num: true, format: (v) => num(v) },
-    { key: "conventional", label: "Conventional route", num: true, format: (v) => num(v) },
-    { key: "agree", label: "Records", html: verdict },
-  ], rows) + `<p class="table-meta">${esc(fill("Records each requester receives. The extra records in {recordArmsDiffer} are symbolic structural variants in restricted genes, which the release links to no gene; no match changed."))}</p>`;
+    { key: "conventional", label: "Conventional workflow", num: true, format: (v) => num(v) },
+    { key: "agree", label: "Released records", html: verdict },
+  ], rows) + `<p class="table-meta">${esc(fill("Records released to each requester. The additional records in {recordArmsDiffer} are symbolic structural-variant records in restricted genes, to which VCF-RDFizer {useCaseVersion} links no gene; no match changed."))}</p>`;
 }
 
 // --------------------------------------------------------------- break-even
 const BREAK_EVEN_FIELDS = [
-  ["conversion", "Conversion to N-Triples, once (s)"],
-  ["index", "QLever index build, once (s)"],
-  ["parser", "VCF parse per question (s)"],
-  ["sparql", "SPARQL per question (s)"],
+  ["conversion", "Conversion to gzip-framed N-Triples (s)"],
+  ["index", "QLever indexing (s)"],
+  ["parser", "Full cyvcf2 parse per question (s)"],
+  ["sparql", "Indexed QLever query per question (s)"],
 ];
 // The defaults are the paper's minimal setup (Section S9.4): the N-Triples-only rerun's conversion
 // and QLever index, its median per-question parse and mean per-question query.
@@ -716,20 +723,20 @@ function renderBreakEven() {
   const box = document.getElementById("breakEvenInputs");
   box.innerHTML = BREAK_EVEN_FIELDS.map(([key, label]) =>
     `<label>${esc(label)}<input type="number" min="0" step="any" id="be-${key}" value="${defaults[key].toFixed(key === "sparql" ? 2 : 1)}" /></label>`).join("") +
-    `<label>&nbsp;<button type="button" id="be-reset">Reset to measured</button></label>`;
+    `<label>&nbsp;<button type="button" id="be-reset">Reset to measured values</button></label>`;
   const update = () => {
     const v = Object.fromEntries(BREAK_EVEN_FIELDS.map(([k]) => [k, Number(document.getElementById(`be-${k}`).value)]));
     const n = breakEven(v);
     const out = document.getElementById("breakEvenResult");
     if (!Number.isFinite(n)) {
-      out.innerHTML = "SPARQL is not faster per question here, so converting <strong>never</strong> pays off on speed alone.";
+      out.innerHTML = "With these values the indexed query is not faster than a full parse, so the RDF setup is <strong>not amortized</strong> by query time.";
       return;
     }
-    out.innerHTML = `Converting pays off after about <strong>${num(n, 0)} questions</strong> (${num(n, 1)}): ` +
-      `${secs(v.conversion + v.index)} paid once, against ${secs(v.parser - v.sparql)} saved per question. ` +
-      `This assumes one full VCF parse per question. One parse answers all ${D.facts.questions} together ` +
-      `(${secs(D.retrieval.batch.parser)}), so a single batch does not pay. ` +
-      `If the setup also builds HDT, as the base campaign's did, the break-even is ${D.facts.breakEvenWithHdt}.`;
+    out.innerHTML = `Break-even after approximately <strong>${num(n, 0)} separately executed questions</strong> (${num(n, 1)}): ` +
+      `${secs(v.conversion + v.index)} of additional RDF setup against a saving of ${secs(v.parser - v.sparql)} per question. ` +
+      `The estimate assumes a full VCF parse for each question; one cyvcf2 pass answers all ${D.facts.questions} questions ` +
+      `in ${secs(D.retrieval.batch.parser)}, so a single batch does not reach break-even. ` +
+      `Including HDT construction in the setup, as in the base campaign, raises the estimate to ${D.facts.breakEvenWithHdt} questions.`;
   };
   box.addEventListener("input", update);
   document.getElementById("be-reset").addEventListener("click", () => {
@@ -811,7 +818,7 @@ async function main() {
   DATASETS.forEach((name, i) => { D[name] = responses[i]; });
   const meta = D.campaign.meta;
   document.getElementById("dataMeta").textContent =
-    `Base campaign: VCF-RDFizer ${D.facts.campaignVersion}; linked workflow, retrieval reruns and converter comparison: ${D.facts.useCaseVersion}. ` +
+    `Base campaign: VCF-RDFizer ${D.facts.campaignVersion}; linked workflow, retrieval reruns, consumer WGS validation run and converter comparison: ${D.facts.useCaseVersion}. ` +
     `Site built ${meta.builtAt.replace("T", " ").replace("+00:00", " UTC")}` +
     (meta.repoCommit ? ` from commit ${meta.repoCommit}.` : ".");
   if (meta.repoCommit) document.getElementById("commitLink").href = `${REPO}/tree/${meta.repoCommit}`;

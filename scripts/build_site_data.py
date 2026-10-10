@@ -712,6 +712,8 @@ def facts(d: dict) -> dict[str, str]:
                        if r["scale"] == "r1000000" and r["engine"] != "qlever")
     failed = {n for (_, ok), n in in_place.items() if not ok}
     out["inPlaceFailed"] = listing([words(n) for n in sorted(failed)])
+    answered = {n for (_, ok), n in in_place.items() if ok}
+    out["nativeAnswered"] = listing([words(n) for n in sorted(answered)])
     regional = retrieval["regional"]
     first = next(iter(regional.values()))
     out["regionalQuestions"] = words(first["questions"])
