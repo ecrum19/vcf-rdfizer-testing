@@ -1,6 +1,6 @@
 # Converter comparison on a shared input (experiment 18)
 
-The paper's converter table (Table 1) was built from public documentation. This experiment runs
+The paper's converter table (Supplementary Table S1) was built from public documentation. This experiment runs
 the converters that can still be installed on the same inputs as VCF-RDFizer, and measures their
 output with **the measurements the paper already applies to VCF-RDFizer**. It adds no new metric.
 

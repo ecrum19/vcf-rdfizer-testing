@@ -16,8 +16,9 @@ The native paths' failures match the base campaign's, which the paper reports. P
 read, were built from those cells with
 `python3 benchmarks/analysis/scale_retrieval.py 16_scale_retrieval --results benchmark-results/vcf-bench-3/v331-rerun/results`.
 On the complete HG005 VCF, QLever answered the thirteen questions in 646.4 s after an 880.8 s index build
-(the earlier pre-release runners `245fe1f` and `5ed75c8`: 634.6 s and 868.0 s).
+(the earlier pre-release runners `245fe1f` and `5ed75c8`: 634.6 s and 868.0 s; those runs are on the legacy
+branch, in [`vcf-bench-3/benchmarks_outputs/16_scale_retrieval/`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results/vcf-bench-3/benchmarks_outputs/16_scale_retrieval)).
 
-`attempt1-exit126/` is the first start, which exited after 60 s because `16_scale_retrieval.sh` is not
-executable in the harness tree. The driver now runs it with `bash`; nothing else changed. No file was left
+The first start (`attempt1-exit126/`, on the legacy branch) exited after 60 s because `16_scale_retrieval.sh`
+is not executable in the harness tree. The driver now runs it with `bash`; nothing else changed. No file was left
 out of this archive ([`excluded-files.tsv`](excluded-files.tsv) is empty).

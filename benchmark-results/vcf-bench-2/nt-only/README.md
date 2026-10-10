@@ -1,6 +1,6 @@
 # N-Triples-only rerun (vcf-bench-2, 2026-10-08)
 
-The break-even of main Figure 8a, measured directly. The base campaign's conversions of the
+The break-even of main Figure 6a, measured directly. The base campaign's conversions of the
 100,000-record HG005 slice also built HDT, which QLever does not need, so its setup overstated the
 RDF route. This rerun converts the same input with the same release, VCF-RDFizer v3.1.0
 (`d3b34d5`, image `ecrum19/vcf-rdfizer:3.1.0`, `sha256:1904e96d…34aa`), to gzip-framed N-Triples

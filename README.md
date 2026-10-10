@@ -13,7 +13,12 @@ The GitHub repository also holds the manuscript, its figures and figure scripts
 not part of the [Zenodo archive](#zenodo-archive).
 
 Every number, table and figure in the manuscript can be traced to a run record
-here and regenerated from it.
+here and regenerated from it. Only the runs whose results the manuscript reports
+are on this branch. Pre-release, superseded, stalled and failed runs, including
+those the supplement cites as evidence of the defects the reported runs
+corrected, are on the
+[`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results)
+(see [`LEGACY.md`](LEGACY.md)).
 
 The input VCFs are downloaded from their providers (see [Datasets](#datasets)),
 and the generated RDF is not stored. Every run records the command, tool
@@ -23,14 +28,14 @@ commit and image digest that rebuild it.
 
 | Path | Contents |
 | --- | --- |
-| [`benchmarks/`](benchmarks/README.md) | The harness: experiments `00`–`18`, the linked workflow ([`use_case/acmg/`](benchmarks/use_case/acmg/README.md)), the converter comparison ([`converters/`](benchmarks/converters/README.md)), fixtures, and analysis scripts. [`DESIGN.md`](benchmarks/DESIGN.md) gives the reasoning behind each experiment |
-| [`benchmark-results/`](benchmark-results/README.md) | The run records, per benchmark host. Its README maps each reported result to its records |
+| [`benchmarks/`](benchmarks/README.md) | The harness: experiments `00`–`18`, the linked workflow ([`use_case/acmg/`](benchmarks/use_case/acmg/README.md)), the converter comparison ([`converters/`](benchmarks/converters/README.md)), fixtures, and analysis scripts. Its README gives each script, what it measures, the result it produced and where its records are; [`DESIGN.md`](benchmarks/DESIGN.md) is the plan written before the campaign |
+| [`benchmark-results/`](benchmark-results/README.md) | The run records of every reported result, per benchmark host. Its README maps each result to its records |
 | [`plugin-tests/`](plugin-tests/README.md) | Tests of VCF-RDFizer's SPDI, gene and policy plug-ins on real data |
 | [`scripts/`](#support-scripts) | Input download, host setup, the archive summary, and the code that computes every reported value (`figure_data.py`, `build_site_data.py`) |
 | [`site/`](site/) | The [results site](https://ecrum19.github.io/vcf-rdfizer-testing/) |
 | [`BioMedSem_2026/`](BioMedSem_2026/README.md) | *Repository only.* The manuscript and supplement (`paper/`), and every figure with the script or TikZ source that draws it (`paper-assets/`) |
 | [`tool-docs/`](tool-docs/README.md) | *Repository only.* Working notes for the authors; no result depends on them |
-| [`LEGACY.md`](LEGACY.md) | Material removed from this branch over time, and how to retrieve it |
+| [`LEGACY.md`](LEGACY.md) | Material moved off this branch over time, and how to retrieve it |
 
 ## Software versions
 
@@ -70,10 +75,9 @@ make -C BioMedSem_2026/paper
 ```
 
 **Rerun an experiment.** You need Docker, Python 3, and a VCF-RDFizer checkout at
-the release the experiment used. Start with the
-[operator's guide](benchmarks/README.md), whose section *How the manuscript's
-results were produced* gives each experiment's release, host and configuration.
-In outline:
+the release the experiment used. Start with
+[`benchmarks/README.md`](benchmarks/README.md), which gives each experiment's
+script, release, host, configuration and records. In outline:
 
 ```bash
 bash scripts/download_test_data.sh                       # the ten input VCFs

@@ -12,8 +12,8 @@ driver role `bench2`.
 
 ## Arm 4
 
-The result matches the pre-release run on vcf-bench-3 (`../../vcf-bench-3/use-case/17_use_case_acmg__layered/`)
-in every count:
+The result matches the pre-release run on vcf-bench-3 in every count. That run is on the legacy branch, in
+[`vcf-bench-3/use-case/17_use_case_acmg__layered/`](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results/vcf-bench-3/use-case/17_use_case_acmg__layered).
 
 | Requester | Matches | Records released | Records withheld |
 | --- | ---: | ---: | ---: |
@@ -31,14 +31,14 @@ expected on another host:
 How it ran:
 - **First run (`arm4`).** Derive, convert, link and baseline completed. The run then stopped at govern's disk
   pre-check, which needs about 55 GB; 48 GB was free (exit 1).
-- **First resume** (`attempt1-arm4-resume-diskfull/`). The `bench2-arm4-resume` role runs the stages
+- **First resume** (`attempt1-arm4-resume-diskfull/`, on the legacy branch). The `bench2-arm4-resume` role runs the stages
   `govern query compare`; see the driver. It started with 56 GB free and filled the disk while indexing the
   first view.
 - **Space cleared.** With the user's approval, space was cleared on the host; every removal is logged in
   `~/vrdev-test/deleted-2026-10-08.txt` there. Arm 3's graphs were among them, removed after its run records
   were copied off.
-- **Second resume** (`attempt2-arm4-resume-stopped/`). It was stopped at the start of govern, by request, to
-  clear more space first.
+- **Second resume** (`attempt2-arm4-resume-stopped/`, on the legacy branch). It was stopped at the start of
+  govern, by request, to clear more space first.
 - **Reported resume.** It restarted at 05:43 UTC on 2026-10-09 with 94 GB free, and finished with exit 0 at
   00:47 UTC on 2026-10-10. Its cells and the first run's derive, convert, link and baseline cells are in
   `results/17_use_case_acmg__layered/`.

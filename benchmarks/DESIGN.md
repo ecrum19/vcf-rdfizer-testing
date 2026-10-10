@@ -1,10 +1,11 @@
 # Benchmark design
 
-> **The runnable version is this directory.** There is one script per section
-> below, [`run_all.sh`](run_all.sh) drives them, and [`analysis/`](analysis/)
-> turns the runs into CSV and JSON. [`README.md`](README.md) is the operator's
-> guide; this document is the reasoning behind what the scripts do. Section
-> numbers match.
+> **This is the plan written before the campaign.** The scripts' comments cite
+> its sections as "Plan §", and it records why each experiment is shaped as it
+> is. Its cost estimates, query counts, open items and recommended order predate
+> the runs. What each script does, and which reported result it produced, is in
+> [`README.md`](README.md); the runs themselves are in
+> [`../benchmark-results/`](../benchmark-results/README.md).
 
 
 This plan motivates the current benchmark suite's separation of conversion,

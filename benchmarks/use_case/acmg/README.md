@@ -90,7 +90,7 @@ gates both lists.
 
 ```bash
 BM_ACMG_ARM=cohort BM_ACMG_STAGES="fetch_cohort derive convert link baseline govern query compare" \
-  BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
+  BM_IMAGE_VERSION=3.3.1 ./17_use_case_acmg.sh
 ```
 
 ### Arm 3: one complete VCF
@@ -108,7 +108,7 @@ GB for convert, 55 for govern, 35 for query) and stops instead of filling it.
 
 ```bash
 BM_ACMG_ARM=wgs BM_ACMG_STAGES="derive convert link baseline govern query compare" \
-  BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh
+  BM_IMAGE_VERSION=3.3.1 ./17_use_case_acmg.sh
 ```
 
 ### Arm 4: one complete VCF, layered consent, four requesters
@@ -146,7 +146,7 @@ released.
 
 ```bash
 BM_ACMG_ARM=layered BM_ACMG_STAGES="derive convert link govern query baseline compare" \
-  BM_IMAGE_VERSION=3.3.0 ./17_use_case_acmg.sh
+  BM_IMAGE_VERSION=3.3.1 ./17_use_case_acmg.sh
 ```
 
 ### Effort
@@ -208,20 +208,25 @@ The requesters are a clinical genetics lab (CC), a cardiovascular consortium
 ## Running it
 
 ```bash
-BM_ACMG_STAGES=fetch ./17_use_case_acmg.sh      # ClinVar + reference, ~1.1 GB, once per host
-BM_IMAGE_VERSION=3.2.0 ./17_use_case_acmg.sh    # derive … compare
+BM_ACMG_STAGES=fetch ./17_use_case_acmg.sh                        # ClinVar + reference, ~1.1 GB, once per host
+VCF_RDFIZER=/path/to/vcf-rdfizer-v3.3.1/vcf_rdfizer.py \
+  BM_IMAGE_VERSION=3.3.1 BM_ACMG_ARM=arm1 ./17_use_case_acmg.sh   # derive … compare
 ```
+
+`BM_ACMG_ARM` selects the arm: `arm1`, `cohort` (Arm 2), `wgs` (Arm 3) or
+`layered` (Arm 4). The reported runs used VCF-RDFizer v3.3.1 for every stage:
+the image for derive, convert, baseline and query, and a v3.3.1 source checkout
+for the link and govern stages, which run host-side from the checkout that
+`VCF_RDFIZER` points at. The driver that ran them, `run_v331.sh`, is archived in
+`benchmark-results/vcf-bench-{1,2}/v331-rerun/`.
 
 Every stage skips a cell it already has, so re-running the same command
 resumes an interrupted run. To redo one cell, move it aside — keeping a failed
 cell is usually worth more than deleting it — or point `BM_RESULTS` elsewhere.
 
-**The link stage needs the `spdi` linker**, which is not in v3.2.0. It is on
-VCF-RDFizer's `feature/spdi-linker` branch, planned for v3.3.0. The link and
-govern stages run host-side, from the tool checkout that `VCF_RDFIZER` points
-at, so that checkout must have the linker. Until it does, the link stage
-records a skip, and govern, query and compare skip after it. derive, convert
-and baseline need only the v3.2.0 image.
+**The link stage needs the `spdi` and gene linkers**, which VCF-RDFizer ships
+from v3.3.0. With an older checkout, the link stage records a skip, and govern,
+query and compare skip after it.
 
 ### The live tier: MyVariant.info
 
@@ -286,6 +291,6 @@ The `Derive` and `Baseline` tests need bcftools and skip without it. To run them
 inside the image:
 
 ```bash
-docker run --rm --entrypoint "" -v "$PWD:/case" ecrum19/vcf-rdfizer:3.2.0 \
+docker run --rm --entrypoint "" -v "$PWD:/case" ecrum19/vcf-rdfizer:3.3.1 \
   sh -c 'cd /tmp && /opt/pycottas-venv/bin/python /case/test_use_case.py Derive Baseline'
 ```
