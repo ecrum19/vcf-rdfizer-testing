@@ -1155,9 +1155,9 @@ RASPBERRY = "#b0306f"
 #: Outcome -> (fill, mark, mark colour, label). The mark carries the outcome too, so it is never
 #: colour alone.
 CONVERTER_OUTCOMES = {
-    "PASS": (VIOLET, "\u2713", "white", "Answers as the oracle does"),
-    "MISMATCH": (RASPBERRY, "\u00d7", "white", "Answers differently"),
-    "NOT_REPRESENTED": (GRID, "\u2013", INK_2, "Not in the graph"),
+    "PASS": (VIOLET, "\u2713", "white", "Matches the oracle"),
+    "MISMATCH": (RASPBERRY, "\u00d7", "white", "Differs from the oracle"),
+    "NOT_REPRESENTED": (GRID, "\u2013", INK_2, "Not represented"),
 }
 
 
