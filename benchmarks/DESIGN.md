@@ -132,8 +132,13 @@ VCF that a converter can plausibly get wrong:
 - a breakend, symbolic alleles, high ploidy, half and haploid calls;
 - missing values, FILTER variants, a declared FORMAT key absent from the
   records, CRLF line endings;
-- a file with no records, a sites-only file that declares FORMAT, and a
-  truncated gzip.
+- a file with no records, a sites-only file (no FORMAT or sample columns), and
+  a truncated gzip.
+
+The campaign's sites-only fixture first declared a FORMAT column with no
+samples, a defect of the fixture generator that bcftools rejects, so its paired
+validation could not run. The cell was rerun with the corrected fixture
+([`benchmark-results/vcf-bench-1/sites-only-rerun/`](../benchmark-results/vcf-bench-1/sites-only-rerun/README.md)).
 
 Each is converted to HDT and validated on Comunica. Converting it and being
 refused with a diagnostic are both acceptable; a crash or a silently wrong graph

@@ -72,6 +72,22 @@ records are unchanged. `main`'s earlier `summary.json`, which classifies all 382
 cells, moved with the runs. The results site's consumer WGS panel now shows only
 the v3.3.1 run.
 
+## Sites-only cell replaced by its rerun (2026-10-10)
+
+The base campaign's `09_awkward_inputs/awkward_sites_only` cell ran on a
+malformed fixture: `benchmarks/lib/make_fixtures.py` wrote a FORMAT column with no
+samples after it, which bcftools rejects, so neither paired validation ran. The
+generator is fixed, and the cell was rerun on the same host with the same release
+and arguments ([`benchmark-results/vcf-bench-1/sites-only-rerun/`](benchmark-results/vcf-bench-1/sites-only-rerun/README.md)).
+
+| Moved from `benchmark-results/` | Now on `legacy` at |
+| --- | --- |
+| `vcf-bench-1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/` (the 2026-09-24 run), byte-identical to `main` at `66f53577` | `vcf-bench-1/benchmarks_outputs__superseded/09_awkward_inputs__malformed_sites_only__20260924T161103/awkward_sites_only/`, with a README and the experiment's tidy table as it stood |
+
+`summary.json` was rebuilt; only that cell's record and experiment 09's roll-up
+changed. The site's validation totals became 78 of 78 completed validations, 1,006
+equal query comparisons, and 8 verified not applicable.
+
 ## Material retained on main
 
 The benchmark harness, fixtures, plug-in tests, linked-workflow definitions,

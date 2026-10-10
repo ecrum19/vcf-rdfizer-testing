@@ -33,19 +33,25 @@ class SiteDataMatchesThePaper(unittest.TestCase):
     def test_campaign(self):
         totals = self.data["campaign"]["totals"]
         self.assertEqual(totals["cells"], 143)
-        self.assertAlmostEqual(totals["hours"], 96.16, places=2)
-        self.assertEqual(totals["byStatus"], {"OK": 136, "RECORDED": 2, "REFUSED": 2, "SKIPPED": 3})
+        self.assertAlmostEqual(totals["hours"], 96.17, places=2)
+        # The one RECORDED cell is the truncated gzip's intended refusal. The
+        # sites-only fixture was the second until its rerun with a conformant
+        # fixture (2026-10-10); the malformed first run is on the legacy branch.
+        self.assertEqual(totals["byStatus"], {"OK": 137, "RECORDED": 1, "REFUSED": 2, "SKIPPED": 3})
 
     def test_validation_evidence(self):
         v = self.data["fidelity"]["validation"]
         self.assertEqual(v["validations"], 78)
-        self.assertEqual(v["comparisons"]["PASS"], 984)
-        self.assertEqual(sum(v["comparisons"].values()), 988)
-        self.assertEqual(v["invariants"], {"PASS": 1144})
-        self.assertEqual(v["rapper"], {"PASS": 76})
-        self.assertEqual(v["enginesAnswering"], {"0": 2, "1": 51, "4": 25})
+        self.assertEqual(v["comparisons"]["PASS"], 1006)
+        # Eight genotype comparisons (Q5, Q6) are verified not applicable: four
+        # on the zero-record fixture and four on the sites-only fixture.
+        self.assertEqual(v["comparisons"]["NOT_APPLICABLE_VERIFIED_NO_SAMPLES_OR_GT"], 8)
+        self.assertEqual(sum(v["comparisons"].values()), 1014)
+        self.assertEqual(v["invariants"], {"PASS": 1160})
+        self.assertEqual(v["rapper"], {"PASS": 78})
+        self.assertEqual(v["enginesAnswering"], {"1": 53, "4": 25})
         self.assertEqual(v["decode"], {"hdt:pass": 118, "cottas:pass": 34})
-        self.assertEqual((v["shacl"]["validations"], v["shacl"]["violations"]), (58, 0))
+        self.assertEqual((v["shacl"]["validations"], v["shacl"]["violations"]), (60, 0))
         self.assertEqual(v["maxValidatedTriples"], 17_098_746)
 
     def test_mutation_scores(self):
@@ -122,7 +128,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         facts = self.data["facts"]
         expected = {
             "campaignVersion": "v3.1.0", "cells": "143", "questions": "thirteen",
-            "comparisonsEqual": "984", "comparisons": "988", "faults": "113", "faultsMissed": "17",
+            "comparisonsEqual": "1,006", "comparisons": "1,014", "comparisonsOther": "eight", "faults": "113", "faultsMissed": "17",
             "faultClasses": "ten", "realTriples": "58.2M",
             "genes": "81", "requesters": "three", "cohort": "104", "restrictedGenes": "28",
             "wholeGenomeAgreement": "equals", "wholeGenomeFold": "400", "wholeGenomeIndexMinutes": "46",

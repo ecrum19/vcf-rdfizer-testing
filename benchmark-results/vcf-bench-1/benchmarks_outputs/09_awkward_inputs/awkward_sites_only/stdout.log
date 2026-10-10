@@ -1,7 +1,7 @@
 Step 1/5: Validating inputs ✅
-  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260924T161103
-  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260924T161103/logs/wrapper.log
-  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260924T161103/logs/progress.log
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/logs/progress.log
 Step 2/5: Ensuring Docker image is available ✅
 Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
   Spark partition hint: 8
@@ -16,19 +16,23 @@ Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation
     * Streaming expanded multi-sample RDF (no expanded helper TSVs)
     * Sample calls streamed: 0; FORMAT values: 0
     * Streaming structured header RDF
-    * Header lines typed: 8; contigs: 1
+    * Header lines typed: 6; contigs: 1
     * Streaming QUAL and structured INFO RDF
     * QUAL values streamed: 2; INFO values: 2; declarations: 1
-    * Triples produced: 245
+    * Triples produced: 183
     * Compression ✅
     * Semantic validation (aggregate, comunica): awkward_sites_only.nt.gz
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/reports/validation/awkward_sites_only
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/stages/validation/awkward_sites_only.json
     * Semantic validation (hdt, comunica): awkward_sites_only.hdt
+Validation results: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/reports/validation/awkward_sites_only__hdt
+Validation metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/stages/validation/awkward_sites_only__hdt.json
     * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/awkward_sites_only
       - RDF aggregate: awkward_sites_only.nt.gz
-      - RDF (.gz): 3.62 KB (retained after validation failure)
-      - HDT (.hdt): 5.23 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/awkward_sites_only/awkward_sites_only.hdt)
-Total triples produced (full run): 245
-Conversion process completed with failures.
-Run time (full mode): 15.94s
-Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260924T161103/wrapper_execution_times.csv
-Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260924T161103/summary.json
+      - RDF (.gz): 3.41 KB (removed after successful compression)
+      - HDT (.hdt): 4.76 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/awkward_sites_only/awkward_sites_only.hdt)
+Total triples produced (full run): 183
+Conversion process finished.
+Run time (full mode): 36.24s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20261010T102640/summary.json

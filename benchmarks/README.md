@@ -40,7 +40,7 @@ others and are not counted. Every family ran whole on one host.
 | `06_equivalence.sh` | RQ1, §1.1–1.2 | The thirteen source-comparison queries on a 10,000-line fixture, in both storage modes and sample profiles, on four SPARQL engines over three RDF artifacts and two HDT strategies, plus two required refusals | Section 3.1; Section S10 | `b2/benchmarks_outputs/06_equivalence/` |
 | `07_representation_axes.sh` | RQ3, §3.6; RQ1, §1.5 | Raw against structured INFO, basic against structured headers, and fixtures declaring VCF 4.1–4.5 or no version | Sections S7, S10 | `b1/benchmarks_outputs/07_representation_axes/` |
 | `08_robustness.sh` | RQ1, §1.3–1.4 | Determinism (two identical conversions), a compress–decompress round trip, index idempotence, and the 113-fault mutation score with the default and all shape profiles | Section 3.1; Figure 3b; Table S6 | `b1/benchmarks_outputs/08_robustness/` |
-| `09_awkward_inputs.sh` | RQ1, §1.5 | Eleven difficult fixtures, a conversion with the three demonstration linkers, and a custom-mapping cell | Section S7; Table S15 | `b1/benchmarks_outputs/09_awkward_inputs/` |
+| `09_awkward_inputs.sh` | RQ1, §1.5 | Eleven difficult fixtures, a conversion with the three demonstration linkers, and a custom-mapping cell. The sites-only cell is a rerun with the corrected fixture (below) | Section S7; Table S15 | `b1/benchmarks_outputs/09_awkward_inputs/` |
 | `10_feasibility.sh` | RQ3, §3.7 | One million HG005 records under three configurations, each with memory ceilings of 8, 16 and 31 GB | Section S10 | `b1/benchmarks_outputs/10_feasibility/` |
 | `11_covering_set.sh` | RQ1, §1.6 | Ten configuration rows on a 1,000-line fixture covering every value and every pair of values of seven options, each validated with shapes | Section S10 | `b1/benchmarks_outputs/11_covering_set/` |
 | `12_modes_smoke.sh` | RQ1, §1.6; §4.3 | Each operating mode on its own: TSV, conversion, validation, compression, decompression, HDT and COTTAS indexing | Section S10 | `b1/benchmarks_outputs/12_modes_smoke/` |
@@ -74,8 +74,8 @@ changes retrieval cost but not the graph.
 
 ## Runs made outside these scripts
 
-Four reported results came from small drivers that call the tool directly. Each
-driver is archived with its records.
+Five reported results came from small drivers that call the tool, or one cell of
+an experiment, directly. Each driver is archived with its records.
 
 | Result | RQ, design | Driver | Records |
 | --- | --- | --- | --- |
@@ -83,6 +83,7 @@ driver is archived with its records.
 | Minimal RDF setup and the repeated-question crossover: `13_query_cost`'s large input converted to N-Triples only (Figure 6a) | RQ3, §3.8 | `run_nt_only.sh` | `b2/nt-only/` |
 | Consumer WGS validation run: the first 250,000 NG131FQA1I records, validated on QLever with batched default shapes (Figure 3a; Section S4.2) | RQ1, §1.7 | `run_v331.sh`, job `consumer_wgs` | `b2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
 | Release conversion check: v3.3.1 and v3.1.0 write the same sorted triples for 100,000 HG005 records (Section S6.2) | RQ3, §3.10 | `run_v331.sh`, job `bridge` | `b2/v331-rerun/bridge/` |
+| `09`'s sites-only cell, rerun on 2026-10-10 because the campaign's fixture declared a FORMAT column without samples and its paired validation could not run (Section S7; Table S15) | RQ1, §1.5 | `rerun_sites_only.sh`: `bm_run` with `09`'s arguments, v3.1.0 | `b1/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/`; driver and log in `b1/sites-only-rerun/` |
 
 ## Supporting code
 
