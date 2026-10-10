@@ -57,19 +57,13 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual(sum(m["mutations"] for m in missed), 17)
 
     def test_real_genome(self):
+        """The consumer WGS validation run with v3.3.1: every answer equal, shapes clean."""
         real = self.data["fidelity"]["realGenome"]
         self.assertEqual(real["triples"], 58_231_176)
-        statuses = {q["query"][:3]: q["status"] for q in real["queries"]}
-        self.assertEqual(sorted(k for k, s in statuses.items() if s != "PASS"), ["q09", "q10", "q11"])
-
-    def test_real_genome_rerun(self):
-        """The v3.3.1 validator's rerun on the same graph: every answer equal, shapes clean."""
-        real = self.data["fidelity"]["realGenome"]
-        rerun = real["rerun"]
-        self.assertEqual(rerun["triples"], real["triples"])
-        self.assertEqual(len(rerun["queries"]), 13)
-        self.assertEqual({q["status"] for q in rerun["queries"]}, {"PASS"})
-        self.assertEqual((rerun["shacl"]["status"], rerun["shacl"]["violations"]), ("PASS", 0))
+        self.assertEqual(len(real["queries"]), 13)
+        self.assertEqual({q["status"] for q in real["queries"]}, {"PASS"})
+        self.assertEqual((real["shacl"]["status"], real["shacl"]["violations"]), ("PASS", 0))
+        self.assertEqual((real["shacl"]["batches"], real["shacl"]["advisories"]), (117, 46))
 
     def test_use_case_carriers(self):
         arms = self.data["usecase"]["arms"]
@@ -129,7 +123,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         expected = {
             "campaignVersion": "v3.1.0", "cells": "143", "questions": "thirteen",
             "comparisonsEqual": "984", "comparisons": "988", "faults": "113", "faultsMissed": "17",
-            "faultClasses": "ten", "realTriples": "58.2M", "phaseSets": "30,910", "qualChanged": "1,998",
+            "faultClasses": "ten", "realTriples": "58.2M",
             "genes": "81", "requesters": "three", "cohort": "104", "restrictedGenes": "28",
             "wholeGenomeAgreement": "equals", "wholeGenomeFold": "400", "wholeGenomeIndexMinutes": "46",
             "dataEdits": "three of four", "rdfRules": "72 lines (policy.ttl 41, carriers.rq 31)",

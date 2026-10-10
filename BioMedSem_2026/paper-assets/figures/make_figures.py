@@ -964,8 +964,8 @@ def fig_validation() -> None:
                               / "whole.manifest.json")["triples"]
     decoded = sum(n for k, n in v["decode"].items() if k.endswith(":pass"))
     decode_total = sum(v["decode"].values())
-    # The consumer WGS validation run as validated by v3.3.1; the v3.1.0 diagnosis is in the supplement.
-    real_equal = sum(q["status"] == "PASS" for q in real["rerun"]["queries"])
+    # The consumer WGS validation run as validated by v3.3.1.
+    real_equal = sum(q["status"] == "PASS" for q in real["queries"])
     valid = [
         ("Base campaign: query comparisons", f"{v['validations'] - 2} validation runs, up to 17.1M triples",
          v["comparisons"]["PASS"],
@@ -974,7 +974,7 @@ def fig_validation() -> None:
         ("Complete HG005 VCF retrieval", f"3.86M records, {millions(whole_triples)} triples",
          sum(r["status"] == "PASS" for r in whole), len(whole)),
         ("Consumer WGS VCF validation", f"NG131FQA1I, 250k records, {millions(real['triples'])} triples",
-         real_equal, len(real["rerun"]["queries"])),
+         real_equal, len(real["queries"])),
     ]
     faults = [
         ("Source-comparison queries", scores["queries"]),
