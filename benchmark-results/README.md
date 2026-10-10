@@ -6,6 +6,11 @@ reports. Every file here is byte-identical to the one `main` had at commit
 `66f53577`; nothing was edited or removed when it moved. (`BioMedSem_2026/benchmark-results/`
 on this branch is a separate, older copy: the repository as it stood on 2026-10-01.)
 
+One record came later and to a new path: experiment 09's first sites-only cell,
+which `main` replaced with its rerun on 2026-10-10. It sits under
+`benchmarks_outputs__superseded/` with a README; its files are still
+byte-identical to `main` at `66f53577`.
+
 Each directory is one of four kinds:
 - **pre-release**: produced by a development build. The paper reports a later
   run with a published release.
@@ -32,6 +37,7 @@ The paper reports the v3.1.0 campaign in `vcf-bench-{1,2}/benchmarks_outputs/` o
 | `vcf-bench-1/benchmarks_outputs__superseded/13_query_cost__format_item_bug__20260916T104331/` | superseded | Query cost on a build with a FORMAT-item defect, which produced three COTTAS mismatches | |
 | `vcf-bench-1/benchmarks_outputs__superseded/08_robustness__no_shacl_host__20260924T132739/` | superseded | v3.1.0 robustness run on a host without pyshacl; rerun as `rerun08.log` on `main` | |
 | `vcf-bench-1/benchmarks_outputs__superseded/09_awkward_inputs__no_network__20260924T160616/` | superseded | v3.1.0 difficult-inputs run without network for the demonstration linkers; rerun as `rerun09_network.log` on `main` | |
+| `vcf-bench-1/benchmarks_outputs__superseded/09_awkward_inputs__malformed_sites_only__20260924T161103/` | superseded | v3.1.0 sites-only cell of `09` on a malformed fixture (a FORMAT column without samples, which bcftools rejects): 245 triples, and neither paired validation ran a query. Rerun on 2026-10-10 with a conformant fixture; that cell is on `main` ([README](vcf-bench-1/benchmarks_outputs__superseded/09_awkward_inputs__malformed_sites_only__20260924T161103/README.md)) | Sites-only fixture: the fixture defect and its correction (defects table) |
 | `vcf-bench-2/benchmarks_outputs__stalled/` | stopped | Two `06_equivalence` runs in which pycottas' rdflib Store did not finish `q05_sample_genotype_counts` on the condensed encoding, after 41 h and then 10 h; in-process timeouts did not stop it | COTTAS query execution (defects table). The reported `06_equivalence` uses the DuckDB-backed endpoint instead |
 | `vcf-bench-1/benchmarks_outputs__partial/`, `vcf-bench-2/benchmarks_outputs__partial/` | failed | Cells of `07` and `06` interrupted before `bench.json` was written | |
 | `vcf-bench-2/benchmarks_outputs__offsplit/` | not reported | `04_scaling_records` started on the host that did not own it | |
