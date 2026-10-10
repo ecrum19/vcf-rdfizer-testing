@@ -1,0 +1,58 @@
+{
+  "run_id": "20260924T094916",
+  "timestamp": "2026-09-24T09:49:16",
+  "stage": "validation",
+  "validation_id": "test-10k",
+  "vcf_path": "/home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.nt.gz",
+  "rdf_format": "nt.gz",
+  "engine": "comunica",
+  "engines": [
+    "comunica",
+    "qlever",
+    "hdt",
+    "cottas"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/run_metrics/test-10k__20260924T094916/reports/validation/test-10k",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/run_metrics/test-10k__20260924T094916/reports/validation/test-10k/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS",
+    "cottas": "PASS",
+    "hdt": "PASS",
+    "qlever": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 137.57679242221639,
+      "cottas": 617.8704545074143,
+      "hdt": 158.19453239114955,
+      "qlever": 6.820131778717041
+    },
+    "engineSetupSeconds": {
+      "comunica": 11.99627474276349,
+      "cottas": 39.167782835196704,
+      "hdt": 10.790871064178646,
+      "qlever": 2.0744653940200806
+    },
+    "oracleSeconds": 0.6441771169193089
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/run_metrics/test-10k__20260924T094916/reports/validation/test-10k/benchmark.csv",
+  "input_rdf_size_bytes": 4058923,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 991.14008082496,
+    "user_seconds": 190.5,
+    "sys_seconds": 9.46,
+    "max_rss_kb": 2161540
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  },
+  "rdf_gzip_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/small__r3/out/test-10k/test-10k.nt.gz"
+}

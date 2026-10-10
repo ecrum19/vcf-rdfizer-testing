@@ -1,0 +1,262 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/run_metrics/test-larger__20260911T102331
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/run_metrics/test-larger__20260911T102331/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/run_metrics/test-larger__20260911T102331/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: test-larger.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample RDF streaming: 20,000 variants, 20,000 calls
+    * Sample RDF streaming: 30,000 variants, 30,000 calls
+    * Sample RDF streaming: 40,000 variants, 40,000 calls
+    * Sample RDF streaming: 50,000 variants, 50,000 calls
+    * Sample RDF streaming: 60,000 variants, 60,000 calls
+    * Sample RDF streaming: 70,000 variants, 70,000 calls
+    * Sample RDF streaming: 80,000 variants, 80,000 calls
+    * Sample RDF streaming: 90,000 variants, 90,000 calls
+    * Sample RDF streaming: 100,000 variants, 100,000 calls
+    * Sample RDF streaming: 110,000 variants, 110,000 calls
+    * Sample RDF streaming: 120,000 variants, 120,000 calls
+    * Sample RDF streaming: 130,000 variants, 130,000 calls
+    * Sample RDF streaming: 140,000 variants, 140,000 calls
+    * Sample RDF streaming: 150,000 variants, 150,000 calls
+    * Sample RDF streaming: 160,000 variants, 160,000 calls
+    * Sample RDF streaming: 170,000 variants, 170,000 calls
+    * Sample RDF streaming: 180,000 variants, 180,000 calls
+    * Sample RDF streaming: 190,000 variants, 190,000 calls
+    * Sample RDF streaming: 200,000 variants, 200,000 calls
+    * Sample RDF streaming: 210,000 variants, 210,000 calls
+    * Sample RDF streaming: 220,000 variants, 220,000 calls
+    * Sample RDF streaming: 230,000 variants, 230,000 calls
+    * Sample RDF streaming: 240,000 variants, 240,000 calls
+    * Sample RDF streaming: 250,000 variants, 250,000 calls
+    * Sample RDF streaming: 260,000 variants, 260,000 calls
+    * Sample RDF streaming: 270,000 variants, 270,000 calls
+    * Sample RDF streaming: 280,000 variants, 280,000 calls
+    * Sample RDF streaming: 290,000 variants, 290,000 calls
+    * Sample RDF streaming: 300,000 variants, 300,000 calls
+    * Sample RDF streaming: 310,000 variants, 310,000 calls
+    * Sample RDF streaming: 320,000 variants, 320,000 calls
+    * Sample RDF streaming: 330,000 variants, 330,000 calls
+    * Sample RDF streaming: 340,000 variants, 340,000 calls
+    * Sample RDF streaming: 350,000 variants, 350,000 calls
+    * Sample RDF streaming: 360,000 variants, 360,000 calls
+    * Sample RDF streaming: 370,000 variants, 370,000 calls
+    * Sample RDF streaming: 380,000 variants, 380,000 calls
+    * Sample RDF streaming: 390,000 variants, 390,000 calls
+    * Sample RDF streaming: 400,000 variants, 400,000 calls
+    * Sample RDF streaming: 410,000 variants, 410,000 calls
+    * Sample RDF streaming: 420,000 variants, 420,000 calls
+    * Sample RDF streaming: 430,000 variants, 430,000 calls
+    * Sample RDF streaming: 440,000 variants, 440,000 calls
+    * Sample RDF streaming: 450,000 variants, 450,000 calls
+    * Sample RDF streaming: 460,000 variants, 460,000 calls
+    * Sample RDF streaming: 470,000 variants, 470,000 calls
+    * Sample RDF streaming: 480,000 variants, 480,000 calls
+    * Sample RDF streaming: 490,000 variants, 490,000 calls
+    * Sample RDF streaming: 500,000 variants, 500,000 calls
+    * Sample RDF streaming: 510,000 variants, 510,000 calls
+    * Sample RDF streaming: 520,000 variants, 520,000 calls
+    * Sample RDF streaming: 530,000 variants, 530,000 calls
+    * Sample RDF streaming: 540,000 variants, 540,000 calls
+    * Sample RDF streaming: 550,000 variants, 550,000 calls
+    * Sample RDF streaming: 560,000 variants, 560,000 calls
+    * Sample RDF streaming: 570,000 variants, 570,000 calls
+    * Sample RDF streaming: 580,000 variants, 580,000 calls
+    * Sample RDF streaming: 590,000 variants, 590,000 calls
+    * Sample RDF streaming: 600,000 variants, 600,000 calls
+    * Sample RDF streaming: 610,000 variants, 610,000 calls
+    * Sample RDF streaming: 620,000 variants, 620,000 calls
+    * Sample RDF streaming: 630,000 variants, 630,000 calls
+    * Sample RDF streaming: 640,000 variants, 640,000 calls
+    * Sample RDF streaming: 650,000 variants, 650,000 calls
+    * Sample RDF streaming: 660,000 variants, 660,000 calls
+    * Sample RDF streaming: 670,000 variants, 670,000 calls
+    * Sample RDF streaming: 680,000 variants, 680,000 calls
+    * Sample RDF streaming: 690,000 variants, 690,000 calls
+    * Sample RDF streaming: 700,000 variants, 700,000 calls
+    * Sample RDF streaming: 710,000 variants, 710,000 calls
+    * Sample RDF streaming: 720,000 variants, 720,000 calls
+    * Sample RDF streaming: 730,000 variants, 730,000 calls
+    * Sample RDF streaming: 740,000 variants, 740,000 calls
+    * Sample RDF streaming: 750,000 variants, 750,000 calls
+    * Sample RDF streaming: 760,000 variants, 760,000 calls
+    * Sample RDF streaming: 770,000 variants, 770,000 calls
+    * Sample RDF streaming: 780,000 variants, 780,000 calls
+    * Sample RDF streaming: 790,000 variants, 790,000 calls
+    * Sample RDF streaming: 800,000 variants, 800,000 calls
+    * Sample RDF streaming: 810,000 variants, 810,000 calls
+    * Sample RDF streaming: 820,000 variants, 820,000 calls
+    * Sample RDF streaming: 830,000 variants, 830,000 calls
+    * Sample RDF streaming: 840,000 variants, 840,000 calls
+    * Sample RDF streaming: 850,000 variants, 850,000 calls
+    * Sample RDF streaming: 860,000 variants, 860,000 calls
+    * Sample RDF streaming: 870,000 variants, 870,000 calls
+    * Sample RDF streaming: 880,000 variants, 880,000 calls
+    * Sample RDF streaming: 890,000 variants, 890,000 calls
+    * Sample RDF streaming: 900,000 variants, 900,000 calls
+    * Sample RDF streaming: 910,000 variants, 910,000 calls
+    * Sample RDF streaming: 920,000 variants, 920,000 calls
+    * Sample RDF streaming: 930,000 variants, 930,000 calls
+    * Sample RDF streaming: 940,000 variants, 940,000 calls
+    * Sample RDF streaming: 950,000 variants, 950,000 calls
+    * Sample RDF streaming: 960,000 variants, 960,000 calls
+    * Sample RDF streaming: 970,000 variants, 970,000 calls
+    * Sample RDF streaming: 980,000 variants, 980,000 calls
+    * Sample RDF streaming: 990,000 variants, 990,000 calls
+    * Sample RDF streaming: 1,000,000 variants, 1,000,000 calls
+    * Sample RDF streaming: 1,010,000 variants, 1,010,000 calls
+    * Sample RDF streaming: 1,020,000 variants, 1,020,000 calls
+    * Sample RDF streaming: 1,030,000 variants, 1,030,000 calls
+    * Sample RDF streaming: 1,040,000 variants, 1,040,000 calls
+    * Sample RDF streaming: 1,050,000 variants, 1,050,000 calls
+    * Sample RDF streaming: 1,060,000 variants, 1,060,000 calls
+    * Sample RDF streaming: 1,070,000 variants, 1,070,000 calls
+    * Sample RDF streaming: 1,080,000 variants, 1,080,000 calls
+    * Sample RDF streaming: 1,090,000 variants, 1,090,000 calls
+    * Sample RDF streaming: 1,100,000 variants, 1,100,000 calls
+    * Sample RDF streaming: 1,110,000 variants, 1,110,000 calls
+    * Sample RDF streaming: 1,120,000 variants, 1,120,000 calls
+    * Sample RDF streaming: 1,130,000 variants, 1,130,000 calls
+    * Sample RDF streaming: 1,140,000 variants, 1,140,000 calls
+    * Sample RDF streaming: 1,150,000 variants, 1,150,000 calls
+    * Sample calls streamed: 1,155,741; FORMAT values: 6,183,585
+    * Streaming structured header RDF
+    * Header lines typed: 243; contigs: 195
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 153,545 values
+    * INFO RDF streaming: 20,000 variants, 308,188 values
+    * INFO RDF streaming: 30,000 variants, 465,673 values
+    * INFO RDF streaming: 40,000 variants, 621,337 values
+    * INFO RDF streaming: 50,000 variants, 776,862 values
+    * INFO RDF streaming: 60,000 variants, 932,392 values
+    * INFO RDF streaming: 70,000 variants, 1,090,088 values
+    * INFO RDF streaming: 80,000 variants, 1,248,557 values
+    * INFO RDF streaming: 90,000 variants, 1,405,780 values
+    * INFO RDF streaming: 100,000 variants, 1,561,735 values
+    * INFO RDF streaming: 110,000 variants, 1,718,717 values
+    * INFO RDF streaming: 120,000 variants, 1,873,892 values
+    * INFO RDF streaming: 130,000 variants, 2,029,190 values
+    * INFO RDF streaming: 140,000 variants, 2,183,053 values
+    * INFO RDF streaming: 150,000 variants, 2,341,712 values
+    * INFO RDF streaming: 160,000 variants, 2,496,478 values
+    * INFO RDF streaming: 170,000 variants, 2,650,272 values
+    * INFO RDF streaming: 180,000 variants, 2,806,311 values
+    * INFO RDF streaming: 190,000 variants, 2,957,239 values
+    * INFO RDF streaming: 200,000 variants, 3,109,877 values
+    * INFO RDF streaming: 210,000 variants, 3,264,435 values
+    * INFO RDF streaming: 220,000 variants, 3,421,050 values
+    * INFO RDF streaming: 230,000 variants, 3,576,977 values
+    * INFO RDF streaming: 240,000 variants, 3,737,207 values
+    * INFO RDF streaming: 250,000 variants, 3,894,101 values
+    * INFO RDF streaming: 260,000 variants, 4,051,235 values
+    * INFO RDF streaming: 270,000 variants, 4,211,904 values
+    * INFO RDF streaming: 280,000 variants, 4,366,104 values
+    * INFO RDF streaming: 290,000 variants, 4,518,525 values
+    * INFO RDF streaming: 300,000 variants, 4,675,189 values
+    * INFO RDF streaming: 310,000 variants, 4,831,402 values
+    * INFO RDF streaming: 320,000 variants, 4,987,076 values
+    * INFO RDF streaming: 330,000 variants, 5,144,481 values
+    * INFO RDF streaming: 340,000 variants, 5,301,402 values
+    * INFO RDF streaming: 350,000 variants, 5,457,571 values
+    * INFO RDF streaming: 360,000 variants, 5,612,254 values
+    * INFO RDF streaming: 370,000 variants, 5,766,340 values
+    * INFO RDF streaming: 380,000 variants, 5,922,664 values
+    * INFO RDF streaming: 390,000 variants, 6,081,375 values
+    * INFO RDF streaming: 400,000 variants, 6,239,600 values
+    * INFO RDF streaming: 410,000 variants, 6,395,805 values
+    * INFO RDF streaming: 420,000 variants, 6,552,264 values
+    * INFO RDF streaming: 430,000 variants, 6,706,821 values
+    * INFO RDF streaming: 440,000 variants, 6,863,978 values
+    * INFO RDF streaming: 450,000 variants, 7,021,504 values
+    * INFO RDF streaming: 460,000 variants, 7,183,803 values
+    * INFO RDF streaming: 470,000 variants, 7,341,079 values
+    * INFO RDF streaming: 480,000 variants, 7,495,796 values
+    * INFO RDF streaming: 490,000 variants, 7,656,184 values
+    * INFO RDF streaming: 500,000 variants, 7,813,170 values
+    * INFO RDF streaming: 510,000 variants, 7,968,084 values
+    * INFO RDF streaming: 520,000 variants, 8,125,471 values
+    * INFO RDF streaming: 530,000 variants, 8,279,858 values
+    * INFO RDF streaming: 540,000 variants, 8,436,598 values
+    * INFO RDF streaming: 550,000 variants, 8,595,544 values
+    * INFO RDF streaming: 560,000 variants, 8,751,318 values
+    * INFO RDF streaming: 570,000 variants, 8,907,894 values
+    * INFO RDF streaming: 580,000 variants, 9,062,712 values
+    * INFO RDF streaming: 590,000 variants, 9,213,061 values
+    * INFO RDF streaming: 600,000 variants, 9,370,314 values
+    * INFO RDF streaming: 610,000 variants, 9,526,460 values
+    * INFO RDF streaming: 620,000 variants, 9,681,647 values
+    * INFO RDF streaming: 630,000 variants, 9,837,769 values
+    * INFO RDF streaming: 640,000 variants, 9,995,071 values
+    * INFO RDF streaming: 650,000 variants, 10,147,849 values
+    * INFO RDF streaming: 660,000 variants, 10,301,861 values
+    * INFO RDF streaming: 670,000 variants, 10,455,665 values
+    * INFO RDF streaming: 680,000 variants, 10,609,624 values
+    * INFO RDF streaming: 690,000 variants, 10,763,814 values
+    * INFO RDF streaming: 700,000 variants, 10,923,467 values
+    * INFO RDF streaming: 710,000 variants, 11,080,575 values
+    * INFO RDF streaming: 720,000 variants, 11,238,610 values
+    * INFO RDF streaming: 730,000 variants, 11,396,740 values
+    * INFO RDF streaming: 740,000 variants, 11,551,297 values
+    * INFO RDF streaming: 750,000 variants, 11,708,487 values
+    * INFO RDF streaming: 760,000 variants, 11,863,703 values
+    * INFO RDF streaming: 770,000 variants, 12,023,041 values
+    * INFO RDF streaming: 780,000 variants, 12,182,241 values
+    * INFO RDF streaming: 790,000 variants, 12,342,760 values
+    * INFO RDF streaming: 800,000 variants, 12,499,595 values
+    * INFO RDF streaming: 810,000 variants, 12,651,717 values
+    * INFO RDF streaming: 820,000 variants, 12,808,342 values
+    * INFO RDF streaming: 830,000 variants, 12,963,808 values
+    * INFO RDF streaming: 840,000 variants, 13,121,271 values
+    * INFO RDF streaming: 850,000 variants, 13,279,066 values
+    * INFO RDF streaming: 860,000 variants, 13,436,265 values
+    * INFO RDF streaming: 870,000 variants, 13,596,375 values
+    * INFO RDF streaming: 880,000 variants, 13,750,561 values
+    * INFO RDF streaming: 890,000 variants, 13,905,496 values
+    * INFO RDF streaming: 900,000 variants, 14,061,519 values
+    * INFO RDF streaming: 910,000 variants, 14,216,982 values
+    * INFO RDF streaming: 920,000 variants, 14,371,152 values
+    * INFO RDF streaming: 930,000 variants, 14,528,245 values
+    * INFO RDF streaming: 940,000 variants, 14,682,479 values
+    * INFO RDF streaming: 950,000 variants, 14,838,748 values
+    * INFO RDF streaming: 960,000 variants, 14,994,879 values
+    * INFO RDF streaming: 970,000 variants, 15,152,752 values
+    * INFO RDF streaming: 980,000 variants, 15,312,935 values
+    * INFO RDF streaming: 990,000 variants, 15,475,224 values
+    * INFO RDF streaming: 1,000,000 variants, 15,633,657 values
+    * INFO RDF streaming: 1,010,000 variants, 15,789,180 values
+    * INFO RDF streaming: 1,020,000 variants, 15,946,526 values
+    * INFO RDF streaming: 1,030,000 variants, 16,103,805 values
+    * INFO RDF streaming: 1,040,000 variants, 16,260,615 values
+    * INFO RDF streaming: 1,050,000 variants, 16,416,558 values
+    * INFO RDF streaming: 1,060,000 variants, 16,569,803 values
+    * INFO RDF streaming: 1,070,000 variants, 16,726,143 values
+    * INFO RDF streaming: 1,080,000 variants, 16,882,801 values
+    * INFO RDF streaming: 1,090,000 variants, 17,038,485 values
+    * INFO RDF streaming: 1,100,000 variants, 17,197,632 values
+    * INFO RDF streaming: 1,110,000 variants, 17,354,653 values
+    * INFO RDF streaming: 1,120,000 variants, 17,514,752 values
+    * INFO RDF streaming: 1,130,000 variants, 17,668,588 values
+    * INFO RDF streaming: 1,140,000 variants, 17,827,599 values
+    * INFO RDF streaming: 1,150,000 variants, 17,982,796 values
+    * QUAL values streamed: 1,155,741; INFO values: 18,071,533; declarations: 18
+    * Triples produced: 215,948,067
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/test-larger
+      - RDF aggregate: test-larger.nt.gz
+      - RDF (.gz): 976.74 MB (removed after successful compression)
+      - HDT (.hdt): 1.48 GB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/test-larger/test-larger.hdt)
+      - COTTAS (.cottas): 558.22 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/test-larger/test-larger.cottas)
+Total triples produced (full run): 215,948,067
+Conversion process finished.
+Run time (full mode): 4h 40m 16.4s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/run_metrics/test-larger__20260911T102331/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/test-larger__space-optimized__r2/out/run_metrics/test-larger__20260911T102331/summary.json

@@ -1,0 +1,66 @@
+{
+  "scale": "whole",
+  "complete": true,
+  "writtenEpoch": 1790404584,
+  "sourceVcf": {
+    "path": "/home/ubuntu/vcf-rdfizer-testing/vcf_data/HG005_GRCh38.vcf.gz",
+    "sha256": "42a86ee9bf1ea1b8e4ee6a352fc24d7a52b9030c62ee56baeb978e3dff475cf4"
+  },
+  "dataset": "HG005_GRCh38",
+  "triples": 657425805,
+  "artifacts": {
+    "nt.gz": {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/scale_store/whole/HG005_GRCh38/HG005_GRCh38.nt.gz",
+      "bytes": 2885155620,
+      "sha256": "ed0b45870da3a9cef1dcd5acc3ebd49f7107d315f72b2df2f445830b9fe43f48"
+    },
+    "hdt": {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/scale_store/whole/HG005_GRCh38/HG005_GRCh38.hdt",
+      "bytes": 4630331497,
+      "sha256": "e381611bd73c034be494a9388664b0f5789a4ed085bbf503d87dce78c3f97f32"
+    },
+    "cottas": {
+      "path": "/home/ubuntu/vcf-rdfizer-testing/scale_store/whole/HG005_GRCh38/HG005_GRCh38.cottas",
+      "bytes": 1503903313,
+      "sha256": "14bf8da2d021c4e7662063e6649455795a17e5b2da2ebb17c2a15f45e223f6b8"
+    }
+  },
+  "provenance": {
+    "toolCommit": "245fe1ff9c3f8f00db10d7846359d66194fe72c7",
+    "imageRef": "ecrum19/vcf-rdfizer:3.1.0",
+    "imageDigest": "ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa",
+    "host": "vcf-bench-3",
+    "buildWallSeconds": 51286,
+    "buildCell": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/15_scale_prepare/whole",
+    "command": [
+      "python3",
+      "/home/ubuntu/VCF-RDFizer/vcf_rdfizer.py",
+      "--mode",
+      "full",
+      "--input",
+      "/home/ubuntu/vcf-rdfizer-testing/vcf_data/HG005_GRCh38.vcf.gz",
+      "--sample-representation",
+      "expanded",
+      "--info-representation",
+      "structured",
+      "--rdf-storage-mode",
+      "space-optimized",
+      "--hdt-strategy",
+      "partitioned",
+      "--representations",
+      "hdt,cottas",
+      "--rdf-compression",
+      "gzip",
+      "--artifact-compression",
+      "none",
+      "--no-shacl",
+      "--spark-partitions",
+      "8",
+      "--image",
+      "ecrum19/vcf-rdfizer:3.1.0",
+      "--no-build",
+      "--out",
+      "/home/ubuntu/vcf-rdfizer-testing/scale_store/whole"
+    ]
+  }
+}

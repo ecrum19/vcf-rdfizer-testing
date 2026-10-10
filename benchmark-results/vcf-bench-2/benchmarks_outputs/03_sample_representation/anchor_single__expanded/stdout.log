@@ -1,0 +1,31 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/run_metrics/test-10k__20260923T131828
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/run_metrics/test-10k__20260923T131828/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/run_metrics/test-10k__20260923T131828/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: test-10k.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 9,986; FORMAT values: 19,972
+    * Streaming structured header RDF
+    * Header lines typed: 13; contigs: 2
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 9,986; INFO values: 29,958; declarations: 3
+    * Triples produced: 958,919
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/test-10k
+      - RDF aggregate: test-10k.nt.gz
+      - RDF (.gz): 3.87 MB (removed after successful compression)
+      - HDT (.hdt): 5.75 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/test-10k/test-10k.hdt)
+Total triples produced (full run): 958,919
+Conversion process finished.
+Run time (full mode): 27.04s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/run_metrics/test-10k__20260923T131828/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/anchor_single__expanded/out/run_metrics/test-10k__20260923T131828/summary.json

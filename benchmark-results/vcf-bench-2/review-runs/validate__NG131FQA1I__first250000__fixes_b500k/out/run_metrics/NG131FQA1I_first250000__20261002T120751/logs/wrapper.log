@@ -1,0 +1,438 @@
+
+[2026-10-02T12:07:51] $ docker version
+Client: Docker Engine - Community
+ Version:           29.7.2
+ API version:       1.55
+ Go version:        go1.26.5
+ Git commit:        a7dcaa6
+ Built:             Wed Aug  5 18:28:53 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.7.2
+  API version:      1.55 (minimum version 1.40)
+  Go version:       go1.26.5
+  Git commit:       6a43e3d
+  Built:            Wed Aug  5 18:28:53 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.3
+  GitCommit:        aad11006b869517fcd3009450b6f82da282e1a9b
+ runc:
+  Version:          1.4.3
+  GitCommit:        v1.4.3-0-gbb14dabe
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+[exit 0]
+
+[2026-10-02T12:07:51] $ docker image inspect vcf-rdfizer:dev-validation-fixes
+[
+    {
+        "Id": "sha256:29c371ada059d0755df464a4e9bab434ac326daf3e8a464395118a16921c5317",
+        "RepoTags": [
+            "vcf-rdfizer:dev-validation-fixes"
+        ],
+        "RepoDigests": [
+            "vcf-rdfizer@sha256:29c371ada059d0755df464a4e9bab434ac326daf3e8a464395118a16921c5317"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-02T11:57:58.959377564+02:00",
+        "Config": {
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-11.0.32.1+1",
+                "RMLSTREAMER_JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+                "HDTC_BIN=/usr/local/bin/hdtc",
+                "HDT_INDEX_MEMORY_LIMIT=512M",
+                "HDT_MERGE_MEMORY_LIMIT=512M",
+                "COTTAS_MERGE_BATCH_ROWS=2048",
+                "RDF2HDT_BIN=/usr/local/bin/rdf2hdt",
+                "HDT2RDF_BIN=/usr/local/bin/hdt2rdf",
+                "COTTAS_PYTHON_BIN=/opt/pycottas-venv/bin/python",
+                "QLEVER_INDEX_BUILDER_BIN=/opt/qlever/bin/qlever-index",
+                "QLEVER_SERVER_BIN=/opt/qlever/bin/qlever-server",
+                "LD_LIBRARY_PATH=/usr/local/lib"
+            ],
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.created": "2026-09-27T10:25:52.887617+00:00",
+                "org.opencontainers.image.description": "The Ubuntu container image maintained by Canonical\n\nUbuntu is a Debian-based Linux operating system that runs from the desktop to the cloud, to all your internet connected things.\nIt is the world's most popular operating system across public clouds and OpenStack clouds.\nIt is the number one platform for containers; from Docker to Kubernetes to LXD, Ubuntu can run your containers at scale.\nFast, secure and simple, Ubuntu powers millions of PCs worldwide.\n",
+                "org.opencontainers.image.title": "ubuntu",
+                "org.opencontainers.image.version": "26.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 832230524,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:f6e0e88dd8e11c81dba77d657b271e1ed7c33882e8f4dfaa7768cbaee94d94fc",
+                "sha256:f98d83061adc18abc1ffea46400be62b16d3da85c4e28563a97b3ff4cf7cca14",
+                "sha256:c059060ac13305713dd22e8b55f1d45f385385bc3c265329bfb010c8069b82b7",
+                "sha256:18ae9f4ac5947c897ab9dace68e2b5517075be5d7426f5d3fe2a3c7a9dee18b5",
+                "sha256:b97ee02504b36aa25f192062a8168699ca8cd469c654b202298c8dc13654c490",
+                "sha256:9d8a92da1dbee472e98e434fa2df72fd699cb8d98793e53fd30cc1b67ea46999",
+                "sha256:381cf9b663233c36fece81413702e6a02ffac986aadd832dec614f559729cd0a",
+                "sha256:5f12b7323f231927e8c0dbeb8937d1e652ef9bfa32b5601480f61f3461ff5ff3",
+                "sha256:d91345e38ec66bf8d77cafad6afc47a47e57f2126fe58da9d4c0c7268c9c9fbb",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:dabeab61b5931090452a76e5689c541906bbd5d251cadca1e66a2bccbfb24d00",
+                "sha256:0bef058e9683f63aa447db720498eb7ee315d69bd964ba03d26a2f9e6f862560",
+                "sha256:3016b09d73bd208b1c3882400f1eb0a0ace6a3b1db62da171d46a1cc709cd43a",
+                "sha256:4174e8db7e4be3ac33ef31a08992c2e49efe609a43369abe5aebb9291a21c133",
+                "sha256:daf8df829612194cd707b31215db0f5e9b7092ca8b0734098b53f93f9c136eda",
+                "sha256:e447a6c2ca084f920530b10228590d514287f220cdfed915f32ef75fe7a91a25",
+                "sha256:86247c48d92c2213737f837ee9ca66a96a7be6170d79648112097a383d0b1ff2",
+                "sha256:5aed3c35fcef92df75160aea15bf05c88fe6e1c8c450dc56353febe6bb6aee10",
+                "sha256:fa2bc5ea8bf59112ad82964a1144926254df21678fdfa2dbf387c8ccca0b4a76",
+                "sha256:eb1e326b8a1ce9d7af169c2724e68e9f5cce931f5d98d9d6e51b53abe4390b45",
+                "sha256:cf18fcaac4bd97c3218321a06699ff207264e7d5363c9c371610db99a87ec02f",
+                "sha256:01084909703690ddaa5f82711fd3fb426c5f45dd3505e17cfb597d735aa4e1f0",
+                "sha256:19218a1e1b05330bed0396764926510ccec65b821458215b1b11c03bd93d9349",
+                "sha256:e1799093275c6a2e2796e5498ed4405e01e1b66ca052c7f3061ecf1bb4420d93",
+                "sha256:2da8ee13ea6387f7bf3bd5efa4908a1351990005546dbbba122e2f74ec7e8f22",
+                "sha256:9b943bf21c465549d2486fb2c5a7a1f542bc20fcec84b8fabe9a4a1f922a7483",
+                "sha256:7c97e02fb59f7a206d91f80be64aae700eceba907800d8f38477bf3c4985418c",
+                "sha256:e89a619ee9a7b501e6e13be556cacf218cd1d6c0c9e6b4b04103d09d40e73748",
+                "sha256:6a1afa138c69f2eed32bf33fd36903c33b25021e6dcf65c89ce02424b4d149c8",
+                "sha256:9bfa43ca325d3ce8b4275f84836fb278fdf704ec7051be970178dfaeda5ca5fe",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-02T09:57:59.122671802Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:29c371ada059d0755df464a4e9bab434ac326daf3e8a464395118a16921c5317",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "zi1k153thi44u7w5g8km525wu",
+                    "CreatedAt": "2026-10-02T11:57:59.221241424+02:00"
+                }
+            ]
+        }
+    }
+]
+[exit 0]
+
+[2026-10-02T12:07:51] $ docker run --rm --label vcf-rdfizer.run=20261002T120751-71193 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/vcf_data/derived:/data/in:ro -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/.intermediate/tsv:/data/tsv -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/run_metrics/NG131FQA1I_first250000__20261002T120751:/data/metrics vcf-rdfizer:dev-validation-fixes bash -lc 'set -euo pipefail; rm -f /data/metrics/timings/tsv/NG131FQA1I_first250000.txt; if [[ -x /usr/bin/time ]] && /usr/bin/time --version >/dev/null 2>&1; then /usr/bin/time -v -o /data/metrics/timings/tsv/NG131FQA1I_first250000.txt -- bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/NG131FQA1I_first250000.vcf.gz /data/tsv; else { time -p bash /opt/vcf-rdfizer/vcf_as_tsv.sh /data/in/NG131FQA1I_first250000.vcf.gz /data/tsv; } > /data/metrics/timings/tsv/NG131FQA1I_first250000.txt 2>&1; fi'
+✅ Wrote: /data/tsv/NG131FQA1I_first250000.records.tsv
+✅ Wrote: /data/tsv/NG131FQA1I_first250000.header_lines.tsv
+✅ Wrote: /data/tsv/NG131FQA1I_first250000.file_metadata.tsv
+[exit 0]
+
+[2026-10-02T12:07:54] $ docker run --rm --label vcf-rdfizer.run=20261002T120751-71193 --user 1000:1000 -v /home/ubuntu/vcf-rdfizer-testing/vcf_data/derived:/data/in:ro -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/run_metrics/NG131FQA1I_first250000__20261002T120751/_generated_rules:/data/rules:ro -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/.intermediate/tsv:/data/tsv:ro -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out:/data/out -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/run_metrics/NG131FQA1I_first250000__20261002T120751:/data/metrics -w /data/rules -e JAR=/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar -e IN=/data/rules/NG131FQA1I_first250000.rules.ttl -e OUT_DIR=/data/out -e OUT_NAME=NG131FQA1I_first250000 -e RDF_STORAGE_MODE=space-optimized -e SPARK_PARTITIONS= -e RUN_ID=20261002T120751 -e TIMESTAMP=2026-10-02T12:07:51 -e TSV_EXIT_CODE=0 -e TSV_WALL_SECONDS=3.001938 -e TSV_USER_SECONDS=2.370000 -e TSV_SYS_SECONDS=0.130000 -e TSV_MAX_RSS_KB=7680 -e TSV_OUTPUT_SIZE_BYTES=72953117 -e 'TSV_OUTPUT_PATH=/data/tsv/NG131FQA1I_first250000.records.tsv|/data/tsv/NG131FQA1I_first250000.header_lines.tsv|/data/tsv/NG131FQA1I_first250000.file_metadata.tsv' -e IN_VCF=/data/in/NG131FQA1I_first250000.vcf.gz -e LOGDIR=/data/metrics -e PROGRESS_FILE=/data/metrics/.progress/rmlstreamer-NG131FQA1I_first250000.jsonl vcf-rdfizer:dev-validation-fixes bash /opt/vcf-rdfizer/run_conversion.sh
+10:07:55,744 INFO  io.rml.framework.Main$                                        - Mapping file: /data/rules/NG131FQA1I_first250000.rules.ttl
+Job name: RMLStreamer
+Base IRI: /
+Parallelise over local task slots: true
+Maximum parallelism: None
+Post processor: None
+Checkpoint interval: /
+Auto Watermark interval: 50
+Output method: File
+Output file: /data/out/NG131FQA1I_first250000/.rmlstreamer-parts-NG131FQA1I_first250000-1
+Kafka broker list: /
+Kafka topic: /
+Kafka topic partition id: /
+Output TCP socket: /
+Function description locations: None
+Discard output: false
+10:07:56,379 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,385 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,387 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,388 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,389 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,390 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,392 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,393 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,394 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,395 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,395 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+10:07:56,396 WARN  io.rml.framework.core.model.csvw.CSVWDialect                  - Only csvw:delimiter is supported, other dialect options will be ignored!
+Number of standard stream triple maps: 12
+Total extracted std triple maps: 12
+Number of standard stream triple maps: 0
+Total extracted std triple maps: 0
+10:07:56,488 INFO  io.rml.framework.Main$                                        - Dataset Job Found.
+10:07:56,547 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+10:07:56,559 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+10:07:56,560 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+10:07:56,561 INFO  io.rml.framework.Main$                                        - 2 Triple Maps are found.
+10:07:56,561 INFO  io.rml.framework.Main$                                        - 3 Triple Maps are found.
+10:08:00,567 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - Log file environment variable 'log.file' is not set.
+10:08:00,568 WARN  org.apache.flink.runtime.webmonitor.WebMonitorUtils           - JobManager log files are unavailable in the web dashboard. Log file location not found in environment variable 'log.file' or configuration key 'web.log.path'.
+10:08:01,289 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,292 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,292 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,292 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,291 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,290 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,316 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,313 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,294 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,294 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,321 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,346 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,356 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,350 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,350 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,366 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,406 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,412 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,429 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,430 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,440 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,437 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,441 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,450 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,450 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,459 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,464 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,472 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,491 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,502 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,527 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,540 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,547 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,556 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,551 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,548 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,573 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,576 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,589 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+10:08:01,597 WARN  org.apache.flink.metrics.MetricGroup                          - The operator name DataSource (at org.apache.flink.api.scala.ExecutionEnvironment.createInput(ExecutionEnvironment.scala:360) (io.rml.framework.flink.source.CSVInputFormat)) exceeded the 80 characters length limit and was truncated.
+WARNING: metrics header mismatch; backed up to /data/metrics/metrics_csv_bak_20261002T120751.csv and creating new metrics file.
+Done.
+JSON: /data/metrics/stages/conversion/NG131FQA1I_first250000.json
+CSV:  /data/metrics/metrics.csv
+[exit 0]
+
+[2026-10-02T12:12:07] $ docker run --rm --label vcf-rdfizer.run=20261002T120751-71193 --user 1000:1000 --init -v /home/ubuntu/vcf-rdfizer-testing/vcf_data/derived:/data/vcf:ro -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/NG131FQA1I_first250000:/data/rdf:ro -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/run_metrics/NG131FQA1I_first250000__20261002T120751/reports/validation/NG131FQA1I_first250000:/data/validation -v /home/ubuntu/vrdev-test/review-runs/validate__NG131FQA1I__first250000__fixes_b500k/out/run_metrics/NG131FQA1I_first250000__20261002T120751:/data/metrics -v /home/ubuntu/vrdev-test/validation-fixes/vcf_rdfizer_data/shacl:/data/shacl:ro -v /home/ubuntu/vrdev-test/validation-fixes/vcf_rdfizer_data/ontology:/data/shacl-ontology:ro vcf-rdfizer:dev-validation-fixes /usr/bin/time -v -o /data/metrics/timings/validation/NG131FQA1I_first250000.txt -- /opt/pycottas-venv/bin/python /opt/vcf-rdfizer/validation/validation_runner.py --vcf /data/vcf/NG131FQA1I_first250000.vcf.gz --rdf /data/rdf/NG131FQA1I_first250000.nt.gz --rdf-format nt.gz --engine qlever --shacl-shapes /data/shacl/vcf-core-vocabulary.shacl.ttl --shacl-ontology /data/shacl-ontology/vcf-core-vocabulary.bundle.ttl --representation expanded --info-representation structured --header-representation structured --results-dir /data/validation --dataset-id NG131FQA1I_first250000 --filter-oracle auto --scratch-dir /work --progress-path /data/metrics/.progress/validation-NG131FQA1I_first250000.jsonl
+[NG131FQA1I_first250000] preparing qlever engine
+[NG131FQA1I_first250000] running expanded/preflight_record_cardinality (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_position_datatype (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_missing_token_conformance (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_representation_profile (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_sample_gt_inventory (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_blank_nodes (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_empty_values (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_distinct_triple_count (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_record_cardinality_count (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_position_datatype_count (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_missing_token_conformance_count (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_representation_profile_count (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_blank_nodes_count (qlever)
+[NG131FQA1I_first250000] running expanded/preflight_empty_values_count (qlever)
+[NG131FQA1I_first250000] running expanded/q01_record_density_1mb (qlever)
+[NG131FQA1I_first250000] running expanded/q02_variant_shape_counts (qlever)
+[NG131FQA1I_first250000] running expanded/q03_titv (qlever)
+[NG131FQA1I_first250000] running expanded/q04_filter_distribution (qlever)
+[NG131FQA1I_first250000] running expanded/q05_sample_genotype_counts (qlever)
+[NG131FQA1I_first250000] running expanded/q06_ac_an_distribution (qlever)
+[NG131FQA1I_first250000] running expanded/q07_file_metadata (qlever)
+[NG131FQA1I_first250000] running expanded/q08_header_line_census (qlever)
+[NG131FQA1I_first250000] running expanded/q09_predicate_census (qlever)
+[NG131FQA1I_first250000] running expanded/q10_class_census (qlever)
+[NG131FQA1I_first250000] running expanded/q11_record_digest (qlever)
+[NG131FQA1I_first250000] running expanded/q12_info_value_digest (qlever)
+[NG131FQA1I_first250000] running expanded/q13_format_value_digest (qlever)
+{
+  "datasetId": "NG131FQA1I_first250000",
+  "representation": "expanded",
+  "status": "PASS",
+  "engine": "qlever",
+  "engines": [
+    "qlever"
+  ],
+  "engineStatuses": {
+    "qlever": "PASS"
+  },
+  "engineAgreement": true,
+  "sourceFormat": "nt.gz",
+  "strictConformance": false,
+  "shacl": {
+    "status": "PASS",
+    "conforms": false,
+    "shapes": [
+      "/data/shacl/vcf-core-vocabulary.shacl.ttl"
+    ],
+    "ontology": "/data/shacl-ontology/vcf-core-vocabulary.bundle.ttl",
+    "violationCount": 0,
+    "violationPaths": [
+      "vcfc:fieldSource",
+      "vcfc:fieldVersion"
+    ],
+    "advisoryCount": 46,
+    "advisoryKinds": [
+      "Warning"
+    ],
+    "advisorySample": [
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/30>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/36>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/33>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/41>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/40>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/34>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/27>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/38>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/37>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/45>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/35>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/43>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/26>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/39>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/46>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/24>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/25>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/29>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/42>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/31>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/44>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/32>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Source on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldSource ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/28>\n\tResult Path: vcfc:fieldSource\n\tMessage: VCF 4.5 recommends Source on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/30>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/36>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/33>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/41>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/40>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/34>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/27>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/38>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/37>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/45>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/35>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/43>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/26>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/39>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/46>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/24>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/25>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/29>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/42>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/31>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/44>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/32>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations.",
+      "Validation Result in MinCountConstraintComponent (http://www.w3.org/ns/shacl#MinCountConstraintComponent):\n\tSeverity: sh:Warning\n\tSource Shape: [ sh:datatype xsd:string ; sh:message Literal(\"VCF 4.5 recommends Version on INFO declarations.\", lang=en) ; sh:minCount Literal(\"1\", datatype=xsd:integer) ; sh:path vcfc:fieldVersion ; sh:severity sh:Warning ]\n\tFocus Node: <file://NG131FQA1I_first250000.vcf.gz#header/line/28>\n\tResult Path: vcfc:fieldVersion\n\tMessage: VCF 4.5 recommends Version on INFO declarations."
+    ],
+    "report": "/data/validation/shacl-report.txt",
+    "wallSeconds": 5339.373867009999,
+    "batches": 117,
+    "recordsPerBatch": 2146,
+    "workers": 4,
+    "sampleLimitedTo": 50,
+    "sample": []
+  },
+  "mappingPolicy": "strict",
+  "recordCount": 250000,
+  "sampleCount": 1,
+  "gtRecordCount": 250000,
+  "preflight": {
+    "preflight_duplicate_triples": {
+      "status": "PASS",
+      "parsedTripleCount": 58231176,
+      "distinctTripleCount": 58231176,
+      "duplicateTripleCount": 0
+    },
+    "preflight_record_cardinality": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_position_datatype": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_missing_token_conformance": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "plainDotCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_representation_profile": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "note": null
+    },
+    "preflight_sample_gt_inventory": {
+      "status": "PASS",
+      "expected": {
+        "sampleCallCount": 250000,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 250000
+      },
+      "actual": {
+        "sampleCallCount": 250000,
+        "sampleIdCount": 1,
+        "gtValueNodeCount": 250000
+      }
+    },
+    "preflight_blank_nodes": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_empty_values": {
+      "status": "PASS",
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false
+    },
+    "preflight_distinct_triple_count": {
+      "status": "PASS",
+      "rows": 1
+    }
+  },
+  "comparisonStatus": "PASS",
+  "benchmark": {
+    "oracleSeconds": 39.17863511200994,
+    "engineQuerySeconds": {
+      "qlever": 417.101992876007
+    },
+    "engineSetupSeconds": {
+      "qlever": 77.93596166900534
+    }
+  },
+  "results": {
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json",
+    "comparison": "/data/validation/comparison.json",
+    "benchmark": "/data/validation/benchmark.csv"
+  },
+  "temporaryRdf": {
+    "decompressedInsideContainer": true,
+    "persisted": false,
+    "cleanupConfirmed": true
+  }
+}
+[exit 0]

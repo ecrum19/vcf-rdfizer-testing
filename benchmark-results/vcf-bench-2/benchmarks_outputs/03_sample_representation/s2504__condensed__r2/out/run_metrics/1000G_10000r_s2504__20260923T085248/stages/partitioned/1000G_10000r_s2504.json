@@ -1,0 +1,146 @@
+{
+  "runtime_environment": "docker-volume",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out/1000G_10000r_s2504/1000G_10000r_s2504.nt.gz",
+  "output_name": "1000G_10000r_s2504",
+  "container_result": {
+    "exit_code": 0,
+    "methods": {
+      "hdt": {
+        "exit_code": 0,
+        "wall_seconds": 130.52085738210008,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 243412,
+        "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out/1000G_10000r_s2504/1000G_10000r_s2504.hdt",
+        "output_size_bytes": 59222484,
+        "source": "partitioned_generated",
+        "details": {
+          "source_file_count": 1,
+          "source_paths": [
+            "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out/1000G_10000r_s2504/1000G_10000r_s2504.nt.gz"
+          ],
+          "chunk_count": 1,
+          "chunk_input_bytes": 337643488,
+          "record_count": 1452018,
+          "target_chunk_bytes": 536870912,
+          "min_chunk_bytes": 134217728,
+          "max_chunk_bytes": 1073741824,
+          "chunk_stream_seconds": 1.9186586332507432,
+          "chunks": [
+            {
+              "chunk_id": 0,
+              "path": "chunk-00000.nt",
+              "start_record": 0,
+              "end_record": 1452018,
+              "start_uncompressed_byte": 0,
+              "end_uncompressed_byte": 337643488,
+              "record_count": 1452018,
+              "payload_bytes": 337643488,
+              "write_seconds": 1.9178401227109134
+            }
+          ],
+          "merge_rounds": 0,
+          "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/s2504__condensed__r2/out/1000G_10000r_s2504/1000G_10000r_s2504.hdt.index.v1-1",
+          "index_size_bytes": 7637731,
+          "index_status": "ready",
+          "index_warning": null,
+          "validation": {
+            "valid": true,
+            "source_triples": 1452018,
+            "decoded_triples": 1452018,
+            "expected_triples": 1452018,
+            "count_match": true,
+            "validator": "hdt2rdf",
+            "timing": {
+              "wall_seconds": 3.7728974199853837,
+              "user_seconds": null,
+              "sys_seconds": null,
+              "max_rss_kb": 243412
+            }
+          },
+          "workspace": "docker-volume",
+          "workspace_cleanup": "removed"
+        }
+      }
+    },
+    "stages": [
+      {
+        "name": "hdt-build-00000",
+        "stage_name": "hdt-build-00000",
+        "exit_code": 0,
+        "wall_seconds": 129.90097835380584,
+        "output_path": "/work/chunk-00000.hdt",
+        "output_size_bytes": 59222484,
+        "workspace_tree_bytes_before": 337643488,
+        "workspace_tree_bytes_after": 396865972,
+        "workspace_free_bytes_after": 100895141888,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 100954370048,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 243412,
+        "max_rss_source": "rusage_children_highwater"
+      },
+      {
+        "name": "hdt-index",
+        "stage_name": "hdt-index",
+        "exit_code": 0,
+        "wall_seconds": 0.6198790282942355,
+        "output_path": "/data/out/1000G_10000r_s2504.hdt.index.v1-1",
+        "output_size_bytes": 7637731,
+        "workspace_tree_bytes_before": 0,
+        "workspace_tree_bytes_after": 0,
+        "workspace_free_bytes_after": 101225148416,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 101232791552,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 243412,
+        "max_rss_source": "rusage_children_highwater"
+      },
+      {
+        "name": "hdt-validate",
+        "stage_name": "hdt-validate",
+        "exit_code": 0,
+        "wall_seconds": 3.7728974199853837,
+        "output_path": "/work/.hdt-validate.validation.json",
+        "output_size_bytes": 159,
+        "workspace_tree_bytes_before": 0,
+        "workspace_tree_bytes_after": 159,
+        "workspace_free_bytes_after": 101225144320,
+        "workspace_total_bytes": 202022608896,
+        "workspace_free_bytes_before": 101225148416,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 243412,
+        "max_rss_source": "rusage_children_highwater"
+      }
+    ],
+    "index_warnings": [],
+    "build_profile": {
+      "chunk_stream_seconds": 1.9186586332507432,
+      "chunk_count": 1,
+      "chunk_input_bytes": 337643488,
+      "by_stage_kind": {
+        "hdt-chunk-build": {
+          "stage_count": 1,
+          "wall_seconds": 129.90097835380584,
+          "max_rss_kb": 243412
+        },
+        "hdt-index": {
+          "stage_count": 1,
+          "wall_seconds": 0.6198790282942355,
+          "max_rss_kb": 243412
+        },
+        "hdt-validate": {
+          "stage_count": 1,
+          "wall_seconds": 3.7728974199853837,
+          "max_rss_kb": 243412
+        }
+      },
+      "merge_rounds": {},
+      "peak_volume_workspace_bytes": 396865972,
+      "max_rss_kb": 243412
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "run_id": "20260924T160653",
+  "timestamp": "2026-09-24T16:06:53",
+  "stage": "validation",
+  "validation_id": "awkward_crlf__hdt",
+  "vcf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures/awkward_crlf.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_crlf/out/awkward_crlf/awkward_crlf.hdt",
+  "rdf_format": "hdt",
+  "engine": "comunica",
+  "engines": [
+    "comunica"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_crlf/out/run_metrics/awkward_crlf__20260924T160653/reports/validation/awkward_crlf__hdt",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_crlf/out/run_metrics/awkward_crlf__20260924T160653/reports/validation/awkward_crlf__hdt/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 0.42419689195230603
+    },
+    "engineSetupSeconds": {
+      "comunica": 6.0962196830660105
+    },
+    "oracleSeconds": 0.0034062638878822327
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_crlf/out/run_metrics/awkward_crlf__20260924T160653/reports/validation/awkward_crlf__hdt/benchmark.csv",
+  "input_rdf_size_bytes": 5782,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 10.009616076014936,
+    "user_seconds": 11.31,
+    "sys_seconds": 1.06,
+    "max_rss_kb": 325596
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  }
+}

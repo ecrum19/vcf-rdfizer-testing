@@ -1,0 +1,19 @@
+PREFIX vcf: <http://github.com/lindenb/jvarkit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# JVarkit vcf2rdf (commit fc2356a3), run with --hide '' so ALT, FILTER and GT are written.
+# Its classes are written as IRIs with the scheme "vcf" (<vcf:Variant>), not as prefixed names,
+# so they are matched literally. A record is <urn:variant/CHROM:POS:REF>.
+SELECT (COUNT(?record) AS ?biallelicSnvCount) (SUM(?isTransition) AS ?transitionCount)
+       (SUM(1 - ?isTransition) AS ?transversionCount)
+WHERE {
+  {
+    SELECT ?record (SAMPLE(?refLiteral) AS ?refValue) (SAMPLE(?altLiteral) AS ?altValue)
+    WHERE { ?record a <vcf:Variant> ; vcf:ref ?refLiteral ; vcf:alt ?altLiteral }
+    GROUP BY ?record
+    HAVING (COUNT(DISTINCT ?altLiteral) = 1)
+  }
+  BIND(UCASE(STR(?refValue)) AS ?ref)
+  BIND(UCASE(STR(?altValue)) AS ?alt)
+  FILTER(REGEX(?ref, "^[ACGT]$") && REGEX(?alt, "^[ACGT]$") && ?ref != ?alt)
+  BIND(IF(CONCAT(?ref, ?alt) IN ("AG", "GA", "CT", "TC"), 1, 0) AS ?isTransition)
+}

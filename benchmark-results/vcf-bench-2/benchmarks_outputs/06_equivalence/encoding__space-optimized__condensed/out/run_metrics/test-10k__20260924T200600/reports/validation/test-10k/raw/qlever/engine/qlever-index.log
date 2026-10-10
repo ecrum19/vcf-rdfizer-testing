@@ -1,0 +1,43 @@
+2026-09-24 18:14:16.937 - INFO: [1mQLever index builder bfd5741, compiled on Thu Sep  3 17:32:42 UTC 2026 using git hash bfd5741[22m
+2026-09-24 18:14:16.938 - WARN: Implicitly using the parallel parser for a single input file for reasons of backward compatibility; this is deprecated, please use the command-line option --parallel-parsing or -p
+2026-09-24 18:14:16.938 - INFO: Processing triples from single input stream /work/vcf-rdfizer-validation-wml0da70/input.nt (parallel = true) ...
+2026-09-24 18:14:16.938 - INFO: Locale was not specified in settings file, default is en_US
+2026-09-24 18:14:16.938 - INFO: You specified "locale = en_US" and "ignore-punctuation = 0"
+2026-09-24 18:14:16.938 - INFO: By default, integers that cannot be represented by QLever will throw an exception
+2026-09-24 18:14:16.939 - INFO: Parsing input triples and creating partial vocabularies, one per batch ...
+2026-09-24 18:14:17.643 - INFO: Triples parsed: 789,157 [average speed 3.7 M/s] 
+2026-09-24 18:14:17.780 - INFO: Number of triples created (including QLever-internal ones): 789,157 [may contain duplicates]
+2026-09-24 18:14:17.780 - INFO: Number of partial vocabularies created: 1
+2026-09-24 18:14:17.839 - INFO: Merging partial vocabularies ...
+2026-09-24 18:14:17.894 - INFO: Words merged: 160,232 [average speed 3.0 M/s] 
+2026-09-24 18:14:17.941 - INFO: Finished writing compressed internal vocabulary, size = 764.3 kB [uncompressed = 6.2 MB, ratio = 12%]
+2026-09-24 18:14:17.941 - INFO: Number of words in external vocabulary: 160,232
+2026-09-24 18:14:17.943 - INFO: Converting triples from local IDs to global IDs ...
+2026-09-24 18:14:17.990 - INFO: Triples converted: 789,157 [average speed 19.0 M/s] 
+2026-09-24 18:14:18.003 - INFO: Creating permutations SPO and SOP ...
+2026-09-24 18:14:18.052 - INFO: Number of inputs to `uniqueView`: 789,157
+2026-09-24 18:14:18.052 - INFO: Number of unique elements: 789,157
+2026-09-24 18:14:18.052 - INFO: Triples sorted: 789,157 [average speed 16.4 M/s] 
+2026-09-24 18:14:18.097 - INFO: Statistics for SPO: #relations = 149,834, #blocks = 17, #triples = 789,157
+2026-09-24 18:14:18.097 - INFO: Statistics for SOP: #relations = 149,834, #blocks = 17, #triples = 789,157
+2026-09-24 18:14:18.098 - INFO: Number of distinct patterns: 22
+2026-09-24 18:14:18.098 - INFO: Number of subjects with pattern: 149,834 [all]
+2026-09-24 18:14:18.098 - INFO: Total number of distinct subject-predicate pairs: 739,179
+2026-09-24 18:14:18.098 - INFO: Average number of predicates per subject: 4.9
+2026-09-24 18:14:18.098 - INFO: Average number of subjects per predicate: 10,713
+2026-09-24 18:14:18.117 - INFO: Creating permutations OSP and OPS ...
+2026-09-24 18:14:18.212 - INFO: Triples sorted: 789,157 [average speed 8.3 M/s] 
+2026-09-24 18:14:18.226 - INFO: Statistics for OSP: #relations = 179,543, #blocks = 20, #triples = 789,157
+2026-09-24 18:14:18.226 - INFO: Statistics for OPS: #relations = 179,543, #blocks = 20, #triples = 789,157
+2026-09-24 18:14:18.227 - INFO: Adding 149,834 triples to the POS and PSO permutation for the internal `ql:has-pattern` ...
+2026-09-24 18:14:18.233 - INFO: Creating permutations PSO and POS ...
+2026-09-24 18:14:18.239 - INFO: Number of inputs to `uniqueView`: 149,834
+2026-09-24 18:14:18.239 - INFO: Number of unique elements: 149,834
+2026-09-24 18:14:18.239 - INFO: Triples sorted: 149,834 [average speed 27.4 M/s] 
+2026-09-24 18:14:18.256 - INFO: Statistics for PSO: #relations = 1, #blocks = 5, #triples = 149,834
+2026-09-24 18:14:18.257 - INFO: Statistics for POS: #relations = 1, #blocks = 5, #triples = 149,834
+2026-09-24 18:14:18.274 - INFO: Creating permutations PSO and POS ...
+2026-09-24 18:14:18.391 - INFO: Triples sorted: 789,157 [average speed 6.7 M/s] 
+2026-09-24 18:14:18.408 - INFO: Statistics for PSO: #relations = 69, #blocks = 27, #triples = 789,157
+2026-09-24 18:14:18.408 - INFO: Statistics for POS: #relations = 69, #blocks = 27, #triples = 789,157
+2026-09-24 18:14:18.409 - INFO: Index build completed

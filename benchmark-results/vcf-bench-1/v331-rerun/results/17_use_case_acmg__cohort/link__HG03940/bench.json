@@ -1,0 +1,29 @@
+{
+  "experiment": "17_use_case_acmg__cohort",
+  "cell": "link__HG03940",
+  "exit_code": 0,
+  "started_epoch": 1791465048,
+  "ended_epoch": 1791465060,
+  "wrapper_wall_seconds": 12,
+  "peak_out_tree_bytes": 4096,
+  "final_out_tree_bytes": 180224,
+  "tool_commit": "unknown",
+  "tool_path": "/home/ubuntu/vrdev-test/v331/vcf-rdfizer-v3.3.1/vcf_rdfizer.py",
+  "image_ref": "ecrum19/vcf-rdfizer:3.3.1",
+  "image_digest": "ecrum19/vcf-rdfizer@sha256:3ad71b1a54612142e3be43b24e7e4a38551949cb641f4421bcae9bf051102993",
+  "image_mode": "pinned-release",
+  "host": "vcf-bench-1",
+  "command": [
+    "bash",
+    "-c",
+    "\n      set -euo pipefail\n      work=\"$(mktemp -d)\"; trap \"rm -rf \\\"$work\\\"\" EXIT\n      \"$1\" \"$2\" run -i \"$3\" --link \"$4\" --offline -o \"$work/$5.links.nt\"\n      mkdir -p \"$6\"\n      gzip -1 -c \"$work/$5.links.nt\" > \"$6/$5.links.nt.gz\"\n      mv \"$work/$5.links.json\" \"$6/\"",
+    "_",
+    "/home/ubuntu/vrdev-test/venv/bin/python",
+    "/home/ubuntu/vrdev-test/v331/vcf-rdfizer-v3.3.1/vcf_rdfizer_link.py",
+    "/home/ubuntu/vrdev-test/v331/derived/cohort/HG03940.acmg.vcf",
+    "spdi,ensembl-genes-grch38",
+    "HG03940.acmg",
+    "/home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/link__HG03940/out"
+  ],
+  "assertion": "ok"
+}

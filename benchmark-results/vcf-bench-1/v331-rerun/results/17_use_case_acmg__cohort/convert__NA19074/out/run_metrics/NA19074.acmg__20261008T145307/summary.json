@@ -1,0 +1,78 @@
+{
+  "metrics_layout_version": 3,
+  "run_id": "20261008T145307",
+  "timestamp": "2026-10-08T14:53:07",
+  "completed_at": "2026-10-08T14:53:25",
+  "mode": "full",
+  "status": "success",
+  "exit_code": 0,
+  "execution": {
+    "wall_seconds": 17.820975,
+    "wall_human": "17.82s",
+    "total_triples": 670685
+  },
+  "summary_tables": {
+    "conversion_and_compression": [
+      {
+        "run_id": "20261008T145307",
+        "timestamp": "2026-10-08T14:53:07",
+        "output_name": "NA19074.acmg",
+        "output_dir": "/data/out/NA19074.acmg",
+        "vcf_version": "",
+        "vcf_version_source": "",
+        "exit_code_java": "0",
+        "wall_seconds_java": "12.840",
+        "user_seconds_java": "30.82",
+        "sys_seconds_java": "1.36",
+        "max_rss_kb_java": "1129732",
+        "input_mapping_size_bytes": "13778",
+        "input_vcf_size_bytes": "554796",
+        "output_dir_size_bytes": "2775985",
+        "output_triples": "670685",
+        "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+        "mapping_file": "/data/rules/NA19074.acmg.rules.ttl",
+        "output_path": "/data/out/NA19074.acmg/NA19074.acmg.nt.gz",
+        "exit_code_tsv": "0",
+        "wall_seconds_tsv": "0.500936",
+        "user_seconds_tsv": "0.060000",
+        "sys_seconds_tsv": "0.010000",
+        "max_rss_kb_tsv": "8064",
+        "tsv_output_size_bytes": "808973",
+        "tsv_output_path": "/home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__NA19074/out/.intermediate/tsv/NA19074.acmg.records.tsv|/home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__NA19074/out/.intermediate/tsv/NA19074.acmg.header_lines.tsv|/home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__cohort/convert__NA19074/out/.intermediate/tsv/NA19074.acmg.file_metadata.tsv",
+        "combined_rdf_size_bytes": "2775985",
+        "compression_methods": "gzip",
+        "gzip_size_bytes": "2775985",
+        "exit_code_gzip": "0",
+        "wall_seconds_gzip": "0.000000",
+        "user_seconds_gzip": "0.000000",
+        "sys_seconds_gzip": "0.000000",
+        "max_rss_kb_gzip": "0"
+      }
+    ],
+    "tsv": [],
+    "wrapper": [
+      {
+        "run_id": "20261008T145307",
+        "timestamp": "2026-10-08T14:53:07",
+        "mode": "full",
+        "exit_code": "0",
+        "status": "success",
+        "elapsed_seconds": "17.820975",
+        "elapsed_human": "17.82s",
+        "total_triples": "670685"
+      }
+    ]
+  },
+  "stage_reports": [
+    "stages/compression/NA19074.acmg.json",
+    "stages/compression_operations/NA19074.acmg/NA19074.acmg.nt.gz.json",
+    "stages/conversion/NA19074.acmg.json",
+    "stages/tsv/NA19074.acmg.json"
+  ],
+  "reports": [],
+  "validation": [],
+  "logs": [
+    "logs/progress.log",
+    "logs/wrapper.log"
+  ]
+}

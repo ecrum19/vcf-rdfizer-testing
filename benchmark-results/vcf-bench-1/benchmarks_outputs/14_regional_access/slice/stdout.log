@@ -1,0 +1,17 @@
+[setup] scanning HG005_GRCh38_r100000.vcf.gz to place windows on real records
+[setup] 100,000 records across 1 contigs in 0.6s
+[setup] building the bgzip + index (one-time VCF-side cost)
+[setup] bgzip 0.4s + tbi index 0.1s
+[reference] computing expected answers for every window
+[arm] cyvcf2-scan: 12 windows x 5 questions x 3 replicates
+[arm] cyvcf2-indexed: 80 windows x 5 questions x 3 replicates
+[arm] bcftools-indexed: 80 windows x 5 questions x 3 replicates
+[setup] materializing nt.gz as N-Triples for the SPARQL arms
+[arm] qlever: preparing engine
+[arm] qlever: setup 23.18s; 80 windows x 5 questions x 3 replicates
+
+wrote /data/regional/regional.csv
+wrote /data/regional/regional.json
+wrote /data/regional/windows.json
+
+3780 timed executions, 0 failed, 0 disagreed with the reference

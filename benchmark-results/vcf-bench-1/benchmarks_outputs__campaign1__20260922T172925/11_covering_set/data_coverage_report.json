@@ -1,0 +1,64 @@
+{
+  "experiment": "11_covering_set",
+  "cells": 10,
+  "value_coverage": {
+    "sample_representation": [
+      "condensed",
+      "expanded"
+    ],
+    "info_representation": [
+      "raw",
+      "structured"
+    ],
+    "rdf_storage_mode": [
+      "plain",
+      "space-optimized"
+    ],
+    "rdf_compression": [
+      "brotli",
+      "gzip"
+    ],
+    "representations": [
+      "cottas",
+      "hdt",
+      "hdt,cottas"
+    ],
+    "artifact_compression": [
+      "brotli",
+      "gzip"
+    ],
+    "hdt_strategy": [
+      "auto",
+      "partitioned",
+      "single"
+    ]
+  },
+  "untested_factors": [],
+  "pair_gaps": [
+    {
+      "left": "rdf_storage_mode",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "space-optimized",
+          "right": "single"
+        }
+      ]
+    },
+    {
+      "left": "representations",
+      "right": "hdt_strategy",
+      "missing": [
+        {
+          "left": "cottas",
+          "right": "single"
+        },
+        {
+          "left": "hdt,cottas",
+          "right": "single"
+        }
+      ]
+    }
+  ],
+  "note": "Some gaps are REQUIRED, not defects: --hdt-strategy single is refused beside space-optimized and beside cottas, so those pairs cannot exist. Check each gap against plan \u00a71.2 before adding a row."
+}

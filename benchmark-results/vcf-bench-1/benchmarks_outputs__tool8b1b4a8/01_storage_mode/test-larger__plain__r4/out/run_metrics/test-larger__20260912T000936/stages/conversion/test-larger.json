@@ -1,0 +1,148 @@
+{
+  "run_id": "20260912T000936",
+  "timestamp": "2026-09-12T00:09:36",
+  "command": "java -Dspark.default.parallelism=8 -Dspark.sql.shuffle.partitions=8 -jar /opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar toFile -m /data/rules/test-larger.rules.ttl -o /data/out/test-larger/.rmlstreamer-parts-test-larger-1 ",
+  "exit_code": 0,
+  "timing": {
+    "wall_seconds": 42.17,
+    "user_seconds": 247.12,
+    "sys_seconds": 11.06,
+    "max_rss_kb": 1539612
+  },
+  "artifacts": {
+    "jar": "/opt/rmlstreamer/RMLStreamer-v2.5.0-standalone.jar",
+    "input_path": "/data/rules/test-larger.rules.ttl",
+    "input_size_bytes": 13766,
+    "input_vcf_size_bytes": 295859765,
+    "input_vcf_size_method": "gzip-trailer",
+    "output_path": "/data/out/test-larger/test-larger.nt",
+    "output_size_bytes": 31304324874,
+    "output_triples": {
+      "/data/out/test-larger/test-larger.nt": 215948067,
+      "TOTAL": 215948067
+    }
+  },
+  "rdf_storage": {
+    "mode": "plain",
+    "compressed": false,
+    "serialization": "ntriples"
+  },
+  "tsv_generation": {
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 11.507093,
+      "user_seconds": 10.93,
+      "sys_seconds": 0.65,
+      "max_rss_kb": 7552
+    },
+    "output_size_bytes": 325988139,
+    "output_path": "/data/tsv/test-larger.records.tsv|/data/tsv/test-larger.header_lines.tsv|/data/tsv/test-larger.file_metadata.tsv"
+  },
+  "java": {
+    "version_header": "openjdk version \"11.0.32\" 2026-07-21"
+  },
+  "sample_representation": {
+    "representation": "expanded",
+    "records": 1155741,
+    "samples": 1,
+    "sample_calls": 1155741,
+    "format_values": 6183585,
+    "format_definitions": 8,
+    "genotypes": 1155741,
+    "genotype_calls": 2311482,
+    "phase_sets": 134960,
+    "local_allele_sets": 0,
+    "base_modifications": 0,
+    "value_items": 5855881,
+    "triples": 76377720,
+    "appended_bytes": 11905986187,
+    "header": {
+      "representation": "header",
+      "header_lines": 243,
+      "typed_lines": 243,
+      "attributes": 562,
+      "field_definitions": 34,
+      "filter_definitions": 5,
+      "alt_definitions": 1,
+      "contigs": 195,
+      "sample_declarations": 0,
+      "pedigree_relations": 0,
+      "file_dates": 0,
+      "triples": 3626,
+      "appended_bytes": 514576
+    },
+    "info": {
+      "representation": "record-detail",
+      "records": 1155741,
+      "qual_values": 1155741,
+      "info_values": 18071533,
+      "info_definitions": 18,
+      "alleles": 2330776,
+      "breakends": 0,
+      "value_items": 4700140,
+      "variant_events": 0,
+      "confidence_intervals": 0,
+      "reference_blocks": 0,
+      "tandem_repeats": 0,
+      "repeat_sequences": 0,
+      "contig_links": 1155741,
+      "assembly_contigs": 0,
+      "assembly_contig_links": 0,
+      "triples": 129163828,
+      "appended_bytes": 18148856216
+    }
+  },
+  "sample_streaming": {
+    "representation": "expanded",
+    "records": 1155741,
+    "samples": 1,
+    "sample_calls": 1155741,
+    "format_values": 6183585,
+    "format_definitions": 8,
+    "genotypes": 1155741,
+    "genotype_calls": 2311482,
+    "phase_sets": 134960,
+    "local_allele_sets": 0,
+    "base_modifications": 0,
+    "value_items": 5855881,
+    "triples": 76377720,
+    "appended_bytes": 11905986187,
+    "header": {
+      "representation": "header",
+      "header_lines": 243,
+      "typed_lines": 243,
+      "attributes": 562,
+      "field_definitions": 34,
+      "filter_definitions": 5,
+      "alt_definitions": 1,
+      "contigs": 195,
+      "sample_declarations": 0,
+      "pedigree_relations": 0,
+      "file_dates": 0,
+      "triples": 3626,
+      "appended_bytes": 514576
+    },
+    "info": {
+      "representation": "record-detail",
+      "records": 1155741,
+      "qual_values": 1155741,
+      "info_values": 18071533,
+      "info_definitions": 18,
+      "alleles": 2330776,
+      "breakends": 0,
+      "value_items": 4700140,
+      "variant_events": 0,
+      "confidence_intervals": 0,
+      "reference_blocks": 0,
+      "tandem_repeats": 0,
+      "repeat_sequences": 0,
+      "contig_links": 1155741,
+      "assembly_contigs": 0,
+      "assembly_contig_links": 0,
+      "triples": 129163828,
+      "appended_bytes": 18148856216
+    }
+  },
+  "vcf_version": "VCFv4.2",
+  "vcf_version_source": "declared"
+}

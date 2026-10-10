@@ -1,0 +1,220 @@
+{
+  "run_id": "20260923T224010",
+  "timestamp": "2026-09-23T22:40:10",
+  "output_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls",
+  "output_name": "awkward_half_and_haploid_calls",
+  "compression_methods": "hdt",
+  "combined_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.nt.gz",
+  "combined_rdf_size_bytes": 5463,
+  "index_warnings": [],
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 0.020831929985433817,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 19456,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.hdt",
+      "output_size_bytes": 6911,
+      "source": "partitioned_generated",
+      "details": {
+        "source_file_count": 1,
+        "source_paths": [
+          "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.nt.gz"
+        ],
+        "chunk_count": 1,
+        "chunk_input_bytes": 67496,
+        "record_count": 446,
+        "target_chunk_bytes": 536870912,
+        "min_chunk_bytes": 134217728,
+        "max_chunk_bytes": 1073741824,
+        "chunk_stream_seconds": 0.0009939121082425117,
+        "chunks": [
+          {
+            "chunk_id": 0,
+            "path": "chunk-00000.nt",
+            "start_record": 0,
+            "end_record": 446,
+            "start_uncompressed_byte": 0,
+            "end_uncompressed_byte": 67496,
+            "record_count": 446,
+            "payload_bytes": 67496,
+            "write_seconds": 0.0007804450578987598
+          }
+        ],
+        "merge_rounds": 0,
+        "index_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.hdt.index.v1-1",
+        "index_size_bytes": 1242,
+        "index_status": "ready",
+        "index_warning": null,
+        "validation": {
+          "valid": true,
+          "source_triples": 446,
+          "decoded_triples": 446,
+          "expected_triples": 446,
+          "count_match": true,
+          "validator": "hdt2rdf",
+          "timing": {
+            "wall_seconds": 0.06062343996018171,
+            "user_seconds": null,
+            "sys_seconds": null,
+            "max_rss_kb": 19456
+          }
+        },
+        "workspace": "docker-volume",
+        "workspace_cleanup": "removed"
+      }
+    }
+  },
+  "hdt_source": "partitioned_generated",
+  "gzip_raw_rdf": {
+    "output_gz_path": "",
+    "output_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_raw_rdf": {
+    "output_brotli_path": "",
+    "output_brotli_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "cottas_conversion": {
+    "output_cottas_path": "",
+    "output_cottas_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    },
+    "validation": null
+  },
+  "hdt_conversion": {
+    "output_hdt_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.hdt",
+    "output_hdt_size_bytes": 6911,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": 0.020831929985433817,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": 19456
+    },
+    "validation": {
+      "valid": true,
+      "source_triples": 446,
+      "decoded_triples": 446,
+      "expected_triples": 446,
+      "count_match": true,
+      "validator": "hdt2rdf",
+      "timing": {
+        "wall_seconds": 0.06062343996018171,
+        "user_seconds": null,
+        "sys_seconds": null,
+        "max_rss_kb": 19456
+      }
+    }
+  },
+  "gzip_on_hdt": {
+    "output_hdt_gz_path": "",
+    "output_hdt_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_hdt": {
+    "output_hdt_br_path": "",
+    "output_hdt_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "gzip_on_cottas": {
+    "output_cottas_gz_path": "",
+    "output_cottas_gz_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "brotli_on_cottas": {
+    "output_cottas_br_path": "",
+    "output_cottas_br_size_bytes": 0,
+    "exit_code": 0,
+    "timing": {
+      "wall_seconds": null,
+      "user_seconds": null,
+      "sys_seconds": null,
+      "max_rss_kb": null
+    }
+  },
+  "semantic_validation": {
+    "run_id": "20260923T224010",
+    "timestamp": "2026-09-23T22:40:10",
+    "stage": "validation",
+    "validation_id": "awkward_half_and_haploid_calls",
+    "validation_target": "aggregate",
+    "vcf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures/awkward_half_and_haploid_calls.vcf",
+    "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.nt.gz",
+    "rdf_format": "nt.gz",
+    "engine": "comunica",
+    "representation": "expanded",
+    "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260923T224010/reports/validation/awkward_half_and_haploid_calls",
+    "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260923T224010/reports/validation/awkward_half_and_haploid_calls/summary.json",
+    "input_rdf_size_bytes": 5463,
+    "exit_code": 0,
+    "status": "PASS",
+    "timing": {
+      "wall_seconds": 10.261250812094659,
+      "user_seconds": 11.41,
+      "sys_seconds": 1.11,
+      "max_rss_kb": 323904
+    },
+    "temporary_rdf": {
+      "decompressed_inside_container": true,
+      "persisted_on_host": false,
+      "cleanup_confirmed_by_runner": true
+    },
+    "engines": [
+      "comunica"
+    ],
+    "strict_conformance": false,
+    "engine_statuses": {
+      "comunica": "PASS"
+    },
+    "engine_agreement": true,
+    "benchmark": {
+      "engineQuerySeconds": {
+        "comunica": 0.4879019199870527
+      },
+      "engineSetupSeconds": {
+        "comunica": 6.100093174725771
+      },
+      "oracleSeconds": 0.003432141151279211
+    },
+    "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/run_metrics/awkward_half_and_haploid_calls__20260923T224010/reports/validation/awkward_half_and_haploid_calls/benchmark.csv",
+    "rdf_gzip_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_half_and_haploid_calls/out/awkward_half_and_haploid_calls/awkward_half_and_haploid_calls.nt.gz"
+  }
+}

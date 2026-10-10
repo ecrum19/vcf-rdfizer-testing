@@ -1,0 +1,343 @@
+=== 2026-09-22T17:33:07+02:00 vcf-bench-1: campaign 2, share [00 01 04 07 08 09 10 11 12 13] ===
+tool    d3b34d5 Merge pull request #19 from ecrum19/release/v3.1.0  (v3.1.0)
+harness 75828db Correct why bm_find_vcf rejects empty inputs
+image   ecrum19/vcf-rdfizer:3.1.0
+digest  ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa
+free    105G
+--- calibration (identical cell on both hosts) ---
+  calibration phaseA_convert   26.0s  host=vcf-bench-1
+--- share ---
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 00_environment.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== Environment manifest ===
+    - tool: /home/ubuntu/VCF-RDFizer/vcf_rdfizer.py (checkout)
+    - commit: d3b34d576958befd6e1fc3558c76e7c52aa0cd0d
+    - image:  ecrum19/vcf-rdfizer:3.1.0 (local-build)
+    - digest: ecrum19/vcf-rdfizer@sha256:1904e96dde12ab2e2e70d8ee1267765c293ab100a8bd1b14d5b009b2bf8e34aa
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/manifest.json
+  note: not detected -> bcftools, bash
+    - system conditions -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/system_conditions.txt
+[1m==>[0m Environment captured: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/manifest.json
+
+=== 01_storage_mode.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §1 Storage mode (paired, 3 reps, interleaved) ===
+    - sizes: HG005_GRCh38_r100000.vcf.gz test-larger.vcf.gz
+    - HG005_GRCh38_r100000__plain__r1
+    - HG005_GRCh38_r100000__space-optimized__r1
+    - HG005_GRCh38_r100000__plain__r2
+    - HG005_GRCh38_r100000__space-optimized__r2
+    - HG005_GRCh38_r100000__plain__r3
+    - HG005_GRCh38_r100000__space-optimized__r3
+    - test-larger__plain__r1
+    - test-larger__space-optimized__r1
+[1m==>[0m Done. Analyse with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 01_storage_mode
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/equivalence.py 01_storage_mode --margin 0.10
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/fit_scaling.py 01_storage_mode --x input_bytes --y peak_host_workspace --group storage
+
+Reporting reminders (§1.1):
+  * The disk metric is PEAK WORKSPACE, not final artifact bytes. Both modes
+    emit the same triples, so a table of final sizes shows ~0% and looks like
+    it refutes the claim. bench.json records peak_out_tree_bytes; the Docker
+    volume used by the partitioned stage is reported separately by the tool in
+    stages/partitioned/<sample>.json and collected by collect_metrics.py.
+    Peak host footprint and peak volume footprint are different numbers.
+  * Compare decoded triples or a canonicalized digest, never the raw .nt.gz
+    checksum: space-optimized assembles a concatenated gzip stream and plain
+    gzips one merged .nt, so the two are not byte-identical even though they
+    decompress to the same N-Triples.
+  * State when the ±10% equivalence margin was fixed. If it was chosen after
+    seeing the data, say so; do not imply pre-registration that did not happen.
+
+=== 04_scaling_records.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §3.1 records ladder (3 reps per rung) ===
+    - r10000__rep1
+    - r10000__rep2
+    - r10000__rep3
+    - r100000__rep1
+    - r100000__rep2
+    - r100000__rep3
+    - r1000000__rep1
+    - r1000000__rep2
+    - r1000000__rep3
+    - rfull__rep1
+[1m==>[0m Done. Fit slopes with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 04_scaling_records
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/fit_scaling.py 04_scaling_records --x records --y triples
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/fit_scaling.py 04_scaling_records --x triples --y wall_seconds
+
+Report these as EMPIRICAL scaling exponents over the measured range, with CIs.
+They are not algorithmic bounds and must not be generalized beyond the rungs
+actually run.
+
+=== 07_representation_axes.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §4.2 --info-representation (paired, 3 reps) ===
+    - info__HGSVC2__structured__r1
+    - info__HGSVC2__raw__r1
+    - info__HGSVC2__structured__r2
+    - info__HGSVC2__raw__r2
+    - info__HGSVC2__structured__r3
+    - info__HGSVC2__raw__r3
+    - info__HG005_GRCh38_r100000__structured__r1
+    - info__HG005_GRCh38_r100000__raw__r1
+    - info__HG005_GRCh38_r100000__structured__r2
+    - info__HG005_GRCh38_r100000__raw__r2
+    - info__HG005_GRCh38_r100000__structured__r3
+    - info__HG005_GRCh38_r100000__raw__r3
+
+=== §4.2 --header-representation ===
+    - header__structured
+    - header__basic
+
+=== §4.2 --vcf-version conformance overlays ===
+    - version__4.1
+    - version__4.2
+    - version__4.3
+    - version__4.4
+    - version__4.5
+    - version__fallback_undeclared
+[1m==>[0m Done. Analyse with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 07_representation_axes
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/equivalence.py 07_representation_axes --cell-filter info__ --margin 0.10
+
+For the version cells, check metrics.csv's vcf_version and vcf_version_source
+columns: the fallback run must record 'fallback', and every explicit run must
+record 'forced'. Group any cost comparison BY VERSION; the overlays change what
+is emitted, so cross-version costs are not comparable.
+
+=== 08_robustness.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== Regenerating fixtures ===
+wrote 18 fixtures to /home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures
+  version_4.1.vcf
+  version_4.2.vcf
+  version_4.3.vcf
+  version_4.4.vcf
+  version_4.5.vcf
+  version_missing_declaration.vcf
+  version_4.0_declared.vcf
+  awkward_sites_only.vcf
+  awkward_symbolic_alleles.vcf
+  awkward_breakend.vcf
+  awkward_high_ploidy.vcf
+  awkward_half_and_haploid_calls.vcf
+  awkward_filter_variants.vcf
+  awkward_missing_values.vcf
+  awkward_declared_format_absent.vcf
+  awkward_no_records.vcf
+  awkward_crlf.vcf
+  awkward_truncated.vcf.gz
+
+=== §4.3 mutation score ===
+    - running the mutation harness (this takes a few minutes)
+  score report -> /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/mutation_score/mutation-score.json
+    - mutation_score__shacl_full — SKIPPED: pyshacl is not installed on the host, so the shape layer cannot be scored.
+Install it first: python3 -m pip install pyshacl
+    - cite the score AND the remaining-gaps list; the gaps are the honest limitation
+
+=== §4.3 round-trip identity ===
+    - roundtrip__01_convert
+    - aggregate: HG005_GRCh38_r100000.nt
+    - roundtrip__02_compress
+    - roundtrip__03_decompress
+  roundtrip: IDENTICAL
+    left  17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    right 17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/roundtrip__verdict.json
+
+=== §4.3 determinism ===
+    - determinism__a
+    - determinism__b
+  determinism: IDENTICAL
+    left  17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    right 17,098,746 distinct (17,098,746 lines) HG005_GRCh38_r100000.nt
+    wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/determinism__verdict.json
+
+=== §4.3 index idempotence ===
+    - index__01_build
+    - index__02_reindex
+  index idempotence: IDENTICAL
+[1m==>[0m Done. Verdicts are in /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/*__verdict.json
+
+=== 09_awkward_inputs.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §4.4 awkward inputs ===
+    - awkward_breakend
+    - awkward_crlf
+    - awkward_declared_format_absent
+    - awkward_filter_variants
+    - awkward_half_and_haploid_calls
+    - awkward_high_ploidy
+    - awkward_missing_values
+    - awkward_no_records
+    - awkward_sites_only
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/stderr.log)
+    - awkward_symbolic_alleles
+    - awkward_truncated
+    -   exit 1 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_truncated/stderr.log)
+
+=== §4.4 extensibility smoke runs ===
+    - rules__custom — SKIPPED: set BM_CUSTOM_RULES=/path/to/rules.ttl to exercise a custom mapping.
+Note: validation reports Q9-Q13 as MISMATCH for a correct custom mapping,
+because the wrapper does not forward --mapping-policy (a known tool gap).
+Read those five as report-only here.
+    - link__00_convert
+    - link__rsid-dbsnp
+    - link__gene-demo
+    - link__rsid-ensembl — SKIPPED: tier-3 linker needs network; set BM_ALLOW_NETWORK=1 and BM_CONTACT_EMAIL to run it
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py awkward 09_awkward_inputs
+
+The table pairs each fixture's recorded expectation against what happened.
+Report refusals as refusals — a clear diagnostic is a pass.
+
+=== 10_feasibility.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §4.4 feasibility matrix: HG005_GRCh38_r1000000.vcf.gz ===
+    - ceilings: 8g 16g 31g
+
+=== ceiling 8g ===
+    - defaults__8g
+    - lowpeak_chunks__8g
+    - lowpeak_condensed__8g
+
+=== ceiling 16g ===
+    - defaults__16g
+    - lowpeak_chunks__16g
+    - lowpeak_condensed__16g
+
+=== ceiling 31g ===
+    - defaults__31g
+    - lowpeak_chunks__31g
+    - lowpeak_condensed__31g
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py feasibility 10_feasibility
+
+Reading the results:
+  * exit_code 0            completed
+  * exit_code -9 or 137    the kernel or Docker OOM-killer intervened. This is
+                           NOT an invalid-RDF result; check stderr_tail,
+                           max_rss_kb and the workspace samples in
+                           stages/partitioned/<sample>.json before suspecting
+                           the data.
+  * anything else          read stderr.log; it is a different failure.
+
+=== 11_covering_set.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §5.1 covering set on test-1k.vcf ===
+    - row1
+    - row2
+    - row3
+    - row4
+    - row5
+    - row6
+    - row7
+    - row8
+    - row9
+    - row10
+[1m==>[0m Done. Verify coverage with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py coverage 11_covering_set
+
+datasets.py coverage re-derives, from the recorded command lines, that every
+option value appears and every option pair is covered — so an edit to the table
+that breaks coverage is caught rather than assumed.
+
+Expect 'Pair coverage: complete'. Exactly three pairs can never be covered, and
+they are excluded by construction rather than by exception: --hdt-strategy
+single cannot sit beside space-optimized storage, beside cottas, or beside
+hdt,cottas. Any OTHER gap is a defect in this table — do not dismiss one as
+'required' without reading hdt_strategy_rejection() in the wrapper, which is the
+only place a combination is actually refused.
+
+Coverage counts only cells that exited 0, so a row that fails shows up as lost
+coverage rather than as an error. Check the per-cell exit codes too.
+
+=== 12_modes_smoke.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §5.3 --mode tsv ===
+    - mode_tsv
+
+=== §5.2 Phase A — conversion, validation OFF ===
+    - phaseA_convert
+    - aggregate: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.nt.gz
+    - hdt:       /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.hdt
+    - cottas:    /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/phaseA_convert/out/test-1k/test-1k.cottas
+
+=== §5.2 Phase B — validation against Phase A's artifacts ===
+    - phaseB_validate_aggregate
+
+=== §5.3 --mode compress / decompress / index ===
+    - mode_compress
+    - mode_decompress
+    - mode_index_hdt
+    - mode_index_cottas
+[1m==>[0m Done. Every mode the plan lists in §5.3 now has a recorded run.
+At scale, prefer --validation-engine qlever or --validate-artifacts hdt;
+--validation-engine all belongs on small inputs only, where cross-engine
+agreement is the actual deliverable (§4.1).
+
+=== 13_query_cost.sh ===
+    - image ecrum19/vcf-rdfizer:3.1.0 already built
+
+=== §4.5 small scale: test-10k.vcf  engines=all ===
+    - small__r1
+    - small__r2
+    - small__r3
+
+=== §4.5 large scale: HG005_GRCh38_r100000.vcf.gz  engines=qlever ===
+    - large__r1
+    - large__r2
+    - large__r3
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 13_query_cost
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py querycost 13_query_cost
+
+The dataset reports, per engine and scale: median engine query seconds, median
+oracle (cyvcf2) seconds for the same work, the ratio, setup seconds, and the
+break-even repetition count. Equality of the answers is established by the
+validation status in the same row — check it is PASS before quoting any speed.
+
+=== Collecting ===
+01_storage_mode: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/tidy.csv
+04_scaling_records: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/04_scaling_records/tidy.csv
+07_representation_axes: 20 cells — 20 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/07_representation_axes/tidy.csv
+08_robustness: 9 cells — 8 ok, 0 non-zero, 1 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/08_robustness/tidy.csv
+09_awkward_inputs: 16 cells — 12 ok, 2 non-zero, 2 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/tidy.csv
+  exit 1: awkward_sites_only
+  exit 1: awkward_truncated
+10_feasibility: 9 cells — 9 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/10_feasibility/tidy.csv
+11_covering_set: 10 cells — 10 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/11_covering_set/tidy.csv
+12_modes_smoke: 7 cells — 7 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/12_modes_smoke/tidy.csv
+13_query_cost: 6 cells — 6 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/13_query_cost/tidy.csv
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/provenance.vcf-bench-1.d3b34d5.json
+  tool   d3b34d5 Merge pull request #19 from ecrum19/release/v3.1.0
+  image   created 
+=== 2026-09-24T12:24:36+02:00 campaign 2 share finished ===

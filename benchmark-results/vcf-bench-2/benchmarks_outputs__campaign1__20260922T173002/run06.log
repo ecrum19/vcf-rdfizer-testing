@@ -1,0 +1,53 @@
+=== 2026-09-21T16:31:05+02:00 vcf-bench-2: 06_equivalence, all engines, comunica-backed cottas ===
+tool    3b2b0a1 Verify the cottas engine with a real query at image-build time
+harness 7170758 Resolve every cell's image tag to a digest, and document the layout
+image   vcf-rdfizer:local-3b2b0a1
+    - image vcf-rdfizer:local-3b2b0a1 already built
+    - biomedsem profile: manuscript configuration; every claim covered
+    -   reps=3 (at scale: 1)  corpus truncated to 250000 records (whole: HG005_GRCh38.vcf.gz)
+
+=== 06_equivalence.sh ===
+    - image vcf-rdfizer:local-3b2b0a1 already built
+
+=== §4.1 representation equivalence on test-10k.vcf ===
+    - engines: all  (targets: all produced artifacts)
+    - encoding__plain__expanded
+    - encoding__plain__condensed
+    - encoding__space-optimized__expanded
+    - encoding__space-optimized__condensed
+
+=== §4.1 mechanism check: single-pass vs partitioned merge ===
+    - mechanism__hdt_single
+    - mechanism__hdt_partitioned
+
+=== §1.2 refusals are enforced, not silent ===
+    - refusal__single_with_cottas
+    -   exit 2 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/refusal__single_with_cottas/stderr.log)
+    - refusal__single_with_space_optimized
+    -   exit 2 (recorded; see /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/refusal__single_with_space_optimized/stderr.log)
+[1m==>[0m Done. Build the structured dataset with:
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/collect_metrics.py 06_equivalence
+  python3 /home/ubuntu/vcf-rdfizer-testing/benchmarks/analysis/datasets.py equivalence 06_equivalence
+
+Every cell equal to the oracle is one quotable sentence: 'every configuration
+answers all six biological queries identically to the source VCF.' Call out
+Q5/Q6 separately — they are the sample-layer traversals.
+
+=== Collecting ===
+01_storage_mode: 8 cells — 8 ok, 0 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/tidy.csv
+03_sample_representation: 30 cells — 29 ok, 0 non-zero, 1 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/03_sample_representation/tidy.csv
+05_corpus_breadth: 10 cells — 9 ok, 0 non-zero, 1 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/05_corpus_breadth/tidy.csv
+06_equivalence: 8 cells — 6 ok, 2 non-zero, 0 skipped
+  /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/tidy.csv
+  exit 2: refusal__single_with_cottas
+  exit 2: refusal__single_with_space_optimized
+
+All selected experiments completed.
+RUN_ALL_EXIT=0
+wrote /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/00_environment/provenance.vcf-bench-2.3b2b0a1.json
+  tool   3b2b0a1 Verify the cottas engine with a real query at image-build time
+  image  sha256:068ae101bce3df593 created 2026-09-21T16:24:46
+=== 2026-09-22T01:30:02+02:00 finished ===

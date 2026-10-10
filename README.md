@@ -1,12 +1,16 @@
-# VCF-RDFizer evaluation: harness, run records and manuscript
+# VCF-RDFizer evaluation: harness and run records
 
 The evaluation of [VCF-RDFizer](https://github.com/ecrum19/VCF-RDFizer) reported in
 *VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Policy-aware Semantic
 Genomic Data* (BioMedSem 2026). The repository holds:
 - the benchmark harness that ran every experiment;
 - the run records of every reported result;
-- the manuscript and supplement, with the scripts that draw their figures;
+- the scripts that compute every reported value from those records;
 - an interactive results site.
+
+The GitHub repository also holds the manuscript, its figures and figure scripts
+(`BioMedSem_2026/`) and the authors' working notes (`tool-docs/`). Those two are
+not part of the [Zenodo archive](#zenodo-archive).
 
 Every number, table and figure in the manuscript can be traced to a run record
 here and regenerated from it.
@@ -20,13 +24,12 @@ commit and image digest that rebuild it.
 | Path | Contents |
 | --- | --- |
 | [`benchmarks/`](benchmarks/README.md) | The harness: experiments `00`–`18`, the linked workflow ([`use_case/acmg/`](benchmarks/use_case/acmg/README.md)), the converter comparison ([`converters/`](benchmarks/converters/README.md)), fixtures, and analysis scripts. [`DESIGN.md`](benchmarks/DESIGN.md) gives the reasoning behind each experiment |
-| [`BioMedSem_2026/benchmark-results/`](BioMedSem_2026/benchmark-results/README.md) | The run records, per benchmark host. Its README maps each reported result to its records |
-| [`BioMedSem_2026/paper/`](BioMedSem_2026/paper/README.md) | The manuscript and supplementary material: sources, PDFs, and a portable source-ZIP builder |
-| [`BioMedSem_2026/paper-assets/`](BioMedSem_2026/README.md#figures) | Every figure, with the script or TikZ source that draws it |
+| [`benchmark-results/`](benchmark-results/README.md) | The run records, per benchmark host. Its README maps each reported result to its records |
 | [`plugin-tests/`](plugin-tests/README.md) | Tests of VCF-RDFizer's SPDI, gene and policy plug-ins on real data |
-| [`scripts/`](#support-scripts) | Input download, host setup, the archive summary, and the results site's data builder |
+| [`scripts/`](#support-scripts) | Input download, host setup, the archive summary, and the code that computes every reported value (`figure_data.py`, `build_site_data.py`) |
 | [`site/`](site/) | The [results site](https://ecrum19.github.io/vcf-rdfizer-testing/) |
-| [`tool-docs/`](tool-docs/README.md) | Working notes for the authors; no result depends on them |
+| [`BioMedSem_2026/`](BioMedSem_2026/README.md) | *Repository only.* The manuscript and supplement (`paper/`), and every figure with the script or TikZ source that draws it (`paper-assets/`) |
+| [`tool-docs/`](tool-docs/README.md) | *Repository only.* Working notes for the authors; no result depends on them |
 | [`LEGACY.md`](LEGACY.md) | Material removed from this branch over time, and how to retrieve it |
 
 ## Software versions
@@ -50,15 +53,20 @@ v3.3.1's.
 
 ## Reproducing the results
 
-**Redraw the figures, rebuild the site data, and check both against the paper,
-using only the archived run records** (Python 3.12 with Matplotlib; the rest is
-the standard library):
+**Recompute every reported value from the run records alone, and check it
+against the paper** (Python 3.12, standard library only):
 
 ```bash
 python3 -m unittest scripts/test_build_site_data.py      # every pinned number matches the paper
+python3 scripts/build_site_data.py --out site/data       # every value the site and figures show
+```
+
+In the GitHub repository, the figures and the manuscript can be rebuilt too
+(Matplotlib and LaTeX):
+
+```bash
 python3 BioMedSem_2026/paper-assets/figures/make_figures.py
-python3 scripts/build_site_data.py --out site/data
-make -C BioMedSem_2026/paper                              # manuscript and supplement (LaTeX)
+make -C BioMedSem_2026/paper
 ```
 
 **Rerun an experiment.** You need Docker, Python 3, and a VCF-RDFizer checkout at
@@ -75,7 +83,7 @@ BM_IMAGE_VERSION=3.3.1 bash benchmarks/17_use_case_acmg.sh       # e.g. the link
 bash benchmarks/18_converter_comparison.sh                       # the converter comparison
 ```
 
-Compare a download against `BioMedSem_2026/benchmark-results/input-checksums.tsv`
+Compare a download against `benchmark-results/input-checksums.tsv`
 before trusting any comparison. `run_all.sh smoke` checks the pipeline on small
 inputs; its timings are not measurements. The plug-in tests run
 separately; see [`plugin-tests/README.md`](plugin-tests/README.md).
@@ -84,6 +92,17 @@ The linked workflow's MyVariant.info tier replays the service responses recorded
 on 2026-09-28, which are published in
 [`benchmarks/use_case/acmg/myvariant-cache/`](benchmarks/use_case/acmg/myvariant-cache/README.md).
 Use them, not the live service, whose data change.
+
+## Zenodo archive
+
+The Zenodo record holds this repository without `BioMedSem_2026/` and `tool-docs/`.
+[`.gitattributes`](.gitattributes) marks both `export-ignore`, so every archive git
+or GitHub makes leaves them out: `git archive`, a release's source zip, and
+Zenodo's GitHub import. To make the archive of a tagged release:
+
+```bash
+git archive --format=zip --prefix=vcf-rdfizer-testing/ -o vcf-rdfizer-testing.zip <tag>
+```
 
 ## Results site
 

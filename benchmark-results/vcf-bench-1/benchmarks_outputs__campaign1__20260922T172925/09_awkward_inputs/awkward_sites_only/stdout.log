@@ -1,0 +1,34 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression -> validation)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  Validation: aggregate, hdt, cottas via comunica
+  - Input 1/1: awkward_sites_only.vcf
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample calls streamed: 0; FORMAT values: 0
+    * Streaming structured header RDF
+    * Header lines typed: 8; contigs: 1
+    * Streaming QUAL and structured INFO RDF
+    * QUAL values streamed: 2; INFO values: 2; declarations: 1
+    * Triples produced: 245
+    * Compression ✅
+    * Semantic validation (aggregate, comunica): awkward_sites_only.nt.gz
+    * Semantic validation (hdt, comunica): awkward_sites_only.hdt
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/awkward_sites_only
+      - RDF aggregate: awkward_sites_only.nt.gz
+      - RDF (.gz): 3.38 KB (retained after validation failure)
+      - HDT (.hdt): 5.23 KB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/awkward_sites_only/awkward_sites_only.hdt)
+Total triples produced (full run): 245
+Conversion process completed with failures.
+Run time (full mode): 15.95s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_sites_only/out/run_metrics/awkward_sites_only__20260915T171308/summary.json

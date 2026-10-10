@@ -28,8 +28,8 @@ Only `live` feeds the reported numbers. Everything else is carried so a reader
 can see what was excluded and why, rather than having to take it on trust.
 
 Usage:
-  python3 scripts/build_run_summary.py BioMedSem_2026/benchmark-results \
-      --output BioMedSem_2026/benchmark-results/summary.json
+  python3 scripts/build_run_summary.py benchmark-results \
+      --output benchmark-results/summary.json
 """
 from __future__ import annotations
 

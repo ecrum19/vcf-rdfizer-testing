@@ -1,0 +1,52 @@
+Step 1/5: Validating inputs ✅
+  Metrics: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/run_metrics/HG005_GRCh38_r100000__20260922T175557
+  Detailed logs: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/run_metrics/HG005_GRCh38_r100000__20260922T175557/logs/wrapper.log
+  Progress log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/run_metrics/HG005_GRCh38_r100000__20260922T175557/logs/progress.log
+Step 2/5: Ensuring Docker image is available ✅
+Step 3/5: Processing per-input pipeline (TSV -> RDF -> compression)
+  Spark partition hint: 8
+  Sample representation: expanded
+  INFO representation: structured
+  Header representation: structured
+  - Input 1/1: HG005_GRCh38_r100000.vcf.gz
+    * TSV conversion ✅
+    * VCF version: VCFv4.2 (detected)
+    * RDF conversion ✅
+    * Streaming expanded multi-sample RDF (no expanded helper TSVs)
+    * Sample RDF streaming: 10,000 variants, 10,000 calls
+    * Sample RDF streaming: 20,000 variants, 20,000 calls
+    * Sample RDF streaming: 30,000 variants, 30,000 calls
+    * Sample RDF streaming: 40,000 variants, 40,000 calls
+    * Sample RDF streaming: 50,000 variants, 50,000 calls
+    * Sample RDF streaming: 60,000 variants, 60,000 calls
+    * Sample RDF streaming: 70,000 variants, 70,000 calls
+    * Sample RDF streaming: 80,000 variants, 80,000 calls
+    * Sample RDF streaming: 90,000 variants, 90,000 calls
+    * Sample RDF streaming: 100,000 variants, 100,000 calls
+    * Sample calls streamed: 100,000; FORMAT values: 700,000
+    * Streaming structured header RDF
+    * Header lines typed: 233; contigs: 195
+    * Streaming QUAL and structured INFO RDF
+    * INFO RDF streaming: 10,000 variants, 86,517 values
+    * INFO RDF streaming: 20,000 variants, 172,611 values
+    * INFO RDF streaming: 30,000 variants, 258,856 values
+    * INFO RDF streaming: 40,000 variants, 344,574 values
+    * INFO RDF streaming: 50,000 variants, 430,130 values
+    * INFO RDF streaming: 60,000 variants, 516,011 values
+    * INFO RDF streaming: 70,000 variants, 601,383 values
+    * INFO RDF streaming: 80,000 variants, 686,378 values
+    * INFO RDF streaming: 90,000 variants, 771,477 values
+    * INFO RDF streaming: 100,000 variants, 856,210 values
+    * QUAL values streamed: 100,000; INFO values: 856,210; declarations: 11
+    * Triples produced: 17,098,746
+    * Compression ✅
+    * Output directory: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/HG005_GRCh38_r100000
+      - RDF aggregate: HG005_GRCh38_r100000.nt.gz
+      - RDF (.gz): 72.32 MB (removed after successful compression)
+      - HDT (.hdt): 105.02 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.hdt)
+      - COTTAS (.cottas): 37.19 MB (/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/HG005_GRCh38_r100000/HG005_GRCh38_r100000.cottas)
+Total triples produced (full run): 17,098,746
+Conversion process finished.
+Run time (full mode): 20m 30.3s
+Timing log: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/run_metrics/HG005_GRCh38_r100000__20260922T175557/wrapper_execution_times.csv
+Metrics summary: /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/01_storage_mode/HG005_GRCh38_r100000__space-optimized__r1/out/run_metrics/HG005_GRCh38_r100000__20260922T175557/summary.json

@@ -1,0 +1,24 @@
+PREFIX vcf: <http://github.com/lindenb/jvarkit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# JVarkit vcf2rdf (commit fc2356a3), run with --hide '' so ALT, FILTER and GT are written.
+# Its classes are written as IRIs with the scheme "vcf" (<vcf:Variant>), not as prefixed names,
+# so they are matched literally. A record is <urn:variant/CHROM:POS:REF>.
+# JVarkit writes one vcf:filter per failed filter, and nothing for either PASS or "." (both are
+# "not filtered" to htsjdk). The port reads a record with no vcf:filter as PASS; a file whose
+# FILTER column is "." would therefore be misreported. Multiple filters lose their file order, so
+# they are joined in sorted order.
+SELECT ?filterStatus ?filterLexical (COUNT(?record) AS ?recordCount)
+WHERE {
+  {
+    SELECT ?record (GROUP_CONCAT(DISTINCT ?filterId; separator=";") AS ?filters)
+    WHERE {
+      ?record a <vcf:Variant> .
+      OPTIONAL { ?record vcf:filter ?filterIri BIND(STRAFTER(STR(?filterIri), "urn:filter/") AS ?filterId) }
+    }
+    GROUP BY ?record
+  }
+  BIND(IF(COALESCE(?filters, "") = "", "PASS", ?filters) AS ?filterLexical)
+  BIND(IF(?filterLexical = "PASS", "PASS", "FAILED") AS ?filterStatus)
+}
+GROUP BY ?filterStatus ?filterLexical
+ORDER BY ?filterStatus ?filterLexical

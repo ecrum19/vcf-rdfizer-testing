@@ -332,7 +332,7 @@ two hosts with the same hardware, one experiment at a time per host:
   first 250,000 records.
 
 Each host's results tree was mirrored, without the generated RDF (`out/`), into
-`BioMedSem_2026/benchmark-results/<host>/benchmarks_outputs/`, and
+`benchmark-results/<host>/benchmarks_outputs/`, and
 `scripts/build_run_summary.py` integrates both into `summary.json`.
 
 **Later experiments (`14`–`18`).** They ran outside the profile. As reported:
@@ -342,7 +342,7 @@ Each host's results tree was mirrored, without the generated RDF (`out/`), into
 
 Every result that a pre-release build first produced was then rerun with the
 published v3.3.1 (`sha256:3ad71b1a…2993`) by one driver, `run_v331.sh`. The driver
-and its logs are archived under `BioMedSem_2026/benchmark-results/vcf-bench-*/v331-rerun/`,
+and its logs are archived under `benchmark-results/vcf-bench-*/v331-rerun/`,
 whose READMEs give each job's result. The use-case arms, regional retrieval,
 large-graph retrieval and the consumer WGS validation run all come from that rerun.
 

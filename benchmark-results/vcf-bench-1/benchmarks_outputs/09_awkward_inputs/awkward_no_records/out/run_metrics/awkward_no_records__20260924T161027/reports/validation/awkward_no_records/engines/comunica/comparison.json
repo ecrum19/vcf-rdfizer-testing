@@ -1,0 +1,149 @@
+{
+  "invariants": {
+    "parser": [
+      {
+        "detail": "0 == 0",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "0 == 0",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "0 == 0",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      }
+    ],
+    "sparql": [
+      {
+        "detail": "0 == 0",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "0 == 0",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "0 == 0",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      }
+    ]
+  },
+  "queries": {
+    "q01_record_density_1mb": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q02_variant_shape_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q03_titv": {
+      "actual": {
+        "biallelicSnvCount": 0,
+        "transitionCount": 0,
+        "transversionCount": 0
+      },
+      "expected": {
+        "biallelicSnvCount": 0,
+        "transitionCount": 0,
+        "transversionCount": 0
+      },
+      "status": "PASS"
+    },
+    "q04_filter_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q05_sample_genotype_counts": {
+      "diagnosticComparison": {
+        "differingRows": [],
+        "extraRows": [],
+        "missingRows": [],
+        "status": "PASS"
+      },
+      "status": "NOT_APPLICABLE_VERIFIED_NO_SAMPLES_OR_GT"
+    },
+    "q06_ac_an_distribution": {
+      "diagnosticComparison": {
+        "differingRows": [],
+        "extraRows": [],
+        "missingRows": [],
+        "status": "PASS"
+      },
+      "status": "NOT_APPLICABLE_VERIFIED_NO_SAMPLES_OR_GT"
+    },
+    "q07_file_metadata": {
+      "actual": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "file:///ref/GRCh38.fa",
+        "sourceSoftware": "(absent)"
+      },
+      "expected": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "file:///ref/GRCh38.fa",
+        "sourceSoftware": "(absent)"
+      },
+      "status": "PASS"
+    },
+    "q08_header_line_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q09_predicate_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q10_class_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q11_record_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q12_info_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q13_format_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    }
+  },
+  "status": "PASS"
+}

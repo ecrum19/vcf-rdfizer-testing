@@ -1,17 +1,21 @@
-# BioMedSem 2026: manuscript and evidence
+# BioMedSem 2026: manuscript and figures
 
 | Directory | Contents |
 | --- | --- |
 | [`paper/`](paper/README.md) | The manuscript (`current_short.tex`, also built as `paper.pdf`), its supplementary material (`supplementary.tex`), the compiled PDFs, and the portable source-ZIP builder |
 | [`paper-assets/`](paper-assets/) | Every figure the two documents include, with its source |
-| [`benchmark-results/`](benchmark-results/README.md) | The run records behind every reported number: commands, logs, timings, comparisons, validation reports and provenance |
+
+The run records behind every number are in [`benchmark-results/`](../benchmark-results/README.md)
+at the repository root. This directory and `tool-docs/` are marked `export-ignore` in
+[`.gitattributes`](../.gitattributes): they are in the GitHub repository, but not in the
+Zenodo archive or any other archive git makes.
 
 ## Figures
 
 The data figures are drawn from `benchmark-results/` by
 [`paper-assets/figures/make_figures.py`](paper-assets/figures/make_figures.py),
 which reads every value through
-[`figure_data.py`](paper-assets/figures/figure_data.py) and
+[`scripts/figure_data.py`](../scripts/figure_data.py) and
 [`scripts/build_site_data.py`](../scripts/build_site_data.py), the results site's
 builder. The paper and the site therefore cannot compute a value differently.
 The diagrams are standalone TikZ sources beside their PDFs.

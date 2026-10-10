@@ -1,0 +1,50 @@
+{
+  "run_id": "20260921T232050",
+  "timestamp": "2026-09-21T23:20:50",
+  "output_name": "test-10k",
+  "rdf_name": "test-10k.nt",
+  "source_rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/test-10k.nt",
+  "compression_methods": "hdt",
+  "index_warnings": [],
+  "auxiliary_stages": {
+    "hdt-validation": {
+      "exit_code": 0,
+      "wall_seconds": 2.752200606279075,
+      "user_seconds": 2.66,
+      "sys_seconds": 0.28,
+      "max_rss_kb": 52380,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/.test-10k.hdt.validation.json",
+      "output_size_bytes": 156
+    }
+  },
+  "methods": {
+    "hdt": {
+      "exit_code": 0,
+      "wall_seconds": 5.754391611088067,
+      "user_seconds": 4.97,
+      "sys_seconds": 0.15,
+      "max_rss_kb": 68768,
+      "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/test-10k.hdt",
+      "output_size_bytes": 6029750,
+      "source": "generated",
+      "details": {},
+      "validation": {
+        "valid": true,
+        "source_triples": 958919,
+        "decoded_triples": 958919,
+        "expected_triples": 958919,
+        "count_match": true,
+        "validator": "hdt2rdf",
+        "execution": {
+          "exit_code": 0,
+          "wall_seconds": 2.752200606279075,
+          "user_seconds": 2.66,
+          "sys_seconds": 0.28,
+          "max_rss_kb": 52380,
+          "output_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/mechanism__hdt_single/out/test-10k/.test-10k.hdt.validation.json",
+          "output_size_bytes": 156
+        }
+      }
+    }
+  }
+}

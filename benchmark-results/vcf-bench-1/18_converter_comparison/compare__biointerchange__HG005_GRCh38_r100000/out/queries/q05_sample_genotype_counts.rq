@@ -1,0 +1,26 @@
+PREFIX g: <https://www.codamono.com/gfvo-squared#>
+PREFIX gu: <https://www.codamono.com/gfvo-squared#unknownProperty->
+PREFIX gc: <https://github.com/BioInterchange/Ontologies/gfvo-squared#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# BioInterchange 2.0.5: GFVO-squared JSON-LD, one gc:Feature (a blank node) per record, with the
+# header on a gc:Meta node. ALT alleles are g:alleleB, g:alleleC, ... in file order; "*" is
+# written as "".
+# g:alleles spells a call with letters (A = REF, B = first ALT, ...). A missing allele is
+# written as REF, so MISSING cannot be told from HOM_REF or HET.
+SELECT ?sampleId ?genotypeClass (COUNT(DISTINCT ?call) AS ?callCount)
+WHERE {
+  ?record a gc:Feature ; g:samples/rdf:rest*/rdf:first ?call .
+  ?call g:id ?sampleIdLiteral .
+  OPTIONAL { ?call g:genotype/g:alleles ?allelesLiteral }
+  BIND(STR(?sampleIdLiteral) AS ?sampleId)
+  BIND(COALESCE(STR(?allelesLiteral), "") AS ?alleles)
+  BIND(IF(!BOUND(?allelesLiteral), "NO_GT_FIELD",
+    IF(STRLEN(?alleles) = 1, IF(?alleles = "A", "HAPLOID_REF", "HAPLOID_ALT"),
+    IF(STRLEN(?alleles) = 2,
+       IF(SUBSTR(?alleles, 1, 1) = SUBSTR(?alleles, 2, 1),
+          IF(SUBSTR(?alleles, 1, 1) = "A", "HOM_REF", "HOM_ALT"), "HET"),
+       "OTHER_PLOIDY"))) AS ?genotypeClass)
+}
+GROUP BY ?sampleId ?genotypeClass
+ORDER BY ?sampleId ?genotypeClass

@@ -1,0 +1,7 @@
+bash -c 
+      set -euo pipefail
+      work="$(mktemp -d)"; trap "rm -rf \"$work\"" EXIT
+      "$1" "$2" run -i "$3" --link "$4" --offline -o "$work/$5.links.nt"
+      mkdir -p "$6"
+      gzip -1 -c "$work/$5.links.nt" > "$6/$5.links.nt.gz"
+      mv "$work/$5.links.json" "$6/" _ /home/ubuntu/vrdev-test/venv/bin/python /home/ubuntu/vrdev-test/vcf-rdfizer-578c2be/vcf_rdfizer_link.py /home/ubuntu/vrdev-test/acmg-run/derived_wgs/HG005.acmg.vcf spdi,ensembl-genes-grch38 HG005.acmg /home/ubuntu/vrdev-test/acmg-run/results/17_use_case_acmg__wgs/link__HG005/out

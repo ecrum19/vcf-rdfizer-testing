@@ -1,0 +1,46 @@
+{
+  "run_id": "20260915T171126",
+  "timestamp": "2026-09-15T17:11:26",
+  "stage": "validation",
+  "validation_id": "awkward_high_ploidy",
+  "vcf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks/fixtures/awkward_high_ploidy.vcf",
+  "rdf_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/awkward_high_ploidy/awkward_high_ploidy.nt.gz",
+  "rdf_format": "nt.gz",
+  "engine": "comunica",
+  "engines": [
+    "comunica"
+  ],
+  "strict_conformance": false,
+  "representation": "expanded",
+  "results_dir": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260915T171126/reports/validation/awkward_high_ploidy",
+  "summary_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260915T171126/reports/validation/awkward_high_ploidy/summary.json",
+  "engine_statuses": {
+    "comunica": "PASS"
+  },
+  "engine_agreement": true,
+  "benchmark": {
+    "engineQuerySeconds": {
+      "comunica": 0.5484590230043977
+    },
+    "engineSetupSeconds": {
+      "comunica": 6.110443759011105
+    },
+    "oracleSeconds": 0.0034064440988004208
+  },
+  "benchmark_csv_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/run_metrics/awkward_high_ploidy__20260915T171126/reports/validation/awkward_high_ploidy/benchmark.csv",
+  "input_rdf_size_bytes": 4052,
+  "exit_code": 0,
+  "status": "PASS",
+  "timing": {
+    "wall_seconds": 9.259109236998484,
+    "user_seconds": 10.44,
+    "sys_seconds": 0.94,
+    "max_rss_kb": 313444
+  },
+  "temporary_rdf": {
+    "decompressed_inside_container": true,
+    "persisted_on_host": false,
+    "cleanup_confirmed_by_runner": true
+  },
+  "rdf_gzip_path": "/home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/09_awkward_inputs/awkward_high_ploidy/out/awkward_high_ploidy/awkward_high_ploidy.nt.gz"
+}

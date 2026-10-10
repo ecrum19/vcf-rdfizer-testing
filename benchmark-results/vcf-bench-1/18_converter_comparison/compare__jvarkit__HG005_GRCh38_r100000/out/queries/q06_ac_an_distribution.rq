@@ -1,0 +1,33 @@
+PREFIX vcf: <http://github.com/lindenb/jvarkit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+# JVarkit vcf2rdf (commit fc2356a3), run with --hide '' so ALT, FILTER and GT are written.
+# Its classes are written as IRIs with the scheme "vcf" (<vcf:Variant>), not as prefixed names,
+# so they are matched literally. A record is <urn:variant/CHROM:POS:REF>.
+# AN and AC from each call's class, for records with exactly one ALT allele. JVarkit writes no
+# ploidy, so every called genotype counts as diploid.
+SELECT ?an ?ac (COUNT(?record) AS ?siteCount)
+WHERE {
+  {
+    SELECT ?record (SUM(?callAn) AS ?an) (SUM(?callAc) AS ?ac)
+    WHERE {
+      {
+        SELECT ?record WHERE { ?record a <vcf:Variant> ; vcf:alt ?altLiteral }
+        GROUP BY ?record
+        HAVING (COUNT(DISTINCT ?altLiteral) = 1)
+      }
+      ?genotype a <vcf:Genotype> ; vcf:variant ?record .
+      OPTIONAL {
+        ?genotype a ?class .
+        VALUES (?class ?classAn ?classAc) {
+          (<vcf:HomRefGenotype> 2 0) (<vcf:HetGenotype> 2 1) (<vcf:HomVarGenotype> 2 2)
+        }
+      }
+      BIND(COALESCE(?classAn, 0) AS ?callAn)
+      BIND(COALESCE(?classAc, 0) AS ?callAc)
+    }
+    GROUP BY ?record
+  }
+  FILTER(?an > 0)
+}
+GROUP BY ?an ?ac
+ORDER BY ?an ?ac

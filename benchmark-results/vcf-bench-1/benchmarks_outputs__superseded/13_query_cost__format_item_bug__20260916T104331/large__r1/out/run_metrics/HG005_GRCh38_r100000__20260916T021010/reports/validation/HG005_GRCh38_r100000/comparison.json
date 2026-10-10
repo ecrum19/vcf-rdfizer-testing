@@ -1,0 +1,221 @@
+{
+  "invariants": {
+    "parser": [
+      {
+        "detail": "100000 == 100000",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "100000 == 100000",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "100000 == 100000",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "100000 == 100000",
+        "name": "q05_total_HG005",
+        "status": "PASS"
+      },
+      {
+        "detail": "99197 <= 99197",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "99197 == 99197",
+        "name": "q06_eligible_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_2",
+        "status": "PASS"
+      }
+    ],
+    "sparql": [
+      {
+        "detail": "100000 == 100000",
+        "name": "q01_record_density_1mb_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "100000 == 100000",
+        "name": "q02_variant_shape_counts_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "100000 == 100000",
+        "name": "q04_filter_distribution_total",
+        "status": "PASS"
+      },
+      {
+        "detail": "transition + transversion == biallelic SNV",
+        "name": "q03_partition",
+        "status": "PASS"
+      },
+      {
+        "detail": "100000 == 100000",
+        "name": "q05_total_HG005",
+        "status": "PASS"
+      },
+      {
+        "detail": "99197 <= 99197",
+        "name": "q06_subset",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_1",
+        "status": "PASS"
+      },
+      {
+        "detail": "AN/AC bounds",
+        "name": "q06_bounds_2_2",
+        "status": "PASS"
+      }
+    ]
+  },
+  "queries": {
+    "q01_record_density_1mb": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q02_variant_shape_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q03_titv": {
+      "actual": {
+        "biallelicSnvCount": 87739,
+        "transitionCount": 61538,
+        "transversionCount": 26201
+      },
+      "expected": {
+        "biallelicSnvCount": 87739,
+        "transitionCount": 61538,
+        "transversionCount": 26201
+      },
+      "status": "PASS"
+    },
+    "q04_filter_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q05_sample_genotype_counts": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q06_ac_an_distribution": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q07_file_metadata": {
+      "actual": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "(absent)",
+        "sourceSoftware": "(absent)"
+      },
+      "expected": {
+        "fileFormat": "VCFv4.2",
+        "referenceGenome": "(absent)",
+        "sourceSoftware": "(absent)"
+      },
+      "status": "PASS"
+    },
+    "q08_header_line_census": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q09_predicate_census": {
+      "differingRows": [
+        {
+          "actual": {
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "tripleCount": 3459808
+          },
+          "expected": {
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "tripleCount": 3058202
+          }
+        }
+      ],
+      "extraRows": [
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#forAllele",
+          "tripleCount": 401606
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#hasValueItem",
+          "tripleCount": 401606
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#itemValue",
+          "tripleCount": 401606
+        },
+        {
+          "predicate": "https://w3id.org/vcf-core/vocab#valueIndex",
+          "tripleCount": 401606
+        }
+      ],
+      "missingRows": [],
+      "status": "MISMATCH"
+    },
+    "q10_class_census": {
+      "differingRows": [],
+      "extraRows": [
+        {
+          "class": "https://w3id.org/vcf-core/vocab#FieldValueItem",
+          "resourceCount": 401606
+        }
+      ],
+      "missingRows": [],
+      "status": "MISMATCH"
+    },
+    "q11_record_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q12_info_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    },
+    "q13_format_value_digest": {
+      "differingRows": [],
+      "extraRows": [],
+      "missingRows": [],
+      "status": "PASS"
+    }
+  },
+  "status": "MISMATCH"
+}

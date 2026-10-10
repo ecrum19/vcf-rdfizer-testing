@@ -1,0 +1,11 @@
+captured: 2026-09-18T09:40:06+02:00
+NOTE: second hang, same query, WITH --validation-query-timeout 1800 and
+      --validation-time-budget 14400 on the command line. Neither fired.
+    PID     ELAPSED                  STARTED %CPU COMMAND
+1484947    13:09:42 Thu Sep 17 20:30:22 2026  0.0 bash ./benchmarks/run_all.sh biomedsem 06
+1484986    13:09:42 Thu Sep 17 20:30:23 2026  0.0 bash /home/ubuntu/vcf-rdfizer-testing/benchmarks/06_equivalence.sh
+1502624    10:04:21 Thu Sep 17 23:35:43 2026  0.0 bash /home/ubuntu/vcf-rdfizer-testing/benchmarks/06_equivalence.sh
+1502628    10:04:21 Thu Sep 17 23:35:43 2026  0.0 python3 /home/ubuntu/VCF-RDFizer/vcf_rdfizer.py --mode full --input /home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf --sample-representation condensed --rdf-storage-mode plain --hdt-strategy partitioned --representations hdt,cottas --rdf-compression gzip --artifact-compression none --validate --validate-artifacts all --validation-engine all --validation-query-timeout 1800 --validation-time-budget 14400 --spark-partitions 8 --image vcf-rdfizer:local-025fb7d --no-build --out /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out
+--- live wrapper argv:
+1502628 python3 /home/ubuntu/VCF-RDFizer/vcf_rdfizer.py --mode full --input /home/ubuntu/VCF-RDFizer/test/test_vcf_files/test-10k.vcf --sample-representation condensed --rdf-storage-mode plain --hdt-strategy partitioned --representations hdt,cottas --rdf-compression gzip --artifact-compression none --validate --validate-artifacts all --validation-engine all --validation-query-timeout 1800 --validation-time-budget 14400 --spark-partitions 8 --image vcf-rdfizer:local-025fb7d --no-build --out /home/ubuntu/vcf-rdfizer-testing/benchmarks_outputs/06_equivalence/encoding__plain__condensed/out
+charming_neumann Up 10 hours vcf-rdfizer:local-025fb7d

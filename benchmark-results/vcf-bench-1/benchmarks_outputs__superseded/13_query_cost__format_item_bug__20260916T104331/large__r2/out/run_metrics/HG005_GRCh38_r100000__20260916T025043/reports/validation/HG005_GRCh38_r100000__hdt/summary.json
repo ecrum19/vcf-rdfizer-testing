@@ -1,0 +1,110 @@
+{
+  "benchmark": {
+    "engineQuerySeconds": {
+      "qlever": 319.22735232207924
+    },
+    "engineSetupSeconds": {
+      "qlever": 23.168431495083496
+    },
+    "oracleSeconds": 11.033961933106184
+  },
+  "comparisonStatus": "MISMATCH",
+  "datasetId": "HG005_GRCh38_r100000__hdt",
+  "engine": "qlever",
+  "engineAgreement": true,
+  "engineStatuses": {
+    "qlever": "MISMATCH"
+  },
+  "engines": [
+    "qlever"
+  ],
+  "gtRecordCount": 100000,
+  "mappingPolicy": "strict",
+  "preflight": {
+    "preflight_blank_nodes": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_distinct_triple_count": {
+      "rows": 1,
+      "status": "PASS"
+    },
+    "preflight_duplicate_triples": {
+      "distinctTripleCount": 17098746,
+      "duplicateTripleCount": 0,
+      "parsedTripleCount": 17098746,
+      "status": "PASS"
+    },
+    "preflight_empty_values": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_missing_token_conformance": {
+      "anomalyCount": 20,
+      "limitedTo": 100,
+      "plainDotCountReturned": 20,
+      "sampleTruncated": false,
+      "status": "EXPECTED_CONFORMANCE_FAILURE"
+    },
+    "preflight_position_datatype": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_record_cardinality": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_representation_profile": {
+      "anomalyCount": 0,
+      "anomalyCountReturned": 0,
+      "limitedTo": 100,
+      "note": null,
+      "sampleTruncated": false,
+      "status": "PASS"
+    },
+    "preflight_sample_gt_inventory": {
+      "actual": {
+        "gtValueNodeCount": 100000,
+        "sampleCallCount": 100000,
+        "sampleIdCount": 1
+      },
+      "expected": {
+        "gtValueNodeCount": 100000,
+        "sampleCallCount": 100000,
+        "sampleIdCount": 1
+      },
+      "status": "PASS"
+    }
+  },
+  "recordCount": 100000,
+  "representation": "expanded",
+  "results": {
+    "benchmark": "/data/validation/benchmark.csv",
+    "comparison": "/data/validation/comparison.json",
+    "manifest": "/data/validation/manifest.json",
+    "parser": "/data/validation/parser.json",
+    "sparql": "/data/validation/sparql.json"
+  },
+  "sampleCount": 1,
+  "shacl": null,
+  "sourceFormat": "hdt",
+  "status": "MISMATCH",
+  "strictConformance": false,
+  "temporaryRdf": {
+    "cleanupConfirmed": true,
+    "decompressedInsideContainer": true,
+    "persisted": false
+  }
+}
