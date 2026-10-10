@@ -1,0 +1,25 @@
+
+=== govern — one release view per requester, on QLever, checked ===
+    - govern: 94 GB free (needs ~55)
+wrote 50545281 triple(s) to /home/ubuntu/vrdev-test/v331/results/17_use_case_acmg__layered/oracle/oracle.nt.gz
+    - source endpoint ready on :7201 after ~5080s
+    - oracle endpoint ready on :7202 after ~205s
+    - govern__own_physician
+    - view endpoint ready on :7203 after ~1755s
+    - govern__clinical
+    - view endpoint ready on :7203 after ~1775s
+    - govern__cardio
+    - view endpoint ready on :7203 after ~5s
+    - govern__biobank
+    - view endpoint ready on :7203 after ~1735s
+
+=== query — carriers.rq (and rare.rq) under QLever, per requester ===
+    - query: 59 GB free (needs ~35)
+    - query__unrestricted
+    - query__own_physician
+    - query__clinical
+    - query__cardio
+    - query__biobank
+
+=== compare — the two routes' carrier lists ===
+AGREE: unrestricted 1382/1382, own_physician 1382/1382, clinical 1382/1382, cardio 722/722, biobank 983/983; records: own_physician 5063417/5063417, clinical 5063411/5063411, cardio 6397/6397, biobank 5060897/5060897

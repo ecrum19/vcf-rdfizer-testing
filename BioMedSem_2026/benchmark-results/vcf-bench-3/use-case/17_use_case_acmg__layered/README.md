@@ -1,5 +1,9 @@
 # Arm 4: layered governance on one complete VCF (VCF-RDFizer v3.3.1)
 
+**Superseded in the manuscript** by Arm 4's rerun with the published v3.3.1 image on vcf-bench-2
+([`../../../vcf-bench-2/v331-rerun/`](../../../vcf-bench-2/v331-rerun/README.md)), which gives the same
+matches, released records and links. This run, on a pre-release build, is kept as the first evidence.
+
 The complete NB72462M VCF (5,063,417 records after normalization, 1.22B triples with links) under
 layered, simulated consent, on vcf-bench-3, 2026-10-06/07. Linking and
 governance ran from the tool checkout at `29a81f6` (VCF-RDFizer PR #32,

@@ -1035,8 +1035,8 @@ def fig_validation() -> None:
 REQUESTERS = [("unrestricted", "All (no policy)"), ("own_physician", "Participant's physician"),
               ("clinical", "Clinical care (CC)"), ("cardio", "Cardiovascular research (DS)"),
               ("biobank", "General research (GRU)")]
-#: Arm 4 (layered rules on one complete VCF) ran on vcf-bench-3, outside the site's arms.
-ARM4 = site.RESULTS / "vcf-bench-3" / "use-case" / "17_use_case_acmg__layered"
+#: Arm 4 (layered rules on one complete VCF), outside the site's arms: its v3.3.1 rerun on vcf-bench-2.
+ARM4 = site.V331["vcf-bench-2"] / "17_use_case_acmg__layered"
 
 
 def arm_genome_triples(arm: Path) -> int:
@@ -1120,7 +1120,7 @@ def millions(n: float) -> str:
 # ---------------------------------------------------------------------------
 # Figure: stage costs of the linked workflow
 # ---------------------------------------------------------------------------
-#: The four arms in order of graph size; arm 4 (layered rules) ran on vcf-bench-3.
+#: The four arms in order of graph size.
 COST_ARMS = [
     ("Arm 1: five gene-span slices", site.ARMS["arm1"]),
     ("Arm 2: cohort of 104", site.ARMS["arm2"]),
