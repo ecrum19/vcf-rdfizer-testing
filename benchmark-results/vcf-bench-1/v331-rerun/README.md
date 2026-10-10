@@ -8,12 +8,12 @@ harness `vcf-rdfizer-testing` `6f2239ff`. The driver is [`run_v331.sh`](run_v331
 
 | Job | What | Wall | Result |
 |---|---|---|---|
-| `arm1` | Experiment 17, Arm 1: five gene-span slices | 53 min | Both routes agree on every carrier list and record count (`results/17_use_case_acmg/comparison.json`) |
+| `arm1` | Experiment 17, Scenario 1: five gene-span slices | 53 min | Both routes agree on every carrier list and record count (`results/17_use_case_acmg/comparison.json`) |
 | `regional` | Experiment 14, regional retrieval on the v3.1.0 graphs that `13_query_cost` built | 85 min | Completed (`results/14_regional_access/`) |
-| `arm2` | Experiment 17, Arm 2: 104 1000 Genomes participants | 3.0 h | Carrier lists agree. The record-level check does not: see below. Exit 1 is the comparison's verdict, not a failure. |
-| `myvariant` | Experiment 17, Arm 1's MyVariant.info tier (2026-10-09; role `bench1-myvariant`, harness `4ea07cc7`) | 1 min | Same links as the 2026-09-28 run, from its recorded responses: see below |
+| `arm2` | Experiment 17, Scenario 2: 104 1000 Genomes participants | 3.0 h | Carrier lists agree. The record-level check does not: see below. Exit 1 is the comparison's verdict, not a failure. |
+| `myvariant` | Experiment 17, Scenario 1's MyVariant.info tier (2026-10-09; role `bench1-myvariant`, harness `4ea07cc7`) | 1 min | Same links as the 2026-09-28 run, from its recorded responses: see below |
 
-## Arm 2's record-level disagreement
+## Scenario 2's record-level disagreement
 
 The release views released 110 more records to the disease-specific requester (cardio, DUO:0000007) and
 58 more to the general-research requester (biobank, DUO:0000042) than the bcftools baseline.
@@ -25,7 +25,7 @@ v3.3.1's gene linkers key no record with a symbolic or breakend ALT, so those re
 prohibition on those genes cannot reach them. The paper keeps v3.3.1 and states this as a limitation;
 ecrum19/VCF-RDFizer#34 links such records by their REF span.
 
-## Arm 1's MyVariant.info tier
+## Scenario 1's MyVariant.info tier
 
 The live tier (`rsid-myvariant` on the two PGP files) first ran on 2026-09-28 from a pre-release tree, outside
 the harness, and made 21 requests to MyVariant.info. That run's records are on the legacy branch, in

@@ -66,7 +66,7 @@ declarative and checkable, not that it is always less code.
   of the problem. `##reference` is set to the reference actually used, since the
   sources declare a lab path or nothing.
 
-### Arm 2: a 1000 Genomes cohort
+### Scenario 2: a 1000 Genomes cohort
 
 `make_cohort.py` selects 104 unrelated participants from the 1000 Genomes
 high-coverage call set, 4 from each of its 26 populations, with the seed in
@@ -93,13 +93,13 @@ BM_ACMG_ARM=cohort BM_ACMG_STAGES="fetch_cohort derive convert link baseline gov
   BM_IMAGE_VERSION=3.3.1 ./17_use_case_acmg.sh
 ```
 
-### Arm 3: one complete VCF
+### Scenario 3: one complete VCF
 
-`make_wgs.py` writes `wgs/case.json`: arm 1's question, participant (HG005)
+`make_wgs.py` writes `wgs/case.json`: Scenario 1's question, participant (HG005)
 and consent, unchanged. `BM_ACMG_ARM=wgs` runs the same stages, except that
 `derive.sh` keeps every record of HG005's VCF (`all` in place of the regions); ClinVar
 stays restricted. Only the scale changes, so HG005's carriers must equal its
-arm-1 carriers. HG005 consents to clinical care only, so two of the three
+Scenario 1 carriers. HG005 consents to clinical care only, so two of the three
 views are empty: their evaluation still streams the whole graph, and their
 check needs no view endpoint.
 
@@ -111,9 +111,9 @@ BM_ACMG_ARM=wgs BM_ACMG_STAGES="derive convert link baseline govern query compar
   BM_IMAGE_VERSION=3.3.1 ./17_use_case_acmg.sh
 ```
 
-### Arm 4: one complete VCF, layered consent, four requesters
+### Scenario 4: one complete VCF, layered consent, four requesters
 
-Arms 1–3 govern whole files, so arm 3's complete HG005 VCF was all or nothing. Arm 4
+Scenarios 1–3 govern whole files, so Scenario 3's complete HG005 VCF was all or nothing. Scenario 4
 asks the same question of the complete NB72462M VCF under rules that each target
 a different kind of selection. [`make_layered.py`](make_layered.py) writes
 `layered/case.json`; `generate.py` writes its policy and `purposes.ttl`.
@@ -151,7 +151,7 @@ BM_ACMG_ARM=layered BM_ACMG_STAGES="derive convert link govern query baseline co
 
 ### Effort
 
-`effort.py` measures what each route asks its author to write (arm 1: rules and
+`effort.py` measures what each route asks its author to write (Scenario 1: rules and
 data, apart), then applies four changes to both routes as real edits: a
 withdrawal, a requester with a new purpose, a cardiac panel in place of the
 cancer one, and a rule on one variant. It counts the lines each changes, and
@@ -213,8 +213,8 @@ VCF_RDFIZER=/path/to/vcf-rdfizer-v3.3.1/vcf_rdfizer.py \
   BM_IMAGE_VERSION=3.3.1 BM_ACMG_ARM=arm1 ./17_use_case_acmg.sh   # derive … compare
 ```
 
-`BM_ACMG_ARM` selects the arm: `arm1`, `cohort` (Arm 2), `wgs` (Arm 3) or
-`layered` (Arm 4). The reported runs used VCF-RDFizer v3.3.1 for every stage:
+`BM_ACMG_ARM` selects the scenario (the harness's own name for a scenario is *arm*): `arm1` (Scenario 1),
+`cohort` (Scenario 2), `wgs` (Scenario 3) or `layered` (Scenario 4). The reported runs used VCF-RDFizer v3.3.1 for every stage:
 the image for derive, convert, baseline and query, and a v3.3.1 source checkout
 for the link and govern stages, which run host-side from the checkout that
 `VCF_RDFIZER` points at. The driver that ran them, `run_v331.sh`, is archived in
@@ -230,7 +230,7 @@ query and compare skip after it.
 
 ### The live tier: MyVariant.info
 
-On arm 1, `link_myvariant` runs the tier-3 `rsid-myvariant` linker on the two
+On Scenario 1, `link_myvariant` runs the tier-3 `rsid-myvariant` linker on the two
 PGP files, whose ID columns carry rsIDs, and
 [`compare_myvariant.py`](compare_myvariant.py) sets its links against those of
 `rsid-dbsnp`, which rewrites every rsID without checking it. The stage does not
@@ -271,7 +271,7 @@ Everything is written under `benchmarks/results/17_use_case_acmg/`:
 | `query/<requester>/` | `carriers.tsv`, `timing.json` (engine setup, then per-replicate query time) |
 | `baseline/` | `carriers.<requester>.tsv`, `summary.json` (per requester, the classification spread, and the reportable subset) |
 | `comparison.json`, `grid.tsv` | Agreement per requester, and carriers per requester and participant |
-| `link_myvariant__<id>/` | Arm 1's tier-3 links (`out/<id>.myvariant.links.nt`) and the linker's report: requests, cache hits, and every response's SHA-256 |
+| `link_myvariant__<id>/` | Scenario 1's tier-3 links (`out/<id>.myvariant.links.nt`) and the linker's report: requests, cache hits, and every response's SHA-256 |
 | `tier1_vs_tier3_myvariant.json` | Per PGP file: tier-1 and tier-3 link counts, and the tier-1 links and rsIDs the service did not confirm |
 
 ## Tests

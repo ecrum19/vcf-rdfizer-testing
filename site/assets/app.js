@@ -76,12 +76,12 @@ const REQUESTERS = [
 ];
 const REQUESTER_LABEL = Object.fromEntries(REQUESTERS);
 const REQUESTER_SHORT = { unrestricted: "All", own_physician: "OP", clinical: "CC", cardio: "DS", biobank: "GRU" };
-const armShort = (arm) => ({ arm2rare: "Arm 2, rare" })[arm] || `Arm ${arm.slice(3)}`;
+const armShort = (arm) => ({ arm2rare: "Scenario 2, rare" })[arm] || `Scenario ${arm.slice(3)}`;
 const REQUESTER_ORDER = REQUESTERS.map(([, label]) => label);
 const armLabel = (arm) => ({
-  arm1: fill("Arm 1: {arm1Genomes} gene-span slices"), arm2: fill("Arm 2: cohort of {cohort}"),
-  arm2rare: "Arm 2: rare in the panel", arm3: fill("Arm 3: complete {wholeGenome} VCF"),
-  arm4: fill("Arm 4: complete {arm4Participant} VCF"),
+  arm1: fill("Scenario 1: {arm1Genomes} gene-span slices"), arm2: fill("Scenario 2: cohort of {cohort}"),
+  arm2rare: "Scenario 2: rare in the panel", arm3: fill("Scenario 3: complete {wholeGenome} VCF"),
+  arm4: fill("Scenario 4: complete {arm4Participant} VCF"),
 })[arm] || arm;
 
 function table(columns, rows) {
@@ -157,8 +157,8 @@ const CHARTS = {
   },
 
   matches: {
-    title: "Matches each requester may receive, by arm",
-    help: "Participant–variant–gene matches to a ClinVar classification in an {geneList} gene that each requester may receive under the simulated consents, with the share of the unrestricted answer. The RDF and conventional workflows returned identical match sets in every cell. Only Arm 4 includes the participant's own physician as a requester.",
+    title: "Matches each requester may receive, by scenario",
+    help: "Participant–variant–gene matches to a ClinVar classification in an {geneList} gene that each requester may receive under the simulated consents, with the share of the unrestricted answer. The RDF and conventional workflows returned identical match sets in every cell. Only Scenario 4 includes the participant's own physician as a requester.",
     rows: () => {
       const out = [];
       for (const [arm, data] of Object.entries(D.usecase.arms)) {
@@ -176,7 +176,7 @@ const CHARTS = {
       }
       return out;
     },
-    columns: [{ key: "arm", label: "Arm" }, { key: "requester", label: "Requester" }, { key: "matches", label: "RDF workflow", num: true, format: (v) => num(v) },
+    columns: [{ key: "arm", label: "Scenario" }, { key: "requester", label: "Requester" }, { key: "matches", label: "RDF workflow", num: true, format: (v) => num(v) },
       { key: "conventional", label: "Conventional workflow", num: true, format: (v) => num(v) }, { key: "agree", label: "Match sets" }],
     spec(t, rows, width) {
       // A phone gets the paper's short labels (Figure 4) and counts only, so the five columns stay legible.
@@ -187,7 +187,7 @@ const CHARTS = {
           y: { field: narrow ? "armShort" : "arm", type: "nominal", sort: null, title: null, axis: { labelLimit: 260 } },
           x: { field: narrow ? "requesterShort" : "requester", type: "nominal", sort: narrow ? Object.values(REQUESTER_SHORT) : REQUESTER_ORDER,
                title: null, axis: { orient: "top", labelAngle: 0, labelLimit: 150 } },
-          tooltip: [{ field: "arm", title: "Arm" }, { field: "requester", title: "Requester" }, { field: "matches", title: "RDF workflow", format: "," },
+          tooltip: [{ field: "arm", title: "Scenario" }, { field: "requester", title: "Requester" }, { field: "matches", title: "RDF workflow", format: "," },
             { field: "conventional", title: "Conventional workflow", format: "," }, { field: "agree", title: "Match sets" }, { field: "share", title: "Share of unrestricted", format: ".0%" }],
         },
         layer: [
@@ -206,7 +206,7 @@ const CHARTS = {
   },
 
   participants: {
-    title: "Arm 1: matches per participant and requester",
+    title: "Scenario 1: matches per participant and requester",
     help: "Per-file consents determine each answer: {consents}. The cohort rule restricts the {restrictedGenes} cancer-predisposition genes to clinical care.",
     rows: () => {
       const g = D.usecase.arms.arm1.grid;
@@ -270,9 +270,9 @@ const CHARTS = {
   },
 
   usecaseCost: {
-    title: "Stage costs of the RDF workflow by arm",
-    help: "Shown for the clinical-care requester (CC), which is present in every arm. Conversion and linking are performed once per arm and include ClinVar; release-view writing, validation and indexing, and the query (median of {queryReplicates} runs), are performed per requester. The data table lists every requester.",
-    caption: "Most linked-workflow cost occurs before the first query and increases with the arm's graph size, whereas query time remains close to the fixed cost of the ClinVar join.",
+    title: "Stage costs of the RDF workflow by scenario",
+    help: "Shown for the clinical-care requester (CC), which is present in every scenario. Conversion and linking are performed once per scenario and include ClinVar; release-view writing, validation and indexing, and the query (median of {queryReplicates} runs), are performed per requester. The data table lists every requester.",
+    caption: "Most linked-workflow cost occurs before the first query and increases with the scenario's graph size, whereas query time remains close to the fixed cost of the ClinVar join.",
     rows: () => {
       const stages = [["convert", "Conversion"], ["link", "Linking"], ["view", "View writing"], ["check", "View validation"], ["index", "View indexing"], ["query", "Query"]];
       return Object.entries(D.usecase.arms).flatMap(([arm, data]) => {
@@ -284,7 +284,7 @@ const CHARTS = {
         }))).filter((row) => !row.perArm || row.requesterKey === "clinical");
       }).map((row) => ({ ...row, label: secs(row.seconds) }));
     },
-    columns: [{ key: "arm", label: "Arm" }, { key: "requester", label: "Requester" }, { key: "stage", label: "Stage" }, { key: "seconds", label: "Time", num: true, format: (v) => secs(v) }],
+    columns: [{ key: "arm", label: "Scenario" }, { key: "requester", label: "Requester" }, { key: "stage", label: "Stage" }, { key: "seconds", label: "Time", num: true, format: (v) => secs(v) }],
     spec(t, rows, width) {
       const shown = rows.filter((r) => r.requesterKey === "clinical" && r.seconds > 0);
       return {
@@ -295,7 +295,7 @@ const CHARTS = {
           x: { field: "seconds", type: "quantitative", scale: { type: "log" }, title: "Seconds (log scale)",
                axis: { values: [10, 100, 1000, 10000], format: "," } },
           color: { field: "arm", type: "nominal", title: null, sort: null, scale: { range: t.series } },
-          tooltip: [{ field: "arm", title: "Arm" }, { field: "stage", title: "Stage" }, { field: "label", title: "Time" }],
+          tooltip: [{ field: "arm", title: "Scenario" }, { field: "stage", title: "Stage" }, { field: "label", title: "Time" }],
         },
         layer: [
           { mark: "point" },
@@ -352,7 +352,7 @@ const CHARTS = {
 
   records: {
     title: "Record scaling of conversion cost",
-    help: "Each line is one measure of conversion on the HG005 ladder ({ladder} records, {ladderReplicates} replicates each, then the complete {wholeRecords}-record VCF), relative to its value on the smallest input. Medians of the replicates.",
+    help: "Each line is one measure of conversion on the HG005 record-count series ({ladder} records, {ladderReplicates} replicates each, then the complete {wholeRecords}-record VCF), relative to its value on the smallest input. Medians of the replicates.",
     rows: () => {
       const r = D.scaling.records;
       const measures = { triples: "Triples", wall: "End-to-end time", disk: "Peak workspace", rss: "Mapping-stage resident memory" };
@@ -637,7 +637,7 @@ function renderKpis() {
   const kpis = [
     ["RQ1", `${num(v.comparisons.PASS)} / ${num(v.comparisons.PASS)}`, fill("applicable SPARQL results agreed exactly with their source-derived counterparts; {comparisonsOther} more verified not applicable")],
     ["RQ1", `${m.queries.detected} · ${m.core.detected} · ${m.full.detected}`, `of ${m.full.total} injected faults detected: source-comparison queries · with the default SHACL profile · with all shape profiles`],
-    ["RQ2", `${agreeing} / ${arms.length} arms`, "with identical requester-specific match sets from the RDF and conventional workflows"],
+    ["RQ2", `${agreeing} / ${arms.length} scenarios`, "with identical requester-specific match sets from the RDF and conventional workflows"],
     ["RQ3", `${ownPassed} / ${D.converters.questions.length}`, fill("content questions matched the source-derived oracle on both inputs; {converterAllPass} was the only converter to match all")],
     ["RQ3", `${millions(largest)} triples`, "largest graph queried; QLever query time remained approximately linear in graph size"],
     ["RQ3", `≈ ${D.facts.breakEven} questions`, fill("break-even of the minimal RDF setup for the {sliceRecords}-record HG005 slice")],
@@ -681,7 +681,7 @@ function renderLinking() {
   const cell = (v) => (v ? `${num(v.linked)} of ${num(v.eligible)}` : "—");
   document.getElementById("linkingTable").innerHTML = table([
     { key: "linker", label: "Linker" },
-    ...Object.keys(arms).map((arm) => ({ key: arm, label: `Arm ${arm.slice(3)} VCFs`, num: true, format: cell })),
+    ...Object.keys(arms).map((arm) => ({ key: arm, label: `Scenario ${arm.slice(3)} VCFs`, num: true, format: cell })),
     { key: "clinvar", label: "ClinVar", num: true, format: cell },
   ], rows) + `<p class="table-meta">${esc(fill("Linked records of eligible records; the gene linker counts records within a gene span from {ensembl}. The MyVariant.info tier confirmed {myvariantShare} of the rsID links in the {myvariantGenomes} PGP files, replaying the {myvariantRequests} recorded service responses."))}</p>`;
   document.getElementById("usecaseSource").innerHTML = `Sources: ${Object.values(arms).map((a) => `<code>${esc(a.source)}</code>`).join(", ")} and <code>benchmarks/use_case/acmg</code>.`;
@@ -694,7 +694,7 @@ function renderRecords() {
   }));
   const verdict = (r) => `<span class="status ${r.agree ? "pass" : "fail"}">${r.agree ? "equal" : `${r.difference > 0 ? "+" : ""}${num(r.difference)} in the RDF view`}</span>`;
   document.getElementById("recordsTable").innerHTML = table([
-    { key: "arm", label: "Arm" }, { key: "requester", label: "Requester" },
+    { key: "arm", label: "Scenario" }, { key: "requester", label: "Requester" },
     { key: "rdf", label: "RDF release view", num: true, format: (v) => num(v) },
     { key: "conventional", label: "Conventional workflow", num: true, format: (v) => num(v) },
     { key: "agree", label: "Released records", html: verdict },

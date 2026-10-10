@@ -633,15 +633,16 @@ def facts(d: dict) -> dict[str, str]:
     out["myvariantGenomes"] = words(len(mv["genomes"]))
     out["myvariantShare"] = span([100 * g["confirmed"] / g["rsid"] for g in mv["genomes"].values()], 0) + "%"
     out["myvariantRequests"] = str(mv["requests"])
-    # All four arms (Arm 4 adds the participant's own physician as a requester).
-    out["arms"] = words(len(arms))
+    # All four scenarios (Scenario 4 adds the participant's own physician as a requester); the data
+    # keys keep the harness's name for a scenario, "arm".
+    out["scenarios"] = words(len(arms))
     out["armsAgree"] = words(sum(all(c["agree"] for c in a["carriers"].values()) for a in arms.values()))
     out["arm4Participant"] = arms["arm4"]["grid"]["participants"][0]
     out["arm4Requesters"] = words(sum(r != "unrestricted" for r in arms["arm4"]["carriers"]))
     agree = [name for name, a in arms.items() if all(c["agree"] for c in a["records"].values())]
     differ = {name: a["records"] for name, a in arms.items() if name not in agree}
-    out["recordArmsAgree"] = "Arms " + listing([n[3:] for n in agree])
-    out["recordArmsDiffer"] = listing([f"Arm {n[3:]}" for n in differ])
+    out["recordArmsAgree"] = "Scenarios " + listing([n[3:] for n in agree])
+    out["recordArmsDiffer"] = listing([f"Scenario {n[3:]}" for n in differ])
     out["recordExtra"] = listing([f"{c['rdf'] - c['baseline']:,}" for a in differ.values() for c in a.values()
                                   if not c["agree"]])
     # Query time of every non-empty release view, over all arms (Section S5.4).

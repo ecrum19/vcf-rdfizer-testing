@@ -1,6 +1,6 @@
 # Recorded MyVariant.info responses (2026-09-28)
 
-These are the 21 responses MyVariant.info returned to the `rsid-myvariant` linker for arm 1's two PGP
+These are the 21 responses MyVariant.info returned to the `rsid-myvariant` linker for Scenario 1's two PGP
 files: 10 for NB72462M and 11 for NG131FQA1I. The paper's MyVariant.info result rests on them.
 
 **To reproduce that result, use these responses, not the live service.** The `link_myvariant` stage of

@@ -43,8 +43,8 @@
 ]
 \node[stagehead] at (0,0) {1. Prepare each file and add explicit links};
 
-\node[box=4.55cm,data] (inputs) at (0,.35) {
-  \textbf{VCF inputs (four arms)}\\[2pt]
+\node[box=4.75cm,data] (inputs) at (0,.35) {
+  \textbf{VCF inputs (four scenarios)}\\[2pt]
   \textbf{1: Five gene-span slices:} NB72462M,\\
   NG131FQA1I, 0GOOR\_HG002,\\
   HG004\_GRCh38, HG005\_GRCh38\\
@@ -52,7 +52,7 @@
   \textbf{2:} 104 single-sample cohort VCFs\\
   \textbf{3:} Complete HG005\_GRCh38 VCF\\
   \textbf{4:} Complete NB72462M VCF\\[3pt]
-  + ClinVar; + frequencies (Arm 2)\\[3pt]
+  + ClinVar; + frequencies (Scenario 2)\\[3pt]
   Then normalize (GRCh38).
 };
 \node[box=3.65cm] (convert) at (5.45,.35) {
@@ -85,13 +85,13 @@
 \draw[flow] (link.east) -- ([yshift=-75pt]graphs.north west);
 
 \node[stagehead] at (0,4.83) {2. Build a validated release view};
-\node[box=4.55cm,policy] (policy) at (0,5.2) {
+\node[box=4.75cm,policy] (policy) at (0,5.2) {
   \textbf{Where the policy is defined}\\
   Case JSON + gene list\\
   $\rightarrow$ \codefont{generate.py} $\rightarrow$ \codefont{policy.ttl}\\
   ODRL file consents and withdrawal;\\
   28 cancer genes: clinical care only.\\
-  Arm 4: + panel, region, variant.\\
+  Scenario 4: + panel, region, variant.\\
   Purposes use DUO terms.
 };
 \node[box=5.25cm,policy] (enforce) at (5.45,5.2) {
@@ -107,7 +107,7 @@
   \codefont{-{}-assignee}: requester identifier\\
   \codefont{-{}-purpose}: DUO purpose term\\[3pt]
   CC, DS, and GRU requesters,\\
-  plus OP in Arm 4.
+  plus OP in Scenario 4.
 };
 
 \draw[flow] (graphs.south) -- ++(0,.4) -| (enforce.north);
@@ -136,7 +136,7 @@
   \textbf{QLever indexes and queries}\\
   Validated participant release view\\
   + ClinVar RDF and links\\
-  + frequency RDF and links (Arm 2).\\[3pt]
+  + frequency RDF and links (Scenario 2).\\[3pt]
   Run the same query for each requester.
 };
 \node[box=4.55cm,data] (rows) at (11.7,11.1) {

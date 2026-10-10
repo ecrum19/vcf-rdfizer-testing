@@ -32,10 +32,10 @@ others and are not counted. Every family ran whole on one host.
 | Script | RQ, design | What it measures | Reported in | Records |
 | --- | --- | --- | --- | --- |
 | `00_environment.sh` | §4.1 | Host, Docker and image manifest; resolves the image tag to its digest | Sections S6.2–S6.3 | `b1`, `b2`: `benchmarks_outputs/00_environment/` |
-| `02_derive_ladders.sh` | §4.2 | Builds the derived inputs with awk: the sample ladder (10,000 records of the 1000 Genomes chr20 call set at 1–2,504 samples) and the record ladder (HG005 prefixes of 10,000, 100,000 and 1,000,000 records) | Inputs to `01`, `03`, `04`, `10`, `13` | (inputs, not cells) |
+| `02_derive_ladders.sh` | §4.2 | Builds the derived inputs with awk: the sample-count series (10,000 records of the 1000 Genomes chr20 call set at 1–2,504 samples) and the record-count series (HG005 prefixes of 10,000, 100,000 and 1,000,000 records) | Inputs to `01`, `03`, `04`, `10`, `13` | (inputs, not cells) |
 | `01_storage_mode.sh` | RQ3, §3.4 | Plain against space-optimized storage: peak workspace and time, on 100,000 HG005 records (3 replicates) and a 269M-triple test file (once each) | Section 3.3; Figure S4f | `b1/benchmarks_outputs/01_storage_mode/` |
-| `03_sample_representation.sh` | RQ3, §3.3 | Condensed against expanded samples across the sample ladder, with timing replicates and a single- and a multi-sample anchor | Section 3.3; Figure S5 | `b2/benchmarks_outputs/03_sample_representation/` |
-| `04_scaling_records.sh` | RQ3, §3.2 | Cost against record count on the record ladder (3 replicates) and the complete HG005 VCF (once); the only place record-scaling exponents are fitted | Section 3.3; Figure S4a–e; Section S9.1 | `b1/benchmarks_outputs/04_scaling_records/` |
+| `03_sample_representation.sh` | RQ3, §3.3 | Condensed against expanded samples across the sample-count series, with timing replicates and a single- and a multi-sample anchor | Section 3.3; Figure S5 | `b2/benchmarks_outputs/03_sample_representation/` |
+| `04_scaling_records.sh` | RQ3, §3.2 | Cost against record count on the record-count series (3 replicates) and the complete HG005 VCF (once); the only place record-scaling exponents are fitted | Section 3.3; Figure S4a–e; Section S9.1 | `b1/benchmarks_outputs/04_scaling_records/` |
 | `05_corpus_breadth.sh` | RQ3, §3.5 | HDT and COTTAS construction on the first 250,000 records of eight public VCFs and on the complete HG005 VCF | Section 3.3; Figure S6; Table S14 | `b2/benchmarks_outputs/05_corpus_breadth/` |
 | `06_equivalence.sh` | RQ1, §1.1–1.2 | The thirteen source-comparison queries on a 10,000-line fixture, in both storage modes and sample profiles, on four SPARQL engines over three RDF artifacts and two HDT strategies, plus two required refusals | Section 3.1; Section S10 | `b2/benchmarks_outputs/06_equivalence/` |
 | `07_representation_axes.sh` | RQ3, §3.6; RQ1, §1.5 | Raw against structured INFO, basic against structured headers, and fixtures declaring VCF 4.1–4.5 or no version | Sections S7, S10 | `b1/benchmarks_outputs/07_representation_axes/` |
@@ -61,7 +61,7 @@ reported runs of `14`, `16` and `17` come from one rerun with v3.3.1, driven by
 | `14_regional_access.sh` | RQ3, §3.9 | Region-restricted questions from 1 kb to 10 Mb: QLever on `13_query_cost`'s graphs, against tabix-indexed cyvcf2 and bcftools; 11,160 executions | Section 3.3; Figures 6c, S8a–b; Table S18 | `b1/v331-rerun/results/14_regional_access/` |
 | `15_scale_prepare.sh` | RQ3, §3.10 | Builds the large graphs once, with the published v3.1.0 image: 1,000,000 HG005 records (170.9M triples) and the complete VCF (657.4M), each with a manifest of every artifact's size and SHA-256 | The graphs that `16` queries | `b3/benchmarks_outputs/15_scale_prepare/`, `b3/scale-store-manifests/` |
 | `16_scale_retrieval.sh` | RQ1, §1.7; RQ3, §3.10 | The thirteen questions on those graphs: QLever from N-Triples, HDT and COTTAS, and the native HDT and COTTAS engines | Figure 3a; Table S17 | `b3/v331-rerun/results/16_scale_retrieval/` |
-| `17_use_case_acmg.sh` | RQ2, §2 | The linked workflow: carriers of ClinVar-classified variants in the 81 ACMG SF v3.2 genes, with simulated consent, by an RDF route and a bcftools baseline that must agree. Arm 1: five gene-span slices; Arm 2: 104 1000 Genomes participants; Arm 3: the complete HG005 VCF; Arm 4: the complete NB72462M VCF under layered consent. See [`use_case/acmg/README.md`](use_case/acmg/README.md) | Section 3.2; Figures 4, S3; Tables S7–S11 | `b1/v331-rerun/results/17_use_case_acmg/` (Arm 1, with the MyVariant.info tier) and `…__cohort/` (Arm 2); `b2/v331-rerun/results/17_use_case_acmg__wgs/` (Arm 3) and `…__layered/` (Arm 4) |
+| `17_use_case_acmg.sh` | RQ2, §2 | The linked workflow: carriers of ClinVar-classified variants in the 81 ACMG SF v3.2 genes, with simulated consent, by an RDF route and a bcftools baseline that must agree. Scenario 1: five gene-span slices; Scenario 2: 104 1000 Genomes participants; Scenario 3: the complete HG005 VCF; Scenario 4: the complete NB72462M VCF under layered consent. See [`use_case/acmg/README.md`](use_case/acmg/README.md) | Section 3.2; Figures 4, S3; Tables S7–S11 | `b1/v331-rerun/results/17_use_case_acmg/` (Scenario 1, with the MyVariant.info tier) and `…__cohort/` (Scenario 2); `b2/v331-rerun/results/17_use_case_acmg__wgs/` (Scenario 3) and `…__layered/` (Scenario 4) |
 | `18_converter_comparison.sh` | RQ3, §3.1 | JVarkit, TogoVar, SPARQLing Genomics, BioInterchange and VCF-RDFizer on two shared inputs, in pinned containers, with questions Q1–Q8 ported to each vocabulary and compared with the same source-derived oracle. See [`converters/README.md`](converters/README.md) | Section 3.3; Figure 5; Section S2; Tables S2–S3 | `b1/18_converter_comparison/` |
 
 `15` and `16` are two halves of one experiment. `13` reconverts its input on
@@ -99,7 +99,7 @@ an experiment, directly. Each driver is archived with its records.
 | `analysis/compare_graphs.py` | Compares two graphs by their sorted triple set, not their bytes (used by `08`) |
 | `analysis/describe_inputs.py` | Structural descriptors of the input VCFs: records, samples, variant classes |
 | `analysis/equivalence.py` | Decides an equivalence claim from paired runs against a stated margin (`01`, `03`) |
-| `analysis/fit_scaling.py` | Fits scaling exponents on a log-log axis, only on the derived ladders (`03`, `04`) |
+| `analysis/fit_scaling.py` | Fits scaling exponents on a log-log axis, only on the scaling series (`03`, `04`) |
 | `analysis/stats.py` | The shared statistics, numpy only: a bootstrap interval on a paired ratio, and a log-log slope with its interval |
 | `analysis/provenance.py` | Resolves each host's image tags to digests (`02`, `14`, `15`) |
 | `analysis/scale_store.py` | Lists the scale store and re-hashes it against its manifests |
@@ -155,7 +155,7 @@ explicit environment variable still wins. It:
 - truncates each corpus file to its first 250,000 records, keeping the header
   (`BM_CORPUS_MAX_RECORDS`), with one file converted whole (`BM_CORPUS_WHOLE`; the
   campaign set `HG005_GRCh38.vcf.gz`);
-- uses the 1,000,000-record HG005 rung for feasibility, and the 100,000-record rung
+- uses the 1,000,000-record HG005 subset for feasibility, and the 100,000-record subset
   for robustness, INFO and header costs, and query cost;
 - validates on all four SPARQL engines in `06` (`BM_EQUIV_ENGINES=all`) and on
   Comunica in `09`, `11` and `12` (`BM_VALIDATION_ENGINES=comunica`). `13` runs
@@ -211,7 +211,7 @@ Move the cell, or set `BM_RESULTS` to a new root.
 ### Environment variables
 
 `BM_RESULTS` results root · `BM_REPS` replicates · `BM_SIZES` storage-mode inputs ·
-`BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` ladder rungs · `BM_SAMPLE_REPRESENTATIONS` and
+`BM_SAMPLE_RUNGS` / `BM_RECORD_RUNGS` subset sizes of the scaling series · `BM_SAMPLE_REPRESENTATIONS` and
 `BM_SAMPLE_PARTS` for `03` · `BM_VALIDATION_ENGINES` · `BM_SPARK_PARTITIONS` (default 8) ·
 `BM_CEILINGS` memory ceilings for `10` · `BM_IMAGE_VERSION` a published release ·
 `BM_REBUILD=1` force a rebuild · `BM_REGIONAL_SCALES`, `BM_REGIONAL_ARMS`,
@@ -235,7 +235,7 @@ without running
    triple sets with `analysis/compare_graphs.py`.
 3. **`--hdt-strategy single` works only with plain storage and HDT without
    COTTAS.** Anything else exits 2, and `06` asserts both refusals.
-4. **The derived ladder files are not valid VCFs.** Sample columns are cut without
+4. **The derived scaling-series files are not valid VCFs.** Sample columns are cut without
    recomputing INFO, so AC and AN disagree with the retained genotypes. INFO is a
    held-fixed control.
 5. **A non-zero exit is not always a failure.** `bench.json` records an
@@ -245,7 +245,7 @@ without running
    `oracle_wall_seconds`.** The first is the parser's cost for that query; the
    second is its total for all queries, repeated on each row.
 7. **A regional window means POS, not overlap.** A tabix seek returns every record
-   whose span overlaps the region. Every VCF arm of `14` drops out-of-window POS
+   whose span overlaps the region. Every VCF execution path of `14` drops out-of-window POS
    after the seek, which makes it comparable with a SPARQL `?pos` filter.
 8. **`16`'s default query set is the thirteen core queries.** A subset makes the
    tool report `TIMING_ONLY` instead of a validation verdict. Each selected query

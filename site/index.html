@@ -99,9 +99,9 @@
           each requester, and queries each view with SPARQL. The conventional workflow harmonizes contigs, annotates with
           bcftools, and applies the same case definition and simulated release rules in Python. The sorted participant,
           gene, contig, position and allele tuples must agree before timings are compared.
-          Arm 1: gene-span slices of <span data-fill="arm1Genomes"></span> single-sample VCFs (<span data-fill="arm1Sources"></span>).
-          Arm 2: <span data-fill="cohort"></span> 1000 Genomes participants. Arm 3: the complete <span data-fill="wholeGenome"></span> VCF.
-          Arm 4: the complete <span data-fill="arm4Participant"></span> VCF under layered consent, with <span data-fill="arm4Requesters"></span> requesters.
+          Scenario 1: gene-span slices of <span data-fill="arm1Genomes"></span> single-sample VCFs (<span data-fill="arm1Sources"></span>).
+          Scenario 2: <span data-fill="cohort"></span> 1000 Genomes participants. Scenario 3: the complete <span data-fill="wholeGenome"></span> VCF.
+          Scenario 4: the complete <span data-fill="arm4Participant"></span> VCF under layered consent, with <span data-fill="arm4Requesters"></span> requesters.
           Consent and access conditions are simulated; the VCFs are public. Every stage used VCF-RDFizer <span data-fill="useCaseVersion"></span>.
         </p>
         <div class="chart-grid">
@@ -117,7 +117,7 @@
         <aside class="interpretation">
           <h3>Findings</h3>
           <p>
-            Across all <span data-fill="arms"></span> arms, the RDF and conventional workflows returned identical requester-specific
+            Across all <span data-fill="scenarios"></span> scenarios, the RDF and conventional workflows returned identical requester-specific
             participant–variant–gene match sets, and every materialized release view passed the policy and source checks.
             Released-record counts also agreed in <span data-fill="recordArmsAgree"></span>. In <span data-fill="recordArmsDiffer"></span>, the RDF views additionally released
             <span data-fill="recordExtra"></span> symbolic structural-variant records in restricted cancer-predisposition genes to disease-specific and general
@@ -132,7 +132,7 @@
           </p>
           <p>
             Most linked-workflow cost occurred before query execution: conversion, linking, and the materialization,
-            validation and indexing of each release view. Query times ranged from <span data-fill="querySeconds"></span> seconds across the arms,
+            validation and indexing of each release view. Query times ranged from <span data-fill="querySeconds"></span> seconds across the scenarios,
             suggesting that the fixed ClinVar join dominated the measured query rather than establishing scale-independent
             SPARQL performance.
           </p>
@@ -158,8 +158,8 @@
 
         <h3 class="rq-sub" id="conversion">Conversion cost</h3>
         <p class="section-intro">
-          Controlled scaling ladders vary one dimension at a time: the record ladder processes increasing numbers of HG005
-          records, and the sample ladder holds <span data-fill="sampleRecords"></span> 1000 Genomes records fixed while varying the sample count from
+          Controlled scaling series vary one dimension at a time: the record-count series processes increasing numbers of HG005
+          records, and the sample-count series holds <span data-fill="sampleRecords"></span> 1000 Genomes records fixed while varying the sample count from
           <span data-fill="samplesMin"></span> to <span data-fill="samplesMax"></span> under both profiles. Stage timings, resident memory, transient workspace and retained artifact
           sizes are measured separately.
         </p>
