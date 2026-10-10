@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Decide an equivalence claim from paired runs.
 
-Plan §1 and §2.3 both make a partly NEGATIVE claim ("does not differ much").
+Plan §3.4 and §3.3 both make a partly NEGATIVE claim ("does not differ much").
 A significance test that fails to reject is not evidence of equivalence — with
 n=3 it is evidence of nothing. This script does it properly: a bootstrap CI on
 the paired ratio, compared against a stated margin, with equivalence declared

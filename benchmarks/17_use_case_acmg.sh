@@ -354,7 +354,7 @@ serve() {
 }
 unserve() { docker rm -f "acmg-$1" >/dev/null 2>&1 || true; }
 
-# Governance runs on QLever, never on an in-memory graph (plan §4.5). One
+# Governance runs on QLever, never on an in-memory graph (plan §2.4). One
 # endpoint serves every genome and its links; a second serves the oracle graph
 # written straight from the VCF text, beside the same link graphs. The links
 # belong there: the policy's gene panel selects on them, and the linker computed

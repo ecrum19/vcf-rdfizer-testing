@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §4.1 — the keystone: configurability does not cost correctness.
+# Plan §1.1 — the keystone: configurability does not cost correctness.
 #
 # Every option is a different physical encoding of the SAME information. This is
 # the experiment that makes configurability a feature rather than a menu of ways
@@ -19,7 +19,7 @@
 # Report them explicitly rather than burying them in a uniform PASS table.
 #
 # Small input only: cross-engine agreement is the deliverable here, and
-# --validation-engine all is affordable at this size and nowhere else (§5.2).
+# --validation-engine all is affordable at this size and nowhere else (§4.3).
 #
 # Usage:
 #   ./06_equivalence.sh
@@ -29,7 +29,7 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib/common.sh"
 
 EXPERIMENT="06_equivalence"
 INPUT="${BM_EQUIV_INPUT:-test-larger-multisample.vcf.gz}"
-# §4.1 IS the cross-engine agreement claim, so it wants every engine even when
+# §1.1 IS the cross-engine agreement claim, so it wants every engine even when
 # the rest of the suite runs one. Falls back to the shared knob, then to all.
 ENGINES="${BM_EQUIV_ENGINES:-${BM_VALIDATION_ENGINES:-all}}"
 
@@ -58,7 +58,7 @@ The tool checkout ships test/test_vcf_files/test-larger-multisample.vcf.gz."
 fi
 VCF="$(bm_vcf "$INPUT")"
 
-bm_banner "§4.1 representation equivalence on $(basename "$VCF")"
+bm_banner "§1.1 representation equivalence on $(basename "$VCF")"
 bm_step "engines: $ENGINES  (targets: all produced artifacts)"
 
 # --------------------------------------------------------------------------
@@ -96,7 +96,7 @@ done
 # The configuration is enforced, not merely recommended: single requires plain
 # storage AND hdt without cottas. Anything else exits 2.
 # --------------------------------------------------------------------------
-bm_banner "§4.1 mechanism check: single-pass vs partitioned merge"
+bm_banner "§1.2 mechanism check: single-pass vs partitioned merge"
 
 for strategy in single partitioned; do
   bm_run "$EXPERIMENT" "mechanism__hdt_${strategy}" -- \

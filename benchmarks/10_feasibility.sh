@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §4.4 — configurability under a real constraint.
+# Plan §3.7 — configurability under a real constraint.
 #
 # "It is configurable for your technical setup" is proven by RUNNING UNDER A
 # CONSTRAINT, not by listing flags. This is the single most convincing piece of
@@ -12,7 +12,7 @@
 #
 # This is the ONLY script in the suite that deliberately imposes a memory
 # ceiling. Everywhere else a constrained run is a contaminated measurement
-# (§5.4).
+# (§4.4).
 #
 # The ceiling is applied to the tool's Docker containers via DOCKER_MEMORY,
 # which the wrapper's own container invocations honour if supported; when it
@@ -40,7 +40,7 @@ because the claim is about a file that does not fit comfortably."
 fi
 VCF="$(bm_vcf "$INPUT")"
 
-bm_banner "§4.4 feasibility matrix: $(basename "$VCF")"
+bm_banner "§3.7 feasibility matrix: $(basename "$VCF")"
 bm_step "ceilings: $CEILINGS"
 
 # Three configurations spanning "no accommodation" to "everything documented".

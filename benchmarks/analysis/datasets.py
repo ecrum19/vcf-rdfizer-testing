@@ -5,13 +5,13 @@ One script, one subcommand per question the plan asks. Each writes a CSV and a
 JSON beside the results and prints a compact view to stdout; the files are the
 deliverable, the stdout view is only there so you can see it worked.
 
-  corpus       §3.2  stratified breadth rows, normalized by emitted TRIPLES
-  equivalence  §4.1  encodings x validation outcome, incl. the mechanism check
-  awkward      §4.4  observed behaviour against each fixture's expectation
-  feasibility  §4.4  memory ceiling x configuration -> completed / OOM
-  coverage     §5.1  re-derive that the covering set actually covers
-  querycost    §4.5  SPARQL retrieval vs the cyvcf2 parser, on identical work
-  regional     §4.6  indexed regional access: per-question cost by access path
+  corpus       §3.5  stratified breadth rows, normalized by emitted TRIPLES
+  equivalence  §1.1  encodings x validation outcome, incl. the mechanism check
+  awkward      §1.5  observed behaviour against each fixture's expectation
+  feasibility  §3.7  memory ceiling x configuration -> completed / OOM
+  coverage     §1.6  re-derive that the covering set actually covers
+  querycost    §3.8  SPARQL retrieval vs the cyvcf2 parser, on identical work
+  regional     §3.9  indexed regional access: per-question cost by access path
 
 Nothing here formats for print. Figures and typeset tables come later, off the
 CSV/JSON these produce.
@@ -161,7 +161,7 @@ def cmd_corpus(args, results: pathlib.Path) -> int:
             "max_rss_kb": row.get("max_rss_kb_java"),
         })
 
-    emit(records, "Corpus breadth (§3.2)",
+    emit(records, "Corpus breadth (§3.5)",
          results / args.experiment / "data_corpus" if not args.no_files else None,
          note=("Cost is normalized by emitted triples, not input bytes: input bytes\n"
                "is exactly what makes a structural-variant callset incomparable.\n"
@@ -192,7 +192,7 @@ def cmd_equivalence(args, results: pathlib.Path) -> int:
             "triples": row.get("output_triples"),
         })
 
-    emit(records, "Representation equivalence (§4.1)",
+    emit(records, "Representation equivalence (§1.1)",
          results / args.experiment / "data_equivalence" if not args.no_files else None,
          note=("Every encoding is validated against a VCF-side oracle computed from\n"
                "the same input (Q1-Q13). Q5 and Q6 traverse the sample layer and are\n"
@@ -272,7 +272,7 @@ def cmd_awkward(args, results: pathlib.Path) -> int:
             "expectation": expectations.get(cell),
         })
 
-    emit(records, "Awkward inputs (§4.4)",
+    emit(records, "Awkward inputs (§1.5)",
          results / args.experiment / "data_awkward" if not args.no_files else None,
          note=("Converted and refused-with-a-clear-diagnostic are BOTH acceptable;\n"
                "a crash or a silently wrong graph is not. The column to watch is\n"
@@ -316,7 +316,7 @@ def cmd_feasibility(args, results: pathlib.Path) -> int:
             "cell": row.get("cell"),
         })
 
-    emit(records, "Feasibility under a memory ceiling (§4.4)",
+    emit(records, "Feasibility under a memory ceiling (§3.7)",
          results / args.experiment / "data_feasibility" if not args.no_files else None,
          note=("oom_killed (exit -9 / 137) means the OOM-killer intervened — NOT that\n"
                "the RDF is invalid. Check stderr_tail, max_rss_kb and the workspace\n"
@@ -355,7 +355,7 @@ def cmd_coverage(args, results: pathlib.Path) -> int:
                 **{f: row.get(f) for f in COVERING_FACTORS}}
                for row in sorted(rows_in, key=lambda r: r.get("cell") or "")]
 
-    emit(records, "Functional covering set as executed (§5.1)",
+    emit(records, "Functional covering set as executed (§1.6)",
          results / args.experiment / "data_coverage" if not args.no_files else None)
 
     value_coverage = {}
@@ -495,7 +495,7 @@ def cmd_querycost(args, results: pathlib.Path) -> int:
                 sorted(str(s) for s in statuses)),
         })
 
-    emit(records, "SPARQL retrieval vs cyvcf2 parser, identical work (§4.5)",
+    emit(records, "SPARQL retrieval vs cyvcf2 parser, identical work (§3.8)",
          results / args.experiment / "data_querycost" if not args.no_files else None,
          note=("engine_query_seconds and oracle_total_seconds both cover the SAME full\n"
                "query set, so this ratio is like-for-like. For the per-question view see\n"
@@ -511,7 +511,7 @@ def cmd_querycost(args, results: pathlib.Path) -> int:
                "this scale, so there is no crossover to report.\n"
                "\n"
                "Conversion cost is in NEITHER column — the graph has to exist first.\n"
-               "Quote it from §3; do not fold it in here, and do not omit it."))
+               "Quote it from §3.2; do not fold it in here, and do not omit it."))
 
     unequal = [r for r in records if r["answers_equal"] != "PASS"]
     if unequal:
@@ -578,7 +578,7 @@ def _emit_per_query(rows_in, results, args, scale_of) -> None:
               "tool build that records the oracle's phase breakdown.")
         return
 
-    emit(per_query, "Per-query: SPARQL vs parser, same question (§4.5)",
+    emit(per_query, "Per-query: SPARQL vs parser, same question (§3.8)",
          results / args.experiment / "data_querycost_per_query" if not args.no_files else None,
          note=("engine_wall_seconds and oracle_query_seconds are the same question on\n"
                "both sides, so this ratio IS valid row-wise.\n"

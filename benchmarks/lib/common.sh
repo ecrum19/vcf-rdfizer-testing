@@ -601,7 +601,7 @@ bm_vcf_samples() {
 #
 # Guard on samples rather than bytes, because the fan-out is per-sample. Only
 # `expanded` is affected; `condensed` is ~S + (V x F) and stays tractable, so a
-# cohort file still gets its condensed cell -- which is the comparison §2 is
+# cohort file still gets its condensed cell -- which is the comparison §3.3 is
 # actually making.
 #
 # Returns 0 when it skipped (caller should `continue`), 1 to proceed.

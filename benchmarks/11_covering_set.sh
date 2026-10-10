@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §5.1 — the functional covering set.
+# Plan §1.6 — the functional covering set.
 #
 # Not a cross product. Ten runs exercise every option VALUE and cover every
 # legal option PAIR at least once. This is the correctness sweep and it belongs
@@ -40,7 +40,7 @@ test/test_vcf_files/test-100.vcf, test-1k.vcf and test-10k.vcf."
 fi
 VCF="$(bm_vcf "$INPUT")"
 
-bm_banner "§5.1 covering set on $(basename "$VCF")"
+bm_banner "§1.6 covering set on $(basename "$VCF")"
 
 # row : sample-rep : info-rep : storage : rdf-comp : reprs : artifact-comp : hdt-strategy
 ROWS="

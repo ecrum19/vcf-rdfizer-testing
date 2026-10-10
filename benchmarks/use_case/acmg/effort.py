@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""What each route asks its author to write, and to change (plan §5.5).
+"""What each route asks its author to write, and to change (plan §2.5).
 
     VCF_RDFIZER_SRC=/path/to/VCF-RDFizer python3 effort.py <out-dir>
 

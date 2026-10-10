@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Fit empirical scaling exponents on a log-log axis.
 
-Plan §2.2 and §3.1. Slopes are fitted ONLY on derived ladders, where exactly
+Plan §3.3 and §3.2. Slopes are fitted ONLY on derived ladders, where exactly
 one thing varies and everything else is held constant by construction. Running
 this across the ten-file corpus would estimate a mixture of genomic content
-differences rather than the tool's scaling — see §3.2, and do not do it.
+differences rather than the tool's scaling — see §3.5, and do not do it.
 
-The headline §2 result is two slopes on one axis from the same variant content:
+The headline §3.3 result is two slopes on one axis from the same variant content:
 
     expanded   log(triples) ~ log(samples)   slope ~1
     condensed  log(triples) ~ log(samples)   slope ~0
@@ -210,7 +210,7 @@ def main() -> int:
     if args.group == "mode" and {"expanded", "condensed"} <= set(fits):
         e, c = fits["expanded"]["slope"], fits["condensed"]["slope"]
         print(f"\n  expanded slope {e:+.3f} vs condensed slope {c:+.3f}")
-        print("  The §2 prediction is ~1 against ~0: expanded structure grows as")
+        print("  The §3.3 prediction is ~1 against ~0: expanded structure grows as")
         print("  V x S x F, condensed as S + (V x F). Two slopes on one axis from")
         print("  the same variant content is the strongest form of that claim.")
 

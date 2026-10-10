@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §3.1 — cost model from the records ladder.
+# Plan §3.2 — cost model from the records ladder.
 #
 # This is the ONLY place records-scaling slopes are fitted, because it is the
 # only place records vary with everything else held constant. One config, one
@@ -17,11 +17,11 @@ RECORD_SOURCE="${BM_RECORD_SOURCE:-HG005_GRCh38.vcf.gz}"
 REPS="${BM_REPS:-3}"
 # The full-source cell at the top of the ladder costs what a whole real file
 # costs (~12h for HG005), and it is one fit point: the rungs below it already
-# supply the variance estimate. Same knob as §1 uses for its larger sizes.
+# supply the variance estimate. Same knob as §3.4 uses for its larger sizes.
 REPS_AT_SCALE="${BM_REPS_AT_SCALE:-$REPS}"
 stem="${RECORD_SOURCE%%.*}"
 
-bm_banner "§3.1 records ladder ($REPS reps per rung)"
+bm_banner "§3.2 records ladder ($REPS reps per rung)"
 
 for rung in $RECORD_RUNGS; do
   input="${stem}_r${rung}.vcf.gz"

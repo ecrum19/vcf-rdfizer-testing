@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Compare two RDF graphs by canonical content, not by bytes.
 
-Used by the round-trip, determinism and index-idempotence checks in plan §4.3.
+Used by the round-trip, determinism and index-idempotence checks in plan §1.4.
 
 Why canonical rather than byte comparison: N-Triples has no canonical
 serialization order, and the pipeline does not promise one. Two runs of the same
 conversion can emit the same triples in a different order, and the two storage
 modes deliberately produce different gzip framing (space-optimized assembles a
 concatenated stream; plain gzips one merged file). Comparing raw checksums would
-report all of that as a difference, which is exactly the false alarm §1 warns
+report all of that as a difference, which is exactly the false alarm §3.4 warns
 about.
 
 So for N-Triples the digest is over the SORTED SET of triple lines, and the

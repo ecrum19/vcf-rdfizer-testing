@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §4.2 — the three configurability axes the original plan omitted.
+# Plan §3.6 and §1.5 — the three configurability axes the original plan omitted.
 #
 #   --info-representation   structured | raw      cost axis
 #   --header-representation structured | basic    cost axis
@@ -43,11 +43,11 @@ read_common
 # INFO representation. Two inputs: a single-sample WGS file (where INFO cost
 # competes with sample cost) and the SV batch (whose records carry heavy INFO).
 # --------------------------------------------------------------------------
-# Overridable for the same reason as §2.4's anchors: these are full corpus
+# Overridable for the same reason as §3.3's anchors: these are full corpus
 # files, so a fast end-to-end pass has to be able to swap them for fixtures.
 INFO_INPUTS="${BM_INFO_INPUTS:-HG005_GRCh38.vcf.gz HGSVC2.vcf.gz}"
 
-bm_banner "§4.2 --info-representation (paired, $REPS reps)"
+bm_banner "§3.6 --info-representation (paired, $REPS reps)"
 
 for input in $INFO_INPUTS; do
   stem="${input%%.*}"
@@ -70,7 +70,7 @@ done
 # Header representation. Header cost is per-file rather than per-record, so a
 # small input is enough to show the difference in emitted structure.
 # --------------------------------------------------------------------------
-bm_banner "§4.2 --header-representation"
+bm_banner "§3.6 --header-representation"
 
 HEADER_INPUT="${BM_HEADER_INPUT:-test-larger.vcf.gz}"
 if bm_have_vcf "$HEADER_INPUT"; then
@@ -95,7 +95,7 @@ fi
 # 4.5 cells need fixtures declaring those versions; 08_robustness.sh builds
 # them under benchmarks/fixtures/ if they are absent.
 # --------------------------------------------------------------------------
-bm_banner "§4.2 --vcf-version conformance overlays"
+bm_banner "§1.5 --vcf-version conformance overlays"
 
 FIXTURE_DIR="$BM_ROOT/fixtures"
 for version in 4.1 4.2 4.3 4.4 4.5; do

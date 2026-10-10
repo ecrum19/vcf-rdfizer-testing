@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Plan §2.1 and §3.1 — build the derived one-factor ladders.
+# Plan §4.2 — build the derived one-factor ladders.
 #
 # Both headline scaling questions need ladders where exactly ONE thing varies.
 # Deriving every rung from a single source file holds variant class, caller,
 # assembly and header constant, which is what makes a fitted slope mean
-# something (§3). The ten-file corpus cannot do this: HGSVC2 is structural
+# something (§3.2, §3.3). The ten-file corpus cannot do this: HGSVC2 is structural
 # variants, 1000G is a phased SNV cohort, and a regression across them
 # estimates a mixture of genomic content, not the tool's scaling.
 #
@@ -58,7 +58,7 @@ bm_sha256() {
 }
 
 # Write a provenance record beside each derived file. Derived inputs are
-# irreproducible without this (§5.4).
+# irreproducible without this (§4.2).
 bm_write_provenance() {
   local derived="$1" source_path="$2" recipe="$3" records="$4" samples="$5"
   python3 - "$derived" "$source_path" "$recipe" "$records" "$samples" \
@@ -92,7 +92,7 @@ PYEOF
 # Samples ladder: fixed record set, varying sample-column count
 # --------------------------------------------------------------------------
 derive_samples() {
-  bm_banner "§2.1 samples ladder from $SAMPLE_SOURCE"
+  bm_banner "§4.2 samples ladder from $SAMPLE_SOURCE"
   if ! bm_have_vcf "$SAMPLE_SOURCE"; then
     bm_warn "source not available: $SAMPLE_SOURCE — samples ladder skipped.
 Download it with: bash $BM_REPO/scripts/download_test_data.sh"
@@ -149,7 +149,7 @@ Download it with: bash $BM_REPO/scripts/download_test_data.sh"
 # Records ladder: fixed sample count, varying record count
 # --------------------------------------------------------------------------
 derive_records() {
-  bm_banner "§3.1 records ladder from $RECORD_SOURCE"
+  bm_banner "§4.2 records ladder from $RECORD_SOURCE"
   if ! bm_have_vcf "$RECORD_SOURCE"; then
     bm_warn "source not available: $RECORD_SOURCE — records ladder skipped.
 Download it with: bash $BM_REPO/scripts/download_test_data.sh"

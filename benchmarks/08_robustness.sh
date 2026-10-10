@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plan §4.3 — robustness evidence, most of which already exists unused.
+# Plan §1.3 and §1.4 — robustness evidence, most of which already exists unused.
 #
 #   1. Mutation score        the strongest quantified claim in the repo
 #   2. Round-trip identity   compress -> decompress -> same triples
@@ -46,7 +46,7 @@ run_fixtures() {
 # 1. Mutation score, regenerated against the pinned commit.
 # --------------------------------------------------------------------------
 run_mutation() {
-  bm_banner "§4.3 mutation score"
+  bm_banner "§1.3 mutation score"
   if [[ ! -f "$TOOL_DIR/test/test_validation_mutation_unit.py" ]]; then
     bm_skip "$EXPERIMENT" "mutation_score" \
       "mutation harness not found in $TOOL_DIR/test — needs a tool checkout, not an installed package"
@@ -136,7 +136,7 @@ PYEOF
 #    Cheap, strong, and it exercises two modes the old suite never touched.
 # --------------------------------------------------------------------------
 run_roundtrip() {
-  bm_banner "§4.3 round-trip identity"
+  bm_banner "§1.4 round-trip identity"
   bm_have_vcf "$INPUT" || { bm_skip "$EXPERIMENT" "roundtrip" "input not available: $INPUT"; return 0; }
   local vcf; vcf="$(bm_vcf "$INPUT")"
 
@@ -196,7 +196,7 @@ real finding, not a script error: record it and investigate before publishing."
 #    canonicalized graph. One extra run; nearly free.
 # --------------------------------------------------------------------------
 run_determinism() {
-  bm_banner "§4.3 determinism"
+  bm_banner "§1.4 determinism"
   bm_have_vcf "$INPUT" || { bm_skip "$EXPERIMENT" "determinism" "input not available: $INPUT"; return 0; }
   local vcf; vcf="$(bm_vcf "$INPUT")"
 
@@ -233,7 +233,7 @@ identical invocations produced different graphs; record it and investigate."
 #    so it is the deliberate exception to the collision policy.
 # --------------------------------------------------------------------------
 run_index() {
-  bm_banner "§4.3 index idempotence"
+  bm_banner "§1.4 index idempotence"
   bm_have_vcf "$INPUT" || { bm_skip "$EXPERIMENT" "index" "input not available: $INPUT"; return 0; }
   local vcf; vcf="$(bm_vcf "$INPUT")"
 
