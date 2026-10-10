@@ -4,7 +4,7 @@
 # Three configurations (the defaults; smaller chunks; smaller chunks with
 # condensed samples), each under requested Docker memory ceilings of 8, 16 and
 # 31 GB, recording which complete and the memory each used. The default input is
-# NG1N86S6FC.vcf.gz; the base campaign's biomedsem profile used the
+# NG1N86S6FC.vcf.gz; the core benchmark's biomedsem profile used the
 # 1,000,000-record HG005 rung (BM_FEASIBILITY_INPUT). All nine of its cells
 # completed.
 #
@@ -16,7 +16,7 @@
 # which the wrapper's own container invocations honour if supported; when it
 # does not, this script records the run as unconstrained rather than pretending
 # the ceiling applied. Check the recorded 'ceiling_applied' field before
-# reporting any cell. No base-campaign cell recorded the ceiling as applied, so
+# reporting any cell. No core-benchmark cell recorded the ceiling as applied, so
 # the paper reports the memory those runs used, not survival under enforced
 # limits.
 #

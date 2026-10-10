@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Two runs the JBMS review asks for, on the campaign's own release (v3.1.0, commit d3b34d5):
+# Two runs the JBMS review asks for, on the core benchmark's own release (v3.1.0, commit d3b34d5):
 #   C2  the mutation score under the default (core) SHACL profile, with a queries-only rerun
-#       that must reproduce the campaign's 96/113;
+#       that must reproduce the core benchmark's 96/113;
 #   C3  paired value-level validation, on QLever, of one heterogeneous real file:
 #       NG131FQA1I (PGP, Dante Labs) through its first 250,000 records, the corpus slice.
 set -uo pipefail

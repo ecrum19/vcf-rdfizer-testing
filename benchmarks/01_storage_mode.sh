@@ -7,7 +7,7 @@
 # pinned, not a second factor (§1.2).
 #
 # By default, three input sizes with five replicates each, so the disk saving
-# can be seen growing with input size. The base campaign's biomedsem profile ran
+# can be seen growing with input size. The core benchmark's biomedsem profile ran
 # two: the 100,000-record HG005 slice, three replicates per mode, and
 # test-larger.vcf.gz (269M triples) once per mode as a size check (BM_SIZES,
 # BM_REPS=3, BM_REPS_AT_SCALE=1). The disk result is peak workspace, not final

@@ -59,7 +59,7 @@ Three questions organize the evaluation, and the Results follow them in order:
 \begin{itemize}
 \item \textbf{A condensed manuscript.} The condensed version is now the manuscript, and the full-length draft is retired. The main text keeps six figures (the VCF Core terms, the pipeline overview beside the section it explains, the validation outcomes, the workflow matches, the converter comparison, and the cost of querying) and the representation-contract table. The workflow's stage costs, the sample-count series, and the detailed retrieval paths move to Supplementary Figures~S3, S5 and~S7.
 \item \textbf{Evaluation design beside its results.} Section~3 now combines the evaluation design with the results: each research question's subsection describes how it was tested and then what the tests showed, so no method has to be looked up in a separate section.
-\item \textbf{Every reported result comes from a published release.} The base campaign used v3.1.0. Everything a pre-release build first produced was rerun with the published v3.3.1: use-case Scenarios~1--3, regional retrieval, large-graph retrieval, and the consumer WGS validation run. Every match set and carrier list is identical. Timings moved by a few percent, and no conclusion changed:
+\item \textbf{Every reported result comes from a published release.} The core benchmark used v3.1.0. Everything a pre-release build first produced was rerun with the published v3.3.1: use-case Scenarios~1--3, regional retrieval, large-graph retrieval, and the consumer WGS validation run. Every match set and carrier list is identical. Timings moved by a few percent, and no conclusion changed:
   \begin{itemize}
   \item the complete HG005 VCF now takes 646.4\,s of queries after an 881-second index, against 634.6\,s and 868\,s before;
   \item Scenario~3's queries now take 216--218\,s, against 205--209\,s before.
@@ -72,7 +72,7 @@ Three questions organize the evaluation, and the Results follow them in order:
 
 \subsection{Earlier in this revision (8 October)}
 \begin{itemize}
-\item \textbf{Structure.} Implementation, Evaluation and Results each followed RQ1--RQ3. The \emph{base campaign} (143 runs in 12 experiment families, v3.1.0) is defined where it is first used and detailed in Supplementary Section~S6.1.
+\item \textbf{Structure.} Implementation, Evaluation and Results each followed RQ1--RQ3. The \emph{core benchmark} (143 runs in 12 experiment families, v3.1.0) is defined where it is first used and detailed in Supplementary Section~S6.1.
 \item \textbf{Setup counted for what QLever needs.} The break-even counts conversion to the gzip-framed N-Triples that QLever indexes, not HDT: about 2\,min of setup and 11 questions, instead of 7.4\,min and 44. The N-Triples are 21--25$\times$ the gzipped VCF.
 \item \textbf{A fourth workflow scenario.} Scenario~4 applies layered rules to the complete NB72462M VCF (5,063,417 records), giving four requesters four different, non-empty release views.
 \item \textbf{Spanning deletions linked.} v3.3.1 links spanning-deletion (\texttt{*}) records to genes by their REF span; v3.3.0 did not, so gene-based rules could not select them.
@@ -84,7 +84,7 @@ Three questions organize the evaluation, and the Results follow them in order:
 
 \section{3. RQ1: source comparisons and structural validation are complementary}
 
-On valid inputs every check agreed with an answer derived independently from the source VCF: all 1,006 applicable query comparisons of the base campaign's 78 validation runs, the decoded triple count of all 152 HDT and COTTAS artifacts, all thirteen answers on the 657.4M-triple graph of the complete HG005 VCF, and all thirteen in the consumer WGS validation run (58.2M triples). The 25 runs repeated on four SPARQL engines returned identical answers.
+On valid inputs every check agreed with an answer derived independently from the source VCF: all 1,006 applicable query comparisons of the core benchmark's 78 validation runs, the decoded triple count of all 152 HDT and COTTAS artifacts, all thirteen answers on the 657.4M-triple graph of the complete HG005 VCF, and all thirteen in the consumer WGS validation run (58.2M triples). The 25 runs repeated on four SPARQL engines returned identical answers.
 
 On 113 injected faults, the queries detected 96. The default shapes detected none of the remaining 17, which change relationships no query summary inspects (which allele a genotype refers to, a sample's index, phasing, header attribute values); the two deeper profiles detected all of them.
 
@@ -155,7 +155,7 @@ Neither workflow is uniformly cheaper. VCF parsing wins one-pass analyses and sm
 \midrule
 Single whole-file questions & QLever took 0.005--4.62\,s per question against 11.5--12.3\,s for a full cyvcf2 parse, on 100,000 HG005 records (17.1M triples).\\
 All thirteen in one pass & One parsing pass took 12.4\,s; QLever's queries took 17.1\,s, plus a 22.8\,s index.\\
-Repeated questions & About 11 questions to break even, measured in a three-replicate rerun: 95.7\,s to convert to gzip-framed N-Triples (HDT is not needed by QLever) and 25.0\,s to index. One scenario, not a tool constant; with the base campaign's HDT it was 44.\\
+Repeated questions & About 11 questions to break even, measured in a three-replicate rerun: 95.7\,s to convert to gzip-framed N-Triples (HDT is not needed by QLever) and 25.0\,s to index. One scenario, not a tool constant; with the core benchmark's HDT it was 44.\\
 Storage & The gzip-framed N-Triples QLever indexes are 24.7$\times$ the gzipped VCF for 100,000 records and 20.7$\times$ for the complete HG005 VCF (2.89\,GB against 139.3\,MB). Indexed for queries, the QLever index is 60.5$\times$ the bgzipped VCF with its tabix index for 100,000 records (214.5\,MB against 3.5\,MB) and 57.5$\times$ for the complete VCF (8.1\,GB against 140.9\,MB).\\
 Regional lookups & Tabix-indexed region queries were faster up to 100\,kb (3.2--4.6\,ms against 10.6--10.8\,ms); at 10\,Mb QLever's 10.3\,ms beat bcftools (31.5\,ms) and cyvcf2 (118.2\,ms).\\
 Sample representation & At 2,504 samples, expanded output has 432$\times$ the triples of condensed but only 69$\times$ the HDT bytes; condensed values need decoding to address one call.\\
@@ -204,7 +204,7 @@ The converter comparison sits in RQ3 because it weighs what a representation hol
 \item The break-even is computed for the N-Triples QLever indexes, with HDT and COTTAS treated as optional artifacts; the regional medians behind main Figure~6 are in Supplementary Table~S18.
 \end{itemize}
 
-\subsection{Claim-dependent additions, not an automatic new benchmark campaign}
+\subsection{Claim-dependent additions, not an automatic rerun of the benchmarks}
 \textbf{External relevance.} Would a focused clinical or data-access review of the application question strengthen the contribution? The shared-input converter comparison is now in the paper (Figure~7 here), but it covers four converters, two inputs, and Q1--Q8, so it shows what each graph can answer rather than which converter suits a purpose. The bcftools comparison is a task comparison, not a converter benchmark, and there is no user study.
 
 \end{document}

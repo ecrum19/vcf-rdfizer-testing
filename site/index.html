@@ -39,7 +39,7 @@
           <span>Under which workloads and representation choices are the costs practical?</span>
         </a>
         <div class="section-nav">
-          <a href="#explorer">Base-campaign explorer</a>
+          <a href="#explorer">Core benchmark explorer</a>
           <a href="#notes">Notes and provenance</a>
         </div>
       </nav>
@@ -53,7 +53,7 @@
         <p class="section-intro">
           Validation compares <span data-fill="questions"></span> SPARQL results (<span data-fill="qRange"></span>) with corresponding answers derived independently
           from the source VCF using cyvcf2 and, for exact FILTER text, bcftools; SHACL shapes check structural constraints
-          that the source-comparison queries do not observe. In the base campaign, <span data-fill="validations"></span> paired validation runs covered
+          that the source-comparison queries do not observe. In the core benchmark, <span data-fill="validations"></span> paired validation runs covered
           difficult-input fixtures, a single-sample fixture under both sample profiles and three RDF artifacts, and HG005
           slices up to <span data-fill="sliceTriples"></span> triples. A fault-injection experiment applies <span data-fill="faults"></span> deliberate corruptions, and a later consumer
           WGS validation run tests <span data-fill="realRecords"></span> records from <span data-fill="realSample"></span> with the default shapes.
@@ -68,7 +68,7 @@
         <aside class="interpretation">
           <h3>Findings</h3>
           <p>
-            Across the base campaign, all <span data-fill="comparisonsEqual"></span> applicable SPARQL results agreed exactly with their source-derived
+            Across the core benchmark, all <span data-fill="comparisonsEqual"></span> applicable SPARQL results agreed exactly with their source-derived
             counterparts after normalization; <span data-fill="comparisonsOther"></span> further genotype-query instances were verified as not applicable to
             files without genotypes. Every engine that answered returned the same normalized answers. This establishes
             representation equivalence for the fields the queries cover, not the biological correctness of the source calls.
@@ -222,9 +222,9 @@
 
       <!-- ===================================================== Explorer -->
       <details class="panel collapsible" id="explorer">
-        <summary>Base-campaign explorer</summary>
+        <summary>Core benchmark explorer</summary>
         <p class="section-intro">
-          The <span data-fill="cells"></span> runs (cells) of the <span data-fill="campaignVersion"></span> base campaign, each linked to its archived run record (command,
+          The <span data-fill="cells"></span> runs (cells) of the <span data-fill="campaignVersion"></span> core benchmark, each linked to its archived run record (command,
           metrics and reports). Filter settings are stored in the URL, so a shared link reproduces the view.
         </p>
         <div class="controls-grid" id="explorerControls"></div>
@@ -236,7 +236,7 @@
       <details class="panel collapsible note-panel" id="notes">
         <summary>Notes and provenance</summary>
         <ul class="notes">
-          <li>The base campaign ran the published image <code><span data-fill="campaignImage"></span></code> on <span data-fill="campaignHosts"></span> hosts with identical hardware (below).</li>
+          <li>The core benchmark ran the published image <code><span data-fill="campaignImage"></span></code> on <span data-fill="campaignHosts"></span> hosts with identical hardware (below).</li>
           <li>The linked workflow, regional retrieval, large-graph retrieval at <span data-fill="midTriples"></span> and <span data-fill="maxTriples"></span> triples, the consumer WGS validation run and the converter comparison used the published VCF-RDFizer <span data-fill="useCaseVersion"></span>. On the same <span data-fill="sliceRecords"></span> HG005 records, both releases wrote identical sorted triples.</li>
           <li>The linked workflow's consents are simulated and do not express any real participant's wishes.</li>
           <li>Only the runs behind reported results are shown. Pre-release, superseded, stalled and failed runs are on the repository's <a href="https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results">legacy branch</a>.</li>

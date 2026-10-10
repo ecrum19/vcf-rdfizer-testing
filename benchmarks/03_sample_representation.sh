@@ -33,7 +33,7 @@ REPS="${BM_REPS:-3}"
 # Both queryable representations, so the byte side of the claim is measured in
 # each: condensed moves its per-sample values into vector literals rather than
 # dropping them, and HDT and COTTAS store those literals very differently.
-# Until v3.1.0's second campaign this built HDT alone, which left COTTAS with
+# Until the v3.1.0 core benchmark, this built HDT alone, which left COTTAS with
 # no sample-ladder numbers at all.
 REPRESENTATIONS="${BM_SAMPLE_REPRESENTATIONS:-hdt,cottas}"
 
@@ -101,7 +101,7 @@ done
 #
 # The defaults are full real files, which ignore the rung parameters and
 # dominate this script's cost (17.7h of 17.8h in one measured smoke pass,
-# against 2.7 minutes for the eight ladder cells). The base campaign's
+# against 2.7 minutes for the eight ladder cells). The core benchmark's
 # biomedsem profile, like `run_all.sh smoke`, points them at fixtures that make
 # the same contrast: test-larger-multisample.vcf.gz (2,504 samples) and
 # test-10k.vcf (one sample). The expanded cohort anchor is skipped by the

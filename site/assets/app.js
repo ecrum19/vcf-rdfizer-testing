@@ -669,7 +669,7 @@ function renderEvidence() {
     `Default shapes were validated in ${num(sh.batches)} record batches (${sh.minutes} min): ${num(sh.violations)} violations and ${num(sh.advisories)} non-blocking recommendations.</p>` +
     table([{ key: "query", label: "Question", format: (q) => pretty(q) },
       { key: "status", label: "SPARQL result and source-derived answer", html: (r) => verdict(r.status) }], real.queries);
-  document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, the campaign's validation reports and <code>08_robustness/mutation_score*</code>.`;
+  document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, the core benchmark's validation reports and <code>08_robustness/mutation_score*</code>.`;
 }
 
 function renderLinking() {
@@ -736,7 +736,7 @@ function renderBreakEven() {
       `${secs(v.conversion + v.index)} of additional RDF setup against a saving of ${secs(v.parser - v.sparql)} per question. ` +
       `The estimate assumes a full VCF parse for each question; one cyvcf2 pass answers all ${D.facts.questions} questions ` +
       `in ${secs(D.retrieval.batch.parser)}, so a single batch does not reach break-even. ` +
-      `Including HDT construction in the setup, as in the base campaign, raises the estimate to ${D.facts.breakEvenWithHdt} questions.`;
+      `Including HDT construction in the setup, as in the core benchmark, raises the estimate to ${D.facts.breakEvenWithHdt} questions.`;
   };
   box.addEventListener("input", update);
   document.getElementById("be-reset").addEventListener("click", () => {
@@ -818,7 +818,7 @@ async function main() {
   DATASETS.forEach((name, i) => { D[name] = responses[i]; });
   const meta = D.campaign.meta;
   document.getElementById("dataMeta").textContent =
-    `Base campaign: VCF-RDFizer ${D.facts.campaignVersion}; linked workflow, retrieval reruns, consumer WGS validation run and converter comparison: ${D.facts.useCaseVersion}. ` +
+    `Core benchmark: VCF-RDFizer ${D.facts.campaignVersion}; linked workflow, retrieval reruns, consumer WGS validation run and converter comparison: ${D.facts.useCaseVersion}. ` +
     `Site built ${meta.builtAt.replace("T", " ").replace("+00:00", " UTC")}` +
     (meta.repoCommit ? ` from commit ${meta.repoCommit}.` : ".");
   if (meta.repoCommit) document.getElementById("commitLink").href = `${REPO}/tree/${meta.repoCommit}`;

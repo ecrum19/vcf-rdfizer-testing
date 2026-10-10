@@ -409,7 +409,7 @@ bm_run_raw() {
 # Exit codes alone are ambiguous here. 06's refusal cells exit 2 *because the
 # refusal is the thing being tested*, and 09 runs awkward fixtures where a
 # refusal is a valid recorded outcome -- yet both looked identical to a genuine
-# failure, so the campaign summary reported five failures that were not.
+# failure, so the run summary reported five failures that were not.
 #
 # "ok"        the run was asserted to succeed
 # "refusal"   the run was asserted to fail, with a specific message

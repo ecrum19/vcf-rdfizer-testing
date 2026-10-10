@@ -25,7 +25,7 @@ ALL="00 02 01 03 04 05 06 07 08 09 10 11 12 13"
 CHEAP="00 02 03 06 07 08 09 11 12 13"
 
 # OPTIONAL experiments. Deliberately absent from ALL, CHEAP and biomedsem:
-# they are standalone investigations, not part of the manuscript campaign, and
+# they are standalone investigations, not part of the core benchmark, and
 # each costs hours to days. Nothing runs them unless they are named.
 #
 #   14  regional access -- windowed retrieval against indexed VCF readers
@@ -104,7 +104,7 @@ case "${1:-all}" in
     export BM_ANCHOR_PAIRS="${BM_ANCHOR_PAIRS:-test-larger-multisample.vcf.gz:cohort test-10k.vcf:single}"
 
     # §3.5 corpus breadth -- features, not file length; one real file still
-    # whole. The base campaign set BM_CORPUS_WHOLE=HG005_GRCh38.vcf.gz.
+    # whole. The core benchmark set BM_CORPUS_WHOLE=HG005_GRCh38.vcf.gz.
     export BM_CORPUS_MAX_RECORDS="${BM_CORPUS_MAX_RECORDS:-250000}"
     export BM_CORPUS_WHOLE="${BM_CORPUS_WHOLE:-NG1N86S6FC.vcf.gz}"
 

@@ -17,11 +17,11 @@ Figure and table numbers are the manuscript's (main text) and the supplement's
 (prefix S). [`README.md`](README.md) lists every script with its records, and
 the run records are in [`../benchmark-results/`](../benchmark-results/README.md).
 Numbers belong to the paper; this document gives the design that produced
-them. The plan written before the campaign, which used a different section
+them. The plan written before the core benchmark, which used a different section
 numbering, can be read with `git show 66f53577:benchmarks/DESIGN.md`. The table at the end maps
 its section numbers, which archived run logs print, to these.
 
-**The base campaign** is experiments `00`–`13`: 143 cells in 12 families
+**The core benchmark** is experiments `00`–`13`: 143 cells in 12 families
 (`00` and `02` prepare the others and are not counted), all with the published
 VCF-RDFizer v3.1.0 image (Table S12). Experiments `14`–`18`, and four results
 made by small drivers (listed in `README.md`), are reported separately
@@ -45,7 +45,7 @@ correct content is known from the source VCF:
   three Comunica engines: over N-Triples, over HDT, and over COTTAS through a
   DuckDB-backed engine.
 
-In the base campaign, 78 validation runs come from five families: difficult
+In the core benchmark, 78 validation runs come from five families: difficult
 inputs (20), covering set (23), equivalence (16), query cost (18) and modes (1).
 Each artifact a run validates (gzip-framed N-Triples, HDT, COTTAS) is decoded and
 its triple count compared with the source graph's.
@@ -102,7 +102,7 @@ relationships. Two controls must still pass. It counts which corruptions each
 layer detects:
 - **Queries only:** `08`'s `mutation_score` cell.
 - **Queries and all three shape profiles:** `08`'s `mutation_score__shacl_full`.
-- **Queries and the default profile:** a rerun outside the campaign on
+- **Queries and the default profile:** a rerun outside the core benchmark on
   vcf-bench-2, with the same release (`review-runs/mutation__core`, with a
   queries-only control, `mutation__none`).
 
@@ -135,7 +135,7 @@ VCF that a converter can plausibly get wrong:
 - a file with no records, a sites-only file (no FORMAT or sample columns), and
   a truncated gzip.
 
-The campaign's sites-only fixture first declared a FORMAT column with no
+The core benchmark's sites-only fixture first declared a FORMAT column with no
 samples, a defect of the fixture generator that bcftools rejects, so its paired
 validation could not run. The cell was rerun with the corrected fixture
 ([`benchmark-results/vcf-bench-1/sites-only-rerun/`](../benchmark-results/vcf-bench-1/sites-only-rerun/README.md)).
@@ -195,7 +195,7 @@ its artifacts:
 
 **Reported in** Section S10.
 
-### 1.7 Validation beyond the base campaign
+### 1.7 Validation beyond the core benchmark
 
 - **Consumer WGS validation run.** The first 250,000 records of the
   `NG131FQA1I` consumer WGS VCF (58,231,176 triples, expanded profile), validated
@@ -479,7 +479,7 @@ turns that into the experiment, with three replicates at two scales and no SHACL
   and then a query per question. The result is a break-even count: additional
   RDF setup divided by the per-question saving (Section S9.4). Conversion is in
   neither column and is quoted from §3.2.
-- **Minimal setup.** The campaign's conversions also built HDT and COTTAS, which
+- **Minimal setup.** The core benchmark's conversions also built HDT and COTTAS, which
   QLever does not need, so their setup overstates the RDF workflow. The
   N-Triples-only rerun (`benchmark-results/vcf-bench-2/nt-only/`, v3.1.0, three
   replicates) converts the same slice to gzip-framed N-Triples only, then indexes
@@ -618,11 +618,11 @@ eight Spark partitions throughout.
 
 ### 4.4 Hosts, profile, and operation
 
-- **Two identical hosts, whole families on each.** The base campaign ran on
+- **Two identical hosts, whole families on each.** The core benchmark ran on
   vcf-bench-1 (`01 04 07 08 09 10 11 12 13`) and vcf-bench-2 (`03 05 06`). Each
   family's cells are compared with each other, so no family was split, and
   `build_run_summary.py` refuses an archive in which one is.
-- **Calibration.** Before the campaign, each host ran `12` under identical
+- **Calibration.** Before the core benchmark, each host ran `12` under identical
   settings. The triples were identical and the timings differed, so timings are
   compared only within a host. The calibration records are on the `legacy`
   branch.
@@ -630,7 +630,7 @@ eight Spark partitions throughout.
   one experiment at a time; only `10` imposes a memory ceiling.
 - **Published images, never rebuilt mid-run.** Every cell used `--no-build`:
   v3.1.0 for `00`–`13` and `15`, v3.3.1 for `14` and `16`–`18`.
-- **The `biomedsem` profile** of `run_all.sh` set the campaign's sizes,
+- **The `biomedsem` profile** of `run_all.sh` set the core benchmark's sizes,
   replicates and engines (`README.md` lists them). Corpus files were truncated to
   250,000 records with HG005 converted whole, and the cohort-scale guard skipped
   expanded cells on inputs with more than 1,000 sample columns.
@@ -651,14 +651,14 @@ one. It records:
 - the tool's own `out/` tree.
 
 The archive keeps all of it except the generated RDF.
-`scripts/build_run_summary.py` integrates the base campaign's cells into
+`scripts/build_run_summary.py` integrates the core benchmark's cells into
 `benchmark-results/summary.json`.
 
 ---
 
 ## Section numbers before 2026-10-10
 
-The plan written before the campaign used a different numbering, which run
+The plan written before the core benchmark used a different numbering, which run
 logs archived before this date print in their banners. Read it with
 `git show 66f53577:benchmarks/DESIGN.md`.
 

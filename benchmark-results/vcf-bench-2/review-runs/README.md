@@ -1,14 +1,14 @@
 # Default-profile mutation rerun (vcf-bench-2, 2026-10-01)
 
-The mutation score of `08_robustness`, rerun outside the 143-cell campaign with
-the default (`core`) shape profile, on the campaign's own release: VCF-RDFizer
+The mutation score of `08_robustness`, rerun outside the 143-cell core benchmark with
+the default (`core`) shape profile, on the core benchmark's own release: VCF-RDFizer
 v3.1.0 (commit `d3b34d5`, image `ecrum19/vcf-rdfizer:3.1.0`, `sha256:1904e96d…34aa`).
 It is the middle bar of Figure 3b; the other two come from `08_robustness` in
 `vcf-bench-1/benchmarks_outputs/`.
 
 | Directory | What | Result |
 | --- | --- | --- |
-| `mutation__none/` | The mutation score with queries only, as a control | 96/113, as in the campaign |
+| `mutation__none/` | The mutation score with queries only, as a control | 96/113, as in the core benchmark |
 | `mutation__core/` | The mutation score with the default shape profile | 96/113; `detectedByShacl` 0 |
 
 Each directory holds `mutation-score.json` (every mutation, its class, and which

@@ -220,8 +220,8 @@ def breakeven() -> dict:
     """Setup, per-question parse and query times, and the break-even, on 100,000 HG005 records.
 
     Everything comes from the N-Triples-only rerun: conversion to the gzip-framed N-Triples
-    that QLever indexes, QLever indexing, and the query-cost validation on them. The base
-    campaign's conversions also built HDT; that setup is kept only for comparison.
+    that QLever indexes, QLever indexing, and the query-cost validation on them. The core
+    benchmark's conversions also built HDT; that setup is kept only for comparison.
     """
     rerun = nt_only_rerun()
     parser = {q: st.median(v) for q, v in rerun["parser"].items()}
@@ -229,7 +229,7 @@ def breakeven() -> dict:
     conversion, index = st.mean(rerun["conversion"]), st.mean(rerun["index"])
     setup = conversion + index
     scan, query = st.median(parser.values()), st.mean(sparql.values())
-    # Base campaign, for comparison: the record ladder's conversion with HDT, the query-cost index.
+    # Core benchmark, for comparison: the record ladder's conversion with HDT, the query-cost index.
     campaign = retrieval()
     with_hdt = st.mean(float(row["wrapper_wall_seconds"]) for row in tidy(B1 / "04_scaling_records" / "tidy.csv")
                        if row["cell"].startswith("r100000__")) + campaign["ql_setup"]

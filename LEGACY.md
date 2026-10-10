@@ -32,7 +32,7 @@ commit that has all of them, for example
 | `BioMedSem_2026/paper-assets/fig-workflow.*`, `fig-usecase.*` | A workflow diagram no document included, and the use-case diagram that only the first co-author brief used. |
 | `BioMedSem_2026/paper-assets/figures/count_validation.py` | A tally of the validation evidence, superseded by `validation_counts()` in `scripts/build_site_data.py`, which the figures and the site tests use. |
 | `BioMedSem_2026/paper-assets/vcf2rdf-v3.fls`, `vcf2rdf-v3.fdb_latexmk` | LaTeX build files. |
-| `benchmarks/RUN_PLAN.md`, `benchmarks/AGGREGATION.md` | The pre-release campaign's host plan and the steps for pulling results off the hosts. Their lasting content, which host ran each experiment and how its records were archived, is in `benchmarks/README.md` and `benchmark-results/README.md`. |
+| `benchmarks/RUN_PLAN.md`, `benchmarks/AGGREGATION.md` | The pre-release benchmark run's host plan and the steps for pulling results off the hosts. Their lasting content, which host ran each experiment and how its records were archived, is in `benchmarks/README.md` and `benchmark-results/README.md`. |
 | `tool-docs/jbms-review-vcf-rdfizer.md`, `jbms-revision-plan.md`, `workstream-a-implementation.md`, `proposal-indexed-regional-access-arm.md`, `results-site-plan.md`, `cottas-multiple-indexes.md` | A simulated journal review and the plans and notes written while acting on it. |
 | `tool-docs/coauthor-report/report.tex`, and the figure copies only it used | The first co-author brief, superseded by `report_revised.tex`. |
 
@@ -60,21 +60,21 @@ what it is, and which statement in the supplement cites it.
 
 | Moved from `benchmark-results/` | What it is |
 | --- | --- |
-| `vcf-bench-{1,2}/benchmarks_outputs__campaign1__*/`, `benchmarks_outputs_calibration*/` | The pre-release campaign, and the host calibrations |
-| `vcf-bench-1/benchmarks_outputs__superseded/`, `vcf-bench-2/benchmarks_outputs__stalled/`, `vcf-bench-{1,2}/benchmarks_outputs__partial/`, `vcf-bench-2/benchmarks_outputs__offsplit/`, `vcf-bench-1/benchmarks_outputs__tool8b1b4a8/` | Superseded, stopped, interrupted and off-host base-campaign runs, and an older tool's storage data |
+| `vcf-bench-{1,2}/benchmarks_outputs__campaign1__*/`, `benchmarks_outputs_calibration*/` | The pre-release benchmark run, and the host calibrations |
+| `vcf-bench-1/benchmarks_outputs__superseded/`, `vcf-bench-2/benchmarks_outputs__stalled/`, `vcf-bench-{1,2}/benchmarks_outputs__partial/`, `vcf-bench-2/benchmarks_outputs__offsplit/`, `vcf-bench-1/benchmarks_outputs__tool8b1b4a8/` | Superseded, stopped, interrupted and off-host core-benchmark runs, and an older tool's storage data |
 | `vcf-bench-1/benchmarks_outputs/14_regional_access/`, `vcf-bench-3/benchmarks_outputs/16_scale_retrieval*/`, `vcf-bench-{1,2,3}/use-case/` | The pre-release regional, large-graph and use-case runs, rerun with v3.3.1 |
 | `vcf-bench-2/review-runs/validate__*`, `shacl-mem/`, `diag_q11*`, `e2e_*`, `validate_noshacl.sh` | The v3.1.0 consumer WGS validation runs, their diagnostics, and the validator-fix runs, rerun with v3.3.1 |
 | `vcf-bench-2/v331-rerun/attempt{1,2}-*`, `vcf-bench-3/v331-rerun/attempt1-exit126/` | Failed attempts within the v3.3.1 rerun |
 | `_manifests/` | The 2026-09 host pulls' file counts and tarball checksums, which count the moved trees |
 
-`summary.json` was rebuilt from what remains, the 143 base-campaign cells; those
+`summary.json` was rebuilt from what remains, the 143 core-benchmark cells; those
 records are unchanged. `main`'s earlier `summary.json`, which classifies all 382
 cells, moved with the runs. The results site's consumer WGS panel now shows only
 the v3.3.1 run.
 
 ## Sites-only cell replaced by its rerun (2026-10-10)
 
-The base campaign's `09_awkward_inputs/awkward_sites_only` cell ran on a
+The core benchmark's `09_awkward_inputs/awkward_sites_only` cell ran on a
 malformed fixture: `benchmarks/lib/make_fixtures.py` wrote a FORMAT column with no
 samples after it, which bcftools rejects, so neither paired validation ran. The
 generator is fixed, and the cell was rerun on the same host with the same release
@@ -95,7 +95,7 @@ results site, paper and supplement remain on `main`, with the run records of eve
 reported result. Every script in `benchmarks/` and `scripts/` produced, computes or
 checks a reported result; `benchmarks/README.md` and the README's support-script
 table say which. `benchmarks/DESIGN.md` gives each experiment's design as run,
-by the paper's research questions; the plan written before the campaign is in its
+by the paper's research questions; the plan written before the core benchmark is in its
 history (`git show 66f53577:benchmarks/DESIGN.md`).
 
 ## Retrieve archived files
