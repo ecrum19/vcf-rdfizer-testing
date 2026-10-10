@@ -111,8 +111,9 @@ git archive --format=zip --prefix=vcf-rdfizer-testing/ -o vcf-rdfizer-testing.zi
 ## Results site
 
 <https://ecrum19.github.io/vcf-rdfizer-testing/> presents the evidence as
-interactive charts. `.github/workflows/pages.yml` builds it from the archive on
-every push to `main`. The page types no numbers of its own:
+interactive charts, organized by the manuscript's three research questions, with
+a data table under every chart. `.github/workflows/pages.yml` builds it from the
+archive on every push to `main`. The page types no numbers of its own:
 - charts read the data files;
 - every number in its prose is filled from `facts.json`, which
   `scripts/build_site_data.py` computes from the run records;

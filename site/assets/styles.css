@@ -61,6 +61,8 @@ code { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.9
   margin: 0 auto;
   padding: 1.1rem 1rem 1.8rem;
   display: grid;
+  /* minmax(0, 1fr): a wide table or chart scrolls inside its panel instead of widening the page. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.9rem;
 }
 
@@ -71,7 +73,8 @@ code { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.9
   padding: 1.2rem 1.4rem;
   box-shadow: var(--shadow);
 }
-.hero h1 { margin: 0 0 0.4rem; font-size: 1.65rem; line-height: 1.2; }
+.hero h1 { margin: 0 0 0.5rem; font-size: clamp(1.25rem, 4.5vw, 1.6rem); line-height: 1.22; max-width: 40ch; }
+.hero .eyebrow { margin: 0 0 0.35rem; font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.8; }
 .hero p { margin: 0.3rem 0; max-width: 72ch; }
 .hero a { color: #fff; }
 .hero .meta { font-size: 0.85rem; opacity: 0.85; }
@@ -90,7 +93,25 @@ code { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.9
   padding: 0.8rem 1rem;
   margin-top: 0.9rem;
 }
-.quickstart-lead { margin: 0 0 0.6rem; max-width: 90ch; }
+/* The three research questions, as the paper states them. */
+.rq-nav { display: grid; gap: 0.45rem; }
+.rq-link {
+  display: flex; gap: 0.7rem; align-items: baseline;
+  color: var(--text); text-decoration: none;
+  padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 10px;
+}
+.rq-link:hover { background: var(--accent-soft); }
+.rq-tag {
+  flex-shrink: 0;
+  display: inline-block; min-width: 2.9rem; text-align: center;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em;
+  color: var(--panel); background: var(--text);
+  border-radius: 6px; padding: 0.08rem 0.4rem;
+}
+details.collapsible > summary .rq-tag { font-size: 0.85rem; vertical-align: 0.15em; margin-right: 0.3rem; }
+.finding { margin: 0.55rem 0 0; font-size: 1.05rem; font-weight: 600; }
+.rq-sub { margin: 1.4rem 0 0.2rem; font-size: 1.12rem; padding-top: 0.9rem; border-top: 1px solid var(--grid); }
+.rq-nav .section-nav { margin-top: 0.2rem; }
 .section-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .section-nav a {
   text-decoration: none;
@@ -127,16 +148,16 @@ details.collapsible[open] > summary::before { content: "▾ "; }
   padding: 0.75rem 0.9rem;
   box-shadow: var(--shadow);
 }
+.kpi .kpi-tag { color: var(--faint); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.2rem; }
 .kpi .value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
 .kpi .label { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
 
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: 0.9rem;
   margin-top: 0.6rem;
 }
-@media (max-width: 520px) { .chart-grid { grid-template-columns: 1fr; } }
 .chart-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -148,7 +169,7 @@ details.collapsible[open] > summary::before { content: "▾ "; }
 .chart-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
 .chart-head h3 { margin: 0 0 0.3rem; font-size: 1rem; }
 .chart-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
-.chart { width: 100%; min-height: 120px; }
+.chart { width: 100%; min-height: 120px; overflow-x: auto; }
 .chart .vega-embed { width: 100%; }
 .chart-caption { color: var(--muted); font-size: 0.86rem; margin: 0.3rem 0 0; }
 
@@ -238,6 +259,8 @@ details.data-table > summary { cursor: pointer; color: var(--muted); font-size: 
 
 dialog {
   width: min(1200px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--panel);
@@ -247,7 +270,8 @@ dialog {
 dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 .modal-head { display: flex; justify-content: space-between; align-items: center; }
 .modal-head h2 { margin: 0; font-size: 1.15rem; }
-.focus-chart { margin-top: 0.6rem; }
+.focus-chart { margin-top: 0.6rem; width: 100%; }
+.focus-chart .chart { min-height: 240px; }
 
 /* Archive paths are long; let them wrap rather than widen the page. */
 .source code, .table-meta code, td code { overflow-wrap: anywhere; }

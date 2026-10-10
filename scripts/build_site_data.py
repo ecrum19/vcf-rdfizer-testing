@@ -334,7 +334,39 @@ def retrieval() -> dict:
         "regional": regional(),
         "scale": scale(),
         "costBySize": qlever_cost_by_size(),
+        "breakEven": {k: v for k, v in fd.breakeven().items() if k != "conversion_runs"},
     }
+
+
+# ---------------------------------------------------------------------------
+# Shared-input converter comparison (experiment 18; Figure 5, Section S2)
+# ---------------------------------------------------------------------------
+CONVERTERS = RESULTS / "vcf-bench-1" / "18_converter_comparison"
+CONVERTER_NAMES = {"vcf-rdfizer": "VCF-RDFizer", "jvarkit": "JVarkit", "togovar": "TogoVar",
+                   "sparqling-genomics": "SPARQLing Genomics", "biointerchange": "BioInterchange"}
+
+
+def converters() -> dict:
+    """Which content questions each converter's graph answers as the oracle does, and its conversion cost."""
+    summary = CONVERTERS / "summary"
+    outcomes = [{"tool": r["tool"], "input": r["input"], "question": r["question"], "status": r["status"]}
+                for r in fd.tidy(summary / "outcomes.csv")]
+    runs = defaultdict(list)
+    for r in fd.tidy(summary / "conversions.csv"):
+        runs[(r["tool"], r["input"])].append(r)
+    conversions = [{"tool": tool, "input": data, "replicates": len(rs),
+                    "wallSeconds": st.median(float(r["wall_seconds"]) for r in rs),
+                    "peakRssGb": max(int(r["peak_rss_kb"]) for r in rs) * 1024 / 1e9,
+                    "outputBytes": st.median(int(r["native_output_bytes"]) for r in rs)}
+                   for (tool, data), rs in sorted(runs.items())]
+    labels = dict(fd.QUERIES)
+    questions = sorted({o["question"] for o in outcomes})
+    inputs = {"HG005_GRCh38_r100000": "HG005, 100,000 records, one sample",
+              "1000G_10000r_s16": "1000 Genomes, 10,000 records, 16 samples"}
+    return {"tools": [{"id": k, "name": v} for k, v in CONVERTER_NAMES.items()],
+            "inputs": [{"id": k, "label": v} for k, v in inputs.items()],
+            "questions": [{"id": q, "label": labels[q]} for q in questions],
+            "outcomes": outcomes, "conversions": conversions, "source": rel(CONVERTERS)}
 
 
 # ---------------------------------------------------------------------------
@@ -344,6 +376,7 @@ ARMS = {
     "arm1": V331["vcf-bench-1"] / "17_use_case_acmg",
     "arm2": V331["vcf-bench-1"] / "17_use_case_acmg__cohort",
     "arm3": V331["vcf-bench-2"] / "17_use_case_acmg__wgs",
+    "arm4": V331["vcf-bench-2"] / "17_use_case_acmg__layered",
 }
 
 
@@ -354,6 +387,59 @@ def reported_cells(arm: Path, prefix: str) -> list[Path]:
 
 def wall(cells: list[Path]) -> float:
     return sum(load(c / "bench.json")["wrapper_wall_seconds"] for c in cells if (c / "bench.json").exists())
+
+
+def stage_costs(arm: Path) -> dict:
+    """Seconds per stage: one value for the once-per-arm stages, one per requester otherwise.
+
+    The view is the govern cell. The harness checks a view between that cell and
+    the next requester's, so a check is the gap between consecutive govern cells;
+    the last requester's gap also holds other work and is not used. Index and
+    query are the query cell's setup and median replicate.
+    """
+    def bench(cell):
+        return load(cell / "bench.json")
+
+    def cells(prefix):
+        return [c for c in reported_cells(arm, prefix) if (c / "bench.json").exists()]
+
+    govern = sorted(cells("govern"), key=lambda c: bench(c)["started_epoch"])
+    out = {"convert": [wall(cells("convert"))], "link": [wall(cells("link"))],
+           "view": [], "check": [], "index": [], "query": [], "empty": set()}
+    for i, cell in enumerate(govern):
+        requester = cell.name.split("__", 1)[1]
+        out["view"].append((requester, bench(cell)["wrapper_wall_seconds"]))
+        if i + 1 < len(govern):
+            out["check"].append((requester, bench(govern[i + 1])["started_epoch"] - bench(cell)["ended_epoch"]))
+        summary = load(cell / "out" / "summary.json")
+        out.setdefault("released", {})[requester] = (summary["records_released"], summary["triples_released"])
+        if summary["records_released"] == 0:
+            out["empty"].add(requester)
+    for timing in sorted(arm.glob("query/*/timing.json")):
+        requester = timing.parent.name
+        data = load(timing)
+        replicates = data["replicates"]
+        replicates = replicates["carriers"] if isinstance(replicates, dict) else replicates
+        if requester == "unrestricted":
+            out["unrestricted"] = (data["setup_seconds"], st.median(replicates))
+            continue
+        out["index"].append((requester, data["setup_seconds"]))
+        out["query"].append((requester, st.median(replicates)))
+    out["triples"] = load(arm / "query" / "unrestricted" / "timing.json")["triples"]
+    return out
+
+
+def stage_cost_table(arm: Path) -> dict:
+    """stage_costs() for the site: once-per-arm stages, then one row per requester (Figure S3, Table S11)."""
+    costs = stage_costs(arm)
+    per = defaultdict(dict)
+    for stage in ("view", "check", "index", "query"):
+        for requester, seconds in costs[stage]:
+            per[requester][stage] = seconds
+    for requester, (records, triples) in costs["released"].items():
+        per[requester].update(records=records, triples=triples, empty=requester in costs["empty"])
+    return {"convert": costs["convert"][0], "link": costs["link"][0], "triples": costs["triples"],
+            "requesters": dict(per)}
 
 
 def usecase() -> dict:
@@ -392,6 +478,9 @@ def usecase() -> dict:
                 "view": {c.name.split("__")[1]: wall([c]) for c in reported_cells(arm, "govern")},
             },
             "queries": queries,
+            "records": {r: {k: v for k, v in c.items() if k in ("baseline", "rdf", "agree")}
+                        for r, c in (comparison.get("records") or {}).items() if isinstance(c, dict)},
+            "costs": stage_cost_table(arm),
             "source": rel(arm),
         }
     images = {load(c / "bench.json").get("image_ref") for arm in ARMS.values()
@@ -466,8 +555,8 @@ def listing(items: list[str]) -> str:
 
 
 def facts(d: dict) -> dict[str, str]:
-    campaign, fidelity, scaling, retrieval, usecase = (
-        d[k] for k in ("campaign", "fidelity", "scaling", "retrieval", "usecase"))
+    campaign, fidelity, scaling, retrieval, usecase, conv = (
+        d[k] for k in ("campaign", "fidelity", "scaling", "retrieval", "usecase", "converters"))
     v, mutation, real = fidelity["validation"], fidelity["mutation"], fidelity["realGenome"]
     records, samples, storage = scaling["records"], scaling["samples"], scaling["storage"]
     arms, effort, study = usecase["arms"], usecase["effort"], usecase["study"]
@@ -495,6 +584,8 @@ def facts(d: dict) -> dict[str, str]:
     out["realSample"] = real["sample"]
     out["realRecords"] = f"{real['records']:,}"
     out["realTriples"] = millions(real["triples"])
+    out["validations"] = words(v["validations"]) if v["validations"] < len(WORDS) else str(v["validations"])
+    out["invariants"] = f"{v['invariants'].get('PASS', 0):,}"
 
     # Use case
     sources = Counter(p["source"].split()[0] for p in study["participants"])
@@ -542,6 +633,21 @@ def facts(d: dict) -> dict[str, str]:
     out["myvariantGenomes"] = words(len(mv["genomes"]))
     out["myvariantShare"] = span([100 * g["confirmed"] / g["rsid"] for g in mv["genomes"].values()], 0) + "%"
     out["myvariantRequests"] = str(mv["requests"])
+    # All four arms (Arm 4 adds the participant's own physician as a requester).
+    out["arms"] = words(len(arms))
+    out["armsAgree"] = words(sum(all(c["agree"] for c in a["carriers"].values()) for a in arms.values()))
+    out["arm4Participant"] = arms["arm4"]["grid"]["participants"][0]
+    out["arm4Requesters"] = words(sum(r != "unrestricted" for r in arms["arm4"]["carriers"]))
+    agree = [name for name, a in arms.items() if all(c["agree"] for c in a["records"].values())]
+    differ = {name: a["records"] for name, a in arms.items() if name not in agree}
+    out["recordArmsAgree"] = "Arms " + listing([n[3:] for n in agree])
+    out["recordArmsDiffer"] = listing([f"Arm {n[3:]}" for n in differ])
+    out["recordExtra"] = listing([f"{c['rdf'] - c['baseline']:,}" for a in differ.values() for c in a.values()
+                                  if not c["agree"]])
+    # Query time of every non-empty release view, over all arms (Section S5.4).
+    seconds = [r["query"] for a in arms.values() for r in a["costs"]["requesters"].values()
+               if r.get("query") and not r.get("empty")]
+    out["querySeconds"] = f"{min(seconds):.0f}–{max(seconds):.0f}"
 
     # Conversion
     rss_gb = [kb * 1024 / 1e9 for kb in records["median"]["rss"]]
@@ -563,6 +669,24 @@ def facts(d: dict) -> dict[str, str]:
     whole = max(scaling["corpus"], key=lambda r: r["triples"])
     out["representationHours"] = f"{(whole['hdt_s'] + whole['cottas_s']) / 3600:.1f}"
     out["wholeHours"] = f"{whole['wall_s'] / 3600:.2f}"
+
+    # Shared-input converter comparison
+    outcomes = defaultdict(list)
+    for o in conv["outcomes"]:
+        outcomes[o["tool"]].append(o["status"] == "PASS")
+    names = {t["id"]: t["name"] for t in conv["tools"]}
+    out["converters"] = words(len(conv["tools"]) - 1)
+    out["converterQuestions"] = words(len(conv["questions"]))
+    out["converterRange"] = f"Q1–Q{len(conv['questions'])}"
+    out["converterInputs"] = words(len(conv["inputs"]))
+    out["converterAllPass"] = listing([names[t] for t, ok in outcomes.items() if all(ok)])
+
+    # Setup amortization: the minimal RDF setup, and the campaign's HDT-inclusive one
+    be = retrieval["breakEven"]
+    out["breakEven"] = f"{be['n_star']:.0f}"
+    out["breakEvenWithHdt"] = f"{be['n_star_with_hdt']:.0f}"
+    out["breakEvenRange"] = span(list(be["per_question"].values()), 0)
+    out["minimalSetup"] = f"{be['setup']:.0f} s"
 
     # Retrieval
     by_graph = {r["graph"]: r for r in retrieval["costBySize"]}
@@ -617,6 +741,7 @@ def build(out: Path) -> dict[str, dict]:
         "scaling": scaling(),
         "retrieval": retrieval(),
         "usecase": usecase(),
+        "converters": converters(),
     }
     datasets["facts"] = facts(datasets)
     meta = {"builtAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
