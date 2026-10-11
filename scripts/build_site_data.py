@@ -438,8 +438,10 @@ def stage_cost_table(arm: Path) -> dict:
             per[requester][stage] = seconds
     for requester, (records, triples) in costs["released"].items():
         per[requester].update(records=records, triples=triples, empty=requester in costs["empty"])
+    # The conventional workflow is one cell for all requesters, after the same derived inputs.
+    conventional = load(arm / "baseline" / "bench.json")["wrapper_wall_seconds"]
     return {"convert": costs["convert"][0], "link": costs["link"][0], "triples": costs["triples"],
-            "requesters": dict(per)}
+            "conventional": conventional, "requesters": dict(per)}
 
 
 def usecase() -> dict:
@@ -649,6 +651,14 @@ def facts(d: dict) -> dict[str, str]:
     seconds = [r["query"] for a in arms.values() for r in a["costs"]["requesters"].values()
                if r.get("query") and not r.get("empty")]
     out["querySeconds"] = f"{min(seconds):.0f}–{max(seconds):.0f}"
+    # The conventional workflow's one run per scenario, against the RDF workflow's conversion and linking.
+    conventional = [a["costs"]["conventional"] for a in arms.values()]
+    convert_link = [(a["costs"]["convert"] + a["costs"]["link"]) / 60 for a in arms.values()]
+    out["conventionalSeconds"] = f"{min(conventional)}–{max(conventional)}"
+    out["convertLinkMinutes"] = f"{min(convert_link):.1f}–{max(convert_link):.0f}"
+    # Run records hold whole seconds, so the ratio allows the conventional run one more second.
+    fold = min(60 * m / (s + 1) for m, s in zip(convert_link, conventional))
+    out["conventionalFold"] = f"{int(fold // 10 * 10)}"
 
     # Conversion
     rss_gb = [kb * 1024 / 1e9 for kb in records["median"]["rss"]]

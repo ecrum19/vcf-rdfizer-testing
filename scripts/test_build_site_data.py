@@ -101,6 +101,8 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual(differ, {("arm2", "cardio"): 110, ("arm2", "biobank"): 58})
         costs = arms["arm4"]["costs"]
         self.assertEqual((round(costs["convert"] / 60, 1), round(costs["link"] / 60, 1)), (88.7, 16.5))
+        # The conventional workflow: one run per scenario for all requesters (Table S11).
+        self.assertEqual([a["costs"]["conventional"] for a in arms.values()], [4, 77, 54, 91])
 
     def test_use_case_linking(self):
         arms = self.data["usecase"]["arms"]
@@ -173,6 +175,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
             "artifactSpread": "0.4%", "regionalExecutions": "11,160", "regionalFailures": "no",
             "scenarios": "four", "armsAgree": "four", "arm4Requesters": "four", "recordArmsAgree": "Scenarios 1, 3 and 4",
             "recordArmsDiffer": "Scenario 2", "recordExtra": "110 and 58", "querySeconds": "171–233",
+            "conventionalSeconds": "4–91", "convertLinkMinutes": "5.7–105", "conventionalFold": "40",
             "converters": "four", "converterQuestions": "eight", "converterAllPass": "VCF-RDFizer",
             "breakEven": "11", "breakEvenWithHdt": "44", "breakEvenRange": "10–17", "invariants": "1,160",
         }
