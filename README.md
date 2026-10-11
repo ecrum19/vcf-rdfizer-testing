@@ -1,5 +1,7 @@
 # VCF-RDFizer evaluation: harness and run records
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23301185.svg)](https://doi.org/10.5281/zenodo.23301185)
+
 The evaluation of [VCF-RDFizer](https://github.com/ecrum19/VCF-RDFizer) reported in
 *VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Policy-aware Semantic
 Genomic Data* (BioMedSem 2026). The repository holds:
@@ -98,6 +100,11 @@ on 2026-09-28, which are published in
 Use them, not the live service, whose data change.
 
 ## Zenodo archive
+
+The archive is [doi:10.5281/zenodo.23301185](https://doi.org/10.5281/zenodo.23301185)
+(all versions, resolving to the newest). Version v1.0.0, released on 2026-10-11 from
+commit `b08756e`, holds the records behind the manuscript's reported results:
+[doi:10.5281/zenodo.23301186](https://doi.org/10.5281/zenodo.23301186).
 
 The Zenodo record holds this repository without `BioMedSem_2026/` and `tool-docs/`.
 [`.gitattributes`](.gitattributes) marks both `export-ignore`, so every archive git
@@ -213,8 +220,11 @@ The four additional datasets are direct downloads from the public IGSR and NIST 
 
 ## Citation
 
-Please cite the manuscript, and this archive by its Zenodo record (metadata in
-[`.zenodo.json`](.zenodo.json), citation in [`CITATION.cff`](CITATION.cff)).
+Please cite the manuscript, and this archive by its Zenodo record:
+[doi:10.5281/zenodo.23301185](https://doi.org/10.5281/zenodo.23301185) (all
+versions), or [doi:10.5281/zenodo.23301186](https://doi.org/10.5281/zenodo.23301186)
+for v1.0.0, the version the manuscript reports. Metadata are in
+[`.zenodo.json`](.zenodo.json), the citation in [`CITATION.cff`](CITATION.cff).
 VCF-RDFizer itself is cited as
 [doi:10.5281/zenodo.23237635](https://doi.org/10.5281/zenodo.23237635) (all
 versions) or by the version used.

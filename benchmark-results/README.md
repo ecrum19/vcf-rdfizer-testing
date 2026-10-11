@@ -7,6 +7,11 @@ writes except the data it generates:
 - its exit status, timings and resource samples;
 - its logs, comparisons and validation reports.
 
+These records are archived on Zenodo with the rest of the repository:
+[doi:10.5281/zenodo.23301185](https://doi.org/10.5281/zenodo.23301185) (all versions);
+v1.0.0, the version the manuscript reports, is
+[doi:10.5281/zenodo.23301186](https://doi.org/10.5281/zenodo.23301186).
+
 **Only the runs whose results the manuscript reports are here.** Pre-release,
 superseded, stalled and failed runs are on the repository's
 [`legacy` branch](https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results),
