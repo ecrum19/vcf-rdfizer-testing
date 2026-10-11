@@ -9,6 +9,7 @@ paper cannot drift apart silently.
 """
 
 import re
+import statistics
 import sys
 import tempfile
 import unittest
@@ -111,6 +112,36 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual(arms["arm3"]["linking"]["genomes"]["spdi"]["linked"], 3887200)
         self.assertEqual(arms["arm3"]["linking"]["genomes"]["ensembl-genes-grch38"]["linked"], 1704954)
         self.assertEqual(arms["arm1"]["linking"]["clinvar"]["spdi"]["linked"], 331413)
+
+    def test_use_case_figure_inputs_and_timings(self):
+        """Figure 4 uses release conversions, with shared annotations counted once."""
+        arms = self.data["usecase"]["arms"]
+        self.assertEqual(self.data["usecase"]["convertImages"], ["ecrum19/vcf-rdfizer:3.3.1"])
+        cohort = arms["arm2"]
+        self.assertEqual(cohort["inputs"]["genomes"],
+                         {"files": 104, "records": 1150288, "triples": 67848218})
+        self.assertEqual(cohort["inputs"]["panel"],
+                         {"files": 1, "records": 68635, "triples": 6517672})
+        for arm in arms.values():
+            self.assertEqual(arm["inputs"]["clinvar"],
+                             {"files": 1, "records": 331453, "triples": 33096749})
+        self.assertEqual(arms["arm4"]["inputs"]["genomes"],
+                         {"files": 1, "records": 5063417, "triples": 1209739110})
+        rare = cohort["queries"]["unrestricted"]["replicates"]["rare"]
+        self.assertEqual(len(rare), 3)
+        self.assertAlmostEqual(statistics.median(rare), 174.429, places=3)
+        self.assertAlmostEqual(cohort["queries"]["unrestricted"]["setup"], 191.126, places=3)
+        self.assertEqual((cohort["costs"]["convert"], cohort["costs"]["link"]), (2043, 1334))
+
+    def test_use_case_conversion_provenance(self):
+        """All plotted graph sizes come from the same pinned published release."""
+        digest = "ecrum19/vcf-rdfizer@sha256:3ad71b1a54612142e3be43b24e7e4a38551949cb641f4421bcae9bf051102993"
+        for arm in build_site_data.ARMS.values():
+            for cell in build_site_data.reported_cells(arm, "convert"):
+                with self.subTest(cell=cell.name, arm=arm.name):
+                    bench = build_site_data.load(cell / "bench.json")
+                    self.assertEqual(bench["image_mode"], "pinned-release")
+                    self.assertEqual(bench["image_digest"], digest)
 
     def test_retrieval(self):
         r = self.data["retrieval"]

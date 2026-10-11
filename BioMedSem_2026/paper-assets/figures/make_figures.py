@@ -4,8 +4,8 @@
     python3 make_figures.py            # writes ../fig-*.pdf
 
 Every number is read from benchmark-results/, never typed in,
-so the figures can be regenerated when a run is replaced. All of them are
-the v3.1.0 core benchmark (the live trees on both hosts).
+so the figures can be regenerated when a run is replaced. The core benchmark
+uses v3.1.0; linked-workflow figures use the archived v3.3.1 reruns.
 
 Colour: two categorical hues (blue, orange) plus gray for context, validated
 together on the white page with the dataviz palette validator. Figures are
@@ -16,12 +16,11 @@ value is also stated in the text or in the archived tidy datasets.
 from __future__ import annotations
 
 import csv
-import glob
 import os
-import re
 import statistics as st
 import sys
 from collections import defaultdict
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
 import matplotlib
@@ -1013,86 +1012,171 @@ def fig_validation() -> None:
 # ---------------------------------------------------------------------------
 # Figure: use-case matches per requester, both workflows
 # ---------------------------------------------------------------------------
-#: Requesters in display order; arm 4 adds care by the participant's physician.
-REQUESTERS = [("unrestricted", "All (no policy)"), ("own_physician", "Participant's physician"),
-              ("clinical", "Clinical care (CC)"), ("cardio", "Cardiovascular research (DS)"),
-              ("biobank", "General research (GRU)")]
-#: Arm 4 (layered rules on one complete VCF), outside the site's arms: its v3.3.1 rerun on vcf-bench-2.
+#: Requesters in display order; Scenario 4 adds care by the participant's physician.
+REQUESTERS = [("unrestricted", "No policy"), ("own_physician", "Part. physician"),
+              ("clinical", "Clinical care"), ("cardio", "Cardio. research"),
+              ("biobank", "Gen. research")]
 ARM4 = site.ARMS["arm4"]
 
 
-def arm_genome_triples(arm: Path) -> int:
-    """Triples converted from the arm's VCFs, before links (ClinVar and the panel excluded)."""
-    total = 0
-    for cell in site.reported_cells(arm, "convert"):
-        if cell.name.split("__", 1)[1] in ("clinvar", "panel"):
-            continue
-        counts = [int(m.group(1))
-                  for path in glob.glob(str(cell / "out" / "**" / "*.json"), recursive=True)
-                  for m in re.finditer(r'"total_triples":\s*"?(\d+)', Path(path).read_text())]
-        total += max(counts)
-    return total
+def checked_usecase() -> dict:
+    """Read the shared data layer and guard the figures' exact-agreement annotations."""
+    arms = site.usecase()["arms"]
+    for arm in arms.values():
+        for query in ("carriers", "rare"):
+            for result in arm[query].values():
+                if not result["agree"] or result["rdf"] != result["baseline"]:
+                    raise ValueError(f"Match disagreement in {arm['source']}: {query}")
+    # Record agreement is claimed only for the main figure's policy example.
+    if not all(r["agree"] and r["rdf"] == r["baseline"] for r in arms["arm4"]["records"].values()):
+        raise ValueError("Scenario 4 released-record counts differ; revise the figure's claim")
+    return arms
 
 
-def carriers(comparison: dict) -> dict:
-    """The per-requester match comparisons of a comparison.json, as the site reads them."""
-    return {r: c for r, c in comparison.items() if isinstance(c, dict) and "agree" in c}
+def match_legend(include_unrestricted: bool = False) -> list:
+    handles = [plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF release view"),
+               plt.Line2D([], [], marker="o", linestyle="", color=ORANGE, markeredgecolor="white",
+                          markersize=5, label="Conventional workflow")]
+    if include_unrestricted:
+        handles.insert(0, plt.Rectangle((0, 0), 1, 1, color=GRAY, label="RDF, no policy"))
+    return handles
+
+
+def match_bars(ax, counts: dict, requesters: list[str]) -> None:
+    """One row per requester; dots retain the independent comparison result."""
+    style_axes(ax, "x")
+    top = max(counts[key]["rdf"] for key in requesters)
+    for y, key in enumerate(reversed(requesters)):
+        c = counts[key]
+        ax.barh(y, c["rdf"], height=0.55, color=GRAY if key == "unrestricted" else BLUE, zorder=2)
+        dot(ax, c["baseline"], y, ORANGE, size=4.8, zorder=4, clip_on=False)
+        ax.annotate(f"{c['rdf']:,}", (c["rdf"], y), xytext=(5, 0), textcoords="offset points",
+                    color=INK_2, fontsize=8.5, va="center")
+    ax.set_yticks(range(len(requesters)))
+    ax.set_yticklabels([dict(REQUESTERS)[k] for k in reversed(requesters)], fontsize=7.5,
+                       ha="left", multialignment="left", linespacing=1.05)
+    ax.set_ylim(-0.55, len(requesters) - 0.45)
+    ax.set_xlim(0, top * 1.42)
+    # A fixed-width, left-aligned column keeps the short requester labels tidy.
+    ax.tick_params(axis="y", length=0, pad=63)
+    ax.tick_params(axis="x", labelsize=8)
+    ax.spines["left"].set_visible(False)
+    ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3, integer=True))
+    ax.xaxis.set_major_formatter(FuncFormatter(
+        lambda x, _p: f"{x / 1000:.0f}k" if top >= 10_000 and x else f"{x:,.0f}"))
+    ax.set_xlabel("Participant-variant-gene matches")
+
+
+def minutes_label(seconds: float) -> str:
+    """Round half up to match the manuscript's one-decimal stage-cost table."""
+    return str((Decimal(str(seconds)) / 60).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
 def fig_usecase_matches() -> None:
-    """Matches each requester may see, per arm; the RDF and conventional workflows side by side.
+    """Two release-backed examples and a compact third panel for selected stage times.
 
-    One row of panels on a shared requester axis, so each requester is named once.
+    Conversion/linking are summed once per scenario, including public annotation
+    inputs. Query timings are medians of three executions. Indexing and view
+    checking remain in the full stage-cost table rather than this selected summary.
     """
-    arms = site.usecase()["arms"]
-    panels = [
-        ("Scenario 1", "five gene-span slices", arms["arm1"]["carriers"], arm_genome_triples(site.ARMS["arm1"])),
-        ("Scenario 2", "cohort of 104", arms["arm2"]["carriers"], arm_genome_triples(site.ARMS["arm2"])),
-        ("Scenario 2", "panel AF < 0.01", arms["arm2"]["rare"], None),
-        ("Scenario 3", "complete HG005 VCF", arms["arm3"]["carriers"], arm_genome_triples(site.ARMS["arm3"])),
-        ("Scenario 4", "complete NB72462M VCF", carriers(site.load(ARM4 / "comparison.json")), arm_genome_triples(ARM4)),
+    arms = checked_usecase()
+    cohort, policy = arms["arm2"], arms["arm4"]
+    fig = plt.figure(figsize=(WIDTH_IN, 4.0))
+    fig.text(0.035, 0.964, "(a) Linking three sources", fontsize=9.5, weight="bold")
+    fig.text(0.965, 0.964, "Scenario 2", fontsize=8.5, color=INK_2, ha="right")
+
+    ax = fig.add_axes([0.035, 0.66, 0.93, 0.276])
+    ax.set(xlim=(0, 1), ylim=(0, 1))
+    ax.axis("off")
+    labels = [f"{cohort['inputs']['genomes']['files']} participant VCFs", "ClinVar", "Panel frequencies"]
+    for y, label in zip((0.82, 0.50, 0.18), labels):
+        ax.add_patch(plt.Rectangle((0, y - 0.12), 0.32, 0.24,
+                                   facecolor="#f4f7fb", edgecolor=AXIS, linewidth=0.7))
+        ax.text(0.16, y, label, fontsize=8.5, color=INK_2, ha="center", va="center")
+        ax.plot([0.32, 0.40], [y, y], color=INK_2, linewidth=0.9)
+    ax.plot([0.40, 0.40], [0.18, 0.82], color=INK_2, linewidth=0.9)
+    ax.annotate("", (0.56, 0.50), (0.40, 0.50),
+                arrowprops={"arrowstyle": "->", "color": INK_2, "lw": 0.9})
+    ax.text(0.465, 0.65, "SPDI join", fontsize=8.5, ha="center", color=INK_2)
+    ax.text(0.78, 0.67, f"{cohort['rare']['unrestricted']['rdf']:,}", fontsize=19,
+            ha="center", va="center", weight="bold", color=BLUE)
+    ax.text(0.78, 0.39, "matches at AF < 1%", fontsize=9, ha="center", color=INK_2)
+    ax.text(0.78, 0.17, f"of {cohort['carriers']['unrestricted']['rdf']:,} ClinVar matches",
+            fontsize=8, ha="center", color=INK_2)
+
+    fig.text(0.035, 0.608, "(b) Policy-aware answers", fontsize=9.5, weight="bold")
+    fig.text(0.965, 0.608, "Scenario 4", fontsize=8.5, color=INK_2, ha="right")
+    fig.text(0.035, 0.567, f"One VCF: {policy['inputs']['genomes']['records']:,} source records",
+             fontsize=8.5, color=INK_2)
+    ax = fig.add_axes([0.255, 0.319, 0.385, 0.2125])
+    requesters = [k for k, _ in REQUESTERS if k != "unrestricted"]
+    match_bars(ax, policy["carriers"], requesters)
+    ax.set_xlabel("Matches", fontsize=8.5, labelpad=2)
+    ax.text(1.52, 1.07, "Released records", transform=ax.transAxes, fontsize=8.5, ha="center", color=INK_2)
+    for y, key in enumerate(reversed(requesters)):
+        ax.text(1.52, y, f"{policy['records'][key]['rdf']:,}", transform=ax.get_yaxis_transform(),
+                ha="center", va="center", fontsize=8.5, color=INK_2)
+    fig.legend(handles=match_legend(), loc="center", ncol=2, bbox_to_anchor=(0.5, 0.212),
+               handlelength=1.4, columnspacing=1.7, fontsize=8)
+
+    # Panel (c) occupies less than half the former timing table's area.
+    # Repetition (once / requester / query) is defined in the caption.
+    fig.text(0.035, 0.13, "(c) Stage times", fontsize=9.5, weight="bold")
+    ax = fig.add_axes([0.275, 0.02, 0.69, 0.12])
+    ax.set(xlim=(0, 1), ylim=(0, 1))
+    ax.axis("off")
+    xs = (0.045, 0.265, 0.46, 0.69, 0.925)
+    for x, label in zip(xs, ("Scenario", "Convert (min)", "Link (min)", "View (min)", "Query (s)")):
+        ax.text(x, 0.89, label, ha="center", fontsize=6.5, color=INK_2)
+    ax.plot([0, 1], [0.74, 0.74], color=AXIS, linewidth=0.5)
+    views = [c["view"] / 60 for c in policy["costs"]["requesters"].values()]
+    queries = [c["query"] for c in policy["costs"]["requesters"].values()]
+    rows = [
+        ("2", minutes_label(cohort["costs"]["convert"]), minutes_label(cohort["costs"]["link"]),
+         "Not needed", f"{st.median(cohort['queries']['unrestricted']['replicates']['rare']):.0f}"),
+        ("4", minutes_label(policy["costs"]["convert"]), minutes_label(policy["costs"]["link"]),
+         f"{min(views):.1f}-{max(views):.1f}", f"{min(queries):.0f}-{max(queries):.0f}"),
     ]
-    short = {"unrestricted": "All", "own_physician": "OP", "clinical": "CC",
-             "cardio": "DS", "biobank": "GRU"}
-    ys = {key: len(REQUESTERS) - 1 - i for i, (key, _) in enumerate(REQUESTERS)}
-    fig, axes = plt.subplots(1, len(panels), figsize=(WIDTH_IN, 2.0), sharey=True)
-    fig.subplots_adjust(left=0.07, right=0.96, top=0.66, bottom=0.12, wspace=0.34)
-    for i, (ax, (arm, what, counts, triples)) in enumerate(zip(axes, panels)):
-        style_axes(ax, "x")
-        top = max(counts[key]["rdf"] for key, _ in REQUESTERS if key in counts)
-        for key, _label in REQUESTERS:
-            y = ys[key]
-            if key not in counts:  # the participant's physician requests only in Arm 4
-                ax.text(top * 0.04, y, "\u2013", color=MUTED, fontsize=6, va="center")
-                continue
-            c = counts[key]
-            ax.barh(y, c["rdf"], height=0.58, color=GRAY if key == "unrestricted" else BLUE, zorder=2)
-            dot(ax, c["baseline"], y, ORANGE, size=4.2, zorder=4)
-            # Offset in points, not data, so the label clears the dot in a narrow panel.
-            ax.annotate(f"{c['rdf']:,}", (c["rdf"], y), xytext=(4.5, 0), textcoords="offset points",
-                        color=INK_2, fontsize=5.8, va="center")
-        ax.set_xlim(0, top * 1.7)
-        ax.set_ylim(-0.6, len(REQUESTERS) - 0.4)
-        ax.set_yticks(sorted(ys.values()))
-        ax.set_yticklabels([short[key] for key, _ in reversed(REQUESTERS)], fontsize=6.3)
-        ax.tick_params(axis="y", length=0)
-        ax.tick_params(axis="x", labelsize=5.8)
-        ax.spines["left"].set_visible(False)
-        ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(2, integer=True))
-        ax.xaxis.set_major_formatter(FuncFormatter(
-            lambda x, _p, big=top >= 10_000: f"{x / 1000:.0f}k" if big and x else f"{x:,.0f}"))
-        size = f"\n{triples_label(triples)} triples" if triples else "\n"
-        ax.set_title(f"({'abcde'[i]}) {arm}\n{what}{size}", fontsize=6.0, linespacing=1.15, loc="center")
-    handles = [plt.Rectangle((0, 0), 1, 1, color=GRAY, label="RDF workflow, no policy"),
-               plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF workflow, release view"),
-               plt.Line2D([], [], marker="o", linestyle="", color=ORANGE, markeredgecolor="white",
-                          markersize=5, label="Conventional workflow")]
-    fig.legend(handles=handles, loc="upper center", ncol=3, bbox_to_anchor=(0.55, 1.0),
-               frameon=False, fontsize=6.5, handletextpad=0.5, columnspacing=1.6)
+    for y, row in zip((0.43, 0.05), rows):
+        for x, value in zip(xs, row):
+            ax.text(x, y, value, ha="center", va="bottom", fontsize=7, color=INK_2)
     fig.savefig(OUT / "fig-usecase-matches.pdf", metadata=PDF_METADATA)
     plt.close(fig)
-    for arm, what, counts, triples in panels:
-        print(f"usecase {arm} {what}: {triples}", {k: (counts[k]['rdf'], counts[k]['baseline']) for k, _ in REQUESTERS if k in counts})
+    print("usecase focused: Scenario 2 rare matches", cohort["rare"]["unrestricted"]["rdf"],
+          "; Scenario 4 matches", {k: policy["carriers"][k]["rdf"] for k in requesters})
+
+
+def fig_usecase_overview() -> None:
+    """All scenarios; frequency-filtered counts occupy an aligned column, not a footnote."""
+    arms = checked_usecase()
+    panels = [("arm1", "Five gene-span slices"),
+              ("arm2", f"{arms['arm2']['inputs']['genomes']['files']}-participant cohort"),
+              ("arm3", "Complete HG005 VCF"), ("arm4", "Complete NB72462M VCF")]
+    fig = plt.figure(figsize=(SUPP_WIDTH_IN, 4.15))
+    fig.legend(handles=match_legend(True), loc="upper center", ncol=3, bbox_to_anchor=(0.52, 1.01),
+               handlelength=1.4, fontsize=8)
+    for i, (key, title) in enumerate(panels):
+        arm = arms[key]
+        left = 0.075 if i % 2 == 0 else 0.57
+        bottom = 0.555 if i < 2 else 0.085
+        width = 0.17 if arm["rare"] else 0.27
+        ax = fig.add_axes([left + 0.125, bottom, width, 0.265])
+        requesters = [k for k, _ in REQUESTERS if k in arm["carriers"]]
+        match_bars(ax, arm["carriers"], requesters)
+        ax.set_xlabel("Matches", fontsize=8.5, labelpad=3)
+        genome = arm["inputs"]["genomes"]
+        fig.text(left, bottom + 0.355, f"({'abcd'[i]}) Scenario {i + 1}: {title}",
+                 fontsize=8.5, weight="bold")
+        fig.text(left, bottom + 0.31, f"{genome['records']:,} records / {triples_label(genome['triples'])} triples",
+                 fontsize=8, color=INK_2)
+        if arm["rare"]:
+            ax.text(1.48, 1.05, "AF < 1%", transform=ax.transAxes, fontsize=8.5, ha="center", color=INK_2)
+            for y, requester in enumerate(reversed(requesters)):
+                ax.text(1.48, y, f"{arm['rare'][requester]['rdf']:,}", transform=ax.get_yaxis_transform(),
+                        fontsize=8.5, ha="center", va="center", color=INK_2)
+    fig.savefig(OUT / "fig-usecase-overview.pdf", metadata=PDF_METADATA)
+    plt.close(fig)
+    print("usecase overview: all four scenarios; rare subset", arms["arm2"]["rare"])
 
 
 def millions(n: float) -> str:
@@ -1250,9 +1334,10 @@ if __name__ == "__main__":
     fig_regional()
     fig_validation()
     fig_usecase_matches()
+    fig_usecase_overview()
     fig_usecase_costs()
     fig_retrieval_detail()
     fig_converters()
     for name in ("fig-converters", "fig-scaling", "fig-samples", "fig-representations", "fig-retrieval", "fig-regional",
-                 "fig-validation", "fig-usecase-matches", "fig-usecase-costs", "fig-retrieval-detail"):
+                 "fig-validation", "fig-usecase-matches", "fig-usecase-overview", "fig-usecase-costs", "fig-retrieval-detail"):
         print("wrote", OUT / f"{name}.pdf")

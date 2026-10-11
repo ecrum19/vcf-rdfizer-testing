@@ -44,14 +44,14 @@ We present VCF-RDFizer, a reusable command-line tool that converts VCF into the 
 
 \textbf{Results:}
 We evaluated source fidelity, linked and policy-aware reuse, scalability, retrieval, and semantic coverage relative to four executable VCF-to-RDF converters.
-All 1,006 applicable source-comparison results in the core benchmark agreed after normalization, while query- and constraint-based checks detected complementary classes of injected and implementation defects.
-A linked workflow combined observations with ClinVar, population frequencies, and simulated policies and returned the same requester-specific matches as a conventional bcftools workflow across gene-span slices of five heterogeneous VCFs, a 104-participant cohort, and two complete single-sample VCFs.
-On shared inputs, VCF-RDFizer was the only evaluated converter whose graphs answered all eight cross-vocabulary content questions as the source-derived oracle did, although its broader representation increased conversion time and output size.
-Native VCF processing remained preferable for the tested one-pass analyses and small indexed regions, whereas selected repeated and large-region questions benefited from an existing graph index.
+In the core benchmark's 78 validation runs, all 1,006 applicable comparisons between SPARQL results and answers computed directly from the source VCF agreed; on fault-injected graphs, the same source-comparison queries detected 96 of 113 injected faults, and deeper SHACL constraints detected the remaining 17.
+A linked workflow joined variant observations to ClinVar classifications in 81 ACMG secondary-finding genes and to population frequencies, and simulated consent policies decided which matches each data requester could receive. The linked workflow returned the same requester-specific matches as a conventional workflow using bcftools on gene-span slices of five heterogeneous VCFs, a 104-participant cohort, and two complete single-sample VCFs.
+On shared inputs, VCF-RDFizer was the only one of five converters whose graphs matched the answers computed directly from the VCF for all eight content questions (record, genotype, and header summaries), although its broader representation increased conversion time and output size.
+Direct VCF processing was faster for one-pass analyses and for indexed regions up to 100\,kb, whereas an indexed graph was faster for 10\,Mb regions and, once about two minutes of conversion and indexing had been paid, after about 11 repeated whole-file questions.
 
 \textbf{Conclusions:}
-VCF-RDFizer provides a verifiable and reusable semantic representation of VCF rather than a universal replacement for native processing.
-This study quantifies the additional representation and indexing costs of semantic VCF representation and more generally the VCF-RDFizer tool establishes a first step toward applications that enable genomic observations to link to external knowledge and data-use conditions.
+VCF-RDFizer provides a verifiable and reusable semantic representation of VCF rather than a universal replacement for direct VCF processing.
+This study quantifies the additional representation and indexing costs of a semantic VCF representation. More generally, VCF-RDFizer is a first step toward applications that link genomic observations to external knowledge and data-use conditions.
 }
 \keywords{Genomic variation, Variant Call Format, RDF, SPARQL, Semantic validation, Data-use policies}
 \maketitle
@@ -84,7 +84,7 @@ Because genomic data are sensitive and potentially identifying, release decision
 None of these tasks is impossible with the current VCF representation.
 Variant-analysis frameworks, clinical systems, and data-access infrastructures already address important parts of the workflows~\cite{paila2013gemini,wake2022pgx,rehm2021ga4gh}.
 The remaining challenges increasingly concern interoperability, reproducibility as knowledge changes, and the computational and operational cost of connecting independently maintained systems.
-VCF was designed to represent genomic variation, genotypes, and associated annotations rather than as a shared model linking source observations to longitudinal evidence, clinical context, and data-use conditions~\cite{vcf_intro}.
+VCF was designed to represent genomic variation, genotypes, and associated annotations rather than to serve as a shared model linking source observations to longitudinal evidence, clinical context, and data-use conditions~\cite{vcf_intro}.
 Downstream systems therefore often add such relationships outside the source representation; for example, GEMINI imports VCF variants into a relational database and augments them with resources such as ClinVar, dbSNP, and population annotations to support integrated queries~\cite{paila2013gemini}.
 Such application-specific integration motivates a shared representation in which relationships between source observations and independently maintained information can be expressed explicitly and reused across workflows.
 
@@ -92,7 +92,7 @@ Knowledge graphs provide a way to connect entities and relationships across inde
 RDF provides a standardized graph model in which resources are identified by IRIs, while Linked Data practices and SPARQL support cross-resource linking and querying~\cite{rdf,hogan_knowledge_graphs_2021,W3CLinkedDataWiki,sparqllang}.
 The use of persistent identifiers and shared semantics also supports the interoperability and reuse goals of the FAIR principles, although RDF alone does not make data FAIR~\cite{wilkinson2016fair}.
 For genomic data, this allows a source observation to remain distinct from the biological variant, external evidence, clinical context, and data-use policy linked to it.
-SPDI-based representations can support joins across files and resources such as dbSNP and ClinVar~\cite{holmes2020spdi,sherry2001dbsnp,landrum2018clinvar}, while ODRL and DUO can represent policy conditions over identified resources~\cite{odrl_2018,lawson2021duo}.
+SPDI (Sequence:Position:Deletion:Insertion) representations can support joins across files and resources such as dbSNP and ClinVar~\cite{holmes2020spdi,sherry2001dbsnp,landrum2018clinvar}, while ODRL (the W3C Open Digital Rights Language) and DUO can represent policy conditions over identified resources~\cite{odrl_2018,lawson2021duo}.
 RDF therefore provides a reusable representation for integration, but reliable use still depends on defined identity rules, interpretation processes, and policy enforcement~\cite{odrl_2018,xacml3_2013}.
 
 Several semantic-genomics initiatives and VCF-to-RDF converters already explore this foundation.
@@ -100,21 +100,30 @@ Many were developed for focused applications or as components of larger pipeline
 Existing tools also differ in their RDF models, treatment of headers and genotypes, and extension mechanisms~\cite{togovar_2022,JVarkit_2015,sparqling_genomics_2020,sparqling_genomics_software,baran2015gfvo}.
 Supplementary Table~\ref{S-tab:tools-evidence} summarizes documented capabilities and the evidence behind each assessment.
 Non-RDF frameworks such as Hail, GEMINI, and TileDB-VCF, and standards such as Beacon, htsget, and FHIR Genomics, address complementary parts of variant analysis, retrieval, and clinical exchange~\cite{hail_software,paila2013gemini,tiledb_vcf_software,rambla2022beacon,kelleher2019htsget,fhir_genomics_ig}.
-The aim is not to replace such systems, but to produce sufficiently complete RDF for multiple downstream links and queries without redesigning the representation for each application.
+Our aim is not to replace such systems but to produce sufficiently complete RDF for multiple downstream links and queries without redesigning the representation for each application.
 
 Producing RDF is only a first step.
 The representation should also remain verifiable against its source, and the practical cost of producing and using it should be characterized.
 SPHN Schema Forge, FAIR-Checker, and a FHIR RDF enrichment pipeline provide precedents for assessing transformations alongside the validation and information requirements of their intended workflows~\cite{toure2025forge,gaignard2023fairchecker,ansari2025etl}.
 
-We present VCF-RDFizer, a tool that converts VCF into RDF using the public VCF Core vocabulary and evaluates the resulting representation~\cite{vcfc210}.
-The vocabulary was developed separately; the present study focuses on the representation choices needed to assess the converter the RDF output's potential for downstream use~\cite{crum_vcfcore_2027}.
-The evaluation combines source-verifiable conversion, links to independently maintained knowledge, policy-aware release, and measured computational costs.
-A linked research workflow joins genomic observations to ClinVar classifications, population frequencies, and simulated data-use policies, with an equivalent conventional VCF workflow as comparator~\cite{landrum2018clinvar}.
-The workflow tests requirements shared by the three motivating use cases without claiming to implement clinical reanalysis, pharmacogenomic decision support, or a secure data-access service.
-Three questions organize the study:
-\textbf{RQ1}: Which aspects of VCF information are preserved and verifiable?
-\textbf{RQ2}: What does the explicit representation in RDF enable in a linked, policy-aware workflow?
-\textbf{RQ3}: Under which workloads and representation choices are the costs practical?
+
+We present VCF-RDFizer, a tool that converts VCF into RDF using the public VCF Core vocabulary~\cite{vcfc210}.
+The vocabulary was developed separately~\cite{crum_vcfcore_2027}, while the present study focuses on the converter, its representation choices, and the potential for downstream use of the generated RDF.
+
+The evaluation of our tool investigates whether the RDF representation can preserve verifiable source information, support links to independently maintained knowledge, and enable policy-aware data reuse without modifying the converted VCF data.
+A linked research workflow combines genomic observations with ClinVar classifications, population frequencies, and simulated data-use policies~\cite{landrum2018clinvar}.
+Requester-specific query results are compared with an equivalent conventional workflow that operates directly on the VCF files, while separate experiments assess conversion fidelity, validation sensitivity, scalability, and retrieval costs.
+
+Three research questions guide the evaluation:
+
+\textbf{RQ1}: Which aspects of VCF information are preserved in RDF and can be validated against the source?
+
+\textbf{RQ2}: How does the RDF representation support linking genomic observations to external knowledge and enable policy-aware querying?
+
+\textbf{RQ3}: What are the computational costs of RDF representation choices, and when can the additional capabilities of VCF as RDF justify those costs?
+
+Together, the experiments evaluate technical requirements shared by clinical variant reanalysis, pharmacogenomic decision support, and consent-aware genomic data reuse; they are intended to inspire future applications, not to offer directly implementable solutions.
+
 
 \section{Implementation}\label{sec:implementation}
 VCF-RDFizer is a command-line tool for converting VCF into RDF and validating selected properties of the result against the source file.\footnote{Source code and documentation: \url{https://github.com/ecrum19/VCF-RDFizer}.}
@@ -129,15 +138,16 @@ The vocabulary aligns VCF-specific structures with FALDO, the Sequence Ontology,
 \centering
 \includegraphics[width=\textwidth]{vcf-core-minimal.pdf}
 \caption{\textbf{Central VCF Core terms emitted by VCF-RDFizer.}
-A versioned file contains its header, records, and sample set; a record contains alleles and a call; and the call holds INFO values and either expanded sample calls or condensed sample-ordered vectors.
+A versioned file contains its header, records, and sample set; a record contains alleles and a call; and the call holds INFO values and either expanded sample calls, one resource per sample, or condensed vectors, one ordered list of values per FORMAT field in sample order.
 Values retain links to the header declarations that define them.
 Supplementary Figure~\ref{S-fig:vcf-core-full} presents the fuller model.}\label{fig:vcf-core}
 \end{figure}
 
 VCF-RDFizer assigns each VCF record a deterministic IRI derived from its source file identifier and record position.
-For example, two VCF files reporting the same genomic alteration receive distinct record IRIs because each identifier incorporates the originating file.
-Each observation therefore retains its own quality scores, annotations, and provenance, while a separate linkset can connect both records to a shared variant identifier.
-Two sample profiles trade access granularity against graph size: \emph{expanded} represents sample calls and FORMAT values as directly addressable resources, whereas \emph{condensed} stores the same values in ordered vectors that require decoding.
+For example, two VCF files reporting the same genomic alteration receive distinct record IRIs because each identifier incorporates the originating file (see the \href{https://ecrum19.github.io/vcf-core-vocabulary/#custom-section-2}{VCF Core Vocabulary companion} for an example).
+Each observation therefore retains its own quality scores, annotations, and provenance, while a separate linkset, a file of link triples kept apart from the converted graph, can connect both records to a shared variant identifier.
+Two sample profiles trade access granularity against graph size: \emph{expanded} represents sample calls and FORMAT values as directly addressable resources, whereas \emph{condensed} stores the same values in ordered vectors, for example one text value listing every sample's genotype for a record, which a query must split to reach a single sample.
+The reasoning for having separate sample profiles is due to performance considerations, and explained in-depth in Supplementary Section~\ref{S-subsec:model-profiles}.
 Both profiles retain file, header, and record context.
 Supplementary Section~\ref{S-sec:model} provides the complete model, capability matrix, and scaling derivation.
 
@@ -146,29 +156,32 @@ Supplementary Section~\ref{S-sec:model} provides the complete model, capability 
 \centering
 \includegraphics[width=0.85\textwidth]{vcf2rdf-v3.pdf}
 \caption{\textbf{The VCF-RDFizer pipeline.}
-(1)~Conversion: the VCF is split into TSV logical sources, and RML mappings executed by RMLStreamer and direct emitters write the VCF graph, appended incrementally as plain or gzip-framed N-Triples.
-(2)~Optional queryable representations: HDT and COTTAS builders consume one record-safe chunk at a time before merging and indexing.
-(3)~Validation and packaging: native decoding, source-comparison queries, and enabled SHACL profiles assess different properties of the result.}
+(1)~Conversion: the VCF is split into tab-separated tables (logical sources); declarative RML mapping rules, executed by RMLStreamer, and the converter's own emitters turn them into RDF triples, appended incrementally as plain or gzip-framed N-Triples (one triple per line; gzip-framed output is a sequence of gzip members).
+(2)~Optional queryable representations: HDT and COTTAS, compressed queryable formats, are built one chunk of complete N-Triples lines at a time before merging and indexing.
+(3)~Validation and packaging: decoding checks on each artifact's triple count, the source-comparison queries Q1--Q13, and enabled SHACL profiles assess different properties of the result.}
 \label{fig:implementation}
 \end{figure}
 
 Conversion first derives tabular logical sources from the VCF (Figure~\ref{fig:implementation}).
-RML mappings executed by RMLStreamer produce the record backbone, while direct emitters add typed values, header attributes, and sample structures that require per-value handling~\cite{rml_2024,rmlstreamer_2022}.
-The implementation is therefore hybrid, and changing the mappings alone does not alter the complete representation.
+RML mappings, declarative rules that map tabular data to RDF, are executed by RMLStreamer and produce the record backbone of nine core triples per record, while direct emitters, code in the converter that writes triples without mappings, add typed values, header attributes, and sample structures that require per-value handling~\cite{rml_2024,rmlstreamer_2022}.
+The implementation is therefore hybrid: editing the RML mappings changes only the record backbone, not the sample, header, and typed-value triples written in code.
 Output is appended incrementally to plain or gzip-framed N-Triples.
-HDT, COTTAS, and additional gzip or Brotli packages are optional artifacts rather than prerequisites for obtaining RDF~\cite{hdt_2013,cottas_2025,brotli_2019}.
-Native decoding checks compare each HDT or COTTAS triple count with the N-Triples source graph.
+HDT (a compressed binary RDF format that can be queried without decompression), COTTAS (compressed triple tables stored as Parquet files), and additional gzip or Brotli compressions are optional artifacts rather than prerequisites for obtaining RDF~\cite{hdt_2013,cottas_2025,brotli_2019}.
+Native decoding checks compare each HDT or COTTAS triple count with that of the N-Triples source graph.
 Construction and query-path details are provided in Supplementary Section~\ref{S-subsec:model-construction}.
 
-Validation compares thirteen SPARQL results with corresponding answers derived independently from the source VCF using cyvcf2 and, for exact FILTER text, bcftools~\cite{vcf_intro,cyvcf2_2017,BCFtools}.
-The comparisons cover record and genotype summaries, metadata and graph inventories, and value summaries bound to source records.
+Validation compares the results of 13 SPARQL \emph{source-comparison queries} (Q1--Q13) with answers derived separately from the source VCF using cyvcf2 and, for exact FILTER text, bcftools~\cite{vcf_intro,cyvcf2_2017,BCFtools}.
+The source-derived answers serve as the \emph{oracle}.
+Q1--Q4 count records per contig and window, allele class, transition or transversion, and FILTER value; Q5--Q6 count genotypes and recomputed allele counts; Q7--Q8 compare file metadata and header lines; Q9--Q10 count triples per predicate and resources per class; and Q11--Q13 compare hashed summaries of record, INFO, and FORMAT values bound to source records (Supplementary Table~\ref{S-tab:queries}).
 Normalized results are compared for exact agreement, although the value summaries are not exhaustive value-by-value tests.
-Preflight queries and SHACL constraints assess additional graph properties~\cite{shacl2017}.
-The default shapes check cardinality and datatypes, while deeper profiles assess uniqueness and value agreement.
+Preflight queries (14 integrity checks run before the comparisons) and SHACL constraints (declared shape rules that the graph must satisfy) assess additional graph properties~\cite{shacl2017}.
+The default profile checks cardinality and datatypes, while two deeper profiles check that related values agree (for example, GT text and called alleles) and that indices are unique.
 Table~\ref{tab:contract} summarizes the assessment boundary, and Supplementary Section~\ref{S-sec:validation} specifies the queries, normalization, profiles, and limits.
 
 \begin{table}[!htbp]
-\caption{Representation contract and assessment boundary.}
+\caption{What VCF-RDFizer represents for each part of a VCF, which checks verify it, and what those checks do not establish.
+Q1--Q13 are the source-comparison queries (Section~\ref{subsec:conversion}); Q9--Q10 inventory predicates and classes across the whole graph.
+Shapes are SHACL constraints, fixtures are small purpose-built test VCFs, and the linked workflow is evaluated in Section~\ref{subsec:results-workflow}.}
 \label{tab:contract}
 \setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}%
 \renewcommand{\tabularxcolumn}[1]{m{#1}}%
@@ -177,11 +190,11 @@ Table~\ref{tab:contract} summarizes the assessment boundary, and Supplementary S
 \toprule
 \TCH{Information} & \TCH{Representation} & \TCH{Checked by} & \TCH{Limit}\\
 \midrule
-File and header & Versioned file, declarations, and linked metadata & Q7--Q10, shapes & Attribute--value agreement needs deeper shapes\\
+File and header & Versioned file, declarations, and linked metadata & Q7, Q8, shapes & Attribute--value agreement needs the deeper profiles\\
 \rowsep
 Record and alleles & Core fields, ordered alleles, typed and explicitly missing values & Q1--Q4, Q11, shapes & Summary digest, not exhaustive equality\\
 \rowsep
-INFO & Raw string plus optional typed, structured values & Q12, structural checks & Preserved, not universally interpreted\\
+INFO & Raw string plus optional typed, structured values & Q11 (raw), Q12, shapes & Preserved, not universally interpreted\\
 \rowsep
 Samples and FORMAT & Expanded sample calls or condensed vectors & Q5, Q6, Q13 & Condensed values require decoding\\
 \rowsep
@@ -195,15 +208,17 @@ Links and policies & Separate linksets and policy-defined release views & Linked
 \subsection{Linking and policy extensions}\label{subsec:extensions}
 Two plug-ins extend the graph without modifying the converted source representation.
 
-\texttt{vcf-rdfizer-link} executes Turtle-declared linkers and writes the resulting relationships to separate linksets with coverage reports.
+\texttt{vcf-rdfizer-link} executes linkers, declared rules that connect records or alleles to external identifiers, and writes the resulting relationships to separate linksets with coverage reports.
 The evaluated linkers connect eligible alleles to SPDI identifiers and variant calls to overlapping genes.
-The SPDI linker harmonizes contig names and minimally trims explicit alleles, supporting joins under the tested normalization assumptions without claiming canonical identity across all equivalent representations~\cite{holmes2020spdi}.
+The SPDI linker maps contig names such as \texttt{chr1} and \texttt{1} to the same reference sequence and minimally trims explicit alleles, removing bases shared by REF and ALT, so that the same simple variant in two files receives one SPDI identifier; it does not shift insertions or deletions within repeats, so equivalent alleles there can still receive different identifiers~\cite{holmes2020spdi}.
 
 % TODO: Need to address WHY we use ODRL and do the policy assessment somewhere BEFORE introducing it here...
+The third use case requires deciding, for each requester and purpose, which files, regions, or variants may be released.
+ODRL expresses such permissions and prohibitions as data, and DUO supplies standardized purposes.
 \texttt{vcf-rdfizer-policy} evaluates ODRL rules over files or declared selections, including regions, named variants, and gene-linked records~\cite{odrl_2018,lawson2021duo}.
-The evaluated profile applies default-deny and deny-overrides semantics, with permitted purposes drawn from a subset of DUO.
-Ownership rules define which dependent resources are removed with a withheld file or record.
-For each requester, the plug-in materializes a release view and validates the view against the policy and an oracle derived from the source VCF text.
+The evaluated profile applies default-deny semantics, so anything not explicitly permitted is withheld, and deny-overrides semantics, so a prohibition wins over a conflicting permission, with permitted purposes drawn from a subset of DUO.
+Ownership rules define which dependent resources are removed with a withheld file or record; withholding a file, for example, also withholds its header, records, alleles, and sample calls.
+For each requester, the plug-in materializes a \emph{release view}, a copy of the graph that contains only the triples that requester may receive, and checks the view against the policy and against a record list derived directly from the source VCF text.
 The evaluated plug-in supports requester-specific release under simulated policies, but does not anonymize genomic data or enforce additional policy obligations, such as requirements to delete released information~\cite{garfinkel2023deidentification,odrl_2018}.
 Operational deployment would additionally require authentication, access enforcement, auditing, and other safeguards for secure genomic data sharing~\cite{ga4gh2019dsip}.
 Supplementary Section~\ref{S-sec:usecase} describes linking tiers, policy evaluation, and release validation.
@@ -212,31 +227,34 @@ Supplementary Section~\ref{S-sec:usecase} describes linking tiers, policy evalua
 The experiments assess representation fidelity and validation (RQ1), a linked and policy-aware workflow (RQ2), and scalability, retrieval, and comparative semantic coverage (RQ3).
 Each subsection below first describes how its question was tested and then reports what the tests showed.
 The \emph{core benchmark} comprises 143 runs in 12 experiment families covering conversion, scaling, storage, input coverage, configuration, validation, and query cost, all executed with the published VCF-RDFizer v3.1.0 release on two hosts with identical hardware.
-The linked workflow, the shared-input converter comparison, regional and large-graph retrieval, and two later validation runs are separate experiments and are not counted in the core benchmark's totals.
+The linked workflow, the shared-input converter comparison, regional and large-graph retrieval, the index-storage measurement, an N-Triples-only rerun of the query-cost workload, and two later validation runs (a default-profile fault-injection rerun and the consumer WGS run) are separate experiments and are not counted in the core benchmark's totals.
+The N-Triples-only and fault-injection reruns used v3.1.0, and the other separate experiments used v3.3.1, which includes the evaluated linkers and the policy plug-in; on the same 100,000 HG005 records, both releases wrote identical sorted triples.
 Supplementary Section~\ref{S-subsec:repro-campaign} lists the core benchmark's experiment families, and Section~\ref{S-sec:repro} provides the release ledger, hosts, dependencies, and archived evidence for every experiment.
 An interactive results browser, built from the same run records by the code that draws the figures, presents the measurements for each research question.\footnote{\url{https://ecrum19.github.io/vcf-rdfizer-testing/}}
 
-The public VCF files utilized in evaluation include Personal Genome Project donations, GIAB benchmark files, a precisionFDA HG002 file, the 2,504-sample 1000 Genomes chromosome-20 call set, and HGSVC2 structural variants~\cite{personal_genome_proj,nist_gib_2025,thousand_genomes_2015,hgsvc_2021,giab_v421_2022}.
-The corpus experiment processes 250,000-record slices and the complete HG005 VCF; controlled slices assess the large multi-sample input.
+The public VCF files used in the evaluation include Personal Genome Project donations, GIAB benchmark files, a precisionFDA HG002 file, the 2,504-sample 1000 Genomes chromosome-20 call set, and HGSVC2 structural variants~\cite{personal_genome_proj,nist_gib_2025,thousand_genomes_2015,hgsvc_2021,giab_v421_2022}.
+HG005, a GIAB benchmark VCF, supports validation, scaling, retrieval, and the converter comparison; slices of the 1000 Genomes chromosome-20 call set support the sample-count series and the converter comparison; and the consumer whole-genome VCFs \texttt{NG131FQA1I} (Dante Labs) and \texttt{NB72462M} (Nebula Genomics) support the consumer WGS validation run and Scenario~4, respectively.
+The corpus experiment converts 250,000-record slices of eight public inputs and the complete HG005 VCF.
 Supplementary Table~\ref{S-tab:corpus} lists the inputs.
 
 \subsection{RQ1: Source comparisons and structural validation provide complementary evidence}\label{subsec:results-fidelity}
 \subsubsection{Evaluation design}\label{subsec:eval-fidelity}
-Paired validation covers difficult-input fixtures, a 9,986-record fixture under both sample profiles and three RDF artifacts, and HG005 slices up to 100,000 records.
-A later consumer WGS validation run tests 250,000 records from \texttt{NG131FQA1I} with the default shapes.
-A fault-injection experiment applies 113 deliberate corruptions and evaluates detection by queries alone, by the default shapes, and by all shape profiles.
-Separate retrieval runs compare the same thirteen answers without SHACL on graphs derived from one million records and the complete HG005 VCF.
+Each paired validation run converts a VCF, compares the Q1--Q13 answers on the resulting RDF with answers derived from that VCF, and applies SHACL where enabled.
+The inputs are 11 difficult-input fixtures, small VCFs with edge cases such as zero records, sites only, or a truncated gzip; a 1,000-line fixture converted under 10 option configurations and in the mode experiment; a 9,986-record fixture converted under both sample profiles and into N-Triples, HDT, and COTTAS; and HG005 slices of up to 100,000 records.
+A later consumer WGS validation run tests 250,000 records from \texttt{NG131FQA1I} with the default profile.
+A fault-injection experiment applies 113 deliberate corruptions and evaluates detection by queries alone, by the default profile, and by all three profiles.
+Separate retrieval runs compare the same 13 answers without SHACL on graphs derived from one million records and the complete HG005 VCF.
 Supplementary Section~\ref{S-sec:validation} defines the fault model, oracle dependencies, exclusions, and execution limits.
 
 \subsubsection{Results}
 All 78 validation runs in the core benchmark completed, on fixtures and slices up to 17.1 million triples.
 Across these runs, all 1,006 applicable SPARQL results agreed exactly with their source-derived counterparts after normalization.
 Eight additional genotype-query instances were not applicable because the zero-record and sites-only fixtures contain no genotypes.
-All 1,160 internal consistency checks passed.
-25 validation runs, in the equivalence and query-cost experiments, executed the same queries on four SPARQL engines: QLever, which builds its own index from the decoded graph, and three different Comunica engines that query N-Triples, HDT artifacts, and, through a DuckDB-backed engine, COTTAS artifacts~\cite{qlever_2017,Taelman2018Comunica,comunica_file_docs_2026,comunica_hdt_docs_2026,comunica_cottas_2026}.
+All 1,160 internal consistency checks between query results passed, for example that transitions plus transversions equal biallelic SNVs.
+To test whether answers depend on the query engine or storage format, 25 validation runs in the equivalence and query-cost experiments executed the same queries on four SPARQL engines: QLever, a SPARQL engine that builds its own index from the decoded graph, and three Comunica engines that query N-Triples, HDT artifacts, and, through a DuckDB-backed engine, COTTAS artifacts directly~\cite{qlever_2017,Taelman2018Comunica,comunica_file_docs_2026,comunica_hdt_docs_2026,comunica_cottas_2026}.
 Every engine returned the same normalized answers.
 The other 53 runs used one engine: Comunica over the N-Triples in the difficult-input, covering-set, and mode experiments (44 runs), and QLever in the query-cost experiment (9 runs).
-Supplementary Section~\ref{S-subsec:repro-campaign} describes each experiment's set-up, and Sections~\ref{S-subsec:validation-queries} and~\ref{S-subsec:repro-builds} describe the engines and their pinned versions.
+Supplementary Section~\ref{S-subsec:repro-campaign} describes each experiment's setup, and Sections~\ref{S-subsec:validation-queries} and~\ref{S-subsec:repro-builds} describe the engines and their pinned versions.
 All 152 HDT and COTTAS artifacts decoded to the same triple count as the corresponding N-Triples source graph.
 
 \begin{figure}[!htbp]
@@ -244,8 +262,8 @@ All 152 HDT and COTTAS artifacts decoded to the same triple count as the corresp
 \includegraphics[width=\textwidth]{fig-validation.pdf}
 \caption{\textbf{Source agreement and detection of injected faults.}
 Panel (a) summarizes source agreement in the core benchmark, native artifact decoding, and the separate complete-HG005 and consumer WGS query comparisons.
-Panel (b) shows detection of the 113 injected faults by source-comparison queries, the default SHACL profile, and all shape profiles.
-The results demonstrate that source comparisons and deeper structural constraints provide complementary validation, detecting errors that either approach alone may miss.
+Panel (b) shows detection of the 113 injected faults by source-comparison queries, the default SHACL profile, and all three profiles.
+The deeper SHACL profiles detected every injected fault that the source-comparison queries missed.
 }
 \label{fig:validation}
 \end{figure}
@@ -253,45 +271,50 @@ The results demonstrate that source comparisons and deeper structural constraint
 Each validation layer establishes a different property.
 Query agreement covers the specified summaries, SHACL covers the enabled constraints, and decoding checks cover triple counts after serialization; none alone proves complete semantic equivalence.
 The separate complete-HG005 retrieval run and consumer WGS validation run are not included in the 1,006-comparison denominator.
-For the consumer WGS run, all thirteen query results agreed and batched default-shape validation reported no violations on 58.2 million triples.
+For the consumer WGS run, all 13 query results agreed and batched default-shape validation reported no violations on 58.2 million triples.
 
 The source-comparison queries detected 96 of 113 injected faults.
 The other 17 changed relationships or values outside the query summaries, including called-allele links, sample indexes, phasing, and header attributes.
-The default shape profile detected none of the additional faults, while the two deeper profiles detected all 17 and accepted both unmutated controls.
-The deeper profiles were substantially slower and were evaluated only on the small fault-injection graph.
+The default profile detected none of these 17 faults, while the two deeper profiles detected all 17 and accepted both uncorrupted control graphs.
+The deeper profiles took 33.7 and 73.2 seconds on this graph of about 2,000 triples, compared with 1.7 seconds for the default profile; because they also load the whole graph into memory, they were evaluated only on the small fault-injection graph.
 
-Validation identified three implementation defects that record counts alone would not detect, all of which were corrected.
+Testing identified three implementation defects that record counts alone would not detect: Q9 and Q10 found missing sample resources, the SHACL shapes found dangling allele references, and the policy plug-in's release check found a withheld file's retained header; all were corrected.
 Fixtures covering VCF versions 4.1--4.5 converted successfully.
-Of eleven difficult inputs, ten converted and validated, and a truncated gzip was correctly rejected; the sites-only result comes from a rerun after a defect in its test fixture was corrected.
+Of 11 difficult inputs, 10 converted and validated, and a truncated gzip was correctly rejected; the sites-only result comes from a rerun after a defect in its test fixture was corrected.
 Supplementary Sections~\ref{S-sec:inputs}, \ref{S-sec:validation}, and~\ref{S-sec:issues} document the defects, test outcomes, and remaining limitations.
 
-\subsection{RQ2: Shared identifiers enabled reusable joins and verified release views}\label{subsec:results-workflow}
+\subsection{RQ2: Shared identifiers enabled reusable joins and policy-checked release views}\label{subsec:results-workflow}
 \subsubsection{Evaluation design}\label{subsec:eval-workflow}
 The three motivating use cases share one requirement: a genomic observation should remain traceable to its source while participating in relationships maintained elsewhere.
 The evaluation therefore tests one linked workflow rather than implementing the three applications in full.
 The application asks which participant--variant--gene matches connect an observed allele to a ClinVar classification in the fixed 81-gene ACMG SF v3.2 set and which matches each requester may receive~\cite{miller2023acmg}.
-ClinVar records require at least one review star, and pathogenic or likely pathogenic matches are reported separately.
+A match is a participant--variant--gene tuple in which an observed allele equals a ClinVar record of any classification with at least one review star, so most matches are benign; pathogenic or likely pathogenic matches are reported separately.
 The workflow does not implement the additional criteria required for reportable clinical secondary findings.
 
 The RDF workflow links converted VCFs to ClinVar and gene resources, materializes requester-specific views, and queries each view with SPARQL.
 The conventional workflow harmonizes contigs, annotates with bcftools, and applies the same case definition and simulated release rules in Python.
-The sorted participant, gene, contig, position, and allele tuples should agree before timings are compared.
+The two workflows must return identical sorted participant, gene, contig, position, and allele tuples for every requester.
 Both workflows share preprocessing and the case definition, while downstream linking, policy evaluation, and query implementations remain separate.
 
 Four evaluation scenarios test heterogeneous inputs, cohort breadth, complete-VCF scale, and fine-grained release.
-Scenario~1 contains gene-span slices from five single-sample VCFs, Scenario~2 contains 104 unrelated high-coverage 1000 Genomes participants, Scenario~3 contains the complete HG005 VCF, and Scenario~4 contains the complete \texttt{NB72462M} VCF with four non-empty requester views~\cite{byrska2022highcoverage}.
+Scenario~1 contains gene-span slices, the records within the 81 gene spans, from five single-sample VCFs (HG002, HG004, HG005, \texttt{NG131FQA1I}, and \texttt{NB72462M}), Scenario~2 contains 104 unrelated high-coverage 1000 Genomes participants, Scenario~3 contains the complete HG005 VCF, and Scenario~4 contains the complete \texttt{NB72462M} VCF with four non-empty requester views~\cite{byrska2022highcoverage}.
 Scenario~2 stores required population frequencies once in a separate sites-only graph rather than repeating panel-level INFO for each participant.
+Its rare-variant query joins participant observations, ClinVar classifications, and panel frequencies through SPDI, retaining matches with panel allele frequency below 0.01.
 All scenarios use the ClinVar release from 2026-09-13~\cite{clinvar_vcf}.
+Each requester has one purpose: clinical care (CC), disease-specific cardiovascular research (DS), general research use (GRU), and, in Scenario~4, care by the participant's physician (OP).
 Consent and access conditions are simulated and combine file permissions, withdrawals, gene panels, a region, and one named variant.
+For example, in Scenarios~1--3, records in the 28 cancer-predisposition genes are released only for clinical care, and HG005's simulated consent permits only clinical care, so its DS and GRU views in Scenario~3 are empty.
 Supplementary Section~\ref{S-sec:usecase} specifies every scenario, policy, query, and comparison gate.
 
 \subsubsection{Results}
-Across all four scenarios, the RDF and conventional workflows returned identical requester-specific participant--variant--gene match sets (Figure~\ref{fig:usecase-matches}).
+Across all four scenarios, the RDF and conventional workflows returned identical requester-specific participant--variant--gene match sets (two examples in Figure~\ref{fig:usecase-matches}; all four in Supplementary Figure~\ref{S-fig:usecase-overview}).
 Every materialized release view passed the policy and source checks.
 Released-record counts also agreed in Scenarios~1, 3, and~4.
-In Scenario~2, the RDF views additionally released 110 and 58 symbolic structural-variant records in restricted cancer-predisposition genes to disease-specific and general research, because v3.3.1 links no symbolic allele to a gene; no match changed (Supplementary Section~\ref{S-subsec:usecase-results}).
+In Scenario~2, however, the RDF workflow released records that the policy was meant to withhold: 110 symbolic structural-variant records in restricted cancer-predisposition genes to the disease-specific requester and 58 to the general-research requester.
+VCF-RDFizer v3.3.1 links no symbolic allele, such as \texttt{<DUP>}, to a gene, so gene-based rules could not select these records; no match changed, because the case definition joins only explicit alleles (Supplementary Section~\ref{S-subsec:usecase-results}).
+The release checks could not detect these records, because they use the same gene links as the policy evaluator.
 For HG005, the query over the complete VCF reproduced the result from its gene-span slice exactly, returning 1,496 matches.
-The unrestricted pathogenic or likely pathogenic subset contained no matches in Scenarios~1, 3, and~4 and eight in the Scenario~2 cohort.
+Before policy filtering, the pathogenic or likely pathogenic subset contained no matches in Scenarios~1, 3, and~4 and eight in the Scenario~2 cohort (Supplementary Table~\ref{S-tab:usecase-matches}).
 The counts describe matches under the study definition, not unique participants or clinically adjudicated findings.
 
 Scenario~4 tested fine-grained release from the complete \texttt{NB72462M} VCF, containing 5,063,417 normalized records.
@@ -301,29 +324,44 @@ The two workflows agreed on both released-record counts and resulting matches.
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{fig-usecase-matches.pdf}
-\caption{\textbf{The RDF and conventional workflows returned identical match sets for every requester and scenario.}
-Counts are participant--variant--gene tuples.
-CC denotes clinical care, DS disease-specific cardiovascular research, GRU general research use, and OP care by the participant's physician in Scenario~4.
-The Scenario~2 rare-variant result also joins the separate panel-frequency graph at allele frequency below 0.01.}
+\caption{
+\textbf{Linked RDF supports cross-resource queries and requester-specific genome access without changing the converted source data.}
+Both scenarios use VCF-RDFizer v3.3.1.
+(a) In Scenario~2, shared SPDI identifiers connect 104 participant VCFs to ClinVar and a separately stored panel-frequency graph.
+Of 173,102 ClinVar-linked matches, 4,154 involve variants with a panel allele frequency (AF) below 0.01.
+The result demonstrates how independently maintained genomic resources can be combined in a single query.
+(b) In Scenario~4, simulated policies produce different release views from the same complete VCF containing 5,063,417 records.
+The participant's physician (part. physician) receives the complete file, whereas cardiovascular research (cardio. research) receives only 6,397 records.
+Blue bars represent RDF query results, and orange dots represent the conventional VCF workflow.
+Both workflows return identical participant--variant--gene tuples and agree on the number of released records for every requester.
+(c) Conversion and linking are performed once per scenario, while release views are generated separately for each requester.
+Scenario~2 reports the unrestricted rare-variant query and requires no release view.
+Scenario~4 reports the range of requester-specific view-writing and query times.
+Query times are medians of three executions.
+Indexing and release validation are excluded and reported in Supplementary Table~\ref{S-tab:usecase-costs}.
+Together, the results demonstrate how RDF can support both data integration and selective reuse, although substantial preparation costs remain.
+Importantly, matching query results do not guarantee correct policy release: Scenario~2 retained 110 and 58 additional restricted records in the cardiovascular and general research views, respectively.
+Matches represent participant--variant--gene tuples, not clinical findings.
+}
 \label{fig:usecase-matches}
 \end{figure}
 
 The cohort rare-variant query demonstrates reuse of shared information.
-Panel-level INFO describing all 3,202 panel samples would account for approximately 857 million repeated triples across the participant graphs.
-The workflow instead represents the required frequencies once in a 68,635-site graph of 6.5 million triples and joins observations, ClinVar, and frequencies through SPDI.
-The conventional position-and-allele lookup returned the same rare-variant matches.
-The reduction comes from factoring shared information, not from RDF compression.
+The workflow represents the required frequencies once in a 68,635-site graph of 6.5 million triples and joins observations, ClinVar, and frequencies through SPDI.
+Of 173,102 unrestricted ClinVar matches, 4,154 also had panel allele frequency below 0.01; both sets agreed exactly with the conventional workflow.
 
-Shared variant identity also changed how one release rule was expressed.
-Restricting HFE C282Y to clinical care required a policy edit without changing the RDF policy engine and selected the HG002 record despite its unprefixed contig name.
+The two workflows were also compared on four applied rule changes (Supplementary Table~\ref{S-tab:usecase-effort}).
+Shared variant identity changed how one of them was expressed.
+Restricting HFE C282Y to clinical care required only a six-line policy edit naming the variant's SPDI identity, with no change to the RDF policy engine, and because SPDI abstracts over contig naming, the edited rule also selected the HG002 record, whose contig name lacks the \texttt{chr} prefix.
 The conventional workflow required corresponding code and configuration changes.
 Three other rule changes were similarly small data edits in both workflows, so the result demonstrates reusable configuration for the tested identity-targeted rule rather than a general usability advantage.
 
 Most linked-workflow cost occurred before query execution.
 For Scenario~3, converting the complete HG005 VCF and ClinVar required 55 minutes, linking required 8 minutes, and materializing, validating, and indexing the clinical view required a further 2.6 hours.
 Individual queries then required 216--218 seconds.
-Across all scenarios, queries over non-empty views took 171--233 seconds, suggesting that the fixed ClinVar join dominated the measured query rather than establishing scale-independent SPARQL performance.
+Across all scenarios, queries over non-empty views took 171--233 seconds, which suggests that the fixed ClinVar join dominated the measured query time; the result does not establish scale-independent SPARQL performance.
 Scenario~4's selective views of a 1.2-billion-triple graph each required 55--70 minutes to materialize.
+After the preprocessing both workflows share, the conventional workflow annotated, selected, and released records for every requester in 4--91 seconds per scenario, whereas conversion and linking alone took 5.7--105 minutes in the RDF workflow, more than 40 times as long (Supplementary Table~\ref{S-tab:usecase-costs}).
 Supplementary Figure~\ref{S-fig:usecase-costs} and Table~\ref{S-tab:usecase-costs} report every stage and requester.
 
 \subsection{RQ3: Semantic coverage and practical cost depend on representation and workload}\label{subsec:results-costs}
@@ -332,17 +370,21 @@ A shared-input comparison evaluates four other executable converters: JVarkit, T
 Each converter processes a 100,000-record HG005 slice and a 10,000-record, 16-sample 1000 Genomes slice with its most complete available options.
 Content questions Q1--Q8 are translated to each vocabulary and compared with the same source-derived oracle, normalization, comparator, and QLever build used for VCF-RDFizer.
 A question is reported as not represented when the graph lacks the required information.
-Conversion time, peak memory, and output size use three replicates in pinned containers.
-Supplementary Section~\ref{S-sec:converters} provides the versions, commands, query ports, and complete results.
+Conversion time, peak memory, and output size are measured over three replicates in pinned containers.
+Supplementary Section~\ref{S-sec:converters} provides the converter versions, execution commands, adapted SPARQL queries, and complete results.
 
 Controlled scaling series vary one dimension at a time.
 The record-count series processes 10,000, 100,000, one million, and all HG005 records, while the sample-count series holds 10,000 cohort records fixed and varies the sample count from one to 2,504 under both profiles.
 Stage timings, resident memory, transient workspace, and retained artifact sizes are measured separately.
 Replicated scaling-series measurements are distinguished from single complete-VCF and corpus runs.
 
-Retrieval experiments compare individual questions, the thirteen-question batch, and five regional questions in QLever against cyvcf2 and bcftools VCF access.
-Regional windows range from 1\,kb to 10\,Mb, and all execution paths apply the same POS-based selection before timings are compared.
-Setup and query execution are reported separately.
+Retrieval experiments compare indexed QLever queries with full VCF parsing using cyvcf2.
+For five regional questions, the comparison also includes tabix-indexed VCF access through cyvcf2 and bcftools.
+Individual-question timings measure each question separately, requiring a full VCF parse for each question on the non-indexed VCF path.
+Batch timings measure all 13 questions together, requiring only one full VCF parse.
+Regional questions select records by genomic position (POS) within windows ranging from 1 kilobase (kb) to 10 megabases (Mb), using identical selection criteria across execution paths.
+Setup costs are reported separately from query execution.
+RDF setup includes conversion and index construction, whereas VCF setup includes bgzip compression and tabix indexing.
 
 \subsubsection{Results}
 On the shared inputs, VCF-RDFizer was the only converter whose graphs matched the source-derived oracle for all eight cross-vocabulary content questions (Figure~\ref{fig:converters}).
@@ -362,53 +404,56 @@ Q1--Q4 summarize records, Q5--Q6 genotypes, and Q7--Q8 the header.}
 \end{figure}
 
 Broader coverage carried additional cost.
-The other converters produced 14--203 triples per record on HG005 and completed each input in 0.1--6.3 seconds, whereas VCF-RDFizer produced 171 triples per HG005 record, 536 per record on the 16-sample input, and required 31--92 seconds including container startup for each stage.
+The other converters produced 14--57 triples per record on HG005 and 18--203 on the 16-sample input, and completed each input in 0.1--6.3 seconds, whereas VCF-RDFizer produced 171 triples per HG005 record and 536 per record on the 16-sample input, and took 31--92 seconds per input, including container startup for each stage.
 Supplementary Section~\ref{S-sec:converters} reports output sizes, memory, and per-question causes.
 
 The record-count series produced 170.5--171.9 triples per VCF record, with mapping-stage resident memory between 1.0 and 1.7\,GB as record count increased.
 Wall time and disk use grew with the data, while the observed mapping memory remained bounded over the tested range.
-The sample profile had a larger effect.
+Sample representation, not record count, determined the number of triples per record.
 At 10,000 records and 2,504 samples, expanded output contained 627.4 million triples and a 4.10\,GB HDT, compared with a 59.2\,MB HDT for condensed output.
 The condensed profile reduces repeated graph structure but requires vector-aware querying and validation.
 Supplementary Figure~\ref{S-fig:samples} gives the complete sample-count series.
 
 Optional artifacts dominated one whole-VCF benchmark.
-The conversion of the complete HG005 VCF required 16.07 hours when both HDT and COTTAS were built, of which approximately 14.5 hours were the construction of these compressed representations.
-Retaining HDT, its index, and COTTAS required 10.88\,GB, while gzipped-Triples alone required 2.89\,GB.
+The conversion of the complete HG005 VCF required 16.07 hours when both HDT and COTTAS were built, of which approximately 14.5 hours were spent constructing these compressed representations.
+Retaining HDT, its index, and COTTAS required 10.88\,GB, while gzip-framed N-Triples alone required 2.89\,GB.
 
 On the 17.1-million-triple graph of 100,000 HG005 records, individual indexed QLever queries required 0.005--4.62 seconds, compared with 11.5--12.3 seconds for full cyvcf2 parses.
-For the thirteen-question batch, one cyvcf2 pass required 12.4 seconds, while the QLever queries required 17.1 seconds before setup.
-A separate minimal QLever path required about two minutes to convert the records to gzipped-N-Triples (75.8 MB) and build the index (214.5 MB); under the tested repeated-question workload, the cumulative times crossed after approximately eleven separately executed questions.
+For the 13-question batch, one cyvcf2 pass required 12.4 seconds, while the QLever queries required 17.1 seconds, excluding setup.
+The minimal RDF setup, which converts the records to gzip-framed N-Triples (75.8 MB) and builds a QLever index (214.5 MB) without HDT or COTTAS, required about two minutes; under the tested repeated-question workload, the cumulative times crossed after approximately 11 separately executed questions, because each question saved about 11 seconds (in the N-Triples-only rerun, a median of 12.28 seconds per full parse against a mean of 1.43 seconds per indexed query).
 The N-Triples were 21--25 times larger than the gzipped VCF.
 
-Regional queries provide the stronger indexed-VCF comparison (Figure~\ref{fig:regional}).
+Regional queries give the fairer comparison, because the VCF side can also use an index and read only the requested region (Figure~\ref{fig:regional}).
 Across 11,160 executions, all answers agreed and no execution failed.
 Tabix-indexed VCF access was faster for windows up to 100\,kb and for 1\,Mb windows with bcftools, while QLever was faster for 10\,Mb windows and for 1\,Mb windows with cyvcf2.
-QLever query time remained nearly constant across window sizes, whereas VCF-region retrieval increased with the number of records parsed.
-Setup required 23.3 seconds for QLever and 0.46 seconds for bgzip and tabix.
-Indexed for queries, the QLever index required 60.5 times the storage of the bgzipped VCF with its tabix index (214.5\,MB against 3.5\,MB), and 57.5 times for the complete HG005 VCF (8.1\,GB against 140.9\,MB).
+QLever query time remained nearly constant across window sizes, whereas VCF-region retrieval time increased with the number of records parsed.
+Building the QLever index from existing N-Triples required 23.3 seconds, and bgzip and tabix required 0.46 seconds.
+The QLever index required 60.5 times the storage of the bgzipped VCF with its tabix index (214.5\,MB against 3.5\,MB), and 57.5 times for the complete HG005 VCF (8.1\,GB against 140.9\,MB).
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{fig-regional.pdf}
 \caption{
 \textbf{Indexed RDF querying can offset conversion costs through repeated queries, while VCF parsing remains faster for narrow regions and one-pass analyses.}
-(a) Including approximately two minutes for RDF conversion and indexing, cumulative query time becomes lower than repeated VCF scans after eleven separately executed questions.
-(b) Gzip-compressed N-Triples require 20.7--24.7 times more storage than the corresponding gzip-compressed VCF; once indexed for queries, the QLever index requires 57.5--60.5 times the storage of the bgzipped VCF with its tabix index.
+Data: 100,000 HG005 records (17.1 million triples) unless noted; a whole-file question is one of the 13 source-comparison queries, and the five regional questions are window-restricted variants of Q1--Q5.
+(a) Including approximately two minutes for RDF conversion and indexing, cumulative RDF time becomes lower than that of repeated VCF scans after 11 separately executed questions.
+(b) Gzip-framed N-Triples require 20.7--24.7 times more storage than the corresponding gzip-compressed VCF; the QLever index requires 57.5--60.5 times the storage of the bgzipped VCF with its tabix index.
 (c) Regional queries show nearly constant QLever execution times as window size increases from 1\,kb to 10\,Mb, while indexed VCF retrieval becomes slower for larger windows.
 (d) Ratios of VCF parsing time to QLever query time, excluding setup, show which approach performs better across workloads; values above one favor QLever.
-Together, the results demonstrate that repeated and large-region queries can justify RDF's additional processing and storage costs, whereas direct VCF access remains advantageous for smaller or batched workloads.
+Together, the results show that repeated and large-region queries can offset RDF's additional processing time, whereas direct VCF access remains advantageous for regions up to 100\,kb and when all questions are answered in one VCF pass.
 }
 \label{fig:regional}
 \end{figure}
 
-On the 657.4-million-triple graph of complete HG005, QLever answered all thirteen questions in 646.4 seconds after an 880.8-second index build, with every answer equal to the parser-derived result.
+On the 657.4-million-triple graph of the complete HG005 VCF, QLever answered all 13 questions in 646.4 seconds after an 880.8-second index build, with every answer equal to the parser-derived result.
 Loading the same graph from N-Triples, HDT, or COTTAS changed indexed query time by only 0.4\%, although decode costs differed.
-The native HDT- and COTTAS-backed paths did not complete the full workload on the 171-million-triple graph.
-Supplementary Figure~\ref{S-fig:retrieval}, Table~\ref{S-tab:retrieval-scale}, and Section~\ref{S-sec:measurements} retain the detailed engine and artifact results.
+When Comunica queried the HDT and COTTAS files directly, without a QLever index, it did not complete the full workload on the 171-million-triple graph of one million HG005 records.
+Supplementary Figure~\ref{S-fig:retrieval}, Table~\ref{S-tab:retrieval-scale}, and Section~\ref{S-sec:measurements} report the detailed engine and artifact results.
 
 \section{Discussion}\label{sec:discussion}
 % TODO: A small intro of what is discussed here
+This section first relates the evaluated representation to the three motivating use cases (RQ2; Sections~\ref{subsec:disc-first-step}--\ref{subsec:disc-consent}).
+It then discusses what the validation results establish (RQ1; Section~\ref{subsec:disc-validation}) and when the measured costs favor RDF or direct VCF processing (RQ3; Section~\ref{subsec:disc-deployment}), and closes with the scope of the study and next steps.
 
 \subsection{A first step toward reusable genomic information}\label{subsec:disc-first-step}
 Clinical reanalysis, pharmacogenomic decision support, and consent-aware genomic reuse require more than converting VCF into another serialization.
@@ -416,12 +461,13 @@ Each application depends on explicit links between source observations and infor
 VCF-RDFizer provides an evaluated representation layer by retaining source context, validating selected properties of the RDF, and demonstrating integration and policy-aware release.
 The study evaluates that foundation rather than the clinical effectiveness, operational utility, or security of complete applications.
 
-Agreement with the bcftools workflow confirms that the demonstrated task is not exclusive to RDF.
+Agreement with the conventional workflow confirms that the demonstrated task is not exclusive to RDF.
 The distinction is representational: observations, external resources, shared identifiers, and policies are expressed in a common graph that can be queried and extended without rewriting the source representation.
 The separate frequency graph and identity-targeted policy demonstrate reuse within the tested workflow, but do not establish a general reduction in development effort or imply that conventional pipelines cannot provide equivalent functionality.
 
 % TODO: There's a lot of could/would here. I get the idea, but I wonder if we can make it sound less like a hope for the future. Maybe through explicit links to your preliminary findings
 \subsection{Clinical interpretation and reanalysis}\label{subsec:disc-reanalysis}
+In the evaluated workflow, each converted VCF was joined to a fixed ClinVar release through SPDI identifiers, and the workflow returned the same matches as the conventional workflow in every scenario.
 RDF could make the evidence supporting an interpretation explicit and inspectable.
 A genomic observation could remain linked to the assertions used at a specific time, while later evidence is added with separate provenance rather than replacing the earlier interpretation.
 Queries could then identify observations affected by a revised clinical assertion or frequency estimate and nominate the corresponding cases for review~\cite{richards2015standards,deignan2019reevaluation}.
@@ -430,12 +476,14 @@ Such a workflow would support reevaluation without replacing clinical interpreta
 The evaluated ClinVar and frequency joins demonstrate static relationships required by such a workflow, not longitudinal reanalysis.
 A practical service would require validated rules for assemblies, allele normalization, and unresolved matches.
 Minimally trimmed SPDI expressions do not necessarily correspond to NCBI contextual or canonical alleles in repetitive regions, so equivalent alleles can receive different identifiers and miss evidence joins~\cite{holmes2020spdi}.
+For example, a one-base deletion in a run of identical bases can be written at any position in the run; NCBI's contextual SPDI spans the whole run, whereas minimal trimming keeps the position written in the VCF.
 Longitudinal evidence would also require assertion-level versioning, disease context, review status, provenance, relevant dates, and links to patient phenotypes, family information, and prior reports.
 A change-detection process could then route affected observations for clinical review.
 Evaluation should compare nominated cases with conventional reannotation and expert-reviewed outcomes, including missed updates and unnecessary reviews.
 The clinical value reported in reanalysis studies cannot be inferred from the static query agreement measured here~\cite{hiatt2018systematic}.
 
 \subsection{Pharmacogenomic clinical decision support}\label{subsec:disc-pgx}
+The evaluated linkers connected variant calls to overlapping genes and alleles to shared identifiers, the kind of link a pharmacogenomic decision-support path requires, although no pharmacogenomic interpretation was evaluated.
 RDF could represent the path from a genomic observation to a pharmacogenomic interpretation, medication order, indication, and prescribing guidance.
 Separate linked resources could preserve which observation, interpretation, and guideline version support a recommendation and allow an existing interpretation to be reused when the prescribing context changes.
 The model addresses an integration challenge reported in pharmacogenomic decision-support research without replacing established clinical systems or interpretation tools~\cite{wake2022pgx,johnson2024genetically}.
@@ -451,7 +499,7 @@ Expert validation, comparison with source guidance, and evaluation of the clinic
 \subsection{Consent-aware genomic reuse}\label{subsec:disc-consent}
 RDF could make the relationship between a genomic resource, governing policy, and request purpose directly inspectable.
 Policies could target files, participant records, or declared subsets without creating a separate source copy for every permitted use.
-The evaluated plug-in demonstrates part of this model: requester-specific views matched the conventional workflow, ownership checks detected dependent context, and Scenario~4 produced four distinct non-empty views from one complete VCF.
+The evaluated plug-in demonstrates part of this model: requester-specific match sets matched the conventional workflow, released records agreed in three of the four scenarios, ownership checks detected dependent context, and Scenario~4 produced four distinct non-empty views from one complete VCF.
 The evaluation does not cover selective masking within a multi-sample VCF, and coordinate-based region rules still depend on source contig labels.
 
 Operational deployment would require reviewed mappings from consent and institutional conditions to a defined policy profile.
@@ -467,11 +515,11 @@ The current plug-in demonstrates inspectable release decisions under simulated r
 
 \subsection{Validation requires both source and graph checks}\label{subsec:disc-validation}
 % TODO: Need to re-do sentence number one
-The strongest validation result is the complementary coverage of source comparisons and structural constraints rather than the number of passing checks alone.
-Source-derived queries detected changed values and summaries, while deeper shapes detected relationships that the current oracle does not inspect.
-The three implementation defects found during development show why both layers matter.
+The most informative validation result is not the number of passing checks but that the deeper structural constraints detected every injected fault that the source comparisons missed.
+Source-comparison queries detected changed values and summaries, while the deeper profiles detected relationships that the current oracle does not inspect.
+Two of the three implementation defects found during testing, one caught by Q9 and Q10 and one only by the shapes, show why both layers matter.
 At the same time, a passing summary, shape profile, or triple-count check establishes only the property tested.
-The complete fault-detection result applies to the constructed 113-fault set on a small graph, and the deeper shape profiles have not been shown practical at whole-VCF scale.
+The complete fault-detection result applies to the constructed 113-fault set on a small graph, and the deeper profiles have not been shown to be practical at whole-VCF scale.
 
 Oracle quality is also part of validation quality.
 Expected predicate and class inventories depend on the selected representation, and the converter and oracle can share an incorrect assumption.
@@ -484,22 +532,21 @@ The expanded profile preserves directly addressable sample calls, whereas the co
 The condensed profile consequently lowers graph size at the cost of direct sample-level querying, validation, and policy targeting.
 Triple count alone does not capture the capability of either representation.
 
-Native VCF access remains preferable for many one-pass analyses and small indexed regions because no semantic conversion or graph indexing is required.
-The additional RDF setup becomes beneficial when the same genomic data support repeated questions, independently maintained links, or policy-dependent release.
+Direct VCF access remains preferable for many one-pass analyses and small indexed regions because no semantic conversion or graph indexing is required.
+The additional RDF setup may become beneficial when the same genomic data support repeated questions, independently maintained links, or policy-dependent release.
 A clinical reanalysis service, for example, could retain a converted VCF while querying successive evidence releases instead of reconstructing every relationship for each cycle.
 The present experiments demonstrate prerequisites for such reuse but do not benchmark longitudinal updates.
 
 % TODO: un-AI this
-The measured eleven-query crossover is therefore an example, not a tool constant.
-The estimate depends on the tested question mix, a full VCF parse for each separate question, and the measured minimal N-Triples-plus-QLever setup.
-A batched parser pass changes the conclusion.
+The crossover after about 11 questions is specific to this workload, not a property of the tool: it assumes a full VCF parse for each question, the tested question mix, and the measured minimal RDF setup.
+If all 13 questions are known in advance, a single cyvcf2 pass answers them in 12.4 seconds, less than the 17.1 seconds of QLever queries even before setup, so RDF does not pay off for that workload.
 HDT and COTTAS should similarly be generated only when their separate storage or access properties are required.
 Applications with changing evidence or policies would also incur update costs for links, indexes, and release views that were not measured here.
 
 \subsection{Scope and next steps}\label{subsec:disc-scope}
 The shared-input converter comparison covers four converters, two inputs, and Q1--Q8.
 The result establishes comparative content coverage under the tested configurations, not universal superiority or suitability for every purpose.
-The sample-count series fixes INFO content, the complete multi-sample cohort was not converted, and the deepest SHACL profiles were evaluated only on small inputs.
+The sample-count series held INFO content fixed, the complete multi-sample cohort was not converted, and the deeper SHACL profiles were evaluated only on small inputs.
 The linking experiments use single-sample files and simulated policies, and all outcomes remain tied to the recorded data, software, reference releases, and policy configurations.
 Gene-based policy selection also remains incomplete for some symbolic and breakend records, as documented in Supplementary Section~\ref{S-sec:issues}.
 
@@ -516,7 +563,7 @@ VCF-RDFizer provides a testable starting point for this progression: a genomic r
 \section{Conclusions}\label{sec:conclusions}
 VCF-RDFizer makes VCF information explicit in a representation that can be validated against its source, linked to external knowledge, and used in policy-aware research queries.
 The evaluation demonstrates complementary validation, reusable joins, and requester-specific agreement with a conventional workflow, while showing that semantic coverage adds conversion, storage, and indexing costs.
-The resulting representation is therefore most relevant when persistent links, repeated questions, or inspectable release rules justify those costs, rather than as a universal replacement for native VCF processing.
+The resulting representation is therefore most relevant when persistent links, repeated questions, or inspectable release rules justify those costs, rather than as a universal replacement for direct VCF processing.
 VCF-RDFizer is a first step toward evidence-aware reanalysis, pharmacogenomic decision support, and consent-aware reuse; complete applications still require validated interpretation, clinical integration, and enforced access processes.
 
 
@@ -525,11 +572,11 @@ VCF-RDFizer is a first step toward evidence-aware reanalysis, pharmacogenomic de
 \textbf{Home page:} \url{https://github.com/ecrum19/VCF-RDFizer}.
 \textbf{Language:} Python, with the mapping, compression, and query tools specified in Supplementary Section~\ref{S-sec:repro}.
 \textbf{Platforms:} Linux, macOS, and Windows are covered by the tool's tests; the experiments reported here ran on Ubuntu.
-\textbf{Distribution:} PyPI, Conda-Forge, and Docker.
+\textbf{Distribution:} PyPI, conda-forge, and Docker.
 \textbf{License:} MIT.
 \textbf{Any restrictions to use by non-academics:} none.
 Docker supplies the pinned benchmark environment; requirements for other installations are documented with each release.
-v3.1.0 produced the core benchmark, and v3.3.1 produced the linked workflow, regional and large-graph retrieval, the consumer WGS validation run, and the converter comparison.
+Version 3.1.0 produced the core benchmark results and the N-Triples-only and fault-injection reruns, and v3.3.1 produced those of the linked workflow, regional and large-graph retrieval, the index-storage measurement, the consumer WGS validation run, and the converter comparison.
 On the same 100,000 HG005 records, both releases wrote identical sorted triples.
 Supplementary Section~\ref{S-subsec:repro-builds} records the build behind each result.
 
@@ -547,6 +594,7 @@ The manuscript reports aggregate results and software measurements, not individu
 
 \subsection*{Availability of data and materials}
 Input filenames, provider URLs, download commands, fixtures, derivation scripts, query files, manifests, normalized outputs, and comparison reports are maintained at \url{https://github.com/ecrum19/vcf-rdfizer-testing}.
+The benchmark harness and the run records behind every reported result are archived on Zenodo at \url{https://doi.org/10.5281/zenodo.23301185}; version v1.0.0, which holds the results reported here, is \url{https://doi.org/10.5281/zenodo.23301186}~\cite{vcfrdfizer_testing_zenodo}.
 Large source VCFs are obtained from their public providers rather than redistributed in Git.
 Experiment~17 (\texttt{benchmarks/use\_case/acmg}) contains the use-case definitions, simulated policies, conventional baseline, and applied-change tests.
 Its match sets, timings, and check reports, as well as the additional validation runs, are recorded under \texttt{benchmark-results}.
@@ -554,8 +602,8 @@ The main branch holds the runs behind the reported results; pre-release, superse
 No biological materials were generated or used.
 
 The software is available at the project home page.
-The core benchmark used v3.1.0 (\texttt{d3b34d5}; image \texttt{sha256:1904e96d\ldots34aa}).
-The linked workflow, regional and large-graph retrieval, converter comparison, and consumer WGS validation run used v3.3.1 (\texttt{b25fb7b}; image \texttt{sha256:3ad71b1a\ldots2993}), the release that includes the linking and policy extensions.
+The core benchmark and the N-Triples-only and fault-injection reruns used v3.1.0 (\texttt{d3b34d5}; image \texttt{sha256:1904e96d\ldots34aa}).
+The linked workflow, regional and large-graph retrieval, index-storage measurement, converter comparison, and consumer WGS validation run used v3.3.1 (\texttt{b25fb7b}; image \texttt{sha256:3ad71b1a\ldots2993}), a release that includes the evaluated linkers and the policy plug-in.
 Supplementary Section~\ref{S-sec:repro} identifies each experiment's build, the image digests, and the bundled shape snapshot.
 The public vocabulary is separately versioned \cite{vcfc210}.
 Results must be traced to their recorded build and input, not only to the latest package.
@@ -566,10 +614,12 @@ None declared.
 \Needspace{7\baselineskip}
 \subsection*{Funding}
 Elias Crum acknowledges support from the Research Foundation--Flanders (FWO), SB Fellowship 1S27825N.
+This work was supported by the European Union under the Horizon Europe programme through the REALM project (grant agreement No.~101095435), the European Union's Horizon Europe research and innovation programme through the RAIDO (Reliable AI and Data Optimisation) project under grant agreement No.~101135800, and the Belgian Federal Public Service Policy \& Support (BOSA) through the DigiTwin4PH (Digital Twins for Personalised Healthcare) project.
+Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the granting authorities.
 \authorquery{Complete the funding statements for B.B., R.T., and G.E.}
 
 \subsection*{Authors' contributions}
-E.C., G.E., and R.T. conceived of this study.
+E.C., G.E., and R.T. conceived the study.
 E.C. did the implementation and coding work.
 E.C. devised the validation and use-case demonstration with the guidance of R.T. and executed the experiments.
 E.C., G.E., and R.T. reviewed and verified all results.
@@ -581,8 +631,6 @@ Benchmarking used the resources of IDLab at Ghent University.
 Claude Opus 5.5~\cite{anthropic2026claudeopus55} and GPT-6 Astra~\cite{openai2026gpt6astra} assisted with experiment automation scripting, result data analysis scripting, and restructuring and language editing of this manuscript.
 The authors reviewed all AI outputs and take full responsibility for the manuscript, experiments, tools, and repositories.
 
-This work was supported by  the European Union under the Horizon Europe programme through the REALM project (grant agreement No. 101095435), the European Union's Horizon Europe research and innovation programme through the RAIDO (Reliable AI and Data Optimisation) project under grant agreement No. 101135800 and the Belgian Federal Public Service Policy \& Support (BOSA) through the DigiTwin4PH (Digital Twins for Personalised Healthcare) project. 
-Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the granting authorities.
 
 \clearpage
 \bibliography{reference}

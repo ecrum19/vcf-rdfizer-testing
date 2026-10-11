@@ -389,6 +389,28 @@ def wall(cells: list[Path]) -> float:
     return sum(load(c / "bench.json")["wrapper_wall_seconds"] for c in cells if (c / "bench.json").exists())
 
 
+def usecase_inputs(arm: Path) -> dict:
+    """Converted files, records and triples, with public annotations counted separately.
+
+    Use the final conversion-stage report, not a counterfactual conversion or
+    a sum of intermediate metrics. These are the same v3.3.1 cells as the
+    match comparisons and stage-cost reader below; links are excluded.
+    """
+    groups = defaultdict(Counter)
+    for cell in reported_cells(arm, "convert"):
+        source = cell.name.split("__", 1)[1]
+        group = source if source in ("clinvar", "panel") else "genomes"
+        reports = list((cell / "out" / "run_metrics").glob("*/stages/conversion/*.json"))
+        if len(reports) != 1:
+            raise ValueError(f"Expected one conversion report in {cell}, got {len(reports)}")
+        report = load(reports[0])
+        if report["exit_code"] != 0:
+            raise ValueError(f"Unsuccessful conversion: {reports[0]}")
+        groups[group].update(files=1, records=report["sample_representation"]["records"],
+                             triples=report["artifacts"]["output_triples"]["TOTAL"])
+    return {group: dict(counts) for group, counts in groups.items()}
+
+
 def stage_costs(arm: Path) -> dict:
     """Seconds per stage: one value for the once-per-arm stages, one per requester otherwise.
 
@@ -430,7 +452,7 @@ def stage_costs(arm: Path) -> dict:
 
 
 def stage_cost_table(arm: Path) -> dict:
-    """stage_costs() for the site: once-per-arm stages, then one row per requester (Figure S3, Table S11)."""
+    """stage_costs() for the site: once-per-arm stages, then one row per requester (Figure S4, Table S11)."""
     costs = stage_costs(arm)
     per = defaultdict(dict)
     for stage in ("view", "check", "index", "query"):
@@ -468,6 +490,7 @@ def usecase() -> dict:
         with (arm / "grid.tsv").open(encoding="utf-8") as handle:
             grid = list(csv.reader(handle, delimiter="\t"))
         arms[name] = {
+            "inputs": usecase_inputs(arm),
             "carriers": {r: {k: v for k, v in c.items() if k in ("baseline", "rdf", "agree")}
                          for r, c in comparison.items() if isinstance(c, dict) and "agree" in c},
             "rare": {r: {k: v for k, v in c.items() if k in ("baseline", "rdf", "agree")}

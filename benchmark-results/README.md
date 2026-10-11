@@ -28,13 +28,13 @@ script behind each.
 
 | Manuscript result | Release | Records |
 | --- | --- | --- |
-| Core benchmark: fidelity and validation, record and sample scaling, storage, corpus breadth, configuration coverage, query cost (Figures 3, 6, S4–S7; Tables S6, S12, S14–S15) | v3.1.0 | `vcf-bench-1/benchmarks_outputs/`, `vcf-bench-2/benchmarks_outputs/`; integrated in `summary.json` |
+| Core benchmark: fidelity and validation, record and sample scaling, storage, corpus breadth, configuration coverage, query cost (Figures 3, 6, S5–S8; Tables S6, S12, S14–S15) | v3.1.0 | `vcf-bench-1/benchmarks_outputs/`, `vcf-bench-2/benchmarks_outputs/`; integrated in `summary.json` |
 | Default-profile mutation rerun (Figure 3b) | v3.1.0 | `vcf-bench-2/review-runs/` ([README](vcf-bench-2/review-runs/README.md)) |
 | Minimal RDF setup and the repeated-question crossover (Figure 6a) | v3.1.0 | `vcf-bench-2/nt-only/` ([README](vcf-bench-2/nt-only/README.md)) |
 | Consumer WGS validation run (Figure 3a; Section S4.2) | v3.3.1 | `vcf-bench-2/v331-rerun/results/consumer_wgs__NG131FQA1I__first250000/` |
-| Linked workflow, Scenarios 1–2, with the MyVariant.info tier (Figures 4, S3; Tables S7–S11) | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/`, `…__cohort/` ([README](vcf-bench-1/v331-rerun/README.md)) |
-| Linked workflow, Scenarios 3–4 (Figures 4, S3; Tables S7–S11) | v3.3.1 | `vcf-bench-2/v331-rerun/results/17_use_case_acmg__wgs/`, `…__layered/` ([README](vcf-bench-2/v331-rerun/README.md)) |
-| Regional retrieval (Figures 6c, S8a–b; Table S18) | v3.3.1 | `vcf-bench-1/v331-rerun/results/14_regional_access/` |
+| Linked workflow, Scenarios 1–2, with the MyVariant.info tier (Figures 4, S3–S4; Tables S7–S11) | v3.3.1 | `vcf-bench-1/v331-rerun/results/17_use_case_acmg/`, `…__cohort/` ([README](vcf-bench-1/v331-rerun/README.md)) |
+| Linked workflow, Scenarios 3–4 (Figures 4, S3–S4; Tables S7–S11) | v3.3.1 | `vcf-bench-2/v331-rerun/results/17_use_case_acmg__wgs/`, `…__layered/` ([README](vcf-bench-2/v331-rerun/README.md)) |
+| Regional retrieval (Figures 6c, S9a–b; Table S18) | v3.3.1 | `vcf-bench-1/v331-rerun/results/14_regional_access/` |
 | Large-graph retrieval (Figure 3a; Table S17) | v3.3.1 on v3.1.0 graphs | `vcf-bench-3/v331-rerun/results/16_scale_retrieval/`; the graphs' builds in `vcf-bench-3/benchmarks_outputs/15_scale_prepare/` and their manifests in `vcf-bench-3/scale-store-manifests/` ([README](vcf-bench-3/README.md)) |
 | Release conversion check: both releases write the same graph (Section S6.2) | v3.1.0, v3.3.1 | `vcf-bench-2/v331-rerun/bridge/` |
 | Shared-input converter comparison (Figure 5; Section S2; Tables S2–S3) | v3.3.1 | `vcf-bench-1/18_converter_comparison/` ([README](vcf-bench-1/18_converter_comparison/README.md)) |

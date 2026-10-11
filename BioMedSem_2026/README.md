@@ -19,6 +19,14 @@ which reads every value through
 [`scripts/build_site_data.py`](../scripts/build_site_data.py), the results site's
 builder. The paper and the site therefore cannot compute a value differently.
 The diagrams are standalone TikZ sources beside their PDFs.
+Figure 4 focuses on the Scenario 2 shared-frequency join and Scenario 4 policy views;
+Figure S3 expands the comparison to all four scenarios and every requester. Both
+read the v3.3.1 reruns through the same reader as the results site. Input records
+and triples come from final conversion-stage reports; link counts, exact match-set
+comparisons, released-record counts, and timing replicates come from the corresponding
+link, comparison, policy, and query records. Figure 4 shows selected stage costs;
+Figure S4 and Table S11 report the full breakdown. No repeated-INFO counterfactual
+is used.
 
 | Figure | File | Source |
 | --- | --- | --- |
@@ -30,12 +38,13 @@ The diagrams are standalone TikZ sources beside their PDFs.
 | 6 | `fig-regional.pdf` | `make_figures.py` |
 | S1 | `vcf-core-classes.pdf` | `vcf-core-classes.tex` |
 | S2 | `fig-linking-framework.pdf` | `fig-linking-framework.tex` |
-| S3 | `fig-usecase-costs.pdf` | `make_figures.py` |
-| S4 | `fig-scaling.pdf` | `make_figures.py` |
-| S5 | `fig-samples.pdf` | `make_figures.py` |
-| S6 | `fig-representations.pdf` | `make_figures.py` |
-| S7 | `fig-retrieval.pdf` | `make_figures.py` |
-| S8 | `fig-retrieval-detail.pdf` | `make_figures.py` |
+| S3 | `fig-usecase-overview.pdf` | `make_figures.py` |
+| S4 | `fig-usecase-costs.pdf` | `make_figures.py` |
+| S5 | `fig-scaling.pdf` | `make_figures.py` |
+| S6 | `fig-samples.pdf` | `make_figures.py` |
+| S7 | `fig-representations.pdf` | `make_figures.py` |
+| S8 | `fig-retrieval.pdf` | `make_figures.py` |
+| S9 | `fig-retrieval-detail.pdf` | `make_figures.py` |
 
 To redraw the data figures (Python 3 with Matplotlib), from the repository root:
 
@@ -48,7 +57,7 @@ byte for byte. To rebuild a diagram, run `pdflatex <name>.tex` in `paper-assets/
 
 For a publisher that wants raster files, `make -C BioMedSem_2026/paper figures-tiff` writes
 every figure as an LZW-compressed TIFF, 4,016 px wide (600 dpi across a 170 mm page), to
-`paper/figures-tiff/`. The files are named by figure number (`Fig1.tif`, …, `FigS8.tif`),
+`paper/figures-tiff/`. The files are named by figure number (`Fig1.tif`, …, `FigS9.tif`),
 and `figures.tsv` maps each one to its source. The export needs Ghostscript
 (`paper-assets/figures/export_tiff.py`).
 
