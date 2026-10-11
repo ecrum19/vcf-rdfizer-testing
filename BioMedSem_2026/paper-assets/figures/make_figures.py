@@ -754,8 +754,8 @@ def fig_regional() -> None:
     ax.set_xlim(-0.55, (len(sizes) - 1) * 2.35 + 1.55)
     ax.tick_params(axis="x", length=0, pad=2)
     ax.set_ylabel("Size on disk")
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF workflow"),
-                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF workflow")],
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GRAY, label="VCF"),
+                       plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF")],
               loc="upper left", fontsize=5.9, handlelength=1.0, borderaxespad=0.3, frameon=False)
     ax.set_title("(b) Storage, gzipped and indexed")
 
