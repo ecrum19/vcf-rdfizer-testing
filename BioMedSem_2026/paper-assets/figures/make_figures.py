@@ -258,7 +258,7 @@ def fig_scaling() -> None:
     storage = storage_modes()
     ax = fig.add_subplot(low_r[0, 0])
     style_axes(ax, "x")
-    rows = [("larger", "test-larger\n269M triples"), ("slice", "100k HG005 records\n17.1M triples")]
+    rows = [("larger", "NG131FQA1I prefix\n269M triples"), ("slice", "100k HG005 records\n17.1M triples")]
     for y, (key, label) in enumerate(rows):
         plain = st.mean(v[0] for v in storage[key]["plain"]) / 1e9
         spo = st.mean(v[0] for v in storage[key]["space-optimized"]) / 1e9
