@@ -270,9 +270,9 @@ const CHARTS = {
   },
 
   usecaseCost: {
-    title: "Stage costs of the RDF workflow by scenario",
-    help: "Shown for the clinical-care requester (CC), which is present in every scenario. Conversion and linking are performed once per scenario and include ClinVar; release-view writing, validation and indexing, and the query (median of {queryReplicates} runs), are performed per requester. The data table lists every requester.",
-    caption: "Most linked-workflow cost occurs before the first query and increases with the scenario's graph size, whereas query time remains close to the fixed cost of the ClinVar join.",
+    title: "Stage costs of the RDF workflow by scenario, with the conventional workflow",
+    help: "Shown for the clinical-care requester (CC), which is present in every scenario. Conversion and linking are performed once per scenario and include ClinVar; release-view writing, validation and indexing, and the query (median of {queryReplicates} runs), are performed per requester. The conventional workflow is one run for all requesters, including container startup. Neither workflow's time includes the preprocessing they share. The data table lists every requester.",
+    caption: "Most linked-workflow cost occurs before the first query and increases with the scenario's graph size, whereas query time remains close to the fixed cost of the ClinVar join. The conventional workflow, run once for all requesters, finished in less time than any RDF conversion.",
     rows: () => {
       const stages = [["convert", "Conversion"], ["link", "Linking"], ["view", "View writing"], ["check", "View validation"], ["index", "View indexing"], ["query", "Query"]];
       return Object.entries(D.usecase.arms).flatMap(([arm, data]) => {
@@ -281,19 +281,23 @@ const CHARTS = {
           arm: armLabel(arm), requester: REQUESTER_LABEL[requester] || requester, requesterKey: requester, stage,
           seconds: key === "convert" || key === "link" ? c[key] : r[key] ?? null,
           perArm: key === "convert" || key === "link",
-        }))).filter((row) => !row.perArm || row.requesterKey === "clinical");
+        }))).filter((row) => !row.perArm || row.requesterKey === "clinical").concat([{
+          arm: armLabel(arm), requester: "All requesters", requesterKey: "all", stage: "Conventional workflow",
+          seconds: c.conventional, perArm: true,
+        }]);
       }).map((row) => ({ ...row, label: secs(row.seconds) }));
     },
     columns: [{ key: "arm", label: "Scenario" }, { key: "requester", label: "Requester" }, { key: "stage", label: "Stage" }, { key: "seconds", label: "Time", num: true, format: (v) => secs(v) }],
     spec(t, rows, width) {
-      const shown = rows.filter((r) => r.requesterKey === "clinical" && r.seconds > 0);
+      const shown = rows.filter((r) => (r.requesterKey === "clinical" || r.requesterKey === "all") && r.seconds > 0);
       return {
-        data: { values: shown }, height: 300,
+        data: { values: shown }, height: 340,
         encoding: {
-          y: { field: "stage", type: "nominal", sort: ["Conversion", "Linking", "View writing", "View validation", "View indexing", "Query"], title: null },
+          y: { field: "stage", type: "nominal", sort: ["Conversion", "Linking", "View writing", "View validation", "View indexing", "Query", "Conventional workflow"], title: null,
+               ...(width < 600 ? { axis: { labelExpr: "datum.label == 'Conventional workflow' ? ['Conventional', 'workflow'] : datum.label" } } : {}) },
           yOffset: { field: "arm", sort: null },
           x: { field: "seconds", type: "quantitative", scale: { type: "log" }, title: "Seconds (log scale)",
-               axis: { values: [10, 100, 1000, 10000], format: "," } },
+               axis: { values: [1, 10, 100, 1000, 10000], format: "," } },
           color: { field: "arm", type: "nominal", title: null, sort: null, scale: { range: t.series } },
           tooltip: [{ field: "arm", title: "Scenario" }, { field: "stage", title: "Stage" }, { field: "label", title: "Time" }],
         },

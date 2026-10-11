@@ -25,12 +25,14 @@
 \begin{document}
 \title[VCF-RDFizer]{VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Policy-aware Semantic Genomic Data}
 \author*[1,2]{\fnm{Elias} \sur{Crum}\ORCID{0009-0005-3991-754X}}\email{elias.crum@ugent.be}
-\author[1]{\fnm{Bart} \sur{Buelens}\ORCID{0000-0001-7734-3747}}
-\author[2]{\fnm{Ruben} \sur{Taelman}\ORCID{0000-0001-5118-256X}}
-\author[1]{\fnm{Gökhan} \sur{Ertaylan}\ORCID{0000-0001-5602-6435}}
+\author[2]{\fnm{Bart} \sur{Buelens}\ORCID{0000-0001-7734-3747}}
+\author[2]{\fnm{Gökhan} \sur{Ertaylan}\ORCID{0000-0001-5602-6435}}
+\equalcont{These authors share final authorship and jointly supervised this work.}
+\author[1]{\fnm{Ruben} \sur{Taelman}\ORCID{0000-0001-5118-256X}}
+\equalcont{These authors share final authorship and jointly supervised this work.}
 
-\affil[2]{\orgdiv{IDLab, Department of Electronics and Information Systems}, \orgname{Ghent University -- imec}, \orgaddress{\street{Technologiepark-Zwijnaarde 116}, \postcode{9052}, \country{Belgium}}}
-\affil[1]{\orgdiv{Digital Biological Systems}, \orgname{Flemish Institute for Technological Research (VITO)}, \orgaddress{\street{Boeretang 200}, \postcode{2400}, \country{Belgium}}}
+\affil[1]{\orgdiv{IDLab, Department of Electronics and Information Systems}, \orgname{Ghent University -- imec}, \orgaddress{\street{Technologiepark-Zwijnaarde 116}, \postcode{9052}, \country{Belgium}}}
+\affil[2]{\orgdiv{Digital Biological Systems}, \orgname{Flemish Institute for Technological Research (VITO)}, \orgaddress{\street{Boeretang 200}, \postcode{2400}, \country{Belgium}}}
 
 
 
@@ -212,6 +214,7 @@ Each subsection below first describes how its question was tested and then repor
 The \emph{core benchmark} comprises 143 runs in 12 experiment families covering conversion, scaling, storage, input coverage, configuration, validation, and query cost, all executed with the published VCF-RDFizer v3.1.0 release on two hosts with identical hardware.
 The linked workflow, the shared-input converter comparison, regional and large-graph retrieval, and two later validation runs are separate experiments and are not counted in the core benchmark's totals.
 Supplementary Section~\ref{S-subsec:repro-campaign} lists the core benchmark's experiment families, and Section~\ref{S-sec:repro} provides the release ledger, hosts, dependencies, and archived evidence for every experiment.
+An interactive results browser, built from the same run records by the code that draws the figures, presents the measurements for each research question.\footnote{\url{https://ecrum19.github.io/vcf-rdfizer-testing/}}
 
 The public VCF files utilized in evaluation include Personal Genome Project donations, GIAB benchmark files, a precisionFDA HG002 file, the 2,504-sample 1000 Genomes chromosome-20 call set, and HGSVC2 structural variants~\cite{personal_genome_proj,nist_gib_2025,thousand_genomes_2015,hgsvc_2021,giab_v421_2022}.
 The corpus experiment processes 250,000-record slices and the complete HG005 VCF; controlled slices assess the large multi-sample input.
@@ -571,6 +574,7 @@ E.C. did the implementation and coding work.
 E.C. devised the validation and use-case demonstration with the guidance of R.T. and executed the experiments.
 E.C., G.E., and R.T. reviewed and verified all results.
 E.C., B.B., G.E., and R.T. wrote and edited the manuscript.
+G.E. and R.T. share final authorship and jointly supervised this work.
 
 \subsection*{Acknowledgments}
 Benchmarking used the resources of IDLab at Ghent University.

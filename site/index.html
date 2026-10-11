@@ -91,14 +91,14 @@
       <!-- ===================================================== RQ2 -->
       <details class="panel collapsible" id="rq2" open>
         <summary><span class="rq-tag">RQ2</span> What does the explicit representation in RDF enable in a linked, policy-aware workflow?</summary>
-        <p class="finding">Shared identifiers enabled reusable joins and verified release views.</p>
+        <p class="finding">Shared identifiers enabled reusable joins and policy-checked release views.</p>
         <p class="section-intro">
           <em>Which participant–variant–gene matches connect an observed allele to a ClinVar classification in the
           <span data-fill="genes"></span>-gene <span data-fill="geneList"></span> set, and which matches may each requester receive?</em>
           The RDF workflow links converted VCFs to ClinVar and gene resources, materializes a validated release view for
           each requester, and queries each view with SPARQL. The conventional workflow harmonizes contigs, annotates with
-          bcftools, and applies the same case definition and simulated release rules in Python. The sorted participant,
-          gene, contig, position and allele tuples must agree before timings are compared.
+          bcftools, and applies the same case definition and simulated release rules in Python. The two workflows must return
+          identical sorted participant, gene, contig, position and allele tuples for every requester.
           Scenario 1: gene-span slices of <span data-fill="arm1Genomes"></span> single-sample VCFs (<span data-fill="arm1Sources"></span>).
           Scenario 2: <span data-fill="cohort"></span> 1000 Genomes participants. Scenario 3: the complete <span data-fill="wholeGenome"></span> VCF.
           Scenario 4: the complete <span data-fill="arm4Participant"></span> VCF under layered consent, with <span data-fill="arm4Requesters"></span> requesters.
@@ -122,6 +122,7 @@
             Released-record counts also agreed in <span data-fill="recordArmsAgree"></span>. In <span data-fill="recordArmsDiffer"></span>, the RDF views additionally released
             <span data-fill="recordExtra"></span> symbolic structural-variant records in restricted cancer-predisposition genes to disease-specific and general
             research, because VCF-RDFizer <span data-fill="useCaseVersion"></span> links no symbolic allele to a gene; no match changed.
+            The release checks could not detect these records, because they use the same gene links as the policy evaluator.
           </p>
           <p>
             Shared variant identity changed how one release rule was expressed: restricting a single variant required a policy
@@ -132,7 +133,10 @@
           </p>
           <p>
             Most linked-workflow cost occurred before query execution: conversion, linking, and the materialization,
-            validation and indexing of each release view. Queries over non-empty release views took <span data-fill="querySeconds"></span> seconds in every scenario,
+            validation and indexing of each release view. After the preprocessing both workflows share, the conventional workflow
+            annotated, selected and released records for every requester in <span data-fill="conventionalSeconds"></span> seconds per scenario;
+            conversion and linking alone took <span data-fill="convertLinkMinutes"></span> minutes in the RDF workflow, more than
+            <span data-fill="conventionalFold"></span> times as long. Queries over non-empty release views took <span data-fill="querySeconds"></span> seconds in every scenario,
             suggesting that the fixed ClinVar join dominated the measured query rather than establishing scale-independent
             SPARQL performance.
           </p>
