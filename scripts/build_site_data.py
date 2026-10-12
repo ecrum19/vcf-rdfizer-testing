@@ -78,12 +78,26 @@ def campaign() -> dict:
         platform = by_commit.get("d3b34d5", {}).get("platform")
         if platform:
             hosts[host] = platform
+    # Every host behind a reported result, each with the record its details come from:
+    # the core benchmark's provenance capture or, for a host whose harness wrote none,
+    # a platform record captured afterwards that says why it applies to the runs.
+    host_records = [
+        {"host": host, **platform, "recorded": "At the core benchmark",
+         "record": f"{REPO_URL}/blob/main/{rel(RESULTS / host / 'benchmarks_outputs' / '00_environment' / f'provenance.{host}.d3b34d5.json')}"}
+        for host, platform in sorted(hosts.items())
+    ]
+    for path in sorted(RESULTS.glob("*/00_environment/platform.json")):
+        record = load(path)
+        host_records.append({"host": record["host"], **record["platform"],
+                             "recorded": f"After its runs ({record['captured_utc'][:10]}), unchanged since before them",
+                             "record": f"{REPO_URL}/blob/main/{rel(path)}"})
     return {
         "image": next(ref for ref in summary["integrity"]["image_refs"] if ref != "?"),
         "harnessCommit": summary["harness_commit"],
         "experiments": [{"experiment": name, **row} for name, row in sorted(experiments.items())],
         "cells": cells,
         "hosts": hosts,
+        "hostRecords": host_records,
         "totals": {
             "cells": len(cells),
             "hours": round(sum(row["wall_hours"] for row in experiments.values()), 2),

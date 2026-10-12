@@ -8,8 +8,14 @@ repository (source "testing"), with line ranges for the oracle code. This script
 copies that exact text into benchmarks/query-catalog/catalog.json, so the site shows
 what ran, and refuses to write if a cited file or line range does not exist.
 
+A group of kind "shacl" names one SHACL shapes file instead of listing items: every
+node shape in it becomes an item, with its exact Turtle text (by line range) and a
+list of its constraints read from the parsed graph. The script refuses to write if
+the statements it cut out do not add up to the file's graph.
+
 The site build (build_site_data.py) only reads catalog.json, because CI has no copy
-of the VCF-RDFizer repository. Rerun this script after editing notes.json:
+of the VCF-RDFizer repository. Rerun this script after editing notes.json (it needs
+rdflib):
 
     python3 scripts/build_query_catalog.py --tool-repo ../vcf-rdfizer
 """
@@ -17,11 +23,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 from pathlib import Path
 
+import rdflib
+from rdflib.collection import Collection
+from rdflib.compare import isomorphic
+from rdflib.namespace import RDF
+
 ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "benchmarks" / "query-catalog"
+SH = rdflib.Namespace("http://www.w3.org/ns/shacl#")
 
 
 def git_show(repo: Path, rev: str, path: str) -> str:
@@ -83,6 +96,221 @@ def code_entries(item: dict, tool_repo: Path) -> list[dict]:
     return out
 
 
+# ---------- SHACL shapes ----------
+
+def turtle_statements(text: str) -> list[tuple[int, int]]:
+    """The 1-based (first, last) line of every top-level Turtle statement.
+
+    A statement ends at a '.' outside strings, IRIs, comments and brackets, so the
+    '.' in a SPARQL string, a comment or a decimal does not end one."""
+    spans, start, line, depth, i, n = [], None, 1, 0, 0, len(text)
+    while i < n:
+        c = text[i]
+        if c == "\n":
+            line += 1
+        elif c == "#":
+            while i < n and text[i] != "\n":
+                i += 1
+            continue
+        elif c in "\"'":
+            start = start or line
+            quote = c * 3 if text.startswith(c * 3, i) else c
+            i += len(quote)
+            while i < n and not text.startswith(quote, i):
+                line += text[i] == "\n"
+                i += 2 if text[i] == "\\" else 1
+            i += len(quote)
+            continue
+        elif c == "<":
+            start = start or line
+            i = text.index(">", i)
+        elif not c.isspace():
+            start = start or line
+            depth += c in "[("
+            depth -= c in "])"
+            if c == "." and depth == 0 and (i + 1 == n or text[i + 1].isspace()):
+                spans.append((start, line))
+                start = None
+        i += 1
+    if start is not None:
+        raise SystemExit(f"unterminated Turtle statement starting at line {start}")
+    return spans
+
+
+def term(g: rdflib.Graph, node) -> str:
+    if isinstance(node, rdflib.Literal):
+        return f'"{node}"' if node.datatype is None or node.datatype == rdflib.XSD.string else str(node)
+    if isinstance(node, rdflib.BNode) and (node, RDF.first, None) in g:
+        return ", ".join(term(g, x) for x in Collection(g, node))
+    return node.n3(g.namespace_manager)
+
+
+def path_text(g: rdflib.Graph, path) -> str:
+    if isinstance(path, rdflib.BNode):
+        if (path, RDF.first, None) in g:
+            return "/".join(path_text(g, p) for p in Collection(g, path))
+        if (inverse := g.value(path, SH.inversePath)) is not None:
+            return f"^{path_text(g, inverse)}"
+    return term(g, path)
+
+
+# The SHACL terms that structure a shape rather than constrain a value.
+STRUCTURE = {RDF.type, SH.path, SH.minCount, SH.maxCount, SH.message, SH.severity, SH.flags, SH.property,
+             SH.sparql, SH.targetClass, SH.targetNode, SH.targetSubjectsOf, SH.targetObjectsOf,
+             SH.qualifiedMinCount, SH.qualifiedMaxCount, SH.name, SH.description}
+RANGE = {SH.minInclusive: "≥", SH.maxInclusive: "≤", SH.minExclusive: ">", SH.maxExclusive: "<"}
+
+
+def value_checks(g: rdflib.Graph, node) -> list[str]:
+    """What a shape or property shape requires of each value, in words."""
+    out = []
+    for p, o in sorted(g.predicate_objects(node), key=lambda po: str(po[0])):
+        if p in STRUCTURE:
+            continue
+        name = g.namespace_manager.compute_qname(p)[2]
+        if p in RANGE:
+            out.append(f"{RANGE[p]} {o}")
+        elif p == SH.pattern:
+            flags = g.value(node, SH.flags)
+            out.append(f"pattern {o}" + (f" (flags {flags})" if flags else ""))
+        elif p == SH.node:
+            out.append(f"conforms to {term(g, o)}")
+        elif p in (SH.datatype, SH["class"], SH.nodeKind):
+            out.append(f"{name} {term(g, o)}")
+        elif p == SH["in"]:
+            out.append(f"one of {term(g, o)}")
+        elif p == SH.hasValue:
+            out.append(f"value {term(g, o)}")
+        elif p in (SH["or"], SH.xone):
+            members = [describe(g, m) for m in Collection(g, o)]
+            out.append(("one of: " if p == SH["or"] else "exactly one of: ") + " | ".join(members))
+        elif p == SH["not"]:
+            out.append("not: " + describe(g, o))
+        elif p == SH.qualifiedValueShape:
+            low, high = g.value(node, SH.qualifiedMinCount), g.value(node, SH.qualifiedMaxCount)
+            out.append(f"{count_text(low, high)} value(s) with " + "; ".join(value_checks(g, o)))
+        else:
+            out.append(f"{name} {term(g, o)}")
+    return out
+
+
+def describe(g: rdflib.Graph, node) -> str:
+    """A nested shape in words: its own value checks, then each of its property shapes."""
+    properties = []
+    for prop in g.objects(node, SH.property):
+        count = count_text(g.value(prop, SH.minCount), g.value(prop, SH.maxCount))
+        checks = ([] if count == "any number" else [count]) + value_checks(g, prop)
+        properties.append(f"{path_text(g, g.value(prop, SH.path))}: {', '.join(checks)}")
+    return "; ".join(value_checks(g, node) + sorted(properties)) or term(g, node)
+
+
+def count_text(low, high) -> str:
+    low, high = int(low or 0), (None if high is None else int(high))
+    word = {0: "zero", 1: "one"}
+    if high is not None and low == high:
+        return f"exactly {word.get(low, low)}"
+    if high is None:
+        return f"at least {word.get(low, low)}" if low else "any number"
+    return f"at most {word.get(high, high)}" if not low else f"{low} to {high}"
+
+
+def constraint_rows(g: rdflib.Graph, shape, text: str) -> list[dict]:
+    """One row per property shape, SPARQL constraint, and the shape's own value checks,
+    in the order they appear in the shape's text."""
+    shape_severity = g.value(shape, SH.severity)
+    rows = []
+    if checks := value_checks(g, shape):
+        rows.append({"kind": "node", "path": "", "count": "", "checks": checks, "at": len(text) + 1})
+    for prop in g.objects(shape, SH.property):
+        path = path_text(g, g.value(prop, SH.path))
+        found = re.search(r"sh:path\s+" + re.escape(path) + r"(?![\w-])", text)
+        low, high, checks = g.value(prop, SH.minCount), g.value(prop, SH.maxCount), value_checks(g, prop)
+        qualified = g.value(prop, SH.qualifiedValueShape)
+        if qualified is not None and low is None and high is None:
+            # Only the qualified count applies: "exactly one hasHeaderLine with class X".
+            low, high = g.value(prop, SH.qualifiedMinCount), g.value(prop, SH.qualifiedMaxCount)
+            path = f"{path} with {describe(g, qualified)}"
+            checks = [c for c in checks if " value(s) with " not in c]
+        rows.append({"kind": "property", "path": path, "count": count_text(low, high), "checks": checks,
+                     "message": str(g.value(prop, SH.message) or ""),
+                     "severity": g.value(prop, SH.severity), "at": found.start() if found else len(text)})
+    for constraint in g.objects(shape, SH.sparql):
+        message = str(g.value(constraint, SH.message) or "")
+        rows.append({"kind": "sparql", "path": "", "count": "", "checks": [], "message": message,
+                     "severity": shape_severity, "at": text.find(message) if message else len(text)})
+    for row in rows:
+        severity = row.pop("severity", None) or SH.Violation
+        row["severity"] = severity.n3(g.namespace_manager).removeprefix("sh:")
+        if not row.get("message"):
+            row.pop("message", None)
+    # rdflib does not keep the file's order; ties are broken by content, so a rebuild is stable.
+    rows.sort(key=lambda r: (r["at"], r["kind"], r["path"], r["checks"], r.get("message", "")))
+    for row in rows:
+        del row["at"]
+    return rows
+
+
+def shape_summary(g: rdflib.Graph, shape, rows: list[dict]) -> str:
+    target = g.value(shape, SH.targetClass)
+    subject = (f"Each {term(g, target)}" if target else
+               f"Each object of {term(g, o)}" if (o := g.value(shape, SH.targetObjectsOf)) else
+               f"Each subject of {term(g, s)}" if (s := g.value(shape, SH.targetSubjectsOf)) else
+               "Used by other shapes through sh:node; each value")
+    by_count: dict[str, list[str]] = {}
+    for row in rows:
+        if row["kind"] == "property" and not row.get("message"):
+            by_count.setdefault(row["count"], []).append(row["path"].removeprefix("vcfc:"))
+    phrases = [f"{count}{' of' if count == 'any number' else ''} "
+               f"{' and '.join(paths) if len(paths) < 3 else ', '.join(paths[:-1]) + ' and ' + paths[-1]}"
+               for count, paths in by_count.items()]
+    node = next((r for r in rows if r["kind"] == "node"), None)
+    if node:
+        phrases.append("plus a condition across properties" if phrases else "; ".join(node["checks"]))
+    messages = [r["message"] for r in rows if r.get("message")]
+    summary = f"{subject}: {'; '.join(phrases)}" if phrases else f"{subject}:"
+    if messages:
+        summary += (". " if phrases else " ") + " ".join(m if m.endswith(".") else m + "." for m in messages)
+    if all(r["severity"] == "Warning" for r in rows):
+        summary += " (warning only)"
+    return summary
+
+
+def shacl_group(group: dict, tool_repo: Path) -> dict:
+    """Every node shape in one shapes file, with its exact text and its constraints."""
+    tags, path = group["tags"], group["path"]
+    text = git_show(tool_repo, tags[0], path)
+    for rev in tags[1:]:
+        if git_show(tool_repo, rev, path) != text:
+            raise SystemExit(f"{group['id']}: {path} differs between {tags[0]} and {rev}")
+    lines = text.splitlines()
+    g = rdflib.Graph().parse(data=text, format="turtle")
+    prefixes = "\n".join(l for l in lines if l.lstrip().startswith("@prefix")) + "\n"
+    rebuilt, items = rdflib.Graph(), []
+    for first, last in turtle_statements(text):
+        statement = "\n".join(lines[first - 1:last])
+        part = rdflib.Graph().parse(data=prefixes + statement, format="turtle")
+        rebuilt += part
+        shapes = [s for s in part.subjects(RDF.type, SH.NodeShape) if isinstance(s, rdflib.URIRef)]
+        if not shapes:
+            continue
+        if len(shapes) > 1:
+            raise SystemExit(f"{group['id']}: lines {first}-{last} declare {len(shapes)} shapes")
+        shape = shapes[0]
+        while first > 1 and lines[first - 2].lstrip().startswith("#") and not lines[first - 2].lstrip().startswith("##"):
+            first -= 1  # a comment written directly above the shape belongs to it; a banner does not
+        rows = constraint_rows(g, shape, statement)
+        name = g.namespace_manager.compute_qname(shape)[2]
+        items.append({"id": f"{group['id']}-{name}", "label": name, "summary": shape_summary(g, shape, rows),
+                      "constraints": rows, "text": "\n".join(lines[first - 1:last]) + "\n",
+                      "from": [provenance("tool", rev, path, tool_repo, (first, last)) for rev in tags]})
+    if not isomorphic(rebuilt, g):
+        raise SystemExit(f"{group['id']}: the statements cut from {path} do not add up to its graph")
+    if len(items) != len(set(g.subjects(RDF.type, SH.NodeShape))):
+        raise SystemExit(f"{group['id']}: found {len(items)} of {len(set(g.subjects(RDF.type, SH.NodeShape)))} shapes")
+    return {key: group[key] for key in ("id", "rq", "title", "intro", "kind")} | {
+        "file": [provenance("tool", rev, path, tool_repo) for rev in tags], "items": items}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--tool-repo", type=Path, required=True, help="a clone of VCF-RDFizer with its release tags")
@@ -90,6 +318,9 @@ def main() -> None:
     notes = json.loads((CATALOG / "notes.json").read_text())
     groups = []
     for group in notes["groups"]:
+        if group.get("kind") == "shacl":
+            groups.append(shacl_group(group, args.tool_repo))
+            continue
         items = []
         for item in group["items"]:
             built = {key: item[key] for key in ("id", "label", "summary") }
@@ -104,7 +335,7 @@ def main() -> None:
     out = {"groups": groups, "builtFrom": {"notes": "benchmarks/query-catalog/notes.json",
                                            "testingCommit": rev_commit(ROOT, "HEAD")}}
     (CATALOG / "catalog.json").write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n")
-    print(f"wrote {CATALOG / 'catalog.json'}: {sum(len(g['items']) for g in groups)} queries in {len(groups)} groups")
+    print(f"wrote {CATALOG / 'catalog.json'}: {sum(len(g['items']) for g in groups)} queries and shapes in {len(groups)} groups")
 
 
 if __name__ == "__main__":

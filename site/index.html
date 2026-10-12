@@ -60,16 +60,20 @@
         </p>
         <div class="table-wrap" id="evidenceTable"></div>
         <div class="chart-grid">
-          <div class="chart-card wide" data-chart="mutationScores"></div>
-          <div class="chart-card wide" data-chart="mutationClasses"></div>
+          <div class="chart-card wide" id="rq1-mutation-scores" data-chart="mutationScores"></div>
+          <div class="chart-card wide" id="rq1-mutation-classes" data-chart="mutationClasses"></div>
         </div>
-        <h3 class="subhead">Consumer WGS validation run: <span data-fill="realSample"></span>, first <span data-fill="realRecords"></span> records</h3>
+        <h3 class="subhead" id="rq1-wgs">Consumer WGS validation run: <span data-fill="realSample"></span>, first <span data-fill="realRecords"></span> records</h3>
         <div class="table-wrap" id="realGenomeTable"></div>
-        <details class="query-catalog" data-groups="validation preflight">
+        <details class="query-catalog" id="rq1-queries" data-groups="validation">
           <summary>Queries and oracles</summary>
           <div class="query-groups"><p class="table-meta">Loading the queries…</p></div>
         </details>
-        <aside class="interpretation">
+        <details class="query-catalog" id="rq1-checks" data-groups="preflight shacl-core shacl-consistency shacl-sparql">
+          <summary>Preflight checks and SHACL shapes</summary>
+          <div class="query-groups"><p class="table-meta">Loading the checks and shapes…</p></div>
+        </details>
+        <aside class="interpretation" id="rq1-findings">
           <h3>Findings</h3>
           <p>
             Across the core benchmark, all <span data-fill="comparisonsEqual"></span> applicable SPARQL results agreed exactly with their source-derived
@@ -109,20 +113,20 @@
           Consent and access conditions are simulated; the VCFs are public. Every stage used VCF-RDFizer <span data-fill="useCaseVersion"></span>.
         </p>
         <div class="chart-grid">
-          <div class="chart-card wide" data-chart="matches"></div>
-          <div class="chart-card" data-chart="participants"></div>
-          <div class="chart-card" data-chart="effort"></div>
-          <div class="chart-card wide" data-chart="usecaseCost"></div>
+          <div class="chart-card wide" id="rq2-matches" data-chart="matches"></div>
+          <div class="chart-card" id="rq2-participants" data-chart="participants"></div>
+          <div class="chart-card" id="rq2-effort" data-chart="effort"></div>
+          <div class="chart-card wide" id="rq2-usecase-cost" data-chart="usecaseCost"></div>
         </div>
-        <h3 class="subhead">Released records: release views compared with the conventional workflow</h3>
+        <h3 class="subhead" id="rq2-records">Released records: release views compared with the conventional workflow</h3>
         <div class="table-wrap" id="recordsTable"></div>
-        <h3 class="subhead">Linksets: records linked to shared identifiers</h3>
+        <h3 class="subhead" id="rq2-linksets">Linksets: records linked to shared identifiers</h3>
         <div class="table-wrap" id="linkingTable"></div>
-        <details class="query-catalog" data-groups="usecase">
+        <details class="query-catalog" id="rq2-queries" data-groups="usecase">
           <summary>Queries and oracles</summary>
           <div class="query-groups"><p class="table-meta">Loading the queries…</p></div>
         </details>
-        <aside class="interpretation">
+        <aside class="interpretation" id="rq2-findings">
           <h3>Findings</h3>
           <p>
             Across all <span data-fill="scenarios"></span> scenarios, the RDF and conventional workflows returned identical requester-specific
@@ -157,7 +161,7 @@
         <summary><span class="rq-tag">RQ3</span> Under which workloads and representation choices are the costs practical?</summary>
         <p class="finding">Semantic coverage and practical cost depend on representation and workload.</p>
 
-        <h3 class="rq-sub" id="coverage">Semantic coverage across converters</h3>
+        <h3 class="rq-sub" id="rq3-coverage">Semantic coverage across converters</h3>
         <p class="section-intro">
           A shared-input comparison evaluates <span data-fill="converters"></span> other executable converters alongside VCF-RDFizer on the same
           <span data-fill="converterInputs"></span> inputs, each with its most complete available options. Content questions <span data-fill="converterRange"></span> are translated to each
@@ -165,10 +169,10 @@
           VCF-RDFizer. A question is reported as not represented when the graph lacks the required information.
         </p>
         <div class="chart-grid">
-          <div class="chart-card wide" data-chart="converters"></div>
+          <div class="chart-card wide" id="rq3-converters" data-chart="converters"></div>
         </div>
 
-        <h3 class="rq-sub" id="conversion">Conversion cost</h3>
+        <h3 class="rq-sub" id="rq3-conversion">Conversion cost</h3>
         <p class="section-intro">
           Controlled scaling series vary one dimension at a time: the record-count series processes increasing numbers of HG005
           records, and the sample-count series holds <span data-fill="sampleRecords"></span> 1000 Genomes records fixed while varying the sample count from
@@ -176,13 +180,13 @@
           sizes are measured separately.
         </p>
         <div class="chart-grid">
-          <div class="chart-card" data-chart="records"></div>
-          <div class="chart-card" data-chart="samples"></div>
-          <div class="chart-card" data-chart="storage"></div>
-          <div class="chart-card" data-chart="representations"></div>
+          <div class="chart-card" id="rq3-records" data-chart="records"></div>
+          <div class="chart-card" id="rq3-samples" data-chart="samples"></div>
+          <div class="chart-card" id="rq3-storage" data-chart="storage"></div>
+          <div class="chart-card" id="rq3-representations" data-chart="representations"></div>
         </div>
 
-        <h3 class="rq-sub" id="retrieval">Retrieval cost</h3>
+        <h3 class="rq-sub" id="rq3-retrieval">Retrieval cost</h3>
         <p class="section-intro">
           Retrieval experiments compare individual questions, the <span data-fill="questions"></span>-question batch and <span data-fill="regionalQuestions"></span> regional questions in
           QLever against cyvcf2 and bcftools VCF access, after verifying that every answer agrees. They also compare the SPARQL
@@ -190,12 +194,12 @@
           POS-based selection on every execution path. Setup and query execution are reported separately.
         </p>
         <div class="chart-grid">
-          <div class="chart-card wide" data-chart="perQuestion"></div>
-          <div class="chart-card" data-chart="engines"></div>
-          <div class="chart-card" data-chart="costBySize"></div>
-          <div class="chart-card wide" data-chart="regional"></div>
+          <div class="chart-card wide" id="rq3-per-question" data-chart="perQuestion"></div>
+          <div class="chart-card" id="rq3-engines" data-chart="engines"></div>
+          <div class="chart-card" id="rq3-cost-by-size" data-chart="costBySize"></div>
+          <div class="chart-card wide" id="rq3-regional" data-chart="regional"></div>
         </div>
-        <div class="calculator panel-inset" id="breakEven">
+        <div class="calculator panel-inset" id="rq3-break-even">
           <h3>Setup amortization: break-even calculator</h3>
           <p class="section-intro">
             Defaults are the measured minimal RDF setup for the <span data-fill="sliceRecords"></span>-record HG005 slice: conversion to gzip-framed
@@ -204,11 +208,11 @@
           <div class="controls-grid" id="breakEvenInputs"></div>
           <p class="calc-result" id="breakEvenResult" aria-live="polite"></p>
         </div>
-        <details class="query-catalog" data-groups="converters regional">
+        <details class="query-catalog" id="rq3-queries" data-groups="converters regional">
           <summary>Queries and oracles</summary>
           <div class="query-groups"><p class="table-meta">Loading the queries…</p></div>
         </details>
-        <aside class="interpretation">
+        <aside class="interpretation" id="rq3-findings">
           <h3>Findings</h3>
           <p>
             <span data-fill="converterAllPass"></span> was the only converter whose graphs matched the source-derived oracle for all <span data-fill="converterQuestions"></span>
@@ -253,6 +257,7 @@
         <summary>Notes and provenance</summary>
         <ul class="notes">
           <li>The core benchmark ran the published image <code><span data-fill="campaignImage"></span></code> on <span data-fill="campaignHosts"></span> hosts with identical hardware (below).</li>
+          <li>The large-graph builds and retrieval and the index-storage measurements ran on a third host, vcf-bench-3, with the same CPU model and core count and an older kernel (below). Its harness wrote no environment record, so its details were read from the host after its runs; the running kernel was booted, and Docker installed, before the first of them, and neither has changed since.</li>
           <li>The linked workflow, regional retrieval, large-graph retrieval at <span data-fill="midTriples"></span> and <span data-fill="maxTriples"></span> triples, the consumer WGS validation run and the converter comparison used the published VCF-RDFizer <span data-fill="useCaseVersion"></span>. On the same <span data-fill="sliceRecords"></span> HG005 records, both releases wrote identical sorted triples.</li>
           <li>The linked workflow's consents are simulated and do not express any real participant's wishes.</li>
           <li>Only the runs behind reported results are shown. Pre-release, superseded, stalled and failed runs are on the repository's <a href="https://github.com/ecrum19/vcf-rdfizer-testing/tree/legacy/benchmark-results">legacy branch</a>.</li>

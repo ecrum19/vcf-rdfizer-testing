@@ -599,7 +599,7 @@ async function renderChart(host, { id = host.dataset.chart, big = false } = {}) 
     host.innerHTML = `<div class="chart" role="img" aria-label="${esc(title)}"></div>${caption}`;
   } else {
     host.innerHTML = `
-      <div class="chart-head"><h3>${esc(title)}</h3>
+      <div class="chart-head"><h3>${esc(title)}${host.id ? anchorLink(host.id) : ""}</h3>
         <div class="chart-actions">
           <span class="metric-help" tabindex="0" role="note" aria-label="${esc(help)}" data-help="${esc(help)}">i</span>
           <button type="button" class="ghost" data-expand="${id}" aria-label="Expand: ${esc(title)}">Expand</button>
@@ -783,25 +783,107 @@ function renderExplorer() {
 }
 
 function renderHosts() {
-  const rows = Object.entries(D.campaign.hosts).map(([host, p]) => ({ host, cpu: `${p.cpu_model} (${p.cpu_count} cores)`,
-    memory: `${num(Number(p.mem_total_kb) / 1e6, 1)} GB`, kernel: p.kernel, docker: p.docker }));
+  const rows = D.campaign.hostRecords.map((p) => ({ ...p, cpu: `${p.cpu_model} (${p.cpu_count} cores)`,
+    memory: `${num(Number(p.mem_total_kb) / 1e6, 1)} GB` }));
   document.getElementById("hostTable").innerHTML = table(
-    [{ key: "host", label: "Host" }, { key: "cpu", label: "CPU" }, { key: "memory", label: "Memory", num: true }, { key: "kernel", label: "Kernel" }, { key: "docker", label: "Docker" }], rows) +
+    [{ key: "host", label: "Host" }, { key: "cpu", label: "CPU" }, { key: "memory", label: "Memory", num: true }, { key: "kernel", label: "Kernel" },
+      { key: "docker", label: "Docker" }, { key: "recorded", label: "Recorded", html: (r) => `<a href="${esc(r.record)}">${esc(r.recorded)}</a>` }], rows) +
     `<p class="table-meta">Harness commit <code>${esc(D.campaign.harnessCommit)}</code>.</p>`;
 }
 
-// --------------------------------------------------------------- modal
+// --------------------------------------------------------------- section links
+// Every section has a stable id (#rq1-checks, #rq3-queries, #notes, ...), offered as a "#"
+// link beside its title that also copies the address; each query and shape gets one when
+// its section renders. A link to a section opens it, and every section around it.
+// The ids the page used before this scheme, so old links still land.
+const ID_ALIASES = { coverage: "rq3-coverage", conversion: "rq3-conversion", retrieval: "rq3-retrieval", breakEven: "rq3-break-even" };
+
+function anchorLink(id) {
+  return `<a class="anchor-link" href="#${esc(id)}" title="Link to this section (copies the address)" aria-label="Link to this section">#</a>`;
+}
+
+// q03_titv in RQ1 is #rq1-q03-titv; shacl-core-VCFRecordShape is #rq1-shacl-core-vcfrecordshape.
+function itemAnchor(group, item) {
+  return `${group.rq.toLowerCase()}-${item.id.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+}
+
+function addSectionLinks() {
+  const titles = [
+    ...[...document.querySelectorAll("details[id] > summary")].map((s) => [s.parentElement.id, s]),
+    ...[...document.querySelectorAll("h3[id]")].map((h) => [h.id, h]),
+    ...[...document.querySelectorAll(".interpretation[id] > h3, .calculator[id] > h3")].map((h) => [h.parentElement.id, h]),
+  ];
+  for (const [id, title] of titles) title.insertAdjacentHTML("beforeend", anchorLink(id));
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest(".anchor-link");
+    if (!link || !navigator.clipboard) return;
+    navigator.clipboard.writeText(`${location.origin}${location.pathname}${link.getAttribute("href")}`).then(() => {
+      link.textContent = "link copied";
+      link.classList.add("copied");
+      setTimeout(() => { link.textContent = "#"; link.classList.remove("copied"); }, 1600);
+    }, () => {});
+  });
+}
+
+async function revealHashTarget() {
+  const hash = decodeURIComponent(location.hash.slice(1));
+  const id = ID_ALIASES[hash] || hash;
+  if (!id) return;
+  let target = document.getElementById(id);
+  if (!target) {
+    // One query or shape: render the section that holds it first.
+    const catalog = await loadQueryCatalog().catch(() => null);
+    const group = catalog?.groups.find((g) => g.items.some((item) => itemAnchor(g, item) === id));
+    const host = group && [...document.querySelectorAll("details.query-catalog")].find((h) => h.dataset.groups.split(" ").includes(group.id));
+    if (!host) return;
+    await fillCatalog(host);
+    target = document.getElementById(id);
+    if (!target) return;
+  }
+  for (let d = target.closest("details"); d; d = d.parentElement?.closest("details")) d.open = true;
+  target.scrollIntoView();
+}
+
 // ---------- Queries and oracles ----------
 // queries.json is fetched the first time a "Queries and oracles" section opens:
 // it holds the exact query and oracle code, which most readers never need.
 const TOOL_REPO = "https://github.com/ecrum19/VCF-RDFizer";
-let queryCatalog = null;
+let catalogRequest = null;
+const catalogFills = new Map();
+
+function loadQueryCatalog() {
+  if (!catalogRequest) {
+    catalogRequest = fetch("./data/queries.json").then((r) => {
+      if (!r.ok) throw new Error(`queries.json: HTTP ${r.status}`);
+      return r.json();
+    });
+    catalogRequest.catch(() => { catalogRequest = null; }); // a failed load can be retried
+  }
+  return catalogRequest;
+}
+
+// Renders a section's queries once; a second call waits for the first.
+function fillCatalog(host) {
+  if (!catalogFills.has(host)) {
+    catalogFills.set(host, loadQueryCatalog().then((catalog) => renderQueryGroups(host, catalog), (error) => {
+      host.querySelector(".query-groups").textContent = `Could not load the queries: ${error.message}`;
+      catalogFills.delete(host);
+    }));
+  }
+  return catalogFills.get(host);
+}
 
 function sourceLink(from) {
   const base = from.source === "VCF-RDFizer" ? TOOL_REPO : REPO;
   const lines = from.lines ? `#L${from.lines[0]}-L${from.lines[1]}` : "";
   const range = from.lines ? `, lines ${from.lines[0]}–${from.lines[1]}` : "";
   return `<a href="${base}/blob/${esc(from.commit)}/${esc(from.path)}${lines}">${esc(from.source)} ${esc(from.rev)}: <code>${esc(from.path)}</code>${range}</a>`;
+}
+
+function itemSummary(item, group) {
+  const id = itemAnchor(group, item);
+  return `<details class="query" id="${esc(id)}"><summary><span class="q-label">${esc(item.label)}</span> ` +
+    `<span class="q-summary">${esc(item.summary)}</span>${anchorLink(id)}</summary>`;
 }
 
 function renderQueryItem(item, group) {
@@ -817,36 +899,42 @@ function renderQueryItem(item, group) {
   const code = item.oracleCode.length ? `<details class="q-code"><summary>Exact ${esc(group.oracleLabel.toLowerCase())} code (${item.oracleCode.length} excerpt${item.oracleCode.length === 1 ? "" : "s"})</summary>` +
     item.oracleCode.map((c) => `<p class="q-sub">${esc(c.note)} <span class="q-from">(${sourceLink(c.from)})</span></p><pre class="code">${esc(c.text)}</pre>`).join("") +
     `</details>` : "";
-  return `<details class="query"><summary><span class="q-label">${esc(item.label)}</span> <span class="q-summary">${esc(item.summary)}</span></summary>` +
+  return itemSummary(item, group) +
     `<div class="q-body"><h5>Query</h5>${sparql}<h5>${esc(group.oracleLabel)}, as pseudo-code</h5><pre class="code">${esc(item.pseudo)}</pre>${extra}${code}</div></details>`;
 }
 
-function renderQueryGroups(host) {
+// A SHACL shape: its constraints in words, then the shape exactly as the tool ships it.
+const CONSTRAINT_LABELS = { node: "The resource as a whole", sparql: "SPARQL constraint" };
+
+function renderShapeItem(item, group) {
+  const rows = item.constraints.map((c) => {
+    const what = [c.count, ...c.checks].filter(Boolean).map(esc).join("; ");
+    return `<li>${c.kind === "property" ? `<code>${esc(c.path)}</code>` : esc(CONSTRAINT_LABELS[c.kind])}` +
+      `${what ? `: ${what}` : ""}${c.message ? ` <span class="q-msg">“${esc(c.message)}”</span>` : ""}` +
+      `${c.severity === "Violation" ? "" : ` <span class="q-tag">${esc(c.severity.toLowerCase())} only</span>`}</li>`;
+  }).join("");
+  return itemSummary(item, group) +
+    `<div class="q-body"><h5>Constraints</h5><ul class="q-constraints">${rows}</ul>` +
+    `<h5>Shape, as written</h5><p class="q-sub"><span class="q-from">(${item.from.map(sourceLink).join("; ")})</span></p>` +
+    `<pre class="code">${esc(item.text)}</pre></div></details>`;
+}
+
+function renderQueryGroups(host, catalog) {
   const wanted = host.dataset.groups.split(" ");
-  host.querySelector(".query-groups").innerHTML = queryCatalog.groups.filter((g) => wanted.includes(g.id)).map((g) =>
-    `<div class="query-group"><h4>${esc(g.title)}</h4><p class="table-meta">${esc(g.intro)}</p>${g.items.map((item) => renderQueryItem(item, g)).join("")}</div>`).join("");
+  host.querySelector(".query-groups").innerHTML = catalog.groups.filter((g) => wanted.includes(g.id)).map((g) => {
+    const file = g.kind === "shacl" ? ` Shapes file: ${g.file.map(sourceLink).join("; ")}.` : "";
+    const items = g.items.map((item) => g.kind === "shacl" ? renderShapeItem(item, g) : renderQueryItem(item, g)).join("");
+    return `<div class="query-group"><h4>${esc(g.title)}</h4><p class="table-meta">${esc(g.intro)}${file}</p>${items}</div>`;
+  }).join("");
 }
 
 function wireQueryCatalogs() {
   for (const host of document.querySelectorAll("details.query-catalog")) {
-    host.addEventListener("toggle", async () => {
-      if (!host.open || host.dataset.loaded) return;
-      host.dataset.loaded = "1";
-      const target = host.querySelector(".query-groups");
-      try {
-        queryCatalog = queryCatalog || await fetch("./data/queries.json").then((r) => {
-          if (!r.ok) throw new Error(`queries.json: HTTP ${r.status}`);
-          return r.json();
-        });
-        renderQueryGroups(host);
-      } catch (error) {
-        target.textContent = `Could not load the queries: ${error.message}`;
-        delete host.dataset.loaded;
-      }
-    });
+    host.addEventListener("toggle", () => { if (host.open) fillCatalog(host); });
   }
 }
 
+// --------------------------------------------------------------- modal
 function wireModal() {
   const modal = document.getElementById("focusModal");
   const content = document.getElementById("focusContent");
@@ -895,8 +983,12 @@ async function main() {
     "N-Triples-only rerun (vcf-bench-2/nt-only); 14_regional_access and 16_scale_retrieval from the v3.3.1 rerun.";
   wireModal();
   wireQueryCatalogs();
+  addSectionLinks();
   await renderAllCharts();
   darkQuery.addEventListener("change", renderAllCharts);
+  // After the charts, so the layout above the target has settled before scrolling.
+  revealHashTarget();
+  window.addEventListener("hashchange", revealHashTarget);
 }
 
 main().catch((error) => {
