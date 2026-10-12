@@ -2,7 +2,7 @@
 """Export every figure of the manuscript and supplement as a high-resolution TIFF.
 
     export_tiff.py --aux-dir <build dir> --figures-dir <dir of figure PDFs> --out <dir> \\
-        current_short.tex supplementary.tex
+        submitted.tex supplementary.tex
 
 Each figure is named by the number LaTeX gave it (Fig1.tif, ..., FigS1.tif, ...),
 read from the documents' .aux files, so a renumbering renames the files with it.

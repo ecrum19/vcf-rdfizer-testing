@@ -1269,15 +1269,17 @@ FUNCTION {multi.page.check}
   while$
   multiresult 
 }
+% VCF-RDFizer manuscript, 2026-10-12: clearpage and do.pages keep letters and dots in page
+% and article numbers (giab008, eabf7117, D44--D51, 3426--3440.e19). The released style kept
+% digits only, printing 008, 7117, 44--51 and 3426--344019. Only dashes and spaces are dropped.
 FUNCTION {clearpage}
 { 't :=
   "" 's :=
   "" 'l :=
-  
     { t empty$ not }
     {
       t #1 #1 substring$ 's :=
-      s is.num not
+      s "-" = s " " = or
         'skip$
         {	l  s * 'l := 	}
       if$
@@ -1285,7 +1287,6 @@ FUNCTION {clearpage}
     }
   while$
   l
-       
 }
 FUNCTION {do.pages}
 {'t :=
@@ -1293,29 +1294,18 @@ FUNCTION {do.pages}
   "" 'v :=
     {t empty$ not}
     { t #1 #1 substring$  's :=
-      s is.num not
-      s "," = not
-      and
-        { "" j = 
-             {
-               t #2 global.max$ substring$ 't :=
-             }
-            {t find.integer 
-                { t clearpage  'v := }
-                'skip$
-                if$
-                "" 't := 
-             }
-           if$	
+      s "-" =  "" j = not  and
+        { t clearpage 'v :=
+          "" 't :=
         }
         {	j  s * 'j :=
-            t #2 global.max$ substring$ 't := 
+            t #2 global.max$ substring$ 't :=
         }
       if$
     }
   while$
   j clearpage  'j :=
-  j  "fpage" make.tag 
+  j  "fpage" make.tag
   "cnd" is.in.list
     'skip$
     {"--"  * v "lpage" make.tag *}

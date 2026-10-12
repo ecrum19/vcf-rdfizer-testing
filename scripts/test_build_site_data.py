@@ -184,7 +184,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
             self.assertEqual(self.data["facts"][f"fidelity{label}"], f"{label}. {title}")
         # Once a manuscript names the groups, it names all five as the site does. (The
         # committed manuscripts predate the groups; the revision that adds them is local.)
-        for name in ("current_short.tex", "supplementary.tex"):
+        for name in ("submitted.tex", "supplementary.tex"):
             source = (build_site_data.ROOT / "BioMedSem_2026" / "paper" / name).read_text()
             named = [label for label, title in groups.items() if f"{label}: {title}" in source]
             self.assertIn(named, ([], list(groups)), name)

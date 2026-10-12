@@ -1,5 +1,5 @@
-# Lets a direct `latexmk current_short.tex` (VS Code LaTeX Workshop, or a terminal)
-# find what the Makefile otherwise copies into .build/current_short/: the Springer
+# Lets a direct `latexmk submitted.tex` (VS Code LaTeX Workshop, or a terminal)
+# find what the Makefile otherwise copies into .build/submitted/: the Springer
 # class in template/, its bibliography style in template/bst/, and the figures
 # in figures/ (the ZIP) or ../paper-assets/ (the repository).
 # The trailing // makes kpathsea search subdirectories.
@@ -12,12 +12,12 @@ $pdf_mode = 1;
 
 # Each document reads the other's labels from its .aux (xr-hyper). The Makefile
 # builds both in .build/; a direct build of one of them here (LaTeX Workshop, or
-# `latexmk current_short.tex`) would find no partner .aux and print ?? for every
+# `latexmk submitted.tex`) would find no partner .aux and print ?? for every
 # cross-document reference. So it first builds the partner when the partner's .aux
 # is missing or older than its source. The environment variable stops the partner
 # build from starting another one.
 unless ($ENV{VCFR_XR_PARTNER}) {
-  my %partner = ('current_short' => 'supplementary', 'supplementary' => 'current_short');
+  my %partner = ('submitted' => 'supplementary', 'supplementary' => 'submitted');
   for my $arg (@ARGV) {
     (my $base = $arg) =~ s{^.*/}{};
     $base =~ s/\.tex$//;

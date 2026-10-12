@@ -1,4 +1,4 @@
-% Supplement revised against current_short.tex, 12 October 2026.
+% Supplement revised against submitted.tex, 12 October 2026.
 % Editorial revision only. Experimental results and cited resources are retained.
 \documentclass[11pt]{article}
 \usepackage[a4paper,margin=2.4cm]{geometry}
@@ -13,7 +13,7 @@
 \usepackage[section]{placeins}
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
-\externaldocument[M-]{current_short}
+\externaldocument[M-]{submitted}
 \graphicspath{{figures/}}
 \usepackage[font=small,labelfont=bf,labelsep=period,skip=4pt]{caption}
 \captionsetup[table]{position=top}
@@ -37,8 +37,6 @@
 \renewcommand{\cftsubsecpagefont}{\footnotesize}
 \renewcommand{\cftdotsep}{3}
 \newcommand{\main}[1]{Section~\ref{M-#1} of the main text}
-\definecolor{queryorange}{RGB}{145,80,0}
-\newcommand{\authorquery}[1]{\par\smallskip\noindent\begin{minipage}{\linewidth}\color{queryorange}\textbf{[AUTHOR QUERY: #1]}\end{minipage}\par\smallskip}
 \emergencystretch=2em
 \setlength{\parskip}{3pt}
 \title{Supplementary material\\[4pt]\large VCF-RDFizer: From a VCF File to Explicit, Verifiable, and Policy-aware Semantic Genomic Data}
@@ -219,7 +217,7 @@ The complete vocabulary is documented at \url{https://ecrum19.github.io/vcf-core
 \label{fig:vcf-core-full}
 \end{figure}
 
-VCF-RDFizer assigns each source record a deterministic Internationalized Resource Identifier (IRI) based on the source file and record position.
+VCF-RDFizer assigns each source record a deterministic Internationalized Resource Identifier (IRI) based on the source file and the record's one-based index among that file's data lines.
 The same alteration reported in two files therefore remains two source observations.
 A separate \emph{linkset}, an N-Triples file of links to external identifiers, can connect the observations to a shared variant identity.
 \emph{Linkers} apply the rules that generate those links (Section~\ref{subsec:usecase-linksets}).
@@ -254,12 +252,12 @@ Section references without an S prefix refer to the main text.}\label{tab:capabi
 \toprule
 \textbf{Capability} & \textbf{Status} & \textbf{Notes and limits}\\
 \midrule
-Core fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported (v3.1.0)\newline\textit{Validated} & \texttt{Q1}--\texttt{Q4} equal in completed comparisons and in the consumer WGS validation run (Section~\ref{subsec:validation-comparisons})\\
+Core fields (CHROM, POS, ID, REF, ALT, FILTER) & Supported (v3.1.0)\newline\textit{Validated} & \texttt{Q1}--\texttt{Q4} equal in completed comparisons and in the consumer WGS validation run (Sections~\ref{subsec:validation-comparisons} and~\ref{subsec:validation-consumer})\\
 \rowsep
 QUAL & Supported\newline\textit{\texttt{Q11} record digest} & Every record has a typed literal.
 Missing QUAL is \texttt{vcfc:Null}\\
 \rowsep
-INFO & Supported, structured by default\newline\textit{\texttt{Q11}, \texttt{Q12} digests} & Typed value per record and key, per-allele items for Number=A/R/G, plus the complete \texttt{infoRaw} string\\
+INFO & Supported, structured by default\newline\textit{\texttt{Q11}, \texttt{Q12} digests} & Typed value per record and key, ordered items for Number=A/R/G (linked to alleles for A and R, to genotype ordinals for G), plus the complete \texttt{infoRaw} string\\
 \rowsep
 FORMAT, sample, and genotype values & Supported\newline\textit{\texttt{Q5}--\texttt{Q6} exact, \texttt{Q13} digest} & Conversion preserves half-calls (for example, \texttt{./1}), haploid calls, and triploid and tetraploid calls (Table~\ref{tab:difficult-inputs}).
 Detecting injected faults in called alleles, sample indexes, and phasing requires the deeper profiles\\
@@ -671,7 +669,8 @@ Empty in raw-only INFO mode\\
 
 Normalization parses counts as integers and sorts result rows by their keys.
 The comparator retains contig and sample identifiers, distinguishes \texttt{PASS} from \texttt{.}, and reports missing, extra, or differing rows.
-\texttt{Q5}--\texttt{Q6} apply to inputs with sample data and \texttt{GT}.
+\texttt{Q5}--\texttt{Q6} apply to an input file with at least one sample column and at least one record whose FORMAT includes \texttt{GT}.
+In such a file, calls from records without \texttt{GT} are counted in the no-GT class of \texttt{Q5}.
 \texttt{Q11}--\texttt{Q13} hash each record, INFO value, or FORMAT value together with its own IRI using SHA-256.
 The first hash byte assigns each item to one of 256 buckets.
 The comparator checks the bucket counts from the graph against the counts derived from VCF.
@@ -1212,7 +1211,7 @@ BioInterchange matched the oracle for all eight questions on the 1000 Genomes sl
 Wall time is the median of three replicates, and peak RSS is the largest observed resident memory.
 Size measurements use replicate~1 after \texttt{riot} conversion to N-Triples, with QLever indexing measured on the same graph.
 The size ratio divides a single \texttt{gzip -6} stream by the BGZF input read by every converter.
-For HG005, the reserialized graph is 89.1\,MB and the BGZF input is 3.50\,MB.
+For VCF-RDFizer's HG005 output, the reserialized graph is 89.1\,MB and the BGZF input is 3.50\,MB.
 The ratio differs from main Figure~\ref{M-fig:regional}b, which compares VCF-RDFizer's 75.8\,MB gzip-framed output with the original 3.07\,MB gzip input, giving 24.7 times the size.
 }\label{tab:converters-cost}%
 \centering\footnotesize\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.1}%
@@ -1336,6 +1335,8 @@ Input artifacts differed by only 0.4\% in indexed query time, but decoding times
 
 At 171 million triples with a 24\,GB heap, Comunica--COTTAS answered \texttt{Q1}--\texttt{Q5} before an engine crash on \texttt{Q6}.
 Comunica--HDT answered \texttt{Q1}--\texttt{Q4} before \texttt{Q5} reached the one-hour limit.
+The v3.3.1 validator recorded this truncated \texttt{Q5} response as a pass, so the archived run record lists it as \texttt{PASS}.
+It is reported here as a timeout, and a later VCF-RDFizer change (pull request~35) records such responses as timeouts.
 Both endpoints then stopped, preventing execution of the remaining queries.
 Small-graph engine rankings therefore did not predict large-graph completion.
 \begin{table}[!htbp]

@@ -2,7 +2,7 @@
 
 | Directory | Contents |
 | --- | --- |
-| [`paper/`](paper/README.md) | The manuscript (`current_short.tex`, also built as `paper.pdf`), its supplementary material (`supplementary.tex`), the compiled PDFs, and the portable source-ZIP builder |
+| [`paper/`](paper/README.md) | The manuscript (`submitted.tex`, also built as `paper.pdf`), its supplementary material (`supplementary.tex`), the compiled PDFs, and the portable source-ZIP builder |
 | [`paper-assets/`](paper-assets/) | Every figure the two documents include, with its source |
 
 The run records behind every number are in [`benchmark-results/`](../benchmark-results/README.md)

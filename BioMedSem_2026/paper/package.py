@@ -23,6 +23,12 @@ def main():
         "template/sn-jnl.cls", "template/bst/sn-mathphys-num.bst",
     ]
     files = {name: root / name for name in names}
+    # The cover letter is kept out of Git, so a fresh clone builds the bundle without it.
+    cover_letter = root / "VCF-RDFizer_JBS_Cover_Letter.pdf"
+    if cover_letter.is_file():
+        files[cover_letter.name] = cover_letter
+    else:
+        print(f"Note: {cover_letter.name} not found; the bundle omits the cover letter.")
     for source in (f"{paper}.tex", "supplementary.tex"):
         figures = re.findall(
             r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}",
