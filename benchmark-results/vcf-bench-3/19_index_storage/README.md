@@ -1,6 +1,6 @@
 # Index storage on vcf-bench-3 (2026-10-10)
 
-What each workflow keeps on disk to answer queries, for the two inputs of main Figure 6b: the VCF compressed
+What each workflow keeps on disk to answer queries, for the two inputs of main Figure 7b: the VCF compressed
 with bgzip plus its tabix index, against the QLever index built from the tool's N-Triples. Experiment
 [`19_index_storage.sh`](../../../benchmarks/19_index_storage.sh) (design §3.11) ran both cells in
 the v3.3.1 image (`sha256:3ad71b1a…2993`), whose QLever is the build (`bfd5741`) the reported runs used.

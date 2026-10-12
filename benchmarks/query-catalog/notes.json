@@ -1,0 +1,3345 @@
+{
+ "groups": [
+  {
+   "id": "validation",
+   "rq": "RQ1",
+   "title": "Source-comparison queries Q1–Q13",
+   "oracleLabel": "Oracle",
+   "intro": "Run in every validation run: the core benchmark (VCF-RDFizer v3.1.0), and the consumer WGS validation run and large-graph retrieval (v3.3.1). The oracle computes every expected answer in one pass over the source VCF with cyvcf2, using bcftools for exact FILTER text; both results are normalized and must agree exactly.",
+   "items": [
+    {
+     "id": "q01_record_density",
+     "label": "Q1 · Record density per 1 Mb window",
+     "summary": "Counts how many variant records fall in each one-megabase window of each chromosome and checks that the graph gives exactly the same counts as the VCF.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q01_record_density_1mb.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "reader = cyvcf2.VCF(vcf_path, strict_gt=True)\ndensity = Counter()\nfor variant in reader:\n    total_records += 1\n    window_index = (int(variant.POS) - 1) // 1_000_000      # zero-based 1 Mb window\n    density[(str(variant.CHROM), window_index)] += 1\nexpected = [{\"chrom\": chrom, \"windowIndex\": window, \"recordCount\": n}\n            for (chrom, window), n in sorted(density.items())]\n# normalize(): windowIndex/recordCount parsed with Decimal and accepted only if integral\n# compare: rows keyed by (chrom, windowIndex), recordCount must be equal\n# invariant (oracle and SPARQL side): sum(recordCount) == total_records",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1527,
+       "end": 1527,
+       "note": "records are iterated with cyvcf2 (strict_gt=True)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1536,
+       "end": 1536,
+       "note": "density counter keyed by (CHROM, window index)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1565,
+       "end": 1567,
+       "note": "parse_vcf loop: count the record in its (CHROM, (POS-1)//1,000,000) window"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1809,
+       "end": 1812,
+       "note": "expected rows for q01_record_density_1mb"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 204,
+       "end": 204,
+       "note": "QUERY_SCHEMAS: windowIndex and recordCount are integer fields; rows sorted by (chrom, windowIndex)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3464,
+       "end": 3471,
+       "note": "normalize(): integer fields accept any integral numeric lexical form"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3772,
+       "end": 3774,
+       "note": "invariant: Q1/Q2/Q4 row totals equal the VCF record count"
+      }
+     ],
+     "differences": "",
+     "notes": "Window index is zero-based (POS 1..1,000,000 is window 0) and CHROM is compared as its exact lexical string. The query computes FLOOR((POS-1)/1000000), which can come back as an xsd:decimal; normalize() parses it with Decimal and accepts it as long as it is integral."
+    },
+    {
+     "id": "q02_variant_shapes",
+     "label": "Q2 · Variant shape counts",
+     "summary": "Sorts every record into a shape class (SNV, insertion, deletion, multi-allelic, symbolic, and so on) from its REF and ALT text and checks that the number of records per class matches the VCF.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q02_variant_shape_counts.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "for variant in cyvcf2.VCF(vcf_path, strict_gt=True):\n    alt = \",\".join(\".\" if a is None else str(a) for a in (variant.ALT or [None]))\n    ref, alt = str(variant.REF).upper(), alt.upper()\n    if alt == \".\":                       shape = \"NO_ALT\"\n    elif \",\" in alt:                     shape = \"MULTIALLELIC\"\n    elif alt == \"*\" or \"[\" in alt or \"]\" in alt or (alt.startswith(\"<\") and alt.endswith(\">\")):\n                                         shape = \"SYMBOLIC_OR_BREAKEND\"\n    elif not fullmatch(\"[ACGTN]+\", ref) or not fullmatch(\"[ACGTN]+\", alt): shape = \"OTHER\"\n    elif len(ref) == len(alt) == 1:      shape = \"SNV\"\n    elif len(ref) == len(alt):           shape = \"MNV_OR_EQUAL_LENGTH_SUBSTITUTION\"\n    else: shape = \"INSERTION_SHAPE\" if len(ref) < len(alt) else \"DELETION_SHAPE\"\n    shapes[shape] += 1\nexpected = [{\"variantClass\": s, \"recordCount\": n} for s, n in sorted(shapes.items())]\n# invariant: sum(recordCount) == total_records",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 320,
+       "end": 321,
+       "note": "alt_lexical(): ALT list joined with ',' ('.' when there is no ALT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 324,
+       "end": 338,
+       "note": "classify_variant_shape(): the ordered shape rules, on upper-cased REF/ALT"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1537,
+       "end": 1537,
+       "note": "shapes counter"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1568,
+       "end": 1569,
+       "note": "parse_vcf loop: classify each record"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1813,
+       "end": 1815,
+       "note": "expected rows for q02_variant_shape_counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3772,
+       "end": 3774,
+       "note": "invariant: Q1/Q2/Q4 row totals equal the VCF record count"
+      }
+     ],
+     "differences": "",
+     "notes": "The whole ALT column is classified, so a multi-allelic record is a single MULTIALLELIC row whatever its alleles are. The rules are applied in order, so a symbolic or breakend allele is never classed OTHER. Both sides upper-case REF and ALT, and N is allowed in the sequence classes."
+    },
+    {
+     "id": "q03_titv",
+     "label": "Q3 · Ti/Tv",
+     "summary": "Counts the single-base substitutions (biallelic SNVs) and splits them into transitions (A↔G, C↔T) and transversions (all other base changes), checking all three counts against the VCF.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q03_titv.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "TRANSITIONS = {(\"A\", \"G\"), (\"G\", \"A\"), (\"C\", \"T\"), (\"T\", \"C\")}\nfor variant in cyvcf2.VCF(vcf_path, strict_gt=True):\n    ref = str(variant.REF).upper()\n    alt = alt_lexical(variant).upper()             # whole ALT column, joined with \",\"\n    if fullmatch(\"[ACGT]\", ref) and fullmatch(\"[ACGT]\", alt) and ref != alt:\n        biallelic_snv_count += 1\n        if (ref, alt) in TRANSITIONS: transition_count += 1\n        else:                         transversion_count += 1\nexpected = {\"biallelicSnvCount\": biallelic_snv_count,\n            \"transitionCount\": transition_count, \"transversionCount\": transversion_count}\n# tiTvRatio = transitions / transversions is reported on both sides but not compared\n# invariant: transition_count + transversion_count == biallelic_snv_count",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 186,
+       "end": 186,
+       "note": "TRANSITIONS constant"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 191,
+       "end": 191,
+       "note": "QUERY_SPECS: the three compared fields (tiTvRatio is not among them)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1541,
+       "end": 1541,
+       "note": "Ti/Tv counters"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1570,
+       "end": 1576,
+       "note": "parse_vcf loop: biallelic A/C/G/T SNV test and transition/transversion split"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1816,
+       "end": 1821,
+       "note": "expected single row for q03_titv"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3484,
+       "end": 3488,
+       "note": "normalize(): tiTvRatio derived on the SPARQL side for the report"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3775,
+       "end": 3776,
+       "note": "invariant: transitions + transversions == biallelic SNVs"
+      }
+     ],
+     "differences": "",
+     "notes": "Only records whose REF and whole ALT column are each one A/C/G/T base qualify, so multi-allelic records (ALT contains ','), N bases and REF == ALT are excluded. The query returns a single row, compared field by field."
+    },
+    {
+     "id": "q04_filter_distribution",
+     "label": "Q4 · FILTER distribution",
+     "summary": "Counts records for each exact FILTER value (PASS, the missing value '.', or each failure-code string) and checks that the counts match the VCF.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q04_filter_distribution.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "def filter_status(v): return \"PASS\" if v == \"PASS\" else \"NOT_APPLIED\" if v == \".\" else \"FAILED\"\nuse_bcftools = filter_oracle == \"bcftools\" or (filter_oracle == \"auto\" and which(\"bcftools\"))\nif use_bcftools:                                   # the default inside the container image\n    values = run([\"bcftools\", \"query\", \"-f\", \"%FILTER\\n\", vcf_path]).stdout.splitlines()\n    filters = Counter((filter_status(v), v) for v in values)     # an empty value is an error\nelse:                                              # --filter-oracle cyvcf2\n    for variant in reader:\n        raw = \";\".join(variant.FILTERS) if variant.FILTERS else str(variant).split(\"\\t\")[6]\n        filters[(filter_status(raw), raw)] += 1\nassert sum(filters.values()) == total_records\nexpected = [{\"filterStatus\": s, \"filterLexical\": v, \"recordCount\": n}\n            for (s, v), n in sorted(filters.items())]\n# invariant: sum(recordCount) == total_records",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 341,
+       "end": 342,
+       "note": "filter_status(): PASS / NOT_APPLIED ('.') / FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 345,
+       "end": 352,
+       "note": "exact_filter_lexical(): cyvcf2 fallback, FILTERS joined with ';' or the serialized 7th column"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 355,
+       "end": 368,
+       "note": "filters_with_bcftools(): bcftools query -f '%FILTER\\n', one value per record"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1520,
+       "end": 1525,
+       "note": "parse_vcf: choose the FILTER oracle (bcftools when available under 'auto')"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1577,
+       "end": 1579,
+       "note": "parse_vcf loop: cyvcf2 fallback when bcftools is not used"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1731,
+       "end": 1732,
+       "note": "FILTER oracle total must equal the record count"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1822,
+       "end": 1825,
+       "note": "expected rows for q04_filter_distribution"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3772,
+       "end": 3774,
+       "note": "invariant: Q1/Q2/Q4 row totals equal the VCF record count"
+      }
+     ],
+     "differences": "",
+     "notes": "PASS and the missing value '.' are kept apart: '.' is NOT_APPLIED and is never folded into PASS. The lexical value is compared exactly, so a multi-code FILTER such as 'q10;s50' is one row. The query reads vcfc:filter on the record's call through STR(), so a '.' typed vcfc:Null still reads as '.'. parser.json records which oracle ran as filterOracle ('bcftools' or 'cyvcf2-serialization')."
+    },
+    {
+     "id": "q05_sample_genotypes",
+     "label": "Q5 · Per-sample genotype classes",
+     "summary": "For each sample, counts how many of its genotype calls are homozygous reference, heterozygous, homozygous alternate, haploid, missing and so on, and checks those counts against the VCF.",
+     "sparql": [
+      {
+       "label": "expanded profile",
+       "path": "src/validation/queries/expanded/q05_sample_genotype_counts.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "condensed profile",
+       "path": "src/validation/queries/condensed/q05_sample_genotype_counts.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "reader = cyvcf2.VCF(vcf_path, strict_gt=True); samples = list(reader.samples)\nfor variant in reader:\n    has_gt = \"GT\" in format_keys(variant.FORMAT)\n    alleles = [None] * len(samples)\n    if samples and has_gt:   # cyvcf2 genotype = [a1, a2, ..., phased]: drop the flag, negative code -> None\n        alleles = [tuple(None if a is None or a < 0 else a for a in g[:-1]) for g in variant.genotypes]\n    for sample, call in zip(samples, alleles):\n        if not has_gt:                 cls = \"NO_GT_FIELD\"\n        elif not call or None in call: cls = \"MISSING\"\n        elif len(call) == 1:           cls = \"HAPLOID_REF\" if call[0] == 0 else \"HAPLOID_ALT\"\n        elif len(call) == 2:           cls = (\"HOM_REF\" if call[0] == 0 else \"HOM_ALT\") if call[0] == call[1] else \"HET\"\n        else:                          cls = \"OTHER_PLOIDY\"\n        genotypes[(sample, cls)] += 1\nexpected = [{\"sampleId\": s, \"genotypeClass\": c, \"callCount\": n} for (s, c), n in sorted(genotypes.items())]",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 371,
+       "end": 374,
+       "note": "genotype_alleles(): drop cyvcf2's trailing phased flag, map negative allele codes to None"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 377,
+       "end": 389,
+       "note": "classify_genotype(): the genotype classes"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1527,
+       "end": 1528,
+       "note": "cyvcf2 reader (strict_gt=True) and sample list"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1580,
+       "end": 1589,
+       "note": "parse_vcf loop: FORMAT keys, has_gt, GT record count"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1700,
+       "end": 1707,
+       "note": "parse_vcf loop: per-sample alleles and class counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1733,
+       "end": 1736,
+       "note": "expected rows for q05_sample_genotype_counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3777,
+       "end": 3782,
+       "note": "invariant: each sample's callCount totals the record count"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3795,
+       "end": 3799,
+       "note": "compare(): not applicable when the VCF has no samples or no GT"
+      }
+     ],
+     "differences": "",
+     "notes": "Phased and unphased calls are pooled: the oracle drops cyvcf2's phased flag and the query maps '|' to '/'. The comparison is required only when the VCF has samples and at least one record with a GT key; otherwise the status is NOT_APPLICABLE_VERIFIED_NO_SAMPLES_OR_GT, with the comparison kept as a diagnostic. The expanded query reads each SampleCall's FormatFieldValue whose IRI ends in /fmt/GT and counts distinct sample calls. The condensed query cuts each sample's GT out of the tab-separated GT FormatValueVector by vcfc:sampleIndex and counts distinct records."
+    },
+    {
+     "id": "q06_ac_an",
+     "label": "Q6 · AC/AN distribution",
+     "summary": "For sites with a single alternate allele, recomputes the allele number (AN) and alternate allele count (AC) from the genotypes and checks how many sites have each (AN, AC) pair.",
+     "sparql": [
+      {
+       "label": "expanded profile",
+       "path": "src/validation/queries/expanded/q06_ac_an_distribution.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "condensed profile",
+       "path": "src/validation/queries/condensed/q06_ac_an_distribution.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "for variant in cyvcf2.VCF(vcf_path, strict_gt=True):\n    alt = alt_lexical(variant)\n    if alt == \".\" or \",\" in alt: continue                 # single-ALT sites only\n    single_alt_records += 1\n    if not has_gt: continue\n    an = ac = 0\n    for call in alleles:                                   # per sample, phased flag dropped (as in Q5)\n        if call is None or None in call: continue          # any missing allele: skip the call\n        if len(call) not in (1, 2) or any(a not in (0, 1) for a in call): continue\n        an += len(call); ac += sum(call)\n    if an:\n        ac_an[(an, ac)] += 1; q06_eligible += 1\nexpected = [{\"an\": an, \"ac\": ac, \"siteCount\": n} for (an, ac), n in sorted(ac_an.items())]\n# af = ac/an is added on both sides but not compared; invariants: sum(siteCount) <= single_alt_records (== q06_eligible on the oracle side), 0 <= ac <= an",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1700,
+       "end": 1705,
+       "note": "per-sample alleles from cyvcf2 genotypes (shared with Q5)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1708,
+       "end": 1722,
+       "note": "parse_vcf loop: AN/AC over complete haploid/diploid 0/1 calls at single-ALT sites"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1827,
+       "end": 1830,
+       "note": "expected rows for q06_ac_an_distribution (af added, not compared)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 194,
+       "end": 194,
+       "note": "QUERY_SPECS: keyed by (an, ac), siteCount compared"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3490,
+       "end": 3492,
+       "note": "normalize(): af derived on the SPARQL side"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3783,
+       "end": 3788,
+       "note": "invariants: subset of single-ALT sites, exact eligible total on the oracle side, AN/AC bounds"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3795,
+       "end": 3799,
+       "note": "compare(): not applicable when the VCF has no samples or no GT"
+      }
+     ],
+     "differences": "",
+     "notes": "AC and AN are recomputed from GT, not read from the INFO AC/AN fields. Only single-ALT sites with at least one complete haploid or diploid call made of alleles 0 and 1 contribute; a call with a missing allele, another ploidy or an allele index above 1 is skipped. This matches the query's contributions (AN 1 for '^[01]$', 2 for '^[01]/[01]$'). Phased and unphased calls are pooled ('|' mapped to '/'). The same NOT_APPLICABLE rule as Q5 applies when there are no samples or no GT."
+    },
+    {
+     "id": "q07_file_metadata",
+     "label": "Q7 · File metadata",
+     "summary": "Checks that the file-level ##fileformat, ##reference and ##source declarations in the graph are exactly the ones in the VCF header.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q07_file_metadata.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "header_text = the leading '#' lines read from the file itself (gzip-aware), not cyvcf2's raw_header\nFILE_METADATA_KEYS = {\"fileformat\": \"fileFormat\", \"reference\": \"referenceGenome\",\n                      \"source\": \"sourceSoftware\", \"filedate\": \"fileDate\"}\nmetadata = {field: \"(absent)\" for field in FILE_METADATA_KEYS.values()}\nfor line in header_text.splitlines():\n    if not line.startswith(\"##\"): continue\n    key, _, value = line[2:].partition(\"=\")\n    field = FILE_METADATA_KEYS.get(key.lower())\n    if field and metadata[field] == \"(absent)\":           # a repeated declaration keeps the first\n        metadata[field] = value\nexpected = {k: metadata[k] for k in (\"fileFormat\", \"referenceGenome\", \"sourceSoftware\")}",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 394,
+       "end": 400,
+       "note": "FILE_METADATA_KEYS and the '(absent)' sentinel"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1380,
+       "end": 1387,
+       "note": "read_vcf_header_text(): the header block read from the file text"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1397,
+       "end": 1408,
+       "note": "parse_header_metadata(): first value of each metadata key (case-insensitive)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1529,
+       "end": 1529,
+       "note": "parse_vcf: header metadata from the file's own header"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1797,
+       "end": 1801,
+       "note": "expected single row for q07_file_metadata"
+      }
+     ],
+     "differences": "",
+     "notes": "The key match is case-insensitive and a repeated declaration keeps the first value. A missing declaration is the sentinel '(absent)' on both sides (the query uses COALESCE), so it shows up as a value mismatch rather than a normalization error. fileDate is in FILE_METADATA_KEYS but is not part of Q7; it is covered by the census. The header is read from the file text because htslib's normalised header injects lines, such as ##FILTER=<ID=PASS>, that the file does not contain."
+    },
+    {
+     "id": "q08_header_line_census",
+     "label": "Q8 · Header line census",
+     "summary": "Counts the '##' header lines for each header key (INFO, FORMAT, contig and so on) and checks that the graph has the same number of header lines per key.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q08_header_line_census.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "header_text = the leading '#' lines read from the file itself (not cyvcf2's raw_header)\nkeys = Counter()\nfor line in header_text.splitlines():\n    if not line.startswith(\"##\"): continue           # the #CHROM column line is not counted\n    key, _, value = line[2:].partition(\"=\")          # key = text before the first '='\n    keys[key] += 1                                   # case preserved\nexpected = [{\"headerKey\": k, \"lineCount\": n} for k, n in sorted(keys.items())]",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1380,
+       "end": 1387,
+       "note": "read_vcf_header_text(): the header block read from the file text"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1398,
+       "end": 1404,
+       "note": "parse_header_metadata(): count every '##' line by its key"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1452,
+       "end": 1454,
+       "note": "expected rows for q08_header_line_census"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1529,
+       "end": 1529,
+       "note": "parse_vcf: header metadata from the file's own header"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1802,
+       "end": 1802,
+       "note": "q08 expectation placed in the parser summary"
+      }
+     ],
+     "differences": "",
+     "notes": "Keys are compared exactly as written (case-sensitive), unlike Q7's case-insensitive lookup. The #CHROM line is excluded because the mapping emits no HeaderLine for it. Counting per key localizes a dropped declaration instead of only shifting one total."
+    },
+    {
+     "id": "q09_predicate_census",
+     "label": "Q9 · Predicate census",
+     "summary": "Lists every property used in the graph and how many times it is used, and checks that list against what the VCF implies, so a missing, miscounted or unexpected property is caught.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q09_predicate_census.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "p = parse_vcf(vcf)   # one pass also counts records R, samples S, '##' lines H, ID/FILTER parts, FORMAT keys/slots, INFO values, alleles\nP = {hasRecord, chrom, pos, ref, recordIndex, hasCall, recordId, alt, qual, filter, infoRaw, filterStatus: R,\n     hasHeaderLine, headerKey, lineIndex: H, headerValue: non-empty '##' values, formatRaw: records with FORMAT,\n     fileFormat/referenceGenome/sourceSoftware/fileDate: 1 if declared else 0, representationProfile: 1, ...}\nP += ID/FILTER decomposition (hasIdentifier, hasFilterCode, componentIndex, ...) and FORMAT keys (hasFormatKey, fieldIndex, declaredBy)\nif S: P += sample set (hasSample, sampleName, sampleIndex: S, ...) + definitions for undeclared FORMAT keys\n    if representation == \"expanded\": P += SampleCall/FormatFieldValue predicates (R*S, value slots), genotype + phase-set layer, FORMAT value items, typed FORMAT values\n    else: P += hasCallMatrix, appliesToSampleSet (records with FORMAT keys), hasFormatValueVector, valueEncoding, encodedValues (key occurrences)\nif header_representation == \"structured\": P += emitted_header_counters(## lines)\nif info_representation == \"structured\": P += INFO values, typed values, undeclared-key definitions, value items, SV carriers\nif info_representation == \"structured\" or representation == \"expanded\": P += allele layer\nP = {k: n for k, n in P.items() if n}; P[rdf:type] = sum(expected class counts)\nexpected = [{\"predicate\": iri, \"tripleCount\": n} for iri, n in sorted(P.items())]",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1035,
+       "end": 1065,
+       "note": "expected_census(): one-per-file, one-per-record and header-line predicates; metadata predicates 0 or 1"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1067,
+       "end": 1099,
+       "note": "expected_census(): ID/FILTER decomposition, FORMAT keys, filterStatus, representationProfile"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1100,
+       "end": 1165,
+       "note": "expected_census(): sample layer, expanded vs condensed"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1167,
+       "end": 1179,
+       "note": "expected_census(): fileDate and the structured-header families"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1181,
+       "end": 1218,
+       "note": "expected_census(): structured INFO values, definitions, value items and SV carriers"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1224,
+       "end": 1233,
+       "note": "expected_census(): allele layer, drop zero counts, rdf:type = sum of class counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1236,
+       "end": 1239,
+       "note": "expected rows for q09_predicate_census"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 512,
+       "end": 614,
+       "note": "emitted_header_counters(): header-line classes, HeaderAttribute and field-definition predicates per '##' line"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 634,
+       "end": 706,
+       "note": "_count_sv_layer(): SV carriers (flags, SVLEN, SVCLAIM, gVCF reference blocks, events, CIPOS/CIEND/CILEN/CICN intervals)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 709,
+       "end": 724,
+       "note": "_count_phase_set(): phase sets from PS/PSL/PSO/PSQ"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 727,
+       "end": 958,
+       "note": "emitted_record_counters(): allele, INFO value-item, SV, FORMAT value-item, genotype and phase-set layers from the raw data columns"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 961,
+       "end": 1009,
+       "note": "synthesized_definition_numbers() and _count_definitions(): definitions invented for undeclared INFO/FORMAT keys"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1591,
+       "end": 1594,
+       "note": "parse_vcf loop: records with a non-empty FORMAT column"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1607,
+       "end": 1612,
+       "note": "parse_vcf loop: ID and FILTER decomposition counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1627,
+       "end": 1642,
+       "note": "parse_vcf loop: structured INFO value, flag and typed-value counts (lines 1633-1637 are Q12's digest)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1643,
+       "end": 1665,
+       "note": "parse_vcf loop: FORMAT widened to the longest sample payload; key occurrences, value slots, non-empty values"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1683,
+       "end": 1689,
+       "note": "parse_vcf loop: typed FORMAT values"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1741,
+       "end": 1789,
+       "note": "parse_vcf: census inputs assembled into the parser summary"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1468,
+       "end": 1471,
+       "note": "attach_census_expectations(): census depends on the representation choices"
+      },
+      {
+       "tag": "v3.1.0",
+       "path": "src/validation/validation_runner.py",
+       "start": 564,
+       "end": 772,
+       "note": "v3.1.0 emitted_record_counters(): no _count_sv_layer call and no phase-set counting"
+      },
+      {
+       "tag": "v3.1.0",
+       "path": "src/validation/validation_runner.py",
+       "start": 1029,
+       "end": 1030,
+       "note": "v3.1.0 expected_census(): record-layer predicates always prefixed with vcfc: (no _census_iri)"
+      }
+     ],
+     "differences": "The query is unchanged. v3.1.0's oracle does not count two layers that both versions' emitters write: phase sets (vcfc:PhaseSet, inPhaseSet, phaseSetId/Name/Ordinal/Quality, expanded profile) and the SV carriers (isImprecise/isNovel, svLength, svClaim, VariantEvent/eventType/inEvent, CIPOS/CIEND faldo:InRangePosition intervals, CILEN/CICN ConfidenceIntervals, gVCF ReferenceBlocks; structured INFO). Under v3.1.0 a VCF that carries them therefore fails Q9/Q10 even when the graph is right. This is the mismatch NG131FQA1I hit under v3.3.0, whose census oracle is identical to v3.1.0's. v3.3.1 counts them (commit 3994e94) and keys FALDO terms by their full IRI (_census_iri).",
+     "notes": "Counts every triple per predicate, rdf:type included (expected to equal the sum of all class counts). Zero-count predicates are dropped from the expectation, so a predicate the VCF does not imply must be absent from the graph. Expectations are derived from the VCF and the emitters' documented shapes, never from the mapping rules, so a custom --rules mapping makes Q9-Q13 report-only (NOT_APPLICABLE_CUSTOM_MAPPING). The expected inventory depends on the sample profile (--representation expanded/condensed), --info-representation (structured/raw) and --header-representation (structured/basic). Header and data lines are read from the file text, not from cyvcf2's re-serialization. Tandem repeats, local alleles and base modifications are not counted yet, so a file using them fails Q9/Q10."
+    },
+    {
+     "id": "q10_class_census",
+     "label": "Q10 · Class census",
+     "summary": "Lists every resource type (class) in the graph and how many resources have it, and checks that list against what the VCF implies.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q10_class_census.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "C = {VCFFile: 1, VCFHeader: 1, ColumnHeaderLine: 1, HeaderLine: H, VCFRecord: R, VariantCall: R}\nC[\"VCF<NN>File\"] = 1 if ##fileformat names a version with a conformance overlay (e.g. VCF42File)\nC += RecordIdentifier (ID parts), FilterCode (FILTER codes other than PASS/'.'), FormatKey (FORMAT key occurrences)\nif S: C += {SampleSet: 1, VCFSample: S, FormatFieldDefinition: distinct widened FORMAT keys}\n    if representation == \"expanded\":\n        C += {SampleCall: R*S, FormatFieldValue: FORMAT value slots} + Genotype, GenotypeAlleleCall, PhaseSet, FieldValueItem (FORMAT)\n    else: C += {CohortCallMatrix: records with FORMAT keys, FormatValueVector: FORMAT key occurrences}\nif header_representation == \"structured\": C += emitted_header_counters(## lines)   # line subclasses, HeaderAttribute, SampleDeclaration\nif info_representation == \"structured\":\n    C += {InfoFieldValue, InfoFieldDefinition} + FieldValueItem (INFO) + VariantEvent, ConfidenceInterval, faldo:InRangePosition, ReferenceBlock\nif info_representation == \"structured\" or representation == \"expanded\":\n    C += allele layer (ReferenceAllele, AltAllele, Breakend, AssemblyContig)\nexpected = [{\"class\": iri, \"resourceCount\": n} for iri, n in sorted(C.items()) if n]",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1021,
+       "end": 1034,
+       "note": "expected_census(): fixed classes and the version-specific file class"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1067,
+       "end": 1094,
+       "note": "expected_census(): RecordIdentifier, FilterCode and FormatKey"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1100,
+       "end": 1165,
+       "note": "expected_census(): sample layer, expanded vs condensed"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1169,
+       "end": 1177,
+       "note": "expected_census(): structured-header classes"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1181,
+       "end": 1185,
+       "note": "expected_census(): InfoFieldValue and InfoFieldDefinition"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1211,
+       "end": 1215,
+       "note": "expected_census(): value items and SV carriers (structured INFO)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1224,
+       "end": 1230,
+       "note": "expected_census(): allele layer; drop zero counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1240,
+       "end": 1242,
+       "note": "expected rows for q10_class_census"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 512,
+       "end": 614,
+       "note": "emitted_header_counters(): header-line classes, HeaderAttribute and field-definition predicates per '##' line"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 634,
+       "end": 706,
+       "note": "_count_sv_layer(): SV carriers (flags, SVLEN, SVCLAIM, gVCF reference blocks, events, CIPOS/CIEND/CILEN/CICN intervals)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 709,
+       "end": 724,
+       "note": "_count_phase_set(): phase sets from PS/PSL/PSO/PSQ"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 727,
+       "end": 958,
+       "note": "emitted_record_counters(): allele, INFO value-item, SV, FORMAT value-item, genotype and phase-set layers from the raw data columns"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 961,
+       "end": 1009,
+       "note": "synthesized_definition_numbers() and _count_definitions(): definitions invented for undeclared INFO/FORMAT keys"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1591,
+       "end": 1594,
+       "note": "parse_vcf loop: records with a non-empty FORMAT column"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1607,
+       "end": 1612,
+       "note": "parse_vcf loop: ID and FILTER decomposition counts"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1627,
+       "end": 1642,
+       "note": "parse_vcf loop: structured INFO value, flag and typed-value counts (lines 1633-1637 are Q12's digest)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1643,
+       "end": 1665,
+       "note": "parse_vcf loop: FORMAT widened to the longest sample payload; key occurrences, value slots, non-empty values"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1683,
+       "end": 1689,
+       "note": "parse_vcf loop: typed FORMAT values"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1741,
+       "end": 1789,
+       "note": "parse_vcf: census inputs assembled into the parser summary"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1468,
+       "end": 1471,
+       "note": "attach_census_expectations(): census depends on the representation choices"
+      },
+      {
+       "tag": "v3.1.0",
+       "path": "src/validation/validation_runner.py",
+       "start": 564,
+       "end": 772,
+       "note": "v3.1.0 emitted_record_counters(): no _count_sv_layer call and no phase-set counting"
+      },
+      {
+       "tag": "v3.1.0",
+       "path": "src/validation/validation_runner.py",
+       "start": 1027,
+       "end": 1028,
+       "note": "v3.1.0 expected_census(): record-layer classes always prefixed with vcfc: (no _census_iri)"
+      }
+     ],
+     "differences": "The query is unchanged. v3.1.0's oracle does not count two layers that both versions' emitters write: phase sets (vcfc:PhaseSet, inPhaseSet, phaseSetId/Name/Ordinal/Quality, expanded profile) and the SV carriers (isImprecise/isNovel, svLength, svClaim, VariantEvent/eventType/inEvent, CIPOS/CIEND faldo:InRangePosition intervals, CILEN/CICN ConfidenceIntervals, gVCF ReferenceBlocks; structured INFO). Under v3.1.0 a VCF that carries them therefore fails Q9/Q10 even when the graph is right. This is the mismatch NG131FQA1I hit under v3.3.0, whose census oracle is identical to v3.1.0's. v3.3.1 counts them (commit 3994e94) and keys FALDO terms by their full IRI (_census_iri).",
+     "notes": "Counts distinct resources per asserted rdf:type, with no inference. This is why vcfc:FilterDefinition and vcfc:AltDefinition, which the vocabulary's subclass axioms imply for FILTER and ALT header lines, are not expected. Expectations are derived from the VCF and the emitters' documented shapes, never from the mapping rules, so a custom --rules mapping makes Q9-Q13 report-only (NOT_APPLICABLE_CUSTOM_MAPPING). The expected inventory depends on the sample profile (--representation expanded/condensed), --info-representation (structured/raw) and --header-representation (structured/basic). Header and data lines are read from the file text, not from cyvcf2's re-serialization. Tandem repeats, local alleles and base modifications are not counted yet, so a file using them fails Q9/Q10."
+    },
+    {
+     "id": "q11_record_digest",
+     "label": "Q11 · Record digest",
+     "summary": "Fingerprints every record (position, alleles, QUAL, FILTER and INFO, bound to the record's own IRI) into 256 hash buckets and checks that the bucket counts match the VCF, so values swapped between records are caught.",
+     "sparql": [
+      {
+       "label": "v3.1.0 (core benchmark)",
+       "path": "src/validation/queries/common/q11_record_digest.rq",
+       "tags": [
+        "v3.1.0"
+       ]
+      },
+      {
+       "label": "v3.3.1 (later runs)",
+       "path": "src/validation/queries/common/q11_record_digest.rq",
+       "tags": [
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "source_component = rml_uri_component(vcf_path.name)           # RMLStreamer-style URL encoding\nfor n, columns in enumerate(raw tab-split data lines of the file, start=1):   # kept aligned with cyvcf2\n    record_iri = f\"file://{source_component}#record/{n}\"\n    qual = columns[5]\n    if re.search(r\"\\.[0-9]*0$\", qual):                        # digest_qual(), v3.3.1 only\n        qual = re.sub(r\"\\.?0+$\", \"\", qual)                    # \"30.10\" -> \"30.1\", \"30.0\" -> \"30\"; \"100\", \".\" unchanged\n    fields = [record_iri, *columns[0:5], qual, *columns[6:8]]  # IRI, CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO\n    bucket = sha256(\"\\u001f\".join(fields).encode(\"utf-8\")).hexdigest()[:2]\n    digest_buckets[bucket] += 1\nexpected = [{\"bucket\": b, \"recordCount\": n} for b, n in sorted(digest_buckets.items())]\n# v3.1.0: fields = [record_iri, *columns[:8]]   (QUAL hashed verbatim)",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 455,
+       "end": 459,
+       "note": "DIGEST_SEPARATOR (U+001F) and DIGEST_BUCKET_CHARS (2 hex characters, 256 buckets)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 462,
+       "end": 471,
+       "note": "digest_qual(): drop trailing fractional zeros from QUAL"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 474,
+       "end": 477,
+       "note": "record_digest_bucket(): SHA-256 of the U+001F-joined fields, first two hex characters"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1357,
+       "end": 1364,
+       "note": "read_vcf_data_columns(): data lines split from the file text"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1557,
+       "end": 1557,
+       "note": "source component of every IRI: the VCF file name, URL-encoded"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1600,
+       "end": 1606,
+       "note": "parse_vcf loop: the next raw line, which must stay aligned with cyvcf2"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1616,
+       "end": 1622,
+       "note": "parse_vcf loop: record IRI and record digest bucket (QUAL through digest_qual)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1790,
+       "end": 1793,
+       "note": "expected rows for q11_record_digest"
+      },
+      {
+       "tag": "v3.1.0",
+       "path": "src/validation/validation_runner.py",
+       "start": 1428,
+       "end": 1432,
+       "note": "v3.1.0: record digest over the raw columns[:8], QUAL verbatim"
+      }
+     ],
+     "differences": "v3.3.1 drops trailing fractional zeros from QUAL on both sides (digest_qual() in the oracle, a REGEX/REPLACE into ?qualKey in the query) because QLever prints a decimal canonically ('30.1') where other engines keep the lexical form ('30.10'); v3.1.0 hashed QUAL verbatim (columns[:8] and STR(?qual)).",
+     "notes": "Hashes the raw lexical columns read from the file text (not cyvcf2's typed accessors) and binds them to the record IRI, so values permuted between records change the histogram. The record IRI is built from the VCF file name and the 1-based record index, so the check assumes the shipped mapping's IRI templates (report-only under a custom mapping). Fields are separated by U+001F; the result has at most 256 buckets."
+    },
+    {
+     "id": "q12_info_value_digest",
+     "label": "Q12 · INFO value digest",
+     "summary": "Fingerprints every structured INFO value, together with the record and key it belongs to, into 256 hash buckets and checks that the bucket counts match the VCF.",
+     "sparql": [
+      {
+       "label": "common (both profiles)",
+       "path": "src/validation/queries/common/q12_info_value_digest.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "src = rml_uri_component(vcf_path.name)\nfor row, columns in enumerate(raw tab-split data lines of the file, start=1):\n    info = columns[7]\n    entries = [] if info in (\"\", \".\") else [item.partition(\"=\") for item in info.split(\";\") if item]\n    for key, sep, value in entries:\n        if not sep: continue                                 # Flag (no '='): no vcfc:fieldValue, not hashed\n        info_iri = f\"file://{src}#call/{row}/info/{rml_uri_component(key)}\"\n        bucket = sha256(f\"{info_iri}\\u001f{value}\".encode(\"utf-8\")).hexdigest()[:2]\n        info_value_digest[bucket] += 1\nexpected = [{\"bucket\": b, \"valueCount\": n} for b, n in sorted(info_value_digest.items())]\nif info_representation != \"structured\": expected = []      # raw INFO emits no InfoFieldValue nodes",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "vcf_rdfizer_vocab.py",
+       "start": 1206,
+       "end": 1220,
+       "note": "parse_info_entries(): split INFO on ';', key=value, an entry without '=' is a Flag (identical at v3.1.0)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 474,
+       "end": 477,
+       "note": "record_digest_bucket(): SHA-256 of the U+001F-joined fields, first two hex characters"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1557,
+       "end": 1557,
+       "note": "source component of every IRI: the VCF file name, URL-encoded"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1626,
+       "end": 1637,
+       "note": "parse_vcf loop: one digest entry per non-flag INFO value, keyed by its InfoFieldValue IRI"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1768,
+       "end": 1771,
+       "note": "expected rows for q12_info_value_digest"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1477,
+       "end": 1482,
+       "note": "attach_census_expectations(): empty expectation unless INFO is structured"
+      }
+     ],
+     "differences": "",
+     "notes": "The whole lexical value is hashed, so a multi-valued entry such as AC=1,2 is one value. Flags are skipped on both sides because they carry vcfc:fieldValueBoolean rather than vcfc:fieldValue. The expectation is empty under --info-representation raw. The IRI templates are the shipped mapping's (report-only under a custom mapping)."
+    },
+    {
+     "id": "q13_format_value_digest",
+     "label": "Q13 · FORMAT value digest",
+     "summary": "Fingerprints every per-sample FORMAT value (GT, DP, AD and so on), together with its record, sample and key, into 256 hash buckets and checks that the bucket counts match the VCF.",
+     "sparql": [
+      {
+       "label": "expanded profile",
+       "path": "src/validation/queries/expanded/q13_format_value_digest.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "condensed profile",
+       "path": "src/validation/queries/condensed/q13_format_value_digest.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "sample_components = [rml_uri_component(i) for i in sample_uri_ids(samples)]   # sanitized, de-duplicated sample ids\nfor row, columns in enumerate(raw tab-split data lines of the file, start=1):   # format_keys from cyvcf2 variant.FORMAT\n    payloads = [p.split(\":\") if p else [] for p in columns[9:]]\n    keys = format_keys widened to the longest payload; a missing or empty key name becomes f\"FIELD_{i+1}\"\n    if not (samples and keys): continue\n    for k, key in enumerate(keys):\n        for s, fields in enumerate(payloads):              # expanded: one hash per non-empty cell\n            cell = fields[k] if k < len(fields) else \"\"\n            if cell: expanded[bucket(f\"file://{src}#sample/{row}/{sample_components[s]}/fmt/{enc(key)}\", cell)] += 1\n        encoded = \"\\t\".join(f[k] if k < len(f) and f[k] else \".\" for f in payloads)   # condensed: one hash per vector\n        condensed[bucket(f\"file://{src}#call/{row}/matrix/fmt/{enc(key)}\", encoded)] += 1\n# bucket(iri, value) = sha256(iri + \"\\u001f\" + value)[:2]\nexpected = expanded if representation == \"expanded\" else condensed",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1246,
+       "end": 1259,
+       "note": "sample_uri_ids(): sample IRI component, with an occurrence suffix for repeated ids"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1548,
+       "end": 1548,
+       "note": "URL-encoded sample components"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1557,
+       "end": 1557,
+       "note": "source component of every IRI: the VCF file name, URL-encoded"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1626,
+       "end": 1626,
+       "note": "row component: the 1-based record index"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1580,
+       "end": 1586,
+       "note": "parse_vcf loop: FORMAT keys from cyvcf2"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1643,
+       "end": 1655,
+       "note": "parse_vcf loop: payloads from the file text, FORMAT widened to the longest payload"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1669,
+       "end": 1682,
+       "note": "parse_vcf loop: expanded digest, one entry per non-empty cell"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1690,
+       "end": 1698,
+       "note": "parse_vcf loop: condensed digest, one entry per tab-joined key vector"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 474,
+       "end": 477,
+       "note": "record_digest_bucket(): SHA-256 of the U+001F-joined fields, first two hex characters"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1772,
+       "end": 1779,
+       "note": "both profiles' digest rows kept in the parser summary"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1472,
+       "end": 1476,
+       "note": "attach_census_expectations(): pick the digest for --representation"
+      }
+     ],
+     "differences": "",
+     "notes": "Both profiles' digests are accumulated in the same single pass, and attach_census_expectations() keeps the one for --representation. FORMAT is widened to the longest sample payload, with surplus fields named FIELD_<n>, mirroring SampleRecordStream. Sample IRI components follow sample_uri_ids(): characters outside [A-Za-z0-9._~-] become '_' and a repeated id gets an occurrence suffix. In the condensed profile an empty or absent cell is written as '.' inside the vector. The IRI templates are the shipped mapping's (report-only under a custom mapping)."
+    }
+   ]
+  },
+  {
+   "id": "preflight",
+   "rq": "RQ1",
+   "title": "Preflight checks",
+   "oracleLabel": "Check",
+   "intro": "Integrity checks run before the comparisons. They assert properties of the graph rather than comparing with the VCF: most expect no anomalies, and two compare with counts the oracle takes from the VCF.",
+   "items": [
+    {
+     "id": "preflight_record_cardinality",
+     "label": "Record cardinality",
+     "summary": "Checks that every record in the graph has exactly one chromosome, one position, one REF, one ALT and one call, so no record lost a core field or gained a second one.",
+     "sparql": [
+      {
+       "label": "listing (both profiles)",
+       "path": "src/validation/queries/common/preflight_record_cardinality.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "count (both profiles)",
+       "path": "src/validation/queries/common/preflight_record_cardinality_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "# no VCF-derived oracle: the expected anomaly count is the constant 0\nrows = run(preflight_record_cardinality.rq)          # VCFRecords whose COUNT(DISTINCT chrom|pos|ref|alt|hasCall) != 1, LIMIT 100\nif len(rows) < 100: anomaly_count = len(rows)       # _count companion is derived, not executed\nelse:               anomaly_count = run(preflight_record_cardinality_count.rq)[\"anomalyCount\"]\nstatus = \"PASS\" if len(rows) == 0 else \"FAIL\"\nsample_truncated = len(rows) >= 100\nif status != \"PASS\": verdict = \"BLOCKED_BY_PREFLIGHT\"   # blocking preflight",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 185,
+       "end": 185,
+       "note": "ANOMALY_SAMPLE_LIMIT = 100 (the listing query's LIMIT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3518,
+       "end": 3525,
+       "note": "derive_anomaly_count_execution(): a listing under the limit enumerated every match, so the _count query is derived, not run"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3593,
+       "end": 3611,
+       "note": "anomaly_count(): exact count read from the _count result"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3663,
+       "end": 3669,
+       "note": "preflight(): per-query loop; a failed execution is EXECUTION_FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3673,
+       "end": 3685,
+       "note": "preflight(): PASS only when the listing returned no rows"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3821,
+       "end": 3832,
+       "note": "BLOCKING_PREFLIGHT_QUERIES"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3941,
+       "end": 3954,
+       "note": "evaluate_validation(): blocking failure gives BLOCKED_BY_PREFLIGHT; inventory or strict-conformance failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "Blocking: a failure makes the run BLOCKED_BY_PREFLIGHT, because the aggregate comparisons cannot be interpreted. The report carries the exact anomalyCount, the number of rows returned and sampleTruncated."
+    },
+    {
+     "id": "preflight_position_datatype",
+     "label": "POS datatype",
+     "summary": "Checks that every record's position is stored as an integer, not as text or a decimal number.",
+     "sparql": [
+      {
+       "label": "listing (both profiles)",
+       "path": "src/validation/queries/common/preflight_position_datatype.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "count (both profiles)",
+       "path": "src/validation/queries/common/preflight_position_datatype_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "# no VCF-derived oracle: the expected anomaly count is the constant 0\nrows = run(preflight_position_datatype.rq)          # records whose DATATYPE(vcfc:pos) is outside the XSD integer family, LIMIT 100\n#   integer family = xsd:integer, int, long, short, byte, nonNegativeInteger, positiveInteger, unsignedLong/Int/Short/Byte\nif len(rows) < 100: anomaly_count = len(rows)       # _count companion is derived, not executed\nelse:               anomaly_count = run(preflight_position_datatype_count.rq)[\"anomalyCount\"]\nstatus = \"PASS\" if len(rows) == 0 else \"FAIL\"\nsample_truncated = len(rows) >= 100\nif status != \"PASS\": verdict = \"BLOCKED_BY_PREFLIGHT\"   # blocking preflight",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 185,
+       "end": 185,
+       "note": "ANOMALY_SAMPLE_LIMIT = 100 (the listing query's LIMIT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3518,
+       "end": 3525,
+       "note": "derive_anomaly_count_execution(): a listing under the limit enumerated every match, so the _count query is derived, not run"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3593,
+       "end": 3611,
+       "note": "anomaly_count(): exact count read from the _count result"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3663,
+       "end": 3669,
+       "note": "preflight(): per-query loop; a failed execution is EXECUTION_FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3673,
+       "end": 3685,
+       "note": "preflight(): PASS only when the listing returned no rows"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3821,
+       "end": 3832,
+       "note": "BLOCKING_PREFLIGHT_QUERIES"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3941,
+       "end": 3954,
+       "note": "evaluate_validation(): blocking failure gives BLOCKED_BY_PREFLIGHT; inventory or strict-conformance failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "The XSD integer family is accepted, not xsd:integer alone, because QLever canonicalises \"100\"^^xsd:integer to xsd:int at index time. Requiring exactly xsd:integer would block every QLever run. Blocking."
+    },
+    {
+     "id": "preflight_missing_token_conformance",
+     "label": "Missing-token typing",
+     "summary": "Looks for VCF missing values ('.') that were written as plain text instead of being typed with the vocabulary's vcfc:Null marker.",
+     "sparql": [
+      {
+       "label": "listing, v3.1.0 (core benchmark)",
+       "path": "src/validation/queries/common/preflight_missing_token_conformance.rq",
+       "tags": [
+        "v3.1.0"
+       ]
+      },
+      {
+       "label": "listing, v3.3.1 (later runs)",
+       "path": "src/validation/queries/common/preflight_missing_token_conformance.rq",
+       "tags": [
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "count, v3.1.0 (core benchmark)",
+       "path": "src/validation/queries/common/preflight_missing_token_conformance_count.rq",
+       "tags": [
+        "v3.1.0"
+       ]
+      },
+      {
+       "label": "count, v3.3.1 (later runs)",
+       "path": "src/validation/queries/common/preflight_missing_token_conformance_count.rq",
+       "tags": [
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "# no VCF-derived oracle: the expected number of plain \".\" literals is the constant 0\nrows = run(preflight_missing_token_conformance.rq)   # literals with STR(o) == \".\" and DATATYPE(o) != vcfc:Null, LIMIT 100\n#   excluded: vcfc:fieldNumber and vcfc:genotypeString, where \".\" is a conformant value\n#   v3.3.1 also excludes vcfc:attributeValue on a HeaderAttribute whose attributeKey is \"Number\"\nanomaly_count = len(rows) if len(rows) < 100 else run(preflight_missing_token_conformance_count.rq)[\"anomalyCount\"]\nstatus = \"PASS\" if not rows else \"EXPECTED_CONFORMANCE_FAILURE\"\nif strict_conformance and status != \"PASS\": verdict = \"MISMATCH\"   # otherwise report-only, never blocking",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 185,
+       "end": 185,
+       "note": "ANOMALY_SAMPLE_LIMIT = 100 (the listing query's LIMIT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3518,
+       "end": 3525,
+       "note": "derive_anomaly_count_execution(): a listing under the limit enumerated every match, so the _count query is derived, not run"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3593,
+       "end": 3611,
+       "note": "anomaly_count(): exact count read from the _count result"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3663,
+       "end": 3669,
+       "note": "preflight(): per-query loop; a failed execution is EXECUTION_FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3699,
+       "end": 3706,
+       "note": "preflight(): EXPECTED_CONFORMANCE_FAILURE instead of FAIL when rows are returned"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3946,
+       "end": 3954,
+       "note": "evaluate_validation(): only --strict-conformance turns it into MISMATCH"
+      }
+     ],
+     "differences": "v3.3.1 adds an exclusion, in both the listing and the count query, for the '.' attributeValue of a structured-header HeaderAttribute whose attributeKey is 'Number' (Number=. declarations). Per the query comment, v3.1.0 reported these as ten rows on the HG005 benchmark cell. The runner logic is unchanged.",
+     "notes": "Report-only unless --strict-conformance is given; it is not in BLOCKING_PREFLIGHT_QUERIES. The listing and count queries must keep identical exclusions so they describe the same population."
+    },
+    {
+     "id": "preflight_representation_profile",
+     "label": "Representation profile",
+     "summary": "Checks that the file resource declares the sample representation profile (expanded or condensed) that the validation run expects.",
+     "sparql": [
+      {
+       "label": "expanded profile, listing",
+       "path": "src/validation/queries/expanded/preflight_representation_profile.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "condensed profile, listing",
+       "path": "src/validation/queries/condensed/preflight_representation_profile.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "expanded profile, count",
+       "path": "src/validation/queries/expanded/preflight_representation_profile_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "condensed profile, count",
+       "path": "src/validation/queries/condensed/preflight_representation_profile_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "target = vcfc:ExpandedRepresentation if representation == \"expanded\" else vcfc:CondensedRepresentation\nrows = run(preflight_representation_profile.rq)      # VCFFile resources with no representationProfile, or one != target, LIMIT 100\nanomaly_count = len(rows) if len(rows) < 100 else run(preflight_representation_profile_count.rq)[\"anomalyCount\"]\nprofile_missing_is_expected = parser[\"sampleCount\"] == 0      # len(cyvcf2 reader.samples)\nstatus = \"PASS\" if not rows or profile_missing_is_expected else \"FAIL\"   # expected anomalies: 0\nif status != \"PASS\": verdict = \"BLOCKED_BY_PREFLIGHT\"   # blocking preflight",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 185,
+       "end": 185,
+       "note": "ANOMALY_SAMPLE_LIMIT = 100 (the listing query's LIMIT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3518,
+       "end": 3525,
+       "note": "derive_anomaly_count_execution(): a listing under the limit enumerated every match, so the _count query is derived, not run"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3593,
+       "end": 3611,
+       "note": "anomaly_count(): exact count read from the _count result"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3663,
+       "end": 3669,
+       "note": "preflight(): per-query loop; a failed execution is EXECUTION_FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3686,
+       "end": 3698,
+       "note": "preflight(): rows are tolerated for a sample-free VCF"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1803,
+       "end": 1803,
+       "note": "sampleCount from the cyvcf2 sample list"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3821,
+       "end": 3832,
+       "note": "BLOCKING_PREFLIGHT_QUERIES"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3941,
+       "end": 3954,
+       "note": "evaluate_validation(): blocking failure gives BLOCKED_BY_PREFLIGHT; inventory or strict-conformance failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "The only anomaly preflight that consults the VCF: a sample-free VCF passes even with rows, and the report then notes that no sample representation is emitted for a sample-free VCF. Blocking."
+    },
+    {
+     "id": "preflight_sample_gt_inventory",
+     "label": "Sample/GT inventory",
+     "summary": "Checks that the graph holds the right number of samples, per-sample calls and genotype (GT) values for the VCF's sample and record counts.",
+     "sparql": [
+      {
+       "label": "expanded profile",
+       "path": "src/validation/queries/expanded/preflight_sample_gt_inventory.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "condensed profile",
+       "path": "src/validation/queries/condensed/preflight_sample_gt_inventory.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "S = len(cyvcf2 reader.samples); R = total_records; G = records whose FORMAT keys include \"GT\"\nrow = run(preflight_sample_gt_inventory.rq)            # exactly one aggregate row, otherwise FAIL\nif representation == \"expanded\":                       # DISTINCT SampleCall / sampleId literal / .../fmt/GT node with a fieldValue\n    actual = (row.sampleCallCount, row.sampleIdCount, row.gtValueNodeCount)\n    expected = (S * R, S if R else 0, S * G)\nelse:                                                  # DISTINCT sample in a SampleSet / sampleName / GT FormatValueVector\n    actual = (row.sampleCount, row.sampleIdCount, row.gtVectorCount)\n    expected = (S, S, G)\nstatus = \"PASS\" if actual == expected else \"FAIL\"\nif status != \"PASS\": verdict = \"MISMATCH\"              # not blocking",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1587,
+       "end": 1589,
+       "note": "parse_vcf loop: count records whose FORMAT includes GT"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1803,
+       "end": 1806,
+       "note": "sampleCount, totalRecords and gtRecordCount in the parser summary"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3707,
+       "end": 3731,
+       "note": "preflight(): one aggregate row, compared with the expected inventory per profile"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3945,
+       "end": 3954,
+       "note": "evaluate_validation(): an inventory failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "No _count companion, because the query is already an aggregate. In the expanded profile a header-only VCF (no records) expects sampleIdCount 0, because vcfc:sampleId sits on per-record SampleCalls. In the condensed profile the sample set and its names are file-scoped, so they survive a zero-record file. Not blocking: a failure makes the verdict MISMATCH."
+    },
+    {
+     "id": "preflight_blank_nodes",
+     "label": "Blank nodes",
+     "summary": "Checks that the graph contains no blank (anonymous) nodes, since every resource should have a stable IRI.",
+     "sparql": [
+      {
+       "label": "listing (both profiles)",
+       "path": "src/validation/queries/common/preflight_blank_nodes.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "count (both profiles)",
+       "path": "src/validation/queries/common/preflight_blank_nodes_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "# no VCF-derived oracle: the expected anomaly count is the constant 0\nrows = run(preflight_blank_nodes.rq)          # triples with ISBLANK(subject) or ISBLANK(object), LIMIT 100\nif len(rows) < 100: anomaly_count = len(rows)       # _count companion is derived, not executed\nelse:               anomaly_count = run(preflight_blank_nodes_count.rq)[\"anomalyCount\"]\nstatus = \"PASS\" if len(rows) == 0 else \"FAIL\"\nsample_truncated = len(rows) >= 100\nif status != \"PASS\": verdict = \"BLOCKED_BY_PREFLIGHT\"   # blocking preflight",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 185,
+       "end": 185,
+       "note": "ANOMALY_SAMPLE_LIMIT = 100 (the listing query's LIMIT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3518,
+       "end": 3525,
+       "note": "derive_anomaly_count_execution(): a listing under the limit enumerated every match, so the _count query is derived, not run"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3593,
+       "end": 3611,
+       "note": "anomaly_count(): exact count read from the _count result"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3663,
+       "end": 3669,
+       "note": "preflight(): per-query loop; a failed execution is EXECUTION_FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3673,
+       "end": 3685,
+       "note": "preflight(): PASS only when the listing returned no rows"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3821,
+       "end": 3832,
+       "note": "BLOCKING_PREFLIGHT_QUERIES"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3941,
+       "end": 3954,
+       "note": "evaluate_validation(): blocking failure gives BLOCKED_BY_PREFLIGHT; inventory or strict-conformance failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "Every vocabulary class declares an IRI template, so a blank node means a term map produced no IRI, and the record and value digests could not address it. Predicates cannot be blank in RDF, so only subject and object are checked. Blocking."
+    },
+    {
+     "id": "preflight_empty_values",
+     "label": "Empty values",
+     "summary": "Checks that no literal is empty or whitespace-only and no IRI is empty, either of which would mean a value was lost rather than marked missing.",
+     "sparql": [
+      {
+       "label": "listing (both profiles)",
+       "path": "src/validation/queries/common/preflight_empty_values.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      },
+      {
+       "label": "count (both profiles)",
+       "path": "src/validation/queries/common/preflight_empty_values_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "# no VCF-derived oracle: the expected anomaly count is the constant 0\nrows = run(preflight_empty_values.rq)          # EMPTY_LITERAL: literal matching ^\\s*$; EMPTY_IRI: empty subject, predicate or IRI object, LIMIT 100\nif len(rows) < 100: anomaly_count = len(rows)       # _count companion is derived, not executed\nelse:               anomaly_count = run(preflight_empty_values_count.rq)[\"anomalyCount\"]\nstatus = \"PASS\" if len(rows) == 0 else \"FAIL\"\nsample_truncated = len(rows) >= 100\nif status != \"PASS\": verdict = \"BLOCKED_BY_PREFLIGHT\"   # blocking preflight",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 185,
+       "end": 185,
+       "note": "ANOMALY_SAMPLE_LIMIT = 100 (the listing query's LIMIT)"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3518,
+       "end": 3525,
+       "note": "derive_anomaly_count_execution(): a listing under the limit enumerated every match, so the _count query is derived, not run"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3593,
+       "end": 3611,
+       "note": "anomaly_count(): exact count read from the _count result"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3663,
+       "end": 3669,
+       "note": "preflight(): per-query loop; a failed execution is EXECUTION_FAILED"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3673,
+       "end": 3685,
+       "note": "preflight(): PASS only when the listing returned no rows"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3821,
+       "end": 3832,
+       "note": "BLOCKING_PREFLIGHT_QUERIES"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3941,
+       "end": 3954,
+       "note": "evaluate_validation(): blocking failure gives BLOCKED_BY_PREFLIGHT; inventory or strict-conformance failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "A missing VCF value should become \".\"^^vcfc:Null, never an empty literal; an empty IRI means a template substitution collapsed. Whitespace-only literals count as empty. Blocking."
+    },
+    {
+     "id": "preflight_distinct_triple_count",
+     "label": "Distinct triples (duplicate check)",
+     "summary": "Counts the distinct triples the SPARQL store holds and compares that with the number of statements in the N-Triples file, to detect statements written more than once.",
+     "sparql": [
+      {
+       "label": "query (both profiles)",
+       "path": "src/validation/queries/common/preflight_distinct_triple_count.rq",
+       "tags": [
+        "v3.1.0",
+        "v3.3.1"
+       ]
+      }
+     ],
+     "oracle_pseudo": "log = run([\"rapper\", \"-i\", \"ntriples\", \"-c\", decoded_nt])            # validate_ntriples()\nm = re.search(r\"Parsing returned (\\d+) triples\", log); parsed = int(m[1]) if m else None   # statements read\ndistinct = run(preflight_distinct_triple_count.rq)[\"distinctTripleCount\"]   # COUNT(*) over the store, which is a set\nif parsed is None or the query did not PASS: preflight_duplicate_triples = \"NOT_EVALUATED\"   # never PASS on a missing input\nelse: preflight_duplicate_triples = \"PASS\" if parsed - distinct == 0 else \"FAIL\"   # expected duplicates: 0\npreflight_distinct_triple_count = \"PASS\" whenever it executed        # nothing to judge on its own\nif preflight_duplicate_triples == \"FAIL\": verdict = \"BLOCKED_BY_PREFLIGHT\"   # NOT_EVALUATED does not block",
+     "oracle_code": [
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 2471,
+       "end": 2489,
+       "note": "validate_ntriples(): rapper's parsed statement count"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3614,
+       "end": 3649,
+       "note": "duplicate_triple_report(): parsed minus distinct; NOT_EVALUATED when either is unavailable"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3660,
+       "end": 3662,
+       "note": "preflight(): the duplicate report is computed first"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3670,
+       "end": 3672,
+       "note": "preflight(): the distinct count itself is PASS when executed"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 4547,
+       "end": 4552,
+       "note": "run_validation(): rapper's tripleCount passed as parsed_triple_count"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3821,
+       "end": 3832,
+       "note": "BLOCKING_PREFLIGHT_QUERIES"
+      },
+      {
+       "tag": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3941,
+       "end": 3954,
+       "note": "evaluate_validation(): blocking failure gives BLOCKED_BY_PREFLIGHT; inventory or strict-conformance failure gives MISMATCH"
+      }
+     ],
+     "differences": "",
+     "notes": "A SPARQL store deduplicates on load, so duplicates are invisible to every query; the parsed count comes from rapper on the decoded N-Triples. The judged check appears in preflight.json as preflight_duplicate_triples, which is blocking. There is no _count companion."
+    }
+   ]
+  },
+  {
+   "id": "usecase",
+   "rq": "RQ2",
+   "title": "Linked-workflow queries",
+   "oracleLabel": "Conventional workflow",
+   "intro": "Run by the RDF workflow on QLever over each requester's release view. Instead of an oracle, the conventional workflow (bcftools and a consent script) must return the same participant, gene, contig, position and allele tuples for every requester.",
+   "items": [
+    {
+     "id": "usecase-carriers",
+     "label": "Carriers query",
+     "summary": "Lists, for each participant, the variants they carry that ClinVar has classified (with at least one review star) in one of the 81 ACMG secondary-findings genes, joining participant VCFs and ClinVar through a shared variant identifier.",
+     "sparql": [
+      {
+       "label": "Carriers query, identical in all four scenarios (Scenario 1 copy)",
+       "source": "testing",
+       "path": "benchmarks/use_case/acmg/carriers.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "oracle_pseudo": "# Conventional workflow (baseline.sh + baseline_carriers.py): bcftools and a hand-written consent script, no RDF\nfor id in participants:\n    if first CHROM of id.acmg.vcf.gz starts with \"chr\": bcftools annotate --rename-chrs chrN->N\n    bcftools annotate -a clinvar.acmg.vcf.gz -c INFO/CLNSIG,INFO/CLNREVSTAT,INFO/GENEINFO --pair-logic exact \\\n      | bcftools view -f PASS,. -i 'INFO/CLNSIG!=\".\" && GT=\"alt\"' \\\n      | bcftools query -i 'GT=\"alt\"' -f \"id CHROM POS REF ALT CLNSIG CLNREVSTAT GENEINFO [GT]\" >> genotypes.tsv\nfor (participant, chrom, pos, ref, alt, clnsig, revstat, geneinfo, gt) in genotypes.tsv:\n    if revstat in excluded_review_status: continue          # no_assertion_criteria_provided, no_classification_*\n    for gene in sorted({item.split(\":\")[0] for item in geneinfo.split(\"|\")} & ACMG_GENES):\n        carrier(participant, gene, chrom without 'chr', pos, ref, alt, classification=clnsig.split(\"|\")[0], gt,\n                restricted=REF extent overlaps a cancer-predisposition gene span)\nfor requester in requesters:   # plus 'unrestricted' = every carrier\n    carriers.<requester>.tsv = [c for c in carriers if released(c, purpose, policy, assignee, panels)]\n# compare.py: key sets (participant, gene, chrom, pos, ref, alt) must be equal for every requester",
+     "oracle_code": [
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline.sh",
+       "start": 34,
+       "end": 34,
+       "note": "contig map chr1..chr22, chrX, chrY -> ClinVar's 1..22, X, Y"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline.sh",
+       "start": 51,
+       "end": 57,
+       "note": "step 1: rename contigs only in a file whose first CHROM starts with 'chr'"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline.sh",
+       "start": 59,
+       "end": 64,
+       "note": "steps 2-4: bcftools annotate (exact CHROM/POS/REF/ALT) | view -f PASS,. | query one row per carrier GT"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline.sh",
+       "start": 75,
+       "end": 77,
+       "note": "step 5: hand the rows to baseline_carriers.py"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 57,
+       "end": 63,
+       "note": "classification: first '|' term of CLNSIG (reported, not filtered on)"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 71,
+       "end": 74,
+       "note": "acmg_genes: GENEINFO symbols that are ACMG SF v3.2 genes"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 86,
+       "end": 102,
+       "note": "overlaps (REF extent vs restricted gene spans) and carriers(): review-status exclusion, one row per ACMG gene"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 111,
+       "end": 145,
+       "note": "released(): consent, withdrawal, DUO purpose hierarchy, cancer-gene rule, arm-4 panel/region/variant rules"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 197,
+       "end": 198,
+       "note": "carriers.unrestricted.tsv"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 210,
+       "end": 215,
+       "note": "carriers.<requester>.tsv: carriers each requester may see"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/compare.py",
+       "start": 27,
+       "end": 45,
+       "note": "comparison key (participant, gene, chrom without 'chr', pos, ref, alt) for both routes"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/compare.py",
+       "start": 55,
+       "end": 66,
+       "note": "set equality per requester ('unrestricted' included)"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/compare.py",
+       "start": 89,
+       "end": 91,
+       "note": "overall verdict: every carriers, rare and records comparison must agree"
+      }
+     ],
+     "notes": "The four scenario copies are byte-identical (SHA-256 abcb5f4f..., checked at testing HEAD 47f1e942); all are written by generate.py (carriers_query, generate.py 219-278; written at 311-315) from the case file and acmg_sf_v3.2.genes.txt, so 'per scenario' differences live in the policy and the inputs, not in the query. Relative to harness commit e3743590 the queries changed only in a comment (lines 11-12). The query joins participant calls and ClinVar on the SPDI IRI written by the spdi linker (vcfl:sameVariantAs), keeps calls with vcfc:filterStatus FiltersPassed or FiltersNotApplied and a genotype string containing a non-zero allele (REGEX \"[1-9]\"), excludes the three unstarred review statuses, and matches a GENEINFO symbol against the 81 ACMG genes. Consent is not in the query: it is applied by vcf-rdfizer-policy views, and the query runs once over each requester's view plus ClinVar and its links, and once over everything as 'unrestricted' (17_use_case_acmg.sh 422-458; run_query.py loads each input as its own named graph into QLever and clears the cache before each replicate). On the baseline side consent is the hand-written released() function; the cancer-gene restriction is decided by REF-extent overlap with gene spans (regions.json), the RDF side by vcfl:overlapsGene links. Agreement check (compare.py): for 'unrestricted' and every requester whose query ran, the baseline's carriers.<requester>.tsv and the RDF route's query/<requester>/carriers.tsv are reduced to sets of keys (participant, gene, CHROM without 'chr', POS, REF, ALT), with the participant taken from ?file (file://<participant>.acmg.vcf); the two sets must be equal. Classification, CLNSIG and GT are not part of the key. Where both routes wrote rare.tsv the rare lists are compared the same way, and where governed views exist each view's released record count must equal the baseline's per-requester count over every record (records.tsv). compare.py exits 1 unless at least one requester ran and every comparison agrees. Reported v3.3.1 reruns: carrier lists agree for every requester in all four scenarios (Scenario 1 unrestricted 7,211; Scenario 2 173,102; Scenario 3 1,496; Scenario 4 1,382). Scenario 2's record-level view check disagrees (cardio 685,928 vs 685,818; biobank 356,835 vs 356,777): per benchmark-results/vcf-bench-1/v331-rerun/README.md every differing record is a symbolic structural variant in a cancer-predisposition gene that v3.3.1's gene linkers do not link, a limitation the paper states."
+    },
+    {
+     "id": "usecase-rare",
+     "label": "Rare-variant carriers query (Scenario 2)",
+     "summary": "The carriers query restricted to variants that are rare in the 1000 Genomes panel (allele frequency below 1%), joining three files (participant VCFs, ClinVar, the panel's sites) by one variant identifier.",
+     "sparql": [
+      {
+       "label": "Rare-variant carriers query (Scenario 2, cohort)",
+       "source": "testing",
+       "path": "benchmarks/use_case/acmg/cohort/rare.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "oracle_pseudo": "# Conventional workflow, Scenario 2 only (baseline.sh step 6 + baseline_carriers.py)\ncarriers and visible[requester] exactly as in the carriers item (bcftools annotate/view/query + released())\nbcftools query -f '%CHROM\\t%POS\\t%REF\\t%ALT\\t%INFO/AF\\n' panel.acmg.vcf.gz > panel.tsv\nrare = set()\nfor chrom, pos, ref, alt, frequency in panel.tsv:\n    if frequency != \".\" and float(frequency) < 0.01: rare.add((chrom.removeprefix(\"chr\"), int(pos), ref, alt))\nfor name, rows in visible.items():               # 'unrestricted' and every requester\n    rare.<name>.tsv = [c for c in rows if (c.chrom, c.pos, c.ref, c.alt) in rare]\n# compare.py: rare key sets (participant, gene, chrom, pos, ref, alt) must be equal for every requester",
+     "oracle_code": [
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline.sh",
+       "start": 59,
+       "end": 64,
+       "note": "steps 2-4: the carrier rows, as for the carriers query"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline.sh",
+       "start": 67,
+       "end": 73,
+       "note": "step 6: the panel's CHROM, POS, REF, ALT and AF (field from cohort.json panel.rare.field)"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 165,
+       "end": 173,
+       "note": "rare_sites: panel sites whose frequency is below the threshold"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 209,
+       "end": 209,
+       "note": "threshold from cohort.json panel.rare.below (0.01)"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/baseline_carriers.py",
+       "start": 216,
+       "end": 221,
+       "note": "rare.<requester>.tsv: visible carriers whose (chrom, pos, ref, alt) is rare"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/compare.py",
+       "start": 67,
+       "end": 72,
+       "note": "rare lists compared per requester when both routes wrote them"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/use_case/acmg/compare.py",
+       "start": 89,
+       "end": 91,
+       "note": "overall verdict includes the rare comparison"
+      }
+     ],
+     "notes": "Generated by generate.py (carriers_query with panel, generate.py 204-216 and 219-278; written at 314-315 when the case declares a panel); the query is carriers.rq plus a third subquery that reads the panel's AF as vcfc:fieldValueDecimal on <file://panel.acmg.vcf>, joined by SPDI, with FILTER(?af < 0.01), and ?af added to the SELECT. The baseline looks the frequency up by CHROM (without 'chr'), POS, REF and ALT instead of by SPDI. The participants' own files drop INFO (derive.sh drop-info); the panel frequencies are recorded once in a sites-only panel.acmg.vcf (cohort.json panel). 17_use_case_acmg.sh 433 adds rare.rq to the query stage only when it exists beside the policy, i.e. in Scenario 2. Agreement check (compare.py): for 'unrestricted' and every requester whose query ran, the baseline's carriers.<requester>.tsv and the RDF route's query/<requester>/carriers.tsv are reduced to sets of keys (participant, gene, CHROM without 'chr', POS, REF, ALT), with the participant taken from ?file (file://<participant>.acmg.vcf); the two sets must be equal. Classification, CLNSIG and GT are not part of the key. Where both routes wrote rare.tsv the rare lists are compared the same way, and where governed views exist each view's released record count must equal the baseline's per-requester count over every record (records.tsv). compare.py exits 1 unless at least one requester ran and every comparison agrees. Reported v3.3.1 rerun (Scenario 2): rare lists agree for every requester (unrestricted 4,154; clinical 1,621; cardio 2,198; biobank 1,144)."
+    }
+   ]
+  },
+  {
+   "id": "converters",
+   "rq": "RQ3",
+   "title": "Converter comparison: Q1–Q8 in each converter's vocabulary",
+   "oracleLabel": "Oracle",
+   "intro": "Each content question is ported to each converter's vocabulary and run on QLever. The oracle is the validator's own, imported from the VCF-RDFizer image, so every converter is held to the same expected answers.",
+   "items": [
+    {
+     "id": "converters-q01",
+     "label": "Q1 · Record density per 1 Mb window (converter comparison)",
+     "summary": "Counts how many variant records fall in each 1-megabase window of each chromosome.",
+     "sparql": [
+      {
+       "label": "Q1 · Record density per 1 Mb window (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/common/q01_record_density_1mb.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q1 · Record density per 1 Mb window (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q01_record_density_1mb.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q1 · Record density per 1 Mb window (JVarkit port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/jvarkit/q01_record_density_1mb.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q1 · Record density per 1 Mb window (TogoVar port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/togovar/q01_record_density_1mb.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q1 · Record density per 1 Mb window (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q01_record_density_1mb.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q1 · Record density per 1 Mb window (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q01_record_density_1mb.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [],
+     "oracle_pseudo": "# oracle = validation_runner.parse_vcf(source_vcf, filter_oracle=\"auto\"): one cyvcf2 pass\nfor v in VCF(source_vcf, strict_gt=True):\n    density[(str(v.CHROM), (int(v.POS) - 1) // 1_000_000)] += 1\nq01 = [{\"chrom\": c, \"windowIndex\": w, \"recordCount\": n} for (c, w), n in sorted(density.items())]\n# per converter: normalize(SPARQL JSON) then compare_rows keyed on (chrom, windowIndex), value recordCount",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1527,
+       "end": 1528,
+       "note": "one cyvcf2 reader over the source VCF (strict_gt=True) and its samples"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1565,
+       "end": 1567,
+       "note": "record loop: density per (CHROM, (POS-1)//1,000,000)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1809,
+       "end": 1812,
+       "note": "expected q01 rows"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). Ports: JVarkit reads CHROM from its urn:chrom/ IRI and counts <urn:variant/CHROM:POS:REF> records; TogoVar regroups allele nodes on (reference, POS, REF, ID) and maps its reference IRI back to CHROM through {{CHROM_VALUES}}, filled per input from TogoVar's own generated config (18_converter_comparison.sh 162-171, 296-297); SPARQLing Genomics regroups calls on floor(k / samples) from its origin://<md5>@<k> call IRIs, so only records with at least one non-reference call exist; BioInterchange uses g:locus landmark and start. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit pass/differs, TogoVar pass/differs, SPARQLing Genomics pass/differs, BioInterchange pass/pass."
+    },
+    {
+     "id": "converters-q02",
+     "label": "Q2 · Variant shape counts (converter comparison)",
+     "summary": "Sorts every record into an allele-shape class (SNV, insertion, deletion, multiallelic, symbolic, ...) and counts each class.",
+     "sparql": [
+      {
+       "label": "Q2 · Variant shape counts (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/common/q02_variant_shape_counts.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q2 · Variant shape counts (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q02_variant_shape_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q2 · Variant shape counts (JVarkit port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/jvarkit/q02_variant_shape_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q2 · Variant shape counts (TogoVar port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/togovar/q02_variant_shape_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q2 · Variant shape counts (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q02_variant_shape_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q2 · Variant shape counts (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q02_variant_shape_counts.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [],
+     "oracle_pseudo": "for v in VCF(source_vcf, strict_gt=True):\n    alt = \",\".join(\".\" if a is None else str(a) for a in (v.ALT or [None]))   # alt_lexical\n    shapes[classify_variant_shape(v.REF, alt)] += 1\n# classify_variant_shape(ref, alt), both upper-cased:\n#   \".\" -> NO_ALT; contains \",\" -> MULTIALLELIC; \"*\", \"[\", \"]\" or <...> -> SYMBOLIC_OR_BREAKEND;\n#   not [ACGTN]+ on either side -> OTHER; 1 vs 1 -> SNV; equal lengths -> MNV_OR_EQUAL_LENGTH_SUBSTITUTION;\n#   len(ref) < len(alt) -> INSERTION_SHAPE, else DELETION_SHAPE\nq02 = [{\"variantClass\": c, \"recordCount\": n} for c, n in sorted(shapes.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1568,
+       "end": 1569,
+       "note": "record loop: ALT lexical form and shape class"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 320,
+       "end": 321,
+       "note": "alt_lexical"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 324,
+       "end": 338,
+       "note": "classify_variant_shape"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1813,
+       "end": 1815,
+       "note": "expected q02 rows"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). Port conflations from the README and the query comments: JVarkit writes one vcf:alt per allele with symbolic alleles and breakends as \"\" (the port maps \"\" to SYMBOLIC_OR_BREAKEND and counts distinct ALTs for MULTIALLELIC); TogoVar drops alleles outside [ACGTURYKMSWBDHVN] (symbolic, *, breakends); SPARQLing Genomics writes only the first ALT, so a record is read as MULTIALLELIC only when a written call carries an allele index >= 2; BioInterchange writes \"*\" as \"\" and the port restores it. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit pass/differs, TogoVar differs/differs, SPARQLing Genomics pass/differs, BioInterchange pass/pass."
+    },
+    {
+     "id": "converters-q03",
+     "label": "Q3 · Ti/Tv (converter comparison)",
+     "summary": "Counts the single-base substitutions in the file and splits them into transitions (A<->G, C<->T) and transversions.",
+     "sparql": [
+      {
+       "label": "Q3 · Ti/Tv (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/common/q03_titv.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q3 · Ti/Tv (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q03_titv.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q3 · Ti/Tv (JVarkit port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/jvarkit/q03_titv.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q3 · Ti/Tv (TogoVar port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/togovar/q03_titv.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q3 · Ti/Tv (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q03_titv.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q3 · Ti/Tv (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q03_titv.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [],
+     "oracle_pseudo": "TRANSITIONS = {(\"A\",\"G\"), (\"G\",\"A\"), (\"C\",\"T\"), (\"T\",\"C\")}\nfor v in VCF(source_vcf, strict_gt=True):\n    ref, alt = str(v.REF).upper(), alt_lexical(v).upper()\n    if fullmatch(\"[ACGT]\", ref) and fullmatch(\"[ACGT]\", alt) and ref != alt:\n        snv += 1\n        if (ref, alt) in TRANSITIONS: ti += 1\n        else: tv += 1\nq03 = {\"biallelicSnvCount\": snv, \"transitionCount\": ti, \"transversionCount\": tv}   # one row; tiTvRatio is derived, not compared",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 186,
+       "end": 186,
+       "note": "TRANSITIONS"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1570,
+       "end": 1576,
+       "note": "record loop: biallelic SNV, transition and transversion counts"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1816,
+       "end": 1821,
+       "note": "expected q03 row"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). compare_rows compares the three counts only (QUERY_SPECS, validation_runner.py 191). Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit pass/differs, TogoVar differs/differs, SPARQLing Genomics pass/differs, BioInterchange pass/pass."
+    },
+    {
+     "id": "converters-q04",
+     "label": "Q4 · FILTER values (converter comparison)",
+     "summary": "Counts records by their exact FILTER value and whether they passed, failed or were not filtered.",
+     "sparql": [
+      {
+       "label": "Q4 · FILTER values (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/common/q04_filter_distribution.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q4 · FILTER values (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q04_filter_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q4 · FILTER values (JVarkit port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/jvarkit/q04_filter_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q4 · FILTER values (TogoVar port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/togovar/q04_filter_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q4 · FILTER values (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q04_filter_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q4 · FILTER values (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q04_filter_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [],
+     "oracle_pseudo": "status = lambda x: \"PASS\" if x == \"PASS\" else \"NOT_APPLIED\" if x == \".\" else \"FAILED\"\nuse_bcftools = shutil.which(\"bcftools\") is not None        # filter_oracle \"auto\", the compare_converters default\nif use_bcftools:\n    values = run(\"bcftools query -f '%FILTER\\n' source_vcf\").splitlines()   # FILTER exactly as written\n    filters = Counter((status(x), x) for x in values)\nelse:   # inside the cyvcf2 record loop\n    raw = \";\".join(v.FILTERS) or column 7 of str(v)       # exact_filter_lexical\n    filters[(status(raw), raw)] += 1\nassert sum(filters.values()) == total_records\nq04 = [{\"filterStatus\": s, \"filterLexical\": l, \"recordCount\": n} for (s, l), n in sorted(filters.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1520,
+       "end": 1525,
+       "note": "FILTER oracle choice: bcftools when on PATH under 'auto'"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 355,
+       "end": 368,
+       "note": "filters_with_bcftools: bcftools query -f '%FILTER\\n'"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 341,
+       "end": 352,
+       "note": "filter_status and exact_filter_lexical (the cyvcf2 fallback)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1577,
+       "end": 1579,
+       "note": "record loop: cyvcf2 fallback when bcftools is not used"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1731,
+       "end": 1732,
+       "note": "FILTER count must equal the record count"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1822,
+       "end": 1825,
+       "note": "expected q04 rows"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/18_converter_comparison.sh",
+       "start": 300,
+       "end": 304,
+       "note": "the compare step passes no --filter-oracle, so 'auto' applies"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "Dockerfile",
+       "start": 151,
+       "end": 151,
+       "note": "the v3.3.1 image installs bcftools, so 'auto' selects the bcftools FILTER oracle"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). Which FILTER oracle ran is not written to comparison.json; under 'auto' it is bcftools whenever bcftools is on PATH, and the v3.3.1 Dockerfile installs it (line 151), so it is the bcftools route. Port conflations: JVarkit writes nothing for both PASS and '.', so its port reads no filter as PASS; TogoVar, SPARQLing Genomics (and JVarkit) lose the order of multiple FILTER values, and those ports' comments say they are joined in sorted order (GROUP_CONCAT DISTINCT); BioInterchange writes FILTER as an ordered list with PASS as rdf:nil and '.' as nothing, and its port reads up to four codes. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit pass/differs, TogoVar pass/differs, SPARQLing Genomics pass/differs, BioInterchange pass/pass."
+    },
+    {
+     "id": "converters-q05",
+     "label": "Q5 · Genotype classes per sample (converter comparison)",
+     "summary": "Counts each sample's genotype calls by class (homozygous reference, heterozygous, homozygous alternate, haploid, missing, ...).",
+     "sparql": [
+      {
+       "label": "Q5 · Genotype classes per sample (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/expanded/q05_sample_genotype_counts.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q5 · Genotype classes per sample (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q05_sample_genotype_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q5 · Genotype classes per sample (JVarkit port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/jvarkit/q05_sample_genotype_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q5 · Genotype classes per sample (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q05_sample_genotype_counts.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q5 · Genotype classes per sample (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q05_sample_genotype_counts.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [
+      {
+       "converter": "TogoVar",
+       "reason": "TogoVar reads no sample columns: its record holds only the contig, FILTER and INFO dictionaries, and nothing in src/ calls the FORMAT or genotype accessors (src/vcf/record.rs:40-47 at f17835a6). It publishes allele frequencies by design, for privacy.",
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/queries/togovar/not_represented.json"
+      }
+     ],
+     "oracle_pseudo": "samples = list(reader.samples)\nfor v in VCF(source_vcf, strict_gt=True):\n    has_gt = \"GT\" in FORMAT keys of v\n    calls = [tuple(None if a < 0 else a for a in g[:-1]) for g in v.genotypes] if samples and has_gt else [None] * len(samples)\n    for s, a in zip(samples, calls): genotypes[(s, classify_genotype(a, has_gt=has_gt))] += 1\n# classify_genotype: NO_GT_FIELD if not has_gt; MISSING if empty or any allele None;\n#   1 allele: HAPLOID_REF if 0 else HAPLOID_ALT; 2 alleles: equal -> HOM_REF (0) / HOM_ALT, else HET;\n#   more -> OTHER_PLOIDY\nq05 = [{\"sampleId\": s, \"genotypeClass\": c, \"callCount\": n} for (s, c), n in sorted(genotypes.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1527,
+       "end": 1528,
+       "note": "one cyvcf2 reader over the source VCF (strict_gt=True) and its samples"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1580,
+       "end": 1587,
+       "note": "record loop: FORMAT keys and has_gt"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1700,
+       "end": 1707,
+       "note": "record loop: per-sample genotype classes"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 371,
+       "end": 389,
+       "note": "genotype_alleles and classify_genotype"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1733,
+       "end": 1736,
+       "note": "expected q05 rows"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). VCF-RDFizer's query is the expanded-representation q05 (experiment 18 converts with --sample-representation expanded). Port conflations: JVarkit writes no ploidy (haploid reads as homozygous) and gives a no-call and a record without GT no class (both read as MISSING); SPARQLing Genomics writes only calls carrying a non-reference allele, so HOM_REF, HAPLOID_REF and fully missing calls are absent; BioInterchange writes a missing allele as REF, so MISSING reads as HOM_REF or HET. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit pass/differs, TogoVar not represented, SPARQLing Genomics pass/differs, BioInterchange pass/pass. Not represented: TogoVar: TogoVar reads no sample columns: its record holds only the contig, FILTER and INFO dictionaries, and nothing in src/ calls the FORMAT or genotype accessors (src/vcf/record.rs:40-47 at f17835a6). It publishes allele frequencies by design, for privacy."
+    },
+    {
+     "id": "converters-q06",
+     "label": "Q6 · AC/AN from genotypes (converter comparison)",
+     "summary": "For single-ALT records, adds up allele number (AN) and alternate allele count (AC) from the called genotypes and counts records per (AN, AC) pair.",
+     "sparql": [
+      {
+       "label": "Q6 · AC/AN from genotypes (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/expanded/q06_ac_an_distribution.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q6 · AC/AN from genotypes (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q06_ac_an_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q6 · AC/AN from genotypes (JVarkit port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/jvarkit/q06_ac_an_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q6 · AC/AN from genotypes (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q06_ac_an_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q6 · AC/AN from genotypes (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q06_ac_an_distribution.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [
+      {
+       "converter": "TogoVar",
+       "reason": "TogoVar reads no sample columns: its record holds only the contig, FILTER and INFO dictionaries, and nothing in src/ calls the FORMAT or genotype accessors (src/vcf/record.rs:40-47 at f17835a6). It publishes allele frequencies by design, for privacy. The oracle counts AN and AC from genotypes; INFO AC/AN, where an input has them, is a different quantity.",
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/queries/togovar/not_represented.json"
+      }
+     ],
+     "oracle_pseudo": "for v in VCF(source_vcf, strict_gt=True):\n    alt = alt_lexical(v)\n    if alt == \".\" or \",\" in alt or not has_gt: continue      # single-ALT records with a GT field\n    an = ac = 0\n    for call in calls:                                      # per-sample allele tuples, as in Q5\n        if call is None or None in call: continue\n        if len(call) not in (1, 2) or any(a not in (0, 1) for a in call): continue\n        an += len(call); ac += sum(call)\n    if an: ac_an[(an, ac)] += 1\nq06 = [{\"an\": an, \"ac\": ac, \"siteCount\": n, \"af\": ac / an} for (an, ac), n in sorted(ac_an.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1708,
+       "end": 1722,
+       "note": "record loop: AN/AC from haploid or diploid 0/1 calls of single-ALT records"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1827,
+       "end": 1830,
+       "note": "expected q06 rows (af is derived; compare_rows compares siteCount keyed on (an, ac))"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). AN/AC are computed from genotypes, not read from INFO (TogoVar's not_represented reason notes INFO AC/AN is a different quantity). Port conflations: JVarkit counts every called genotype as diploid; SPARQLing Genomics writes only carrier calls, so on a multi-sample file AN covers carriers only; BioInterchange's MISSING-as-REF conflation applies. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit pass/differs, TogoVar not represented, SPARQLing Genomics pass/differs, BioInterchange pass/pass. Not represented: TogoVar: TogoVar reads no sample columns: its record holds only the contig, FILTER and INFO dictionaries, and nothing in src/ calls the FORMAT or genotype accessors (src/vcf/record.rs:40-47 at f17835a6). It publishes allele frequencies by design, for privacy. The oracle counts AN and AC from genotypes; INFO AC/AN, where an input has them, is a different quantity."
+    },
+    {
+     "id": "converters-q07",
+     "label": "Q7 · File metadata (converter comparison)",
+     "summary": "Reads three file-level header values: the VCF format version, the reference genome and the software that wrote the file.",
+     "sparql": [
+      {
+       "label": "Q7 · File metadata (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/common/q07_file_metadata.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q7 · File metadata (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q07_file_metadata.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q7 · File metadata (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q07_file_metadata.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q7 · File metadata (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q07_file_metadata.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [
+      {
+       "converter": "JVarkit",
+       "reason": "JVarkit writes no ##fileformat, ##reference or ##source value: its header output is the input file IRI, the contigs, the FILTER definitions and the samples only (VcfToRdf.java:441-495 at fc2356a3).",
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/queries/jvarkit/not_represented.json"
+      },
+      {
+       "converter": "TogoVar",
+       "reason": "No meta-information line is written: the header is used only internally, for the contig, FILTER and INFO dictionaries (src/vcf/reader.rs:100-154; src/rdf/turtle_writer.rs:193-216 at f17835a6).",
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/queries/togovar/not_represented.json"
+      }
+     ],
+     "oracle_pseudo": "header = the leading '#' lines read from the file itself (not cyvcf2's normalised raw_header)\nKEYS = {\"fileformat\": \"fileFormat\", \"reference\": \"referenceGenome\", \"source\": \"sourceSoftware\", \"filedate\": \"fileDate\"}\nmeta = {field: \"(absent)\" for field in KEYS.values()}\nfor line in header:\n    if not line.startswith(\"##\"): continue\n    key, _, value = line[2:].partition(\"=\")\n    field = KEYS.get(key.lower())\n    if field is not None and meta[field] == \"(absent)\": meta[field] = value     # first declaration wins\nq07 = {\"fileFormat\": ..., \"referenceGenome\": ..., \"sourceSoftware\": ...}   # one row, compared field by field",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1380,
+       "end": 1387,
+       "note": "read_vcf_header_text: the file's own '#' lines"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 394,
+       "end": 400,
+       "note": "FILE_METADATA_KEYS and the '(absent)' sentinel"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1397,
+       "end": 1408,
+       "note": "parse_header_metadata: first value per key"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1797,
+       "end": 1801,
+       "note": "expected q07 row"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). Port notes: SPARQLing Genomics stores a simple ##key=value line as hdr:<key> hdr:<key> \"value\"; BioInterchange stores ##fileformat without its 'VCFv' prefix and the port restores it. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit not represented, TogoVar not represented, SPARQLing Genomics pass/pass, BioInterchange differs/pass (on the HG005 slice its header JSON-LD line is invalid JSON, so the header is absent from the graph). Not represented: JVarkit: JVarkit writes no ##fileformat, ##reference or ##source value: its header output is the input file IRI, the contigs, the FILTER definitions and the samples only (VcfToRdf.java:441-495 at fc2356a3).; TogoVar: No meta-information line is written: the header is used only internally, for the contig, FILTER and INFO dictionaries (src/vcf/reader.rs:100-154; src/rdf/turtle_writer.rs:193-216 at f17835a6)."
+    },
+    {
+     "id": "converters-q08",
+     "label": "Q8 · Header line census (converter comparison)",
+     "summary": "Counts the header meta-information lines per key (INFO, FORMAT, FILTER, contig, ...).",
+     "sparql": [
+      {
+       "label": "Q8 · Header line census (VCF-RDFizer, validator query)",
+       "source": "tool",
+       "path": "src/validation/queries/common/q08_header_line_census.rq",
+       "tag_or_commit": "v3.3.1"
+      },
+      {
+       "label": "Q8 · Header line census (VCF-RDFizer, verbatim copy used in experiment 18)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/vcf-rdfizer/q08_header_line_census.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q8 · Header line census (SPARQLing Genomics port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/sparqling-genomics/q08_header_line_census.rq",
+       "tag_or_commit": "47f1e942"
+      },
+      {
+       "label": "Q8 · Header line census (BioInterchange port)",
+       "source": "testing",
+       "path": "benchmarks/converters/queries/biointerchange/q08_header_line_census.rq",
+       "tag_or_commit": "47f1e942"
+      }
+     ],
+     "not_represented": [
+      {
+       "converter": "JVarkit",
+       "reason": "JVarkit writes only ##contig (as vcf:Chromosome) and ##FILTER definitions; INFO, FORMAT, fileformat, source and every other meta-information line are absent (VcfToRdf.java:448-469 at fc2356a3), so the per-key line counts cannot be recovered.",
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/queries/jvarkit/not_represented.json"
+      },
+      {
+       "converter": "TogoVar",
+       "reason": "No meta-information line is written (src/vcf/reader.rs:100-154; src/rdf/turtle_writer.rs:193-216 at f17835a6).",
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/queries/togovar/not_represented.json"
+      }
+     ],
+     "oracle_pseudo": "header = the leading '#' lines read from the file itself (not cyvcf2's normalised raw_header)\nkeys = Counter()\nfor line in header:\n    if not line.startswith(\"##\"): continue                 # the #CHROM line is not counted\n    key, _, value = line[2:].partition(\"=\")\n    keys[key] += 1\nq08 = [{\"headerKey\": k, \"lineCount\": n} for k, n in sorted(keys.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1380,
+       "end": 1387,
+       "note": "read_vcf_header_text: the file's own '#' lines"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1398,
+       "end": 1404,
+       "note": "parse_header_metadata: per-key line counts"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 1452,
+       "end": 1454,
+       "note": "expected q08 rows"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 144,
+       "end": 144,
+       "note": "the oracle: the image's validation_runner.parse_vcf over the source VCF (filter_oracle defaults to 'auto')"
+      },
+      {
+       "source": "testing",
+       "tag_or_commit": "47f1e942",
+       "path": "benchmarks/converters/compare_converters.py",
+       "start": 177,
+       "end": 186,
+       "note": "each converter's SPARQL answer is normalised by vr.normalize and compared with vr.compare_rows"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 3735,
+       "end": 3766,
+       "note": "compare_rows: keyed exact comparison, PASS only with no missing, extra or differing rows"
+      }
+     ],
+     "notes": "compare_converters.py runs inside the pinned VCF-RDFizer 3.3.1 image and imports that image's validator unchanged, so every converter's graph is held to the validator's own Q1-Q8 oracle (validation_runner.parse_vcf: one cyvcf2 pass, plus bcftools for FILTER when available), the same QLever engine, the same normalisation and the same comparator; only the SPARQL differs. Each question needs exactly one of a ported query or a not_represented.json reason, or the script refuses to run (compare_converters.py 120-134). VCF-RDFizer's own queries in the testing repo are verbatim copies of the v3.3.1 validator queries (SHA-256 identical, re-checked here; 18_converter_comparison.sh 140-146 checks them against the image). Inputs: HG005_GRCh38_r100000 (100,000 records x 1 sample) and 1000G_10000r_s16 (10,000 x 16). The reported run (benchmark-results/vcf-bench-1/18_converter_comparison/, harness e3743590) used the same query files and compare_converters.py as testing HEAD 47f1e942 (no diff in benchmarks/converters/queries or compare_converters.py). The oracle reads the header text rather than cyvcf2's raw_header because htslib injects declarations such as ##FILTER=<ID=PASS,...> (read_vcf_header_text docstring, 1367-1379). Port notes: SPARQLing Genomics types INFO/FORMAT/FILTER/contig/ALT definitions as items and loses the key of any other structured line; BioInterchange keeps INFO and ALT in one bag, told apart by g:type, and collapses definitions it renames to the same term. Reported outcomes (HG005 / 1000G): VCF-RDFizer pass/pass, JVarkit not represented, TogoVar not represented, SPARQLing Genomics differs/pass (htslib's added PASS FILTER definition: 10 FILTER lines instead of 9), BioInterchange differs/pass (header absent on the HG005 slice). Not represented: JVarkit: JVarkit writes only ##contig (as vcf:Chromosome) and ##FILTER definitions; INFO, FORMAT, fileformat, source and every other meta-information line are absent (VcfToRdf.java:448-469 at fc2356a3), so the per-key line counts cannot be recovered.; TogoVar: No meta-information line is written (src/vcf/reader.rs:100-154; src/rdf/turtle_writer.rs:193-216 at f17835a6)."
+    }
+   ]
+  },
+  {
+   "id": "regional",
+   "rq": "RQ3",
+   "title": "Regional retrieval: R1–R5",
+   "oracleLabel": "VCF-side readers",
+   "intro": "Window-restricted versions of Q1–Q5, run on QLever for windows of 1 kb to 10 Mb. The VCF side reads the same windows with cyvcf2 or bcftools through a tabix index, and a full cyvcf2 parse is the reference every path must equal.",
+   "items": [
+    {
+     "id": "regional-r01",
+     "label": "R1 · Records in a window",
+     "summary": "Counts how many variant records start inside one stretch of a chromosome.",
+     "sparql": [
+      {
+       "label": "R1 · records in a window (common)",
+       "source": "tool",
+       "path": "src/validation/queries/regional/common/r01_region_record_count.rq",
+       "tag_or_commit": "v3.3.1"
+      }
+     ],
+     "oracle_pseudo": "# window = (chrom, start, end): POS-based, 1-based, inclusive\n# cyvcf2 + tabix (cyvcf2-indexed)\nn = sum(1 for v in VCF(indexed_vcf)(f\"{chrom}:{start}-{end}\") if start <= int(v.POS) <= end)\n# full parse (cyvcf2-scan; also the untimed equality reference)\nn = sum(1 for v in VCF(source_vcf) if str(v.CHROM) == chrom and start <= int(v.POS) <= end)\n# bcftools + tabix (bcftools-indexed)\nfor line in run(\"bcftools query -r chrom:start-end -f '%CHROM\\t%POS\\n' indexed_vcf\"):\n    c, pos = line.split(\"\\t\")[:2]\n    n += (c == chrom and start <= int(pos) <= end)\nreturn {\"recordCount\": n}",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 537,
+       "end": 548,
+       "note": "cyvcf2 + tabix arm (cyvcf2-indexed): VCF(bgzipped copy)(\"chrom:start-end\") index seek, then keep only START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 549,
+       "end": 564,
+       "note": "full-parse arm (cyvcf2-scan): iterate the whole source VCF, keep records on the window's contig with START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 595,
+       "end": 600,
+       "note": "bcftools + tabix arm (bcftools-indexed): bcftools query -r chrom:start-end -f <per-question format>"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 612,
+       "end": 622,
+       "note": "bcftools arm folding: CHROM re-checked and the same POS post-filter applied to every output line"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 844,
+       "end": 847,
+       "note": "equality reference: one untimed cyvcf2-scan pass per question that fills every window"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 855,
+       "end": 856,
+       "note": "each arm's answer must equal the reference (canonical JSON equality)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 434,
+       "end": 436,
+       "note": "R1 accumulator: one count per kept record"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 578,
+       "end": 578,
+       "note": "R1 bcftools format: %CHROM\\t%POS"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 624,
+       "end": 625,
+       "note": "R1 bcftools fold: count kept lines"
+      }
+     ],
+     "notes": "Window semantics (REGION_SEMANTICS, regional_runner.py 54-70 at v3.3.1): a window is POS-based, 1-based and inclusive. A tabix/CSI seek returns every record whose span overlaps the region, so both indexed arms keep the seek and then drop records whose POS lies outside the window; the SPARQL side substitutes {{CHROM}}, {{START}} and {{END}} into the template (render_query, 698-713). The equality reference is the cyvcf2-scan computation over the original VCF; the indexed arms read the bgzip + tabix (or CSI, chosen automatically for contigs over 2^29-1 bp) copy built once by prepare_indexed_vcf (212-283). 14_regional_access.sh runs the runner with --representation expanded, windows of 1 kb, 100 kb, 1 Mb and 10 Mb, 20 per size, seed 20260923, each window anchored at a randomly chosen record. In the reported v3.3.1 rerun (testing repo benchmark-results/vcf-bench-1/v331-rerun/results/14_regional_access/{small,slice}/out/regional.json) every arm agreed with the reference: 0 disagreements and 0 failures in 7,380 (small) and 3,780 (slice) timed executions. R1 is a single-row aggregate: an empty window is {recordCount: 0} on the VCF side, and normalize_regional (716-749) reads an unbound SPARQL aggregate as 0."
+    },
+    {
+     "id": "regional-r02",
+     "label": "R2 · Variant shapes in a window",
+     "summary": "Sorts the records inside one chromosome window into allele-shape classes (SNV, insertion, deletion, multiallelic, symbolic, ...) and counts each class.",
+     "sparql": [
+      {
+       "label": "R2 · variant shapes in a window (common)",
+       "source": "tool",
+       "path": "src/validation/queries/regional/common/r02_region_variant_shape_counts.rq",
+       "tag_or_commit": "v3.3.1"
+      }
+     ],
+     "oracle_pseudo": "# for each record kept in the window by any of the three arms (seek or scan, then START <= POS <= END)\nref = v.REF;  alt = \",\".join(\".\" if a is None else a for a in (v.ALT or [None]))   # cyvcf2 arms\n# bcftools arm: ref, alt = the %REF and %ALT columns of 'bcftools query -r ... -f %CHROM\\t%POS\\t%REF\\t%ALT'\nref, alt = ref.upper(), alt.upper()\ncls = (\"NO_ALT\" if alt == \".\" else \"MULTIALLELIC\" if \",\" in alt\n       else \"SYMBOLIC_OR_BREAKEND\" if alt == \"*\" or \"[\" in alt or \"]\" in alt or (alt.startswith(\"<\") and alt.endswith(\">\"))\n       else \"OTHER\" if not fullmatch(\"[ACGTN]+\", ref) or not fullmatch(\"[ACGTN]+\", alt)\n       else \"SNV\" if len(ref) == len(alt) == 1\n       else \"MNV_OR_EQUAL_LENGTH_SUBSTITUTION\" if len(ref) == len(alt)\n       else \"INSERTION_SHAPE\" if len(ref) < len(alt) else \"DELETION_SHAPE\")\nshapes[cls] += 1\nreturn [{\"variantClass\": c, \"recordCount\": n} for c, n in sorted(shapes.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 537,
+       "end": 548,
+       "note": "cyvcf2 + tabix arm (cyvcf2-indexed): VCF(bgzipped copy)(\"chrom:start-end\") index seek, then keep only START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 549,
+       "end": 564,
+       "note": "full-parse arm (cyvcf2-scan): iterate the whole source VCF, keep records on the window's contig with START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 595,
+       "end": 600,
+       "note": "bcftools + tabix arm (bcftools-indexed): bcftools query -r chrom:start-end -f <per-question format>"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 612,
+       "end": 622,
+       "note": "bcftools arm folding: CHROM re-checked and the same POS post-filter applied to every output line"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 844,
+       "end": 847,
+       "note": "equality reference: one untimed cyvcf2-scan pass per question that fills every window"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 855,
+       "end": 856,
+       "note": "each arm's answer must equal the reference (canonical JSON equality)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 438,
+       "end": 443,
+       "note": "R2 accumulator (cyvcf2 arms): ALT lexical form and shape class"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 579,
+       "end": 579,
+       "note": "R2 bcftools format: %CHROM\\t%POS\\t%REF\\t%ALT"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 626,
+       "end": 627,
+       "note": "R2 bcftools fold: same classifier on the REF and ALT columns"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 320,
+       "end": 321,
+       "note": "alt_lexical: ALT joined with ',' and a missing ALT as '.'"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 324,
+       "end": 338,
+       "note": "classify_variant_shape, shared with the whole-file oracle (Q2)"
+      }
+     ],
+     "notes": "Window semantics (REGION_SEMANTICS, regional_runner.py 54-70 at v3.3.1): a window is POS-based, 1-based and inclusive. A tabix/CSI seek returns every record whose span overlaps the region, so both indexed arms keep the seek and then drop records whose POS lies outside the window; the SPARQL side substitutes {{CHROM}}, {{START}} and {{END}} into the template (render_query, 698-713). The equality reference is the cyvcf2-scan computation over the original VCF; the indexed arms read the bgzip + tabix (or CSI, chosen automatically for contigs over 2^29-1 bp) copy built once by prepare_indexed_vcf (212-283). 14_regional_access.sh runs the runner with --representation expanded, windows of 1 kb, 100 kb, 1 Mb and 10 Mb, 20 per size, seed 20260923, each window anchored at a randomly chosen record. In the reported v3.3.1 rerun (testing repo benchmark-results/vcf-bench-1/v331-rerun/results/14_regional_access/{small,slice}/out/regional.json) every arm agreed with the reference: 0 disagreements and 0 failures in 7,380 (small) and 3,780 (slice) timed executions. The classifier is imported from validation_runner, so R2 classifies exactly as the whole-file Q2 oracle does; the SPARQL template repeats Q2's IF chain with only the coordinate restriction added."
+    },
+    {
+     "id": "regional-r03",
+     "label": "R3 · Ti/Tv in a window",
+     "summary": "Inside one chromosome window, counts the single-base substitutions and splits them into transitions (A<->G, C<->T) and transversions.",
+     "sparql": [
+      {
+       "label": "R3 · Ti/Tv in a window (common)",
+       "source": "tool",
+       "path": "src/validation/queries/regional/common/r03_region_titv.rq",
+       "tag_or_commit": "v3.3.1"
+      }
+     ],
+     "oracle_pseudo": "# for each record kept in the window by any of the three arms (seek or scan, then START <= POS <= END)\nref = str(v.REF).upper();  alt = alt_lexical(v).upper()       # bcftools arm: %REF, %ALT columns, upper-cased\nif len(ref) == 1 and len(alt) == 1 and ref in \"ACGT\" and alt in \"ACGT\" and ref != alt:\n    snv += 1\n    if {ref, alt} in ({\"A\", \"G\"}, {\"C\", \"T\"}): ti += 1\n    else: tv += 1\nreturn {\"biallelicSnvCount\": snv, \"transitionCount\": ti, \"transversionCount\": tv}",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 537,
+       "end": 548,
+       "note": "cyvcf2 + tabix arm (cyvcf2-indexed): VCF(bgzipped copy)(\"chrom:start-end\") index seek, then keep only START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 549,
+       "end": 564,
+       "note": "full-parse arm (cyvcf2-scan): iterate the whole source VCF, keep records on the window's contig with START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 595,
+       "end": 600,
+       "note": "bcftools + tabix arm (bcftools-indexed): bcftools query -r chrom:start-end -f <per-question format>"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 612,
+       "end": 622,
+       "note": "bcftools arm folding: CHROM re-checked and the same POS post-filter applied to every output line"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 844,
+       "end": 847,
+       "note": "equality reference: one untimed cyvcf2-scan pass per question that fills every window"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 855,
+       "end": 856,
+       "note": "each arm's answer must equal the reference (canonical JSON equality)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 445,
+       "end": 455,
+       "note": "R3 accumulator (cyvcf2 arms)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 580,
+       "end": 580,
+       "note": "R3 bcftools format: %CHROM\\t%POS\\t%REF\\t%ALT"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 628,
+       "end": 636,
+       "note": "R3 bcftools fold: the same test on the REF and ALT columns"
+      }
+     ],
+     "notes": "Window semantics (REGION_SEMANTICS, regional_runner.py 54-70 at v3.3.1): a window is POS-based, 1-based and inclusive. A tabix/CSI seek returns every record whose span overlaps the region, so both indexed arms keep the seek and then drop records whose POS lies outside the window; the SPARQL side substitutes {{CHROM}}, {{START}} and {{END}} into the template (render_query, 698-713). The equality reference is the cyvcf2-scan computation over the original VCF; the indexed arms read the bgzip + tabix (or CSI, chosen automatically for contigs over 2^29-1 bp) copy built once by prepare_indexed_vcf (212-283). 14_regional_access.sh runs the runner with --representation expanded, windows of 1 kb, 100 kb, 1 Mb and 10 Mb, 20 per size, seed 20260923, each window anchored at a randomly chosen record. In the reported v3.3.1 rerun (testing repo benchmark-results/vcf-bench-1/v331-rerun/results/14_regional_access/{small,slice}/out/regional.json) every arm agreed with the reference: 0 disagreements and 0 failures in 7,380 (small) and 3,780 (slice) timed executions. A multiallelic ALT ('A,G') has length > 1 and is never counted, matching the SPARQL REGEX(\"^[ACGT]$\") filter. R3 is a single-row aggregate; an engine that leaves SUM unbound on an empty window is read as 0."
+    },
+    {
+     "id": "regional-r04",
+     "label": "R4 · FILTER values in a window",
+     "summary": "Inside one chromosome window, counts records by their FILTER value and whether they passed, failed or were not filtered.",
+     "sparql": [
+      {
+       "label": "R4 · FILTER values in a window (common)",
+       "source": "tool",
+       "path": "src/validation/queries/regional/common/r04_region_filter_distribution.rq",
+       "tag_or_commit": "v3.3.1"
+      }
+     ],
+     "oracle_pseudo": "status = lambda x: \"PASS\" if x == \"PASS\" else \"NOT_APPLIED\" if x == \".\" else \"FAILED\"\n# cyvcf2 arms (indexed seek or full scan, then START <= POS <= END)\nraw = \"PASS\" if v.FILTER is None else str(v.FILTER)          # _filter_lexical\nfilters[(status(raw), raw)] += 1\n# bcftools + tabix arm\nfor c, pos, raw in rows(\"bcftools query -r chrom:start-end -f '%CHROM\\t%POS\\t%FILTER\\n' indexed_vcf\"):\n    if c == chrom and start <= int(pos) <= end: filters[(status(raw), raw)] += 1\nreturn [{\"filterStatus\": s, \"filterLexical\": l, \"recordCount\": n} for (s, l), n in sorted(filters.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 537,
+       "end": 548,
+       "note": "cyvcf2 + tabix arm (cyvcf2-indexed): VCF(bgzipped copy)(\"chrom:start-end\") index seek, then keep only START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 549,
+       "end": 564,
+       "note": "full-parse arm (cyvcf2-scan): iterate the whole source VCF, keep records on the window's contig with START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 595,
+       "end": 600,
+       "note": "bcftools + tabix arm (bcftools-indexed): bcftools query -r chrom:start-end -f <per-question format>"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 612,
+       "end": 622,
+       "note": "bcftools arm folding: CHROM re-checked and the same POS post-filter applied to every output line"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 844,
+       "end": 847,
+       "note": "equality reference: one untimed cyvcf2-scan pass per question that fills every window"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 855,
+       "end": 856,
+       "note": "each arm's answer must equal the reference (canonical JSON equality)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 457,
+       "end": 460,
+       "note": "R4 accumulator (cyvcf2 arms)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 498,
+       "end": 507,
+       "note": "_filter_lexical: cyvcf2's FILTER, with None mapped to 'PASS'"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 581,
+       "end": 581,
+       "note": "R4 bcftools format: %CHROM\\t%POS\\t%FILTER"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 637,
+       "end": 639,
+       "note": "R4 bcftools fold: the FILTER column as written"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 341,
+       "end": 342,
+       "note": "filter_status: PASS / NOT_APPLIED ('.') / FAILED"
+      }
+     ],
+     "notes": "Window semantics (REGION_SEMANTICS, regional_runner.py 54-70 at v3.3.1): a window is POS-based, 1-based and inclusive. A tabix/CSI seek returns every record whose span overlaps the region, so both indexed arms keep the seek and then drop records whose POS lies outside the window; the SPARQL side substitutes {{CHROM}}, {{START}} and {{END}} into the template (render_query, 698-713). The equality reference is the cyvcf2-scan computation over the original VCF; the indexed arms read the bgzip + tabix (or CSI, chosen automatically for contigs over 2^29-1 bp) copy built once by prepare_indexed_vcf (212-283). 14_regional_access.sh runs the runner with --representation expanded, windows of 1 kb, 100 kb, 1 Mb and 10 Mb, 20 per size, seed 20260923, each window anchored at a randomly chosen record. In the reported v3.3.1 rerun (testing repo benchmark-results/vcf-bench-1/v331-rerun/results/14_regional_access/{small,slice}/out/regional.json) every arm agreed with the reference: 0 disagreements and 0 failures in 7,380 (small) and 3,780 (slice) timed executions. Caveat on the cyvcf2 arms (and therefore on the reference): _filter_lexical maps variant.FILTER == None to 'PASS', and cyvcf2 also returns None for a FILTER of '.'. Checked locally with cyvcf2 0.34.0, the version the v3.3.1 Dockerfile pins (line 183): FILTER 'PASS' -> None, '.' -> None, 'q10' -> 'q10'. A window holding a '.' record would therefore read as PASS on the cyvcf2 arms but as NOT_APPLIED on the bcftools arm and in SPARQL, and the comparator would report a disagreement. The whole-file Q4 oracle avoids this (bcftools, or variant.FILTERS with the serialized column as fallback). The reported rerun had no disagreements, so its windows contained no '.' FILTER. The R4 template comment says the VCF side uses bcftools query -r for the exact FILTER text, but the equality reference is the cyvcf2-scan computation."
+    },
+    {
+     "id": "regional-r05",
+     "label": "R5 · Genotype classes per sample in a window",
+     "summary": "Inside one chromosome window, counts each sample's genotype calls by class (homozygous reference, heterozygous, homozygous alternate, missing, ...).",
+     "sparql": [
+      {
+       "label": "R5 · genotype classes per sample in a window (expanded)",
+       "source": "tool",
+       "path": "src/validation/queries/regional/expanded/r05_region_sample_genotype_counts.rq",
+       "tag_or_commit": "v3.3.1"
+      }
+     ],
+     "oracle_pseudo": "samples = columns[9:] of the #CHROM header line\n# cyvcf2 arms (indexed seek or full scan, then START <= POS <= END)\nhas_gt = \"GT\" in (v.FORMAT or [])\ncalls = [tuple(None if a < 0 else a for a in g[:-1]) for g in v.genotypes] if samples and has_gt else [None] * len(samples)\nfor s, a in zip(samples, calls): genotypes[(s, classify_genotype(a, has_gt))] += 1\n#   NO_GT_FIELD if not has_gt; MISSING if empty or any None; 1 allele: HAPLOID_REF if 0 else HAPLOID_ALT;\n#   2 alleles: HOM_REF / HOM_ALT if equal (0 / non-0), else HET; otherwise OTHER_PLOIDY\n# bcftools + tabix arm: 'bcftools query -r ... -f %CHROM\\t%POS[\\t%GT]', per sample:\ngt = raw_gt.replace(\"|\", \"/\")\ncls = (\"MISSING\" if gt in (\"\", \".\") or \".\" in gt else {1: \"HAPLOID_REF\" if gt == \"0\" else \"HAPLOID_ALT\",\n       2: (\"HOM_REF\" if a == \"0\" else \"HOM_ALT\") if a == b else \"HET\"}.get(n, \"OTHER_PLOIDY\"))   # a, b, n from gt.split(\"/\")\nreturn [{\"sampleId\": s, \"genotypeClass\": c, \"callCount\": n} for (s, c), n in sorted(genotypes.items())]",
+     "oracle_code": [
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 537,
+       "end": 548,
+       "note": "cyvcf2 + tabix arm (cyvcf2-indexed): VCF(bgzipped copy)(\"chrom:start-end\") index seek, then keep only START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 549,
+       "end": 564,
+       "note": "full-parse arm (cyvcf2-scan): iterate the whole source VCF, keep records on the window's contig with START <= POS <= END"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 595,
+       "end": 600,
+       "note": "bcftools + tabix arm (bcftools-indexed): bcftools query -r chrom:start-end -f <per-question format>"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 612,
+       "end": 622,
+       "note": "bcftools arm folding: CHROM re-checked and the same POS post-filter applied to every output line"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 844,
+       "end": 847,
+       "note": "equality reference: one untimed cyvcf2-scan pass per question that fills every window"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 855,
+       "end": 856,
+       "note": "each arm's answer must equal the reference (canonical JSON equality)"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 465,
+       "end": 476,
+       "note": "R5 accumulator (cyvcf2 arms): add_genotypes"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 510,
+       "end": 516,
+       "note": "vcf_sample_names: sample columns of the #CHROM line"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 582,
+       "end": 582,
+       "note": "R5 bcftools format: %CHROM\\t%POS[\\t%GT]"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 640,
+       "end": 643,
+       "note": "R5 bcftools fold: one class per sample column"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/regional_runner.py",
+       "start": 660,
+       "end": 681,
+       "note": "_classify_bcftools_gt: the same classes from the GT text"
+      },
+      {
+       "source": "tool",
+       "tag_or_commit": "v3.3.1",
+       "path": "src/validation/validation_runner.py",
+       "start": 371,
+       "end": 389,
+       "note": "genotype_alleles and classify_genotype, shared with the whole-file Q5 oracle"
+      }
+     ],
+     "notes": "Window semantics (REGION_SEMANTICS, regional_runner.py 54-70 at v3.3.1): a window is POS-based, 1-based and inclusive. A tabix/CSI seek returns every record whose span overlaps the region, so both indexed arms keep the seek and then drop records whose POS lies outside the window; the SPARQL side substitutes {{CHROM}}, {{START}} and {{END}} into the template (render_query, 698-713). The equality reference is the cyvcf2-scan computation over the original VCF; the indexed arms read the bgzip + tabix (or CSI, chosen automatically for contigs over 2^29-1 bp) copy built once by prepare_indexed_vcf (212-283). 14_regional_access.sh runs the runner with --representation expanded, windows of 1 kb, 100 kb, 1 Mb and 10 Mb, 20 per size, seed 20260923, each window anchored at a randomly chosen record. In the reported v3.3.1 rerun (testing repo benchmark-results/vcf-bench-1/v331-rerun/results/14_regional_access/{small,slice}/out/regional.json) every arm agreed with the reference: 0 disagreements and 0 failures in 7,380 (small) and 3,780 (slice) timed executions. R5 is the only regional question with an expanded-only template (the condensed representation has none at v3.3.1; regional_query_path falls back to common/, which holds no r05). Unlike q05 it starts from the record, because the coordinate restriction lives there. A record without a GT field prints '.' from bcftools and so classifies as MISSING there but NO_GT_FIELD on the cyvcf2 arms (documented in _classify_bcftools_gt); the comparator would flag it. The regional cyvcf2 readers are opened without strict_gt=True, unlike parse_vcf."
+    }
+   ]
+  }
+ ]
+}

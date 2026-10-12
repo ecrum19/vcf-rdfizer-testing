@@ -3,7 +3,7 @@
 Not part of the core benchmark (Supplementary Table S12). This host ran the
 two-phase large-graph experiment: `15_scale_prepare.sh` built two graphs once,
 and `16_scale_retrieval.sh` queried them. The manuscript reports the retrieval
-from the v3.3.1 rerun on those graphs (Figure 3a, Table S17).
+from the v3.3.1 rerun on those graphs (Figure 4a, Table S17).
 
 | Path | What |
 | --- | --- |

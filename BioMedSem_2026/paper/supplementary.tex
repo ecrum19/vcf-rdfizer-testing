@@ -460,6 +460,13 @@ The native COTTAS route uses a DuckDB-backed Comunica engine over Parquet~\cite{
 Validation compares 13 SPARQL results with answers derived from the source VCF using cyvcf2 and exact FILTER text from \texttt{bcftools query}~\cite{vcf_intro,BCFtools,cyvcf2_2017}.
 Fourteen preflight queries first inspect syntax-independent graph properties, including missing values, POS typing, core-property cardinality, sample representation, inventories, and triple counts.
 Table~\ref{tab:queries} defines the source-comparison questions.
+Each query summarizes one part of the VCF (main Table~\ref{M-tab:contract}) as counts, histograms, or hash-bucket digests rather than as full record lists, so its result stays small on graphs of any size and its expected answer can be recomputed from the VCF text without reading RDF.
+The queries use only standard SPARQL~1.1, including \texttt{SHA256} for the digests and no order-dependent \texttt{GROUP\_CONCAT}, so the same query text runs on every engine.
+Queries and oracle were developed against one declarative test fixture from which the test VCF, its expected graph, and its expected oracle summary are all derived.
+Its records exercise every query branch: a transition and a transversion SNV, a deletion, a multiallelic and a no-ALT site, PASS and failed FILTER values, and missing and non-diploid genotypes.
+A continuous-integration test checks that the oracle computed from that VCF equals the hand-derived summary, and the queries also run in process under rdflib, an independent SPARQL implementation.
+A container test then runs every query on Comunica, QLever, and the native HDT and COTTAS engines and requires identical answers, and fault injection (Section~\ref{subsec:validation-sensitivity}) measures which corruptions the queries miss.
+Main Figure~\ref{M-fig:query-oracle} shows Q3 next to its oracle, and the results site shows every query and its oracle.
 
 \begin{table}[!htbp]
 \caption{The 13 source-comparison queries.

@@ -174,9 +174,18 @@ Validation compares the results of 13 SPARQL \emph{source-comparison queries} (Q
 The source-derived answers serve as the \emph{oracle}.
 Q1--Q4 count records per contig and window, allele class, transition or transversion, and FILTER value; Q5--Q6 count genotypes and recomputed allele counts; Q7--Q8 compare file metadata and header lines; Q9--Q10 count triples per predicate and resources per class; and Q11--Q13 compare hashed summaries of record, INFO, and FORMAT values bound to source records (Supplementary Table~\ref{S-tab:queries}).
 Normalized results are compared for exact agreement, although the value summaries are not exhaustive value-by-value tests.
+Each query was designed to summarize one part of the VCF (Table~\ref{tab:contract}) as counts, histograms, or hash-bucket digests that the oracle can recompute from the VCF alone; the queries and oracle were developed against a test fixture whose records exercise every query branch, and fault injection then measured what they miss (Figure~\ref{fig:query-oracle}; Supplementary Section~\ref{S-subsec:validation-queries}).
 Preflight queries (14 integrity checks run before the comparisons) and SHACL constraints (declared shape rules that the graph must satisfy) assess additional graph properties~\cite{shacl2017}.
 The default profile checks cardinality and datatypes, while two deeper profiles check that related values agree (for example, GT text and called alleles) and that indices are unique.
 Table~\ref{tab:contract} summarizes the assessment boundary, and Supplementary Section~\ref{S-sec:validation} specifies the queries, normalization, profiles, and limits.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{fig-query-oracle.pdf}
+\caption{\textbf{A source-comparison query and its oracle.}
+Left: query Q3, which counts biallelic single-nucleotide variants (SNVs) and classifies each as a transition or transversion in the RDF graph (abridged: the query writes out the four-way transition test). Right: the oracle, which computes the same counts directly from the source VCF with cyvcf2 (pseudo-code). The two results are normalized and must agree exactly; the Ti/Tv ratio is derived only afterwards. The results site shows every query and its oracle in full.}
+\label{fig:query-oracle}
+\end{figure}
 
 \begin{table}[!htbp]
 \caption{What VCF-RDFizer represents for each part of a VCF, which checks verify it, and what those checks do not establish.

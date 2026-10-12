@@ -638,7 +638,7 @@ def fig_retrieval() -> None:
 # Figure: regional and whole-file retrieval, RDF against tabular parsing
 # ---------------------------------------------------------------------------
 #: Regional execution paths: RDF first, then the indexed readers, then the
-#: unindexed scan as the dashed context baseline (gray, as in Figure 6).
+#: unindexed scan as the dashed context baseline (gray, as in Figure 7).
 REGIONAL_PATHS = [("qlever", "QLever (RDF)", BLUE, "o", "-"),
                   ("bcftools-indexed", "bcftools + tabix", ORANGE, "s", "-"),
                   ("cyvcf2-indexed", "cyvcf2 + tabix", AQUA, "D", "-"),

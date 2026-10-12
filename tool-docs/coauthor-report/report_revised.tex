@@ -92,7 +92,7 @@ On 113 injected faults, the queries detected 96. The default shapes detected non
 \centering
 \includegraphics[width=0.9\textwidth]{figs/fig-validation.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 2. Validation outcomes on valid inputs and on injected faults} (main Figure~3). Each bar spans the expected outcome and is filled to the observed one. (a)~Agreement with source-derived answers. (b)~Detection of 113 injected faults by the queries alone, with the default shapes, and with all shape profiles.}
+\figcaption{\textbf{Figure 2. Validation outcomes on valid inputs and on injected faults} (main Figure~4). Each bar spans the expected outcome and is filled to the observed one. (a)~Agreement with source-derived answers. (b)~Detection of 113 injected faults by the queries alone, with the default shapes, and with all shape profiles.}
 \end{figure}
 
 \subsection{The new limitation: shape validation at scale}
@@ -111,7 +111,7 @@ The workflow asks which observed variants in the frozen 81-gene ACMG SF v3.2 set
 \centering
 \includegraphics[width=\textwidth]{figs/fig-usecase-matches.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 3. Identical match sets for every requester in every scenario} (main Figure~4). Bars are the RDF workflow and dots the bcftools workflow. Scenario~1: the ACMG gene-span regions of five single-sample VCFs; Scenario~2: 104 1000~Genomes participants, with a separate panel-frequency graph in (c); Scenario~3: the complete HG005 VCF; Scenario~4: the complete NB72462M VCF. All: no policy; OP: the participant's own physician; CC: clinical care; DS: cardiovascular research; GRU: general research use.}
+\figcaption{\textbf{Figure 3. Identical match sets for every requester in every scenario} (main Figure~5). Bars are the RDF workflow and dots the bcftools workflow. Scenario~1: the ACMG gene-span regions of five single-sample VCFs; Scenario~2: 104 1000~Genomes participants, with a separate panel-frequency graph in (c); Scenario~3: the complete HG005 VCF; Scenario~4: the complete NB72462M VCF. All: no policy; OP: the participant's own physician; CC: clinical care; DS: cardiovascular research; GRU: general research use.}
 \end{figure}
 
 \begin{itemize}
@@ -145,7 +145,7 @@ Neither workflow is uniformly cheaper. VCF parsing wins one-pass analyses and sm
 \centering
 \includegraphics[width=0.95\textwidth]{figs/fig-regional.pdf}
 \par\medskip
-\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~6). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Storage on disk, also for the complete HG005 VCF: the gzipped VCF against the gzip-framed N-Triples QLever indexes, and, once indexed for queries, the bgzipped VCF with its tabix index against the QLever index. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
+\figcaption{\textbf{Figure 5. Where VCF parsing is and is not faster than RDF querying} (main Figure~7). All panels use 100,000 HG005 records. (a)~Repeated whole-file questions with setup included: a full cyvcf2 parse per question against 2.0\,min, measured in a rerun, to convert the records to gzip-framed N-Triples and index them in QLever, breaking even at 11 questions. (b)~Storage on disk, also for the complete HG005 VCF: the gzipped VCF against the gzip-framed N-Triples QLever indexes, and, once indexed for queries, the bgzipped VCF with its tabix index against the QLever index. (c)~Median time per regional query by window size (median records per window in parentheses). (d)~Every comparison as VCF parsing time divided by QLever time, setup excluded; points in the shaded region are those where VCF parsing was slower.}
 \end{figure}
 
 \begin{center}\small
@@ -181,7 +181,7 @@ The converter comparison sits in RQ3 because it weighs what a representation hol
 \centering
 \includegraphics[width=\textwidth]{figs/fig-converters.pdf}
 \vspace{2pt}
-\figcaption{\textbf{Figure 7. Only VCF-RDFizer's graphs answered every content question as the oracle did on both shared inputs} (main Figure~5). Each cell is one of the content questions Q1--Q8, ported to the converter's vocabulary and answered from its graph: \checkmark\ as the oracle, $\times$ differently, -- not in the graph. Q1--Q4 summarize records, Q5--Q6 genotypes, and Q7--Q8 the header. (a)~100,000 HG005 records, one sample. (b)~10,000 records and 16 samples of the 1000~Genomes chromosome-20 call set. JVarkit merges records sharing CHROM, POS, and REF; TogoVar drops symbolic and \texttt{*} alleles and writes no samples or header; SPARQLing Genomics writes only carriers' calls (1,401 of 10,000 cohort records); BioInterchange's HG005 header document is invalid JSON.}
+\figcaption{\textbf{Figure 7. Only VCF-RDFizer's graphs answered every content question as the oracle did on both shared inputs} (main Figure~6). Each cell is one of the content questions Q1--Q8, ported to the converter's vocabulary and answered from its graph: \checkmark\ as the oracle, $\times$ differently, -- not in the graph. Q1--Q4 summarize records, Q5--Q6 genotypes, and Q7--Q8 the header. (a)~100,000 HG005 records, one sample. (b)~10,000 records and 16 samples of the 1000~Genomes chromosome-20 call set. JVarkit merges records sharing CHROM, POS, and REF; TogoVar drops symbolic and \texttt{*} alleles and writes no samples or header; SPARQLing Genomics writes only carriers' calls (1,401 of 10,000 cohort records); BioInterchange's HG005 header document is invalid JSON.}
 \end{figure}
 
 \reading{main Sections~3.3 and~4.6; supplement Sections~S2, S9 and~S10.}
@@ -201,7 +201,7 @@ The converter comparison sits in RQ3 because it weighs what a representation hol
 \item Scenario~2's structural-variant gap is reported as a limitation of the published v3.3.1, rather than removed by an unreleased fix.
 \item Scenario~4 and the v3.3.1 linker fix are minimal in the main text and detailed in Supplementary Section~S5.
 \item The SHACL scaling limit is framed as future work rather than as a weakness of the validation design.
-\item The break-even is computed for the N-Triples QLever indexes, with HDT and COTTAS treated as optional artifacts; the regional medians behind main Figure~6 are in Supplementary Table~S18.
+\item The break-even is computed for the N-Triples QLever indexes, with HDT and COTTAS treated as optional artifacts; the regional medians behind main Figure~7 are in Supplementary Table~S18.
 \end{itemize}
 
 \subsection{Claim-dependent additions, not an automatic rerun of the benchmarks}
