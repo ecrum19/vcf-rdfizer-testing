@@ -30,7 +30,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
 
     def test_every_dataset_is_written(self):
         self.assertEqual(self.files, ["campaign.json", "converters.json", "facts.json", "fidelity.json",
-                                      "queries.json", "retrieval.json", "scaling.json", "usecase.json"])
+                                      "policies.json", "queries.json", "retrieval.json", "scaling.json", "usecase.json"])
 
     def test_every_query_shows_its_query_and_oracle(self):
         """Each query has its exact text, a pseudo-code oracle, and the exact oracle code;
@@ -49,6 +49,33 @@ class SiteDataMatchesThePaper(unittest.TestCase):
                 self.assertTrue(item["sparql"] and all(q["text"].strip() for q in item["sparql"]), item["id"])
                 if group["id"] != "preflight":
                     self.assertTrue(item["oracleCode"] and all(c["text"].strip() for c in item["oracleCode"]), item["id"])
+
+    def test_every_release_is_explained_by_its_policy(self):
+        """RQ2's policy view: every ODRL rule of each scenario's policy file, as written, and for
+        each requester what each rule withheld, adding up to the release view's own report.
+        (The build itself refuses a policy whose digest differs from a view's manifest, or a
+        rule that decided records without applying to the request.)"""
+        scenarios = self.data["policies"]["scenarios"]
+        self.assertEqual([s["number"] for s in scenarios], [1, 2, 3, 4])
+        for s in scenarios:
+            text = (build_site_data.ROOT / s["policyFile"]).read_text(encoding="utf-8")
+            self.assertEqual(text.count(" a odrl:Set ;"), len(s["rules"]), s["id"])
+            lines = text.splitlines()
+            for rule in s["rules"]:  # the text shown is the text at the lines the page links to
+                self.assertEqual(rule["turtle"], "\n".join("\n".join(lines[a - 1:b]) for a, b in rule["lines"]) + "\n")
+            for r in s["requesters"]:
+                self.assertEqual(sum(e["released"] for e in r["effects"].values()), r["released"])
+                self.assertEqual(sum(e["withheld"] for e in r["effects"].values()), r["withheld"])
+                self.assertTrue(r["matches"]["agree"], (s["id"], r["id"]))
+        # The released records differ only where the paper says: Scenario 2's symbolic SV records.
+        self.assertEqual({(s["id"], r["id"]) for s in scenarios for r in s["requesters"] if not r["records"]["agree"]},
+                         {("arm2", "cardio"), ("arm2", "biobank")})
+        layered = scenarios[3]
+        self.assertEqual([r["id"] for r in layered["rules"] if r["kind"] != "consent"],
+                         ["cohort", "outside_panel_1", "region_apoe", "variant_1"])
+        withheld = {r["id"]: {k: v["withheld"] for k, v in r["effects"].items() if v["withheld"]} for r in layered["requesters"]}
+        self.assertEqual(withheld["biobank"], {"cohort": 2513, "region_apoe": 6, "variant_1": 1})
+        self.assertEqual(withheld["own_physician"], {})
 
     def test_the_paper_names_fourteen_preflight_queries(self):
         """The site stars what the paper's validation paragraph names, and counts the preflight

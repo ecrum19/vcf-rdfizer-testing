@@ -31,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import figure_data as fd  # noqa: E402
+from turtle_text import statement_text, turtle_statements  # noqa: E402
 
 RESULTS = fd.RESULTS
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
@@ -744,6 +745,206 @@ def myvariant() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Release policies (RQ2): how each scenario's ODRL rules decided each release
+# ---------------------------------------------------------------------------
+#: Each scenario's case file. generate.py writes policy.ttl beside it (arm 1's into acmg/),
+#: and test_use_case.py fails if a committed policy.ttl is not what its case generates.
+POLICY_CASES = {
+    "arm1": ACMG / "use_case.json",
+    "arm2": ACMG / "cohort" / "cohort.json",
+    "arm3": ACMG / "wgs" / "case.json",
+    "arm4": ACMG / "layered" / "case.json",
+}
+SCENARIO_TITLES = {
+    "arm1": "Gene-span slices of {n} single-sample VCFs",
+    "arm2": "{n} 1000 Genomes participants",
+    "arm3": "The complete {first} VCF",
+    "arm4": "The complete {first} VCF under layered consent",
+}
+OBO = "http://purl.obolibrary.org/obo/"
+POLICY_NS = "https://example.org/policy/acmg-use-case/"
+CLINICAL_CARE = OBO + "DUO_0000043"  # generate.py's cohort_rule("DUO:0000043")
+NO_PERMISSION = "no-permission"      # the engine's default deny
+
+
+def acmg_generate():
+    """benchmarks/use_case/acmg/generate.py (standard library only), for its DUO terms."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("acmg_generate", ACMG / "generate.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def purpose_iri(term: str) -> str:
+    return OBO + "DUO_" + term.split(":")[1] if term.startswith("DUO:") else term
+
+
+def purpose_vocabulary(case: dict) -> dict[str, dict]:
+    """The purposes a scenario's evaluation knew, each with its broader term.
+
+    generate.py's DUO_TERMS are the plug-in's bundled DUO subset, term for term
+    (arms 1-3 ran with that default); a case's own purposes extend it (arm 4's
+    purposes.ttl)."""
+    terms = {OBO + term: {"label": label, "broader": OBO + broader} for term, label, broader in re.findall(
+        r'obo:(DUO_\d+) rdfs:label "([^"]+)" ; rdfs:subClassOf obo:(DUO_\d+)', acmg_generate().DUO_TERMS)}
+    for term in case.get("purposes", []):
+        terms[term["iri"]] = {"label": term["label"], "broader": purpose_iri(term["broader"])}
+    return terms
+
+
+def within(purpose: str, term: str, vocabulary: dict) -> bool:
+    """The engine's rule: a purpose satisfies a term when it is that term or narrower."""
+    while purpose:
+        if purpose == term:
+            return True
+        purpose = vocabulary.get(purpose, {}).get("broader")
+    return False
+
+
+def rule_applies(rule: dict, assignee: str, purpose: str, vocabulary: dict) -> bool:
+    """vcf_rdfizer_policies.engine.applies(): the assignee matches, and every constraint holds."""
+    if rule["assignees"] and assignee not in rule["assignees"]:
+        return False
+    if rule["operator"]:
+        inside = any(within(purpose, term, vocabulary) for term in rule["purposes"])
+        return inside == (rule["operator"] == "isAnyOf")
+    return True
+
+
+def policy_rules(case: dict) -> list[dict]:
+    """The rules generate.py writes from a case file, in the order it writes them."""
+    policy, requesters = case["policy"], case["policy"]["requesters"]
+    findings = policy["secondary_findings"]
+    rules = [{"id": "cohort", "kind": "prohibition", "subjects": ["ex:cancer-predisposition", "ex:cohort"],
+              "asset": POLICY_NS + "cancer-predisposition", "target": {"kind": "genes", "genes": findings["genes"]},
+              "assignees": [], "operator": "isNoneOf", "purposes": [CLINICAL_CARE], "rule": findings["rule"]}]
+    for participant, consent in policy["consents"].items():
+        rules.append({"id": f"consent-{participant}", "kind": "consent", "subjects": [f"ex:consent-{participant}"],
+                      "asset": f"file://{participant}.acmg.vcf", "target": {"kind": "file", "participant": participant},
+                      "assignees": [], "operator": "isAnyOf", "purposes": [purpose_iri(t) for t in consent["permits"]],
+                      "withdrawn": bool(consent.get("withdrawn"))})
+    for i, panel in enumerate(policy.get("purpose_panels", []), 1):
+        rules.append({"id": f"outside_panel_{i}", "kind": "prohibition",
+                      "subjects": [f"ex:OutsidePanel{i}", f"ex:outside-panel-{i}", f"ex:outside_panel_{i}"],
+                      "asset": POLICY_NS + f"outside-panel-{i}", "target": {"kind": "outside-panel", "genes": panel["genes"]},
+                      "assignees": [], "operator": "isAnyOf", "purposes": [purpose_iri(panel["purpose"])], "rule": panel["rule"]})
+    for region in policy.get("regions", []):
+        name = f"region-{region['name'].lower()}"
+        rules.append({"id": name.replace("-", "_"), "kind": "prohibition", "subjects": [f"ex:{name}", f"ex:{name.replace('-', '_')}"],
+                      "asset": POLICY_NS + name,
+                      "target": {"kind": "region", **{k: region[k] for k in ("name", "chrom", "start", "end", "source")}},
+                      "assignees": [], "operator": "isNoneOf", "purposes": [purpose_iri(t) for t in region["purposes"]],
+                      "rule": region["rule"]})
+    for i, variant in enumerate(policy.get("variants", []), 1):
+        rules.append({"id": f"variant_{i}", "kind": "prohibition", "subjects": [f"ex:variant-{i}", f"ex:variant_{i}"],
+                      "asset": POLICY_NS + f"variant-{i}",
+                      "target": {"kind": "variant", **{k: variant[k] for k in ("name", "spdi")}},
+                      "assignees": [requesters[who]["assignee"] for who in variant["withheld_from"]],
+                      "operator": None, "purposes": [], "rule": variant["rule"]})
+    return rules
+
+
+def policy_statements(path: Path) -> dict[str, dict]:
+    """Every top-level statement of a policy file, by its subject, as written (with its comment)."""
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    out = {}
+    for first, last in turtle_statements(text):
+        subject = lines[first - 1].split()[0]
+        if subject.startswith("@"):
+            continue
+        start, written = statement_text(lines, first, last)
+        out[subject] = {"lines": [start, last], "text": written}
+    return out
+
+
+def release_outcome(cell: Path, rules: list[dict], digest: str) -> dict:
+    """One requester's release view: what was released, and which rule decided each withheld record.
+
+    The engine names one reason per record (the first prohibition that covers
+    it, else the permission that releases it), so the counts per rule add up to
+    the records of the file."""
+    summary = load(cell / "out" / "summary.json")
+    recorded = re.search(r'vcfp:policyDigest "sha256:([0-9a-f]+)"', (cell / "out" / "manifest.ttl").read_text(encoding="utf-8"))
+    if not recorded or recorded.group(1) != digest:
+        raise ValueError(f"{cell}: the release used a different policy than the committed one")
+    by_asset = {rule["asset"]: rule["id"] for rule in rules}
+    effects = defaultdict(lambda: {"released": 0, "withheld": 0})
+    for reason, records in summary["reasons"].items():
+        verdict, _, why = reason.partition(": ")
+        rule = NO_PERMISSION if why == "no permission covers it for this purpose" else by_asset[why.split(" on ", 1)[1].strip("<>")]
+        effects[rule][verdict] += records
+    if sum(e["released"] for e in effects.values()) != summary["records_released"] or \
+            sum(e["withheld"] for e in effects.values()) != summary["records_withheld"]:
+        raise ValueError(f"{cell}: the reasons do not add up to the released and withheld records")
+    files = [{"participant": group.removeprefix("file://").removesuffix(".acmg.vcf"), "released": g["released"],
+              "rule": NO_PERMISSION if g["reason"].endswith("no permission covers it for this purpose")
+              else by_asset[g["reason"].split(" on ", 1)[1].strip("<>")],
+              "recordsReleased": g["records_released"], "recordsWithheld": g["records_withheld"]}
+             for group, g in sorted(summary["groups"].items())]
+    return {"released": summary["records_released"], "withheld": summary["records_withheld"],
+            "triplesReleased": summary["triples_released"], "triplesWithheld": summary["triples_withheld"],
+            "effects": dict(effects), "files": files, "source": rel(cell / "out")}
+
+
+def policies() -> dict:
+    """For each scenario: its purposes, its rules (as data and as the Turtle that ran), and for
+    each requester which rules applied and what each one withheld, through to the ClinVar
+    matches the requester's query returned. Checked against the engine's own records."""
+    import hashlib
+    scenarios = []
+    for arm_id, case_path in POLICY_CASES.items():
+        arm, case = ARMS[arm_id], load(case_path)
+        policy_path = case_path.parent / "policy.ttl"
+        digest = hashlib.sha256(policy_path.read_bytes()).hexdigest()
+        vocabulary = purpose_vocabulary(case)
+        statements = policy_statements(policy_path)
+        rules = policy_rules(case)
+        for rule in rules:
+            parts = sorted((statements[s] for s in rule.pop("subjects")), key=lambda s: s["lines"][0])
+            rule["turtle"] = "\n".join(p["text"].rstrip("\n") for p in parts) + "\n"
+            rule["lines"] = [p["lines"] for p in parts]
+        comparison = load(arm / "comparison.json")
+        requesters = []
+        for requester, request in case["policy"]["requesters"].items():
+            assignee, purpose = request["assignee"], purpose_iri(request["purpose"])
+            outcome = release_outcome(arm / f"govern__{requester}", rules, digest)
+            applies = {rule["id"]: rule_applies(rule, assignee, purpose, vocabulary) for rule in rules}
+            # The site's reading of the policy must agree with the engine's decisions.
+            for rule in rules:
+                effect = outcome["effects"].get(rule["id"], {})
+                if (effect.get("withheld") and rule["kind"] == "prohibition" or effect.get("released")) and not applies[rule["id"]]:
+                    raise ValueError(f"{arm_id} {requester}: {rule['id']} decided records but does not apply")
+            for f in outcome["files"]:
+                consent = next(r for r in rules if r["id"] == f"consent-{f['participant']}")
+                if f["released"] != (applies[consent["id"]] and not consent["withdrawn"]):
+                    raise ValueError(f"{arm_id} {requester}: {f['participant']}'s file decision disagrees with its consent")
+            requesters.append({
+                "id": requester, "assignee": assignee, "purpose": purpose,
+                "label": assignee.rstrip("/").rsplit("/", 1)[1].replace("-", " ").capitalize(),
+                "applies": applies, **outcome,
+                "matches": {k: comparison[requester][k] for k in ("rdf", "baseline", "agree")},
+                "records": {k: comparison["records"][requester][k] for k in ("rdf", "baseline", "agree")},
+            })
+        if {f"govern__{r['id']}" for r in requesters} != {c.name for c in reported_cells(arm, "govern")}:
+            raise ValueError(f"{arm_id}: the case's requesters are not the released views")
+        participants = [p["id"] for p in case["participants"]]
+        scenarios.append({
+            "id": arm_id, "number": int(arm_id[-1]),
+            "title": SCENARIO_TITLES[arm_id].format(n=words(len(participants)) if len(participants) < 10 else len(participants),
+                                                    first=participants[0]),
+            "question": case["question"], "participants": participants,
+            "policyFile": rel(policy_path), "policyDigest": digest,
+            "purposes": [{"iri": iri, **term} for iri, term in vocabulary.items()],
+            "purposeFile": rel(case_path.parent / "purposes.ttl") if case.get("purposes") else None,
+            "rules": rules, "requesters": requesters,
+            "withoutPolicy": {k: comparison["unrestricted"][k] for k in ("rdf", "baseline", "agree")},
+        })
+    return {"scenarios": scenarios, "source": rel(ACMG)}
+
+
+# ---------------------------------------------------------------------------
 # Facts: every number the page's prose quotes, formatted once, here
 # ---------------------------------------------------------------------------
 WORDS = ("no one two three four five six seven eight nine ten eleven twelve thirteen "
@@ -993,6 +1194,7 @@ def build(out: Path) -> dict[str, dict]:
     }
     datasets["facts"] = facts(datasets)
     datasets["queries"] = queries()
+    datasets["policies"] = policies()  # fetched when RQ2's policy section opens, like queries.json
     meta = {"builtAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "repoCommit": git_commit()}
     out.mkdir(parents=True, exist_ok=True)

@@ -141,6 +141,16 @@
         <div class="table-wrap" id="recordsTable"></div>
         <h3 class="subhead" id="rq2-linksets">Linksets: records linked to shared identifiers</h3>
         <div class="table-wrap" id="linkingTable"></div>
+        <details class="query-catalog" id="rq2-policies">
+          <summary>How the ODRL policies decided each release</summary>
+          <p class="section-intro">
+            Each release view evaluates the scenario's ODRL policy against one request: who asks (the assignee) and for
+            what purpose. A record is released when a permission that applies to the request covers it and no prohibition
+            that applies does; anything no permission covers is withheld. Pick a scenario, read its rules, then follow one
+            requester through them to the matches their query returned.
+          </p>
+          <div class="policy-body"><p class="table-meta">Loading the policies…</p></div>
+        </details>
         <details class="query-catalog" id="rq2-queries" data-groups="usecase">
           <summary>Queries and oracles</summary>
           <div class="query-groups"><p class="table-meta">Loading the queries…</p></div>

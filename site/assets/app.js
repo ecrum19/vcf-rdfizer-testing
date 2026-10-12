@@ -989,7 +989,7 @@ async function revealHashTarget() {
     // One query or shape: render the section that holds it first.
     const catalog = await loadQueryCatalog().catch(() => null);
     const group = catalog?.groups.find((g) => g.items.some((item) => itemAnchor(g, item) === id));
-    const host = group && [...document.querySelectorAll("details.query-catalog")].find((h) => h.dataset.groups.split(" ").includes(group.id));
+    const host = group && [...document.querySelectorAll("details.query-catalog[data-groups]")].find((h) => h.dataset.groups.split(" ").includes(group.id));
     if (!host) return;
     await fillCatalog(host);
     target = document.getElementById(id);
@@ -1094,9 +1094,258 @@ function renderQueryGroups(host, catalog) {
 }
 
 function wireQueryCatalogs() {
-  for (const host of document.querySelectorAll("details.query-catalog")) {
+  for (const host of document.querySelectorAll("details.query-catalog[data-groups]")) {
     host.addEventListener("toggle", () => { if (host.open) fillCatalog(host); });
   }
+}
+
+// --------------------------------------------------------------- release policies (RQ2)
+// policies.json is fetched when the section opens. For each scenario it holds the ODRL rules
+// (as data and as the Turtle that ran), and for each requester which rules applied and how
+// many records each one withheld, from the release view's own report.
+let policyRequest = null;
+const policyState = { scenario: "arm4", requester: {} };
+
+function loadPolicies() {
+  if (!policyRequest) {
+    policyRequest = fetch("./data/policies.json").then((r) => {
+      if (!r.ok) throw new Error(`policies.json: HTTP ${r.status}`);
+      return r.json();
+    });
+    policyRequest.catch(() => { policyRequest = null; });
+  }
+  return policyRequest;
+}
+
+const curie = (iri) => iri.replace("http://purl.obolibrary.org/obo/DUO_", "DUO:").replace(/^https?:\/\/example\.org\/purpose\//, "");
+const requesterLabel = (r) => REQUESTER_LABEL[r.id] || r.label;
+const listWords = (items) => items.length < 3 ? items.join(" and ") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+
+function purposeLabel(scenario, iri) {
+  return scenario.purposes.find((p) => p.iri === iri)?.label || curie(iri);
+}
+
+// When a rule applies, in words: the engine's two tests, assignee and purpose.
+function ruleCondition(scenario, rule) {
+  const labels = listWords(rule.purposes.map((p) => `“${purposeLabel(scenario, p)}”`));
+  const who = rule.assignees.length
+    ? `the requester is the ${listWords(rule.assignees.map((a) => a.split("/").pop().replace(/-/g, " ")))}, whatever the purpose` : "";
+  const why = !rule.operator ? "" : rule.operator === "isAnyOf"
+    ? `the purpose is ${labels} or narrower` : `the purpose is not ${labels} (or narrower)`;
+  return [who, why].filter(Boolean).join(", and ") || "every request";
+}
+
+function ruleTitle(scenario, rule) {
+  const t = rule.target;
+  if (rule.id === "cohort") return `Cancer-predisposition genes: ${purposeLabel(scenario, rule.purposes[0])} only`;
+  if (t.kind === "outside-panel") return `Outside a ${num(t.genes.length)}-gene panel: withheld from ${purposeLabel(scenario, rule.purposes[0])}`;
+  if (t.kind === "region") return `${t.name} region: ${purposeLabel(scenario, rule.purposes[0])} only`;
+  if (t.kind === "variant") return `${t.name}: never released to the ${listWords(rule.assignees.map((a) => a.split("/").pop().replace(/-/g, " ")))}`;
+  return rule.id;
+}
+
+function ruleTarget(rule) {
+  const t = rule.target;
+  if (t.kind === "genes" || t.kind === "outside-panel") {
+    const genes = t.genes.map((g) => `<span class="gene">${esc(g)}</span>`).join("");
+    return `${t.kind === "genes" ? "Records whose call overlaps one of" : "Every record outside"} these ${num(t.genes.length)} genes (by gene link): <span class="genes">${genes}</span>`;
+  }
+  if (t.kind === "region") return `Records with POS in ${esc(t.chrom)}:${num(t.start)}–${num(t.end)} (${esc(t.source)})`;
+  if (t.kind === "variant") return `The one record linked to the variant identity <code>${esc(t.spdi)}</code>, whatever the file calls the contig`;
+  return "";
+}
+
+function policySource(scenario, rule) {
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  return rule.lines.map(([a, b]) => `<a href="${REPO}/blob/${esc(commit)}/${esc(scenario.policyFile)}#L${a}-L${b}">lines ${a}–${b}</a>`).join(", ");
+}
+
+function ruleCard(scenario, rule) {
+  return `<article class="rule-card">
+      <p class="rule-kind"><span class="rule-badge ${rule.kind}">${rule.kind === "prohibition" ? "Prohibition" : "Permission"}</span></p>
+      <h5>${esc(ruleTitle(scenario, rule))}</h5>
+      <p><strong>Selects:</strong> ${ruleTarget(rule)}</p>
+      <p><strong>Applies when</strong> ${esc(ruleCondition(scenario, rule))}.</p>
+      <p class="rule-plain">${esc(rule.rule)}</p>
+      <details class="q-code"><summary>ODRL, as run (${policySource(scenario, rule)})</summary><pre class="code">${esc(rule.turtle)}</pre></details>
+    </article>`;
+}
+
+// Consents differ only in whose file and which purposes, so they are grouped by what they permit.
+function consentCard(scenario) {
+  const consents = scenario.rules.filter((r) => r.kind === "consent");
+  const groups = new Map();
+  for (const c of consents) {
+    const key = `${c.purposes.join(" ")}|${c.withdrawn}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(c);
+  }
+  const rows = [...groups.values()].sort((a, b) => b.length - a.length).map((group) => {
+    const c = group[0];
+    const who = group.length === 1 ? esc(c.target.participant) : `${num(group.length)} participants`;
+    const permits = listWords(c.purposes.map((p) => `“${esc(purposeLabel(scenario, p))}”`));
+    return `<li>${who}: permits ${permits}${c.withdrawn ? " — <strong>withdrawn</strong>: a prohibition on the whole file overrides the permission" : ""}
+      <details class="q-code"><summary>ODRL, as run${group.length > 1 ? `, for ${esc(c.target.participant)}` : ""} (${policySource(scenario, c)})</summary><pre class="code">${esc(c.turtle)}</pre></details></li>`;
+  }).join("");
+  return `<article class="rule-card wide">
+      <p class="rule-kind"><span class="rule-badge permission">Permission</span></p>
+      <h5>Each participant's consent (simulated)</h5>
+      <p><strong>Selects:</strong> that participant's whole file. <strong>Applies when</strong> the request's purpose is one the consent permits, or narrower.
+        A file no consent covers for the purpose is withheld: the engine denies by default.</p>
+      <ul class="consents">${rows}</ul>
+    </article>`;
+}
+
+// The purpose vocabulary as a tree: a request satisfies a term when its purpose is that term or narrower.
+function purposeTree(scenario) {
+  const known = new Set(scenario.purposes.map((p) => p.iri));
+  const askedBy = (iri) => scenario.requesters.filter((r) => r.purpose === iri).map((r) => `<span class="who">${esc(requesterLabel(r))}</span>`).join(" ");
+  const node = (p) => {
+    const children = scenario.purposes.filter((c) => c.broader === p.iri);
+    return `<li><span class="purpose">${esc(p.label)}</span> <code>${esc(curie(p.iri))}</code> ${askedBy(p.iri)}${children.length ? `<ul>${children.map(node).join("")}</ul>` : ""}</li>`;
+  };
+  return `<ul class="purpose-tree">${scenario.purposes.filter((p) => !known.has(p.broader)).map(node).join("")}</ul>`;
+}
+
+function releaseBar(released, withheld) {
+  const total = released + withheld;
+  const share = total ? (100 * released) / total : 0;
+  return `<div class="release-bar" role="img" aria-label="${num(released)} of ${num(total)} records released">
+      <span class="released" style="width:${share}%"></span><span class="withheld" style="width:${100 - share}%"></span></div>`;
+}
+
+// The conventional workflow applies the same rules to the VCF; RQ2's findings explain where it differs.
+function recordsVersusConventional(requester) {
+  const r = requester.records;
+  if (r.agree) return `The conventional workflow released the same ${num(r.baseline)} records.`;
+  const extra = r.rdf - r.baseline;
+  return `The conventional workflow released ${num(r.baseline)}: the RDF view released ${num(Math.abs(extra))} ${extra > 0 ? "more" : "fewer"},
+    symbolic structural-variant records in cancer-predisposition genes. The cancer-gene rule selects records by their gene link,
+    and VCF-RDFizer ${esc(D.facts.useCaseVersion)} links no symbolic allele to a gene, so the rule could not select them
+    (see the findings below). No match changed.`;
+}
+
+function stepThrough(scenario, requester) {
+  const rules = scenario.rules.filter((r) => r.kind !== "consent");
+  const effect = (id) => requester.effects[id] || { released: 0, withheld: 0 };
+  const files = requester.files;
+  const fileWord = (n) => `${num(n)} file${n === 1 ? "" : "s"}`;
+  const consentLine = files.length <= 8
+    ? `<ul class="file-list">${files.map((f) => {
+      const why = f.released ? "consent covers this purpose" : f.rule === "no-permission" ? "no consent covers this purpose"
+        : "consent withdrawn";
+      return `<li><span class="mark ${f.released ? "yes" : "no"}">${f.released ? "✓" : "✗"}</span> ${esc(f.participant)}: ${why}</li>`;
+    }).join("")}</ul>`
+    : (() => {
+      const released = files.filter((f) => f.released).length;
+      const withdrawn = files.filter((f) => !f.released && f.rule !== "no-permission").length;
+      const uncovered = files.length - released - withdrawn;
+      return `<p>${fileWord(released)} of ${num(files.length)} released: the participant's consent covers this purpose.
+        ${uncovered ? `${fileWord(uncovered)} withheld: no consent covers it.` : ""} ${withdrawn ? `${fileWord(withdrawn)} withheld: consent withdrawn.` : ""}</p>`;
+    })();
+  const defaultDeny = effect("no-permission").withheld;
+  const withdrawals = scenario.rules.filter((r) => r.kind === "consent").reduce((n, r) => n + effect(r.id).withheld, 0);
+  const ruleRows = rules.map((rule) => {
+    const applies = requester.applies[rule.id];
+    const withheld = effect(rule.id).withheld;
+    const outcome = !applies ? "does not apply" : withheld ? `withheld ${num(withheld)} record${withheld === 1 ? "" : "s"}`
+      : "applies; withheld nothing more (any records it selects were already withheld)";
+    return `<li class="${applies ? "applies" : "skips"}"><span class="mark ${applies ? "no" : "na"}">${applies ? "✗" : "–"}</span>
+      ${esc(ruleTitle(scenario, rule))}: <strong>${outcome}</strong></li>`;
+  }).join("");
+  const m = requester.matches;
+  return `<ol class="steps">
+      <li><h6>The request</h6><p><strong>${esc(requesterLabel(requester))}</strong> (<code>${esc(requester.assignee.split("/").pop())}</code>)
+        asks to read the data for <strong>“${esc(purposeLabel(scenario, requester.purpose))}”</strong> <code>${esc(curie(requester.purpose))}</code>.</p></li>
+      <li><h6>Consent decides which files</h6>${consentLine}
+        ${defaultDeny || withdrawals ? `<p class="table-meta">Records withheld at this step: ${num(defaultDeny + withdrawals)}.</p>` : ""}</li>
+      <li><h6>Record rules</h6><ul class="rule-list">${ruleRows}</ul>
+        <p class="table-meta">A record withheld by several rules is counted once, under the rule the release report names.</p></li>
+      <li><h6>The release view</h6>${releaseBar(requester.released, requester.withheld)}
+        <p><strong>${num(requester.released)}</strong> records released, ${num(requester.withheld)} withheld
+        (${num(requester.triplesReleased)} triples released). ${recordsVersusConventional(requester)}</p></li>
+      <li><h6>What the query returns</h6><p>The ClinVar-match query on this view returns <strong>${num(m.rdf)}</strong> matches,
+        of ${num(scenario.withoutPolicy.rdf)} without any policy. The conventional workflow returned ${num(m.baseline)}:
+        <span class="status ${m.agree ? "pass" : "fail"}">${m.agree ? "the same set" : "a different set"}</span>.</p></li>
+    </ol>`;
+}
+
+function policyMatrix(scenario) {
+  const rs = scenario.requesters;
+  const cell = (r, id) => {
+    if (!r.applies[id]) return `<td class="num na" title="does not apply">–</td>`;
+    const n = r.effects[id]?.withheld || 0;
+    return `<td class="num">${n ? `−${num(n)}` : "0"}</td>`;
+  };
+  const rows = scenario.rules.filter((r) => r.kind !== "consent").map((rule) =>
+    `<tr><th scope="row">${esc(ruleTitle(scenario, rule))}</th>${rs.map((r) => cell(r, rule.id)).join("")}</tr>`).join("");
+  const consents = scenario.rules.filter((r) => r.kind === "consent");
+  const filesRow = `<tr><th scope="row">Files released by consent</th>${rs.map((r) =>
+    `<td class="num">${num(r.files.filter((f) => f.released).length)} of ${num(r.files.length)}</td>`).join("")}</tr>`;
+  const uncovered = `<tr><th scope="row">No consent covers the purpose, or withdrawn</th>${rs.map((r) =>
+    `<td class="num">${(() => { const n = (r.effects["no-permission"]?.withheld || 0) + consents.reduce((t, c) => t + (r.effects[c.id]?.withheld || 0), 0); return n ? `−${num(n)}` : "0"; })()}</td>`).join("")}</tr>`;
+  return `<div class="table-wrap"><table class="policy-matrix">
+      <thead><tr><th>Records withheld by</th>${rs.map((r) => `<th class="num">${esc(requesterLabel(r))}</th>`).join("")}</tr></thead>
+      <tbody>${filesRow}${uncovered}${rows}
+        <tr class="total"><th scope="row">Records released</th>${rs.map((r) => `<td class="num">${num(r.released)}</td>`).join("")}</tr>
+        <tr><th scope="row">Conventional workflow released the same records</th>${rs.map((r) => {
+          const extra = r.records.rdf - r.records.baseline;
+          return `<td class="num"><span class="status ${r.records.agree ? "pass" : "fail"}">${r.records.agree ? "yes" : `no: RDF ${extra > 0 ? "+" : "−"}${num(Math.abs(extra))}`}</span></td>`;
+        }).join("")}</tr>
+        <tr class="total"><th scope="row">ClinVar matches returned (without a policy: ${num(scenario.withoutPolicy.rdf)})</th>${rs.map((r) => `<td class="num">${num(r.matches.rdf)}</td>`).join("")}</tr>
+        <tr><th scope="row">Conventional workflow returned the same matches</th>${rs.map((r) =>
+          `<td class="num"><span class="status ${r.matches.agree ? "pass" : "fail"}">${r.matches.agree ? "yes" : "no"}</span></td>`).join("")}</tr>
+      </tbody></table></div>
+    <p class="table-meta">“–”: the rule does not apply to that request. Records released and withheld are from each release view's own report
+      (<code>${esc(rs[0].source.replace(/govern__[^/]+/, "govern__*"))}/summary.json</code>).</p>`;
+}
+
+function renderPolicyView(host, data) {
+  const scenario = data.scenarios.find((s) => s.id === policyState.scenario) || data.scenarios.at(-1);
+  const requester = scenario.requesters.find((r) => r.id === policyState.requester[scenario.id]) || scenario.requesters.at(-1);
+  const tabs = data.scenarios.map((s) => `<button type="button" class="seg${s.id === scenario.id ? " on" : ""}" data-scenario="${s.id}"
+      aria-pressed="${s.id === scenario.id}">Scenario ${s.number}<small>${esc(s.title)}</small></button>`).join("");
+  const picks = scenario.requesters.map((r) => `<button type="button" class="seg${r.id === requester.id ? " on" : ""}" data-requester="${r.id}"
+      aria-pressed="${r.id === requester.id}">${esc(requesterLabel(r))}</button>`).join("");
+  const rules = scenario.rules.filter((r) => r.kind !== "consent");
+  host.querySelector(".policy-body").innerHTML = `
+    <div class="seg-row" role="group" aria-label="Scenario">${tabs}</div>
+    <p class="table-meta">Policy file <a href="${REPO}/blob/${esc(D.campaign?.meta?.repoCommit || "main")}/${esc(scenario.policyFile)}"><code>${esc(scenario.policyFile)}</code></a>:
+      the file the release views ran with (its SHA-256 matches every view's manifest). Consents are simulated.</p>
+    <h4 class="policy-step"><span>1</span> How the policy is written</h4>
+    <div class="policy-grid">
+      <div class="rule-cards">${consentCard(scenario)}${rules.map((r) => ruleCard(scenario, r)).join("")}</div>
+      <aside class="purposes"><h5>Purposes</h5>
+        <p class="table-meta">A request satisfies a term when its purpose is that term or narrower.</p>${purposeTree(scenario)}</aside>
+    </div>
+    <h4 class="policy-step"><span>2</span> What it does to one request</h4>
+    <div class="seg-row" role="group" aria-label="Requester">${picks}</div>
+    ${stepThrough(scenario, requester)}
+    <h4 class="policy-step"><span>3</span> Every requester at once</h4>
+    ${policyMatrix(scenario)}`;
+}
+
+function wirePolicyView() {
+  const host = document.getElementById("rq2-policies");
+  if (!host) return;
+  let data = null;
+  const show = async () => {
+    if (!host.open) return;
+    try {
+      data = data || await loadPolicies();
+      renderPolicyView(host, data);
+    } catch (error) {
+      host.querySelector(".policy-body").textContent = `Could not load the policies: ${error.message}`;
+    }
+  };
+  host.addEventListener("toggle", show);
+  host.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-scenario], button[data-requester]");
+    if (!button || !data) return;
+    if (button.dataset.scenario) policyState.scenario = button.dataset.scenario;
+    else policyState.requester[policyState.scenario] = button.dataset.requester;
+    renderPolicyView(host, data);
+  });
 }
 
 // --------------------------------------------------------------- modal
@@ -1148,6 +1397,7 @@ async function main() {
     "N-Triples-only rerun (vcf-bench-2/nt-only); 14_regional_access and 16_scale_retrieval from the v3.3.1 rerun.";
   wireModal();
   wireQueryCatalogs();
+  wirePolicyView();
   addSectionLinks();
   await renderAllCharts();
   // Charts above an anchor change its position after the browser's initial scroll.
