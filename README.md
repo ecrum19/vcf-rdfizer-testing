@@ -126,6 +126,15 @@ archive on every push to `main`. The page types no numbers of its own:
   `scripts/build_site_data.py` computes from the run records;
 - the tests fail if a digit is typed into the page.
 
+RQ1 expands the paper's scale comparison with per-query completion; RQ3 adds
+native-engine execution times and complete-HG005 decoding/indexing/query costs.
+These charts read the published-release `16_scale_retrieval` reports directly.
+Complete native responses are compared with source-verified QLever responses;
+truncated timeout responses are not counted as answers. Missing run combinations
+are shown as **not run**, and partial native workloads are not plotted as complete
+query totals. QLever query totals use sums of per-question medians, while decoding
+and index-build times use replicate medians. Chart tables link to the archived evidence.
+
 To view it locally:
 
 ```bash

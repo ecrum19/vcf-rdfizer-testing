@@ -19,6 +19,13 @@ which reads every value through
 [`scripts/build_site_data.py`](../scripts/build_site_data.py), the results site's
 builder. The paper and the site therefore cannot compute a value differently.
 The diagrams are standalone TikZ sources beside their PDFs.
+Figure 4, RQ1, Supplementary Section S4, and the results site share five labels:
+A, Core benchmark validation; B, Artifact decoding; C, Consumer WGS validation;
+D, Large-graph query agreement; E, Fault-injection sensitivity.
+The titles are defined in `FIDELITY_GROUPS` in `build_site_data.py`.
+Group D compares the archived normalized parser and SPARQL answers in every
+replicate; execution status alone is insufficient. Group B checks decoded triple
+counts, not the identity of every triple.
 Figure 5 focuses on the Scenario 2 shared-frequency join and Scenario 4 policy views;
 Figure S3 expands the comparison to all four scenarios and every requester. Both
 read the v3.3.1 reruns through the same reader as the results site. Input records
@@ -32,10 +39,11 @@ is used.
 | --- | --- | --- |
 | 1 | `vcf-core-minimal.pdf` | `vcf-core-minimal.tex` |
 | 2 | `vcf2rdf-v3.pdf` | `vcf2rdf-v3.tex` |
-| 3 | `fig-validation.pdf` | `make_figures.py` |
-| 4 | `fig-usecase-matches.pdf` | `make_figures.py` |
-| 5 | `fig-converters.pdf` | `make_figures.py` |
-| 6 | `fig-regional.pdf` | `make_figures.py` |
+| 3 | `fig-query-oracle.pdf` | `fig-query-oracle.tex` |
+| 4 | `fig-validation.pdf` | `make_figures.py` |
+| 5 | `fig-usecase-matches.pdf` | `make_figures.py` |
+| 6 | `fig-converters.pdf` | `make_figures.py` |
+| 7 | `fig-regional.pdf` | `make_figures.py` |
 | S1 | `vcf-core-classes.pdf` | `vcf-core-classes.tex` |
 | S2 | `fig-linking-framework.pdf` | `fig-linking-framework.tex` |
 | S3 | `fig-usecase-overview.pdf` | `make_figures.py` |

@@ -15,18 +15,18 @@ The second important point is reproducibility and what exactly we mean by “ver
 
 - [ ] I would also write down more explicitly what the validation establishes: *agreement with source-derived queries, structural conformance (via SHACL correct ?), and preservation across serialization*.
 - [ ] Please make it more clear HOW the linking demonstration was done (the appraoch, the queries, etc.) and where to find additional details for readers...
-- [ ] The same sort of more clear definitions are needed for the methods of validation, query writing, and HOW we assessed if the "oracle" workflows using cy2vcf/bcftools were equivalent to the SPARQL queries we used? How do the "traditional" cy2vcf workflows look and are they defined somewhere?
+- [x] The same sort of more clear definitions are needed for the methods of validation, query writing, and HOW we assessed if the "oracle" workflows using cy2vcf/bcftools were equivalent to the SPARQL queries we used? How do the "traditional" cy2vcf workflows look and are they defined somewhere?
 
 This is strong validation, but it is not full value-by-value semantic equivalence, so being precise here will actually strengthen the paper rather than make it appear weak in my opinion. This is I usually appreciate when I review papers, where authors dont claim full validation but explicitly state what they mean by it.
 
 - [x] Finally, I would suggest to look once more at the comparison with existing VCF-to-RDF tools. At the moment this is mainly documentation-based, this is certainly acceptable if we clearly present it that way, but
 - [x] one direct comparison with the closest usable alternative on a common input would substantially strengthen the novelty argument. I am guessing we might judge this is too much to add now, then I would simply tone down any implication that we have experimentally demonstrated superiority over the other converters.
-- [ ] The same applies to the large-scale performance results: where we only have single full-WGS runs, in that instance we might consider either replicate the key measurements or keep our conclusions qualitative. (clarify this)
+- [x] The same applies to the large-scale performance results: where we only have single full-WGS runs, in that instance we might consider either replicate the key measurements or keep our conclusions qualitative. (clarify this)
 
 The rest is mostly tightening: 
-- [ ] clearly distinguish expected rejection of malformed input from unsupported valid VCF cases,
-- [ ] make the independence of the RDF and conventional comparison workflows a bit more east to grasp, and
-- [ ] cleaning up the remaining author queries/formatting issues etc.
+- [x] clearly distinguish expected rejection of malformed input from unsupported valid VCF cases,
+- [x] make the independence of the RDF and conventional comparison workflows a bit more east to grasp, and
+- [x] cleaning up the remaining author queries/formatting issues etc.
 - [ ] I also would not hide the scalability limitations — actually *I think the finding that RDF might not be the right solution for every workload is one of the more credible and useful aspects of the paper*.
 
 So in short, I would avoid expanding the scope further as the paper already has a strong core; the main job remined in the coming few days now is to sharpen that core and make sure we claim exactly what we have demonstrated.

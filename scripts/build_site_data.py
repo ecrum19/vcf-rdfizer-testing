@@ -6,7 +6,8 @@
 Standard library only, and no network: everything is read from
 benchmark-results/ and benchmarks/use_case/acmg, which hold only the reported
 runs: the v3.1.0 core benchmark, the additional v3.1.0 runs, and the v3.3.1 rerun.
-Superseded, stalled and failed attempts are on the repository's legacy branch. The
+Superseded attempts are on the repository's legacy branch; reported execution
+failures remain alongside the successful runs. The
 values behind the paper's figures come from the same module make_figures.py
 uses (scripts/figure_data.py), so the site and the paper cannot
 compute them differently.
@@ -24,11 +25,13 @@ import subprocess
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import figure_data as fd  # noqa: E402
+from turtle_text import statement_text, turtle_statements  # noqa: E402
 
 RESULTS = fd.RESULTS
 REVIEW = RESULTS / "vcf-bench-2" / "review-runs"
@@ -109,6 +112,49 @@ def campaign() -> dict:
 # ---------------------------------------------------------------------------
 # Fidelity
 # ---------------------------------------------------------------------------
+FIDELITY_GROUPS = {
+    "A": "Core benchmark validation",
+    "B": "Artifact decoding",
+    "C": "Consumer WGS validation",
+    "D": "Large-graph query agreement",
+    "E": "Fault-injection sensitivity",
+}
+
+
+def large_graph_agreement() -> dict:
+    """RQ1 D: compare saved normalized answers, not execution PASS alone.
+
+    These retrieval runs are TIMING_ONLY: Q1--Q13 were compared with the VCF,
+    but preflight and SHACL were omitted. Count a question once per input path
+    only if it agrees in every recorded replicate; retain failures explicitly.
+    """
+    root = V331["vcf-bench-3"] / "16_scale_retrieval"
+    groups = defaultdict(list)
+    for cell in sorted(root.glob("*__qlever__*")):
+        reports = list(cell.glob("out/run_metrics/*/reports/validation/*/summary.json"))
+        if len(reports) != 1:
+            raise ValueError(f"Expected one retrieval report in {cell}, got {len(reports)}")
+        report = reports[0].parent
+        summary = load(reports[0])
+        parser, sparql = load(report / "parser.json"), load(report / "sparql.json")
+        queries = {q: q in parser and q in sparql and parser[q] == sparql[q] for q in fd.QIDS}
+        groups[(cell.name.split("__")[0], summary["sourceFormat"])].append({
+            "source": rel(report), "records": summary["recordCount"],
+            "status": summary["status"], "answersAgree": summary["answersAgree"],
+            "queries": queries,
+        })
+    rows = []
+    for (scale_id, artifact), runs in sorted(groups.items()):
+        manifest = load(RESULTS / "vcf-bench-3" / "scale-store-manifests" / f"{scale_id}.manifest.json")
+        questions = [{"query": q, "status": "PASS" if all(r["queries"][q] for r in runs) else "FAIL"}
+                     for q in fd.QIDS]
+        rows.append({"scale": scale_id, "artifact": artifact, "records": runs[0]["records"],
+                     "triples": manifest["triples"], "replicates": len(runs), "queries": questions,
+                     "passed": sum(q["status"] == "PASS" for q in questions),
+                     "total": len(questions), "runs": runs})
+    return {"rows": rows, "source": rel(root)}
+
+
 def validation_counts() -> dict:
     """Pass/total for every layer of the core benchmark's validation evidence."""
     comparisons, invariants, rapper, engines = Counter(), Counter(), Counter(), Counter()
@@ -291,13 +337,149 @@ def scale() -> dict:
     path = V331["vcf-bench-3"] / "16_scale_retrieval" / "retrieval.csv"
     rows = []
     for row in fd.tidy(path):
+        status = row["statuses"]
+        # A successful wrapper exit need not be a completed query response.
+        # In particular, native HDT Q5 left a truncated !TIMEDOUT! response.
+        if row["engine"] != "qlever" and status == "PASS":
+            responses = list(path.parent.glob(
+                f"{row['scale']}__{row['engine']}__*/out/run_metrics/*/reports/validation/*/raw/"
+                f"{row['engine']}/{row['query_id']}.sparql.json"))
+            if len(responses) != int(row["replicates"]):
+                raise ValueError(f"Missing native query response: {row['engine']} {row['query_id']}")
+            for response in responses:
+                raw = response.read_text(encoding="utf-8")
+                try:
+                    json.loads(raw)["results"]["bindings"]
+                except (json.JSONDecodeError, KeyError):
+                    status = "TIMEOUT" if "!TIMEDOUT!" in raw else "INVALID_RESULT"
         rows.append({
             "scale": row["scale"], "engine": row["engine"], "artifact": row["artifact"],
-            "query": row["query_id"], "status": row["statuses"],
-            "seconds": float(row["median_query_seconds"]) if row["median_query_seconds"] else None,
+            "query": row["query_id"], "status": status, "reportedStatus": row["statuses"],
+            "seconds": float(row["median_query_seconds"]) if row["median_query_seconds"] and status == "PASS" else None,
             "setup": float(row["median_setup_seconds"]) if row["median_setup_seconds"] else None,
         })
     return {"rows": rows, "source": rel(path)}
+
+
+def sparql_binding_multiset(result: dict) -> Counter:
+    """Compare raw answers without row-order or numeric datatype differences.
+
+    Native runs that stop early have no consolidated sparql.json. Their complete
+    raw answers can still be compared with a QLever run whose normalized answers
+    were checked against the source VCF. Preserve duplicate rows and RDF terms.
+    """
+    numeric = {"integer", "int", "long", "decimal", "double", "float", "nonNegativeInteger",
+               "positiveInteger", "unsignedInt", "unsignedLong", "short", "byte"}
+
+    def term(value):
+        datatype = value.get("datatype", "")
+        if datatype.startswith("http://www.w3.org/2001/XMLSchema#") and datatype.split("#")[-1] in numeric:
+            return ("number", Decimal(value["value"]))
+        return (value["type"], value["value"], value.get("xml:lang", ""), datatype)
+
+    return Counter(tuple(sorted((key, term(value)) for key, value in row.items()))
+                   for row in result["results"]["bindings"])
+
+
+def scale_comparison() -> dict:
+    """Per-query completion and stage costs, directly from the scale run reports.
+
+    Missing engine/scale combinations are explicitly unmeasured, never zero-time
+    successes or failures. Query totals follow the paper's sum-of-medians rule;
+    decoding and indexing use separate replicate medians (not a single timed run).
+    """
+    root = V331["vcf-bench-3"] / "16_scale_retrieval"
+    groups = defaultdict(list)
+    references = {}
+    for cell in sorted(root.glob("*__qlever__nt_gz__*")):
+        report = next(cell.glob("out/run_metrics/*/reports/validation/*/summary.json")).parent
+        references.setdefault(cell.name.split("__")[0], report)
+    for cell in sorted(root.glob("*__*__core__r*")):
+        scale_id, engine, artifact_id, _, _ = cell.name.split("__")
+        artifact = {"nt_gz": "nt.gz"}.get(artifact_id, artifact_id)
+        report = next(cell.glob("out/run_metrics/*/reports/validation/*/summary.json")).parent
+        summary = load(report / "summary.json")
+        bench = load(cell / "bench.json")
+        command = bench["command"]
+        timings = {r["query_id"]: r for r in fd.tidy(report / "benchmark.csv") if r["engine"] == engine}
+        parser = load(report / "parser.json")
+        normalized = load(report / "sparql.json") if engine == "qlever" else None
+        reference = references[scale_id]
+        reference_parser = load(reference / "parser.json")
+        reference_answers = load(reference / "sparql.json")
+        queries = []
+        for q, label in fd.QUERIES:
+            execution = summary.get("queryExecutions", {}).get(q, {})
+            timing = timings[q]
+            error = execution.get("error", "")
+            response = report / "raw" / engine / f"{q}.sparql.json"
+            raw = response.read_text(encoding="utf-8")
+            agrees = None
+            if "!TIMEDOUT!" in raw:
+                status = "TIMEOUT"
+            elif "Connection refused" in error or "Connection reset by peer" in error:
+                status = "ENDPOINT_UNAVAILABLE"
+            elif timing["status"] != "PASS":
+                status = "EXECUTION_FAILED"
+            else:
+                # Parsing must succeed even when the wrapper reports PASS.
+                answer = sparql_binding_multiset(json.loads(raw))
+                if engine == "qlever":
+                    agrees = q in normalized and q in parser and normalized[q] == parser[q]
+                else:
+                    reference_raw = load(reference / "raw" / "qlever" / f"{q}.sparql.json")
+                    agrees = (answer == sparql_binding_multiset(reference_raw)
+                              and parser[q] == reference_parser[q] == reference_answers[q])
+                status = "PASS" if agrees else "MISMATCH"
+            queries.append({"query": q, "label": label, "status": status,
+                            "reportedStatus": timing["status"], "answerAgrees": agrees,
+                            "seconds": float(timing["wall_seconds"]), "error": error,
+                            "source": rel(response)})
+        groups[(scale_id, engine, artifact)].append({
+            "source": rel(report), "status": summary["status"],
+            "host": bench["host"], "image": bench["image_ref"],
+            "nodeHeapMb": int(command[command.index("--node-heap-mb") + 1]) if "--node-heap-mb" in command else None,
+            "records": parser["totalRecords"], "queries": queries,
+            "decodeSeconds": load(report / "materialization.json")["wallSeconds"],
+            "indexSeconds": summary["benchmark"]["engineSetupSeconds"][engine],
+        })
+
+    paths = [("qlever", "nt.gz"), ("qlever", "hdt"), ("qlever", "cottas"),
+             ("hdt", "hdt"), ("cottas", "cottas")]
+    cells, stages, graphs = [], [], []
+    for scale_id in ("r1000000", "whole"):
+        manifest = load(RESULTS / "vcf-bench-3" / "scale-store-manifests" / f"{scale_id}.manifest.json")
+        records = groups[(scale_id, "qlever", "nt.gz")][0]["records"]
+        graphs.append({"scale": scale_id, "records": records, "triples": manifest["triples"]})
+        for engine, artifact in paths:
+            runs = groups[(scale_id, engine, artifact)]
+            questions = []
+            for i, (q, label) in enumerate(fd.QUERIES):
+                measured = [r["queries"][i] for r in runs]
+                statuses = {m["status"] for m in measured}
+                status = next(iter(statuses)) if len(statuses) == 1 else "MIXED" if statuses else "NOT_RUN"
+                values = [m["seconds"] for m in measured]
+                questions.append({"query": q, "label": label, "status": status,
+                                  "seconds": st.median(values) if values else None,
+                                  "minSeconds": min(values) if values else None,
+                                  "maxSeconds": max(values) if values else None,
+                                  "sources": [m["source"] for m in measured]})
+            cells.append({"scale": scale_id, "engine": engine, "artifact": artifact,
+                          "records": records, "triples": manifest["triples"], "replicates": len(runs),
+                          "completed": sum(q["status"] == "PASS" for q in questions) if runs else None,
+                          "total": len(questions), "queries": questions, "runs": runs})
+            if scale_id == "whole" and engine == "qlever":
+                for stage, values in (("Decode to N-Triples", [r["decodeSeconds"] for r in runs]),
+                                      ("Build QLever index", [r["indexSeconds"] for r in runs]),
+                                      ("Run all queries", [sum(q["seconds"] for q in r["queries"]) for r in runs])):
+                    if not all(q["status"] == "PASS" for q in questions):
+                        raise ValueError(f"Incomplete QLever workload: {scale_id} {artifact}")
+                    seconds = (sum(q["seconds"] for q in questions) if stage == "Run all queries"
+                               else st.median(values))
+                    stages.append({"artifact": artifact, "stage": stage, "seconds": seconds,
+                                   "minSeconds": min(values), "maxSeconds": max(values),
+                                   "replicates": len(runs), "sources": [r["source"] for r in runs]})
+    return {"cells": cells, "graphs": graphs, "wholeStages": stages, "source": rel(root)}
 
 
 def qlever_cost_by_size() -> list[dict]:
@@ -347,6 +529,7 @@ def retrieval() -> dict:
         "artifacts": {t: st.mean(v) for t, v in data["per_target"].items()},
         "regional": regional(),
         "scale": scale(),
+        "scaleComparison": scale_comparison(),
         "costBySize": qlever_cost_by_size(),
         "breakEven": {k: v for k, v in fd.breakeven().items() if k != "conversion_runs"},
     }
@@ -562,6 +745,246 @@ def myvariant() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Release policies (RQ2): how each scenario's ODRL rules decided each release
+# ---------------------------------------------------------------------------
+#: Each scenario's case file. generate.py writes policy.ttl beside it (arm 1's into acmg/),
+#: and test_use_case.py fails if a committed policy.ttl is not what its case generates.
+POLICY_CASES = {
+    "arm1": ACMG / "use_case.json",
+    "arm2": ACMG / "cohort" / "cohort.json",
+    "arm3": ACMG / "wgs" / "case.json",
+    "arm4": ACMG / "layered" / "case.json",
+}
+SCENARIO_TITLES = {
+    "arm1": "Gene-span slices of {n} single-sample VCFs",
+    "arm2": "{n} 1000 Genomes participants",
+    "arm3": "The complete {first} VCF",
+    "arm4": "The complete {first} VCF under layered consent",
+}
+OBO = "http://purl.obolibrary.org/obo/"
+POLICY_NS = "https://example.org/policy/acmg-use-case/"
+CLINICAL_CARE = OBO + "DUO_0000043"  # generate.py's cohort_rule("DUO:0000043")
+NO_PERMISSION = "no-permission"      # the engine's default deny
+
+
+def acmg_generate():
+    """benchmarks/use_case/acmg/generate.py (standard library only), for its DUO terms."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("acmg_generate", ACMG / "generate.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def purpose_iri(term: str) -> str:
+    return OBO + "DUO_" + term.split(":")[1] if term.startswith("DUO:") else term
+
+
+def purpose_vocabulary(case: dict) -> dict[str, dict]:
+    """The purposes a scenario's evaluation knew, each with its broader term.
+
+    generate.py's DUO_TERMS are the plug-in's bundled DUO subset, term for term
+    (arms 1-3 ran with that default); a case's own purposes extend it (arm 4's
+    purposes.ttl)."""
+    terms = {OBO + term: {"label": label, "broader": OBO + broader} for term, label, broader in re.findall(
+        r'obo:(DUO_\d+) rdfs:label "([^"]+)" ; rdfs:subClassOf obo:(DUO_\d+)', acmg_generate().DUO_TERMS)}
+    for term in case.get("purposes", []):
+        terms[term["iri"]] = {"label": term["label"], "broader": purpose_iri(term["broader"])}
+    return terms
+
+
+def within(purpose: str, term: str, vocabulary: dict) -> bool:
+    """The engine's rule: a purpose satisfies a term when it is that term or narrower."""
+    while purpose:
+        if purpose == term:
+            return True
+        purpose = vocabulary.get(purpose, {}).get("broader")
+    return False
+
+
+def rule_applies(rule: dict, assignee: str, purpose: str, vocabulary: dict) -> bool:
+    """vcf_rdfizer_policies.engine.applies(): the assignee matches, and every constraint holds."""
+    if rule["assignees"] and assignee not in rule["assignees"]:
+        return False
+    if rule["operator"]:
+        inside = any(within(purpose, term, vocabulary) for term in rule["purposes"])
+        return inside == (rule["operator"] == "isAnyOf")
+    return True
+
+
+def policy_rules(case: dict) -> list[dict]:
+    """The rules generate.py writes from a case file, in the order it writes them."""
+    policy, requesters = case["policy"], case["policy"]["requesters"]
+    findings = policy["secondary_findings"]
+    rules = [{"id": "cohort", "kind": "prohibition", "subjects": ["ex:cancer-predisposition", "ex:cohort"],
+              "asset": POLICY_NS + "cancer-predisposition", "target": {"kind": "genes", "genes": findings["genes"]},
+              "assignees": [], "operator": "isNoneOf", "purposes": [CLINICAL_CARE], "rule": findings["rule"]}]
+    for participant, consent in policy["consents"].items():
+        rules.append({"id": f"consent-{participant}", "kind": "consent", "subjects": [f"ex:consent-{participant}"],
+                      "asset": f"file://{participant}.acmg.vcf", "target": {"kind": "file", "participant": participant},
+                      "assignees": [], "operator": "isAnyOf", "purposes": [purpose_iri(t) for t in consent["permits"]],
+                      "withdrawn": bool(consent.get("withdrawn"))})
+    for i, panel in enumerate(policy.get("purpose_panels", []), 1):
+        rules.append({"id": f"outside_panel_{i}", "kind": "prohibition",
+                      "subjects": [f"ex:OutsidePanel{i}", f"ex:outside-panel-{i}", f"ex:outside_panel_{i}"],
+                      "asset": POLICY_NS + f"outside-panel-{i}", "target": {"kind": "outside-panel", "genes": panel["genes"]},
+                      "assignees": [], "operator": "isAnyOf", "purposes": [purpose_iri(panel["purpose"])], "rule": panel["rule"]})
+    for region in policy.get("regions", []):
+        name = f"region-{region['name'].lower()}"
+        rules.append({"id": name.replace("-", "_"), "kind": "prohibition", "subjects": [f"ex:{name}", f"ex:{name.replace('-', '_')}"],
+                      "asset": POLICY_NS + name,
+                      "target": {"kind": "region", **{k: region[k] for k in ("name", "chrom", "start", "end", "source")}},
+                      "assignees": [], "operator": "isNoneOf", "purposes": [purpose_iri(t) for t in region["purposes"]],
+                      "rule": region["rule"]})
+    for i, variant in enumerate(policy.get("variants", []), 1):
+        rules.append({"id": f"variant_{i}", "kind": "prohibition", "subjects": [f"ex:variant-{i}", f"ex:variant_{i}"],
+                      "asset": POLICY_NS + f"variant-{i}",
+                      "target": {"kind": "variant", **{k: variant[k] for k in ("name", "spdi")}},
+                      "assignees": [requesters[who]["assignee"] for who in variant["withheld_from"]],
+                      "operator": None, "purposes": [], "rule": variant["rule"]})
+    return rules
+
+
+def policy_statements(path: Path) -> dict[str, dict]:
+    """Every top-level statement of a policy file, by its subject, as written (with its comment)."""
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    out = {}
+    for first, last in turtle_statements(text):
+        subject = lines[first - 1].split()[0]
+        if subject.startswith("@"):
+            continue
+        start, written = statement_text(lines, first, last)
+        out[subject] = {"lines": [start, last], "text": written}
+    return out
+
+
+def release_outcome(cell: Path, rules: list[dict], digest: str) -> dict:
+    """One requester's release view: what was released, and which rule decided each withheld record.
+
+    The engine names one reason per record (the first prohibition that covers
+    it, else the permission that releases it), so the counts per rule add up to
+    the records of the file."""
+    summary = load(cell / "out" / "summary.json")
+    recorded = re.search(r'vcfp:policyDigest "sha256:([0-9a-f]+)"', (cell / "out" / "manifest.ttl").read_text(encoding="utf-8"))
+    if not recorded or recorded.group(1) != digest:
+        raise ValueError(f"{cell}: the release used a different policy than the committed one")
+    by_asset = {rule["asset"]: rule["id"] for rule in rules}
+    effects = defaultdict(lambda: {"released": 0, "withheld": 0})
+    for reason, records in summary["reasons"].items():
+        verdict, _, why = reason.partition(": ")
+        rule = NO_PERMISSION if why == "no permission covers it for this purpose" else by_asset[why.split(" on ", 1)[1].strip("<>")]
+        effects[rule][verdict] += records
+    if sum(e["released"] for e in effects.values()) != summary["records_released"] or \
+            sum(e["withheld"] for e in effects.values()) != summary["records_withheld"]:
+        raise ValueError(f"{cell}: the reasons do not add up to the released and withheld records")
+    files = [{"participant": group.removeprefix("file://").removesuffix(".acmg.vcf"), "released": g["released"],
+              "rule": NO_PERMISSION if g["reason"].endswith("no permission covers it for this purpose")
+              else by_asset[g["reason"].split(" on ", 1)[1].strip("<>")],
+              "recordsReleased": g["records_released"], "recordsWithheld": g["records_withheld"]}
+             for group, g in sorted(summary["groups"].items())]
+    return {"released": summary["records_released"], "withheld": summary["records_withheld"],
+            "triplesReleased": summary["triples_released"], "triplesWithheld": summary["triples_withheld"],
+            "effects": dict(effects), "files": files, "source": rel(cell / "out")}
+
+
+#: The conventional workflow's version of each piece of the policy, as blocks of
+#: baseline_carriers.py found by their own comments and definitions (start, end exclusive),
+#: so a shifted line cannot misplace them.
+CONVENTIONAL_BLOCKS = {
+    "purposes": ("# DUO: disease-specific research (DS)", "COLUMNS = ["),
+    "within": ("def within(", "def classification("),
+    "overlaps": ("def overlaps(", "def carriers("),
+    "consent": ('    consent = policy["consents"][carrier["participant"]]', "    # The secondary-findings rule"),
+    "cohort": ("    # The secondary-findings rule", "    # Arm 4: a purpose limited to a gene panel"),
+    "outside-panel": ("    # Arm 4: a purpose limited to a gene panel", "    # A region is coordinates"),
+    "region": ("    # A region is coordinates", "    # A named variant"),
+    "variant": ("    # A named variant", "    return True"),
+}
+
+
+def conventional_code() -> dict:
+    """Each rule as the conventional workflow's hand-written Python applies it (baseline_carriers.py's
+    released()), with the lines the page links to. The script reads the same case file as
+    generate.py, never the RDF or the policy."""
+    path = ACMG / "baseline_carriers.py"
+    lines = path.read_text(encoding="utf-8").splitlines()
+
+    def find(marker: str, after: int = 0) -> int:
+        found = [i for i, line in enumerate(lines) if i >= after and line.startswith(marker)]
+        if not found:
+            raise ValueError(f"{rel(path)}: no line starts with {marker!r}")
+        return found[0]
+
+    code = {}
+    for name, (start_marker, end_marker) in CONVENTIONAL_BLOCKS.items():
+        start = find(start_marker)
+        end = find(end_marker, start + 1)
+        while not lines[end - 1].strip():
+            end -= 1
+        code[name] = {"lines": [start + 1, end], "text": "\n".join(lines[start:end]) + "\n"}
+    return {"script": rel(path), "driver": rel(ACMG / "baseline.sh"), "derive": rel(ACMG / "derive.sh"), "code": code}
+
+
+def policies() -> dict:
+    """For each scenario: its purposes, its rules (as data and as the Turtle that ran), and for
+    each requester which rules applied and what each one withheld, through to the ClinVar
+    matches the requester's query returned. Checked against the engine's own records.
+    Alongside: the conventional workflow's version of each rule, and both routes' stage times."""
+    import hashlib
+    scenarios = []
+    for arm_id, case_path in POLICY_CASES.items():
+        arm, case = ARMS[arm_id], load(case_path)
+        policy_path = case_path.parent / "policy.ttl"
+        digest = hashlib.sha256(policy_path.read_bytes()).hexdigest()
+        vocabulary = purpose_vocabulary(case)
+        statements = policy_statements(policy_path)
+        rules = policy_rules(case)
+        for rule in rules:
+            parts = sorted((statements[s] for s in rule.pop("subjects")), key=lambda s: s["lines"][0])
+            rule["turtle"] = "\n".join(p["text"].rstrip("\n") for p in parts) + "\n"
+            rule["lines"] = [p["lines"] for p in parts]
+        comparison = load(arm / "comparison.json")
+        requesters = []
+        for requester, request in case["policy"]["requesters"].items():
+            assignee, purpose = request["assignee"], purpose_iri(request["purpose"])
+            outcome = release_outcome(arm / f"govern__{requester}", rules, digest)
+            applies = {rule["id"]: rule_applies(rule, assignee, purpose, vocabulary) for rule in rules}
+            # The site's reading of the policy must agree with the engine's decisions.
+            for rule in rules:
+                effect = outcome["effects"].get(rule["id"], {})
+                if (effect.get("withheld") and rule["kind"] == "prohibition" or effect.get("released")) and not applies[rule["id"]]:
+                    raise ValueError(f"{arm_id} {requester}: {rule['id']} decided records but does not apply")
+            for f in outcome["files"]:
+                consent = next(r for r in rules if r["id"] == f"consent-{f['participant']}")
+                if f["released"] != (applies[consent["id"]] and not consent["withdrawn"]):
+                    raise ValueError(f"{arm_id} {requester}: {f['participant']}'s file decision disagrees with its consent")
+            requesters.append({
+                "id": requester, "assignee": assignee, "purpose": purpose,
+                "label": assignee.rstrip("/").rsplit("/", 1)[1].replace("-", " ").capitalize(),
+                "applies": applies, **outcome,
+                "matches": {k: comparison[requester][k] for k in ("rdf", "baseline", "agree")},
+                "records": {k: comparison["records"][requester][k] for k in ("rdf", "baseline", "agree")},
+            })
+        if {f"govern__{r['id']}" for r in requesters} != {c.name for c in reported_cells(arm, "govern")}:
+            raise ValueError(f"{arm_id}: the case's requesters are not the released views")
+        participants = [p["id"] for p in case["participants"]]
+        scenarios.append({
+            "id": arm_id, "number": int(arm_id[-1]),
+            "title": SCENARIO_TITLES[arm_id].format(n=words(len(participants)) if len(participants) < 10 else len(participants),
+                                                    first=participants[0]),
+            "question": case["question"], "participants": participants,
+            "policyFile": rel(policy_path), "policyDigest": digest,
+            "purposes": [{"iri": iri, **term} for iri, term in vocabulary.items()],
+            "purposeFile": rel(case_path.parent / "purposes.ttl") if case.get("purposes") else None,
+            "rules": rules, "requesters": requesters,
+            "withoutPolicy": {k: comparison["unrestricted"][k] for k in ("rdf", "baseline", "agree")},
+            "costs": stage_cost_table(arm),
+        })
+    return {"scenarios": scenarios, "conventional": conventional_code(), "source": rel(ACMG)}
+
+
+# ---------------------------------------------------------------------------
 # Facts: every number the page's prose quotes, formatted once, here
 # ---------------------------------------------------------------------------
 WORDS = ("no one two three four five six seven eight nine ten eleven twelve thirteen "
@@ -625,6 +1048,8 @@ def facts(d: dict) -> dict[str, str]:
     out["realTriples"] = millions(real["triples"])
     out["validations"] = words(v["validations"]) if v["validations"] < len(WORDS) else str(v["validations"])
     out["invariants"] = f"{v['invariants'].get('PASS', 0):,}"
+    for label, title in FIDELITY_GROUPS.items():
+        out[f"fidelity{label}"] = f"{label}. {title}"
 
     # Use case
     sources = Counter(p["source"].split()[0] for p in study["participants"])
@@ -750,6 +1175,10 @@ def facts(d: dict) -> dict[str, str]:
     out["engineArtifacts"] = words(len(retrieval["artifacts"]))
     out["engineReplicates"] = words(engines["qlever"]["runs"] // len(retrieval["artifacts"]))
     out["engineFold"] = span([e["mean"] / engines["qlever"]["mean"] for k, e in engines.items() if k != "qlever"], 0)
+    scale_cells = retrieval["scaleComparison"]["cells"]
+    out["scaleQleverRuns"] = listing(sorted({words(c["replicates"]) for c in scale_cells if c["engine"] == "qlever" and c["replicates"]}))
+    out["scaleNativeRuns"] = listing(sorted({words(c["replicates"]) for c in scale_cells if c["engine"] != "qlever" and c["replicates"]}))
+    out["scaleNativeHeapMb"] = listing(sorted({f"{r['nodeHeapMb']:,}" for c in scale_cells if c["engine"] != "qlever" for r in c["runs"]}))
     rows = retrieval["scale"]["rows"]
     per_artifact = defaultdict(float)
     for r in rows:
@@ -762,6 +1191,8 @@ def facts(d: dict) -> dict[str, str]:
     out["inPlaceFailed"] = listing([words(n) for n in sorted(failed)])
     answered = {n for (_, ok), n in in_place.items() if ok}
     out["nativeAnswered"] = listing([words(n) for n in sorted(answered)])
+    out["nativeHdtAnswered"] = words(in_place[("hdt", True)])
+    out["nativeCottasAnswered"] = words(in_place[("cottas", True)])
     regional = retrieval["regional"]
     first = next(iter(regional.values()))
     out["regionalQuestions"] = words(first["questions"])
@@ -793,8 +1224,9 @@ def queries() -> dict:
 def build(out: Path) -> dict[str, dict]:
     datasets = {
         "campaign": campaign(),
-        "fidelity": {"validation": validation_counts(), "mutation": mutation_profiles(),
-                     "realGenome": real_genome()},
+        "fidelity": {"groups": FIDELITY_GROUPS, "validation": validation_counts(),
+                     "mutation": mutation_profiles(), "realGenome": real_genome(),
+                     "largeGraphs": large_graph_agreement()},
         "scaling": scaling(),
         "retrieval": retrieval(),
         "usecase": usecase(),
@@ -802,6 +1234,7 @@ def build(out: Path) -> dict[str, dict]:
     }
     datasets["facts"] = facts(datasets)
     datasets["queries"] = queries()
+    datasets["policies"] = policies()  # fetched when RQ2's policy section opens, like queries.json
     meta = {"builtAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "repoCommit": git_commit()}
     out.mkdir(parents=True, exist_ok=True)

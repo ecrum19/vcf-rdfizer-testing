@@ -13,6 +13,7 @@ import statistics
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -29,7 +30,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
 
     def test_every_dataset_is_written(self):
         self.assertEqual(self.files, ["campaign.json", "converters.json", "facts.json", "fidelity.json",
-                                      "queries.json", "retrieval.json", "scaling.json", "usecase.json"])
+                                      "policies.json", "queries.json", "retrieval.json", "scaling.json", "usecase.json"])
 
     def test_every_query_shows_its_query_and_oracle(self):
         """Each query has its exact text, a pseudo-code oracle, and the exact oracle code;
@@ -48,6 +49,44 @@ class SiteDataMatchesThePaper(unittest.TestCase):
                 self.assertTrue(item["sparql"] and all(q["text"].strip() for q in item["sparql"]), item["id"])
                 if group["id"] != "preflight":
                     self.assertTrue(item["oracleCode"] and all(c["text"].strip() for c in item["oracleCode"]), item["id"])
+
+    def test_every_release_is_explained_by_its_policy(self):
+        """RQ2's policy view: every ODRL rule of each scenario's policy file, as written, and for
+        each requester what each rule withheld, adding up to the release view's own report.
+        (The build itself refuses a policy whose digest differs from a view's manifest, or a
+        rule that decided records without applying to the request.)"""
+        scenarios = self.data["policies"]["scenarios"]
+        self.assertEqual([s["number"] for s in scenarios], [1, 2, 3, 4])
+        for s in scenarios:
+            text = (build_site_data.ROOT / s["policyFile"]).read_text(encoding="utf-8")
+            self.assertEqual(text.count(" a odrl:Set ;"), len(s["rules"]), s["id"])
+            lines = text.splitlines()
+            for rule in s["rules"]:  # the text shown is the text at the lines the page links to
+                self.assertEqual(rule["turtle"], "\n".join("\n".join(lines[a - 1:b]) for a, b in rule["lines"]) + "\n")
+            for r in s["requesters"]:
+                self.assertEqual(sum(e["released"] for e in r["effects"].values()), r["released"])
+                self.assertEqual(sum(e["withheld"] for e in r["effects"].values()), r["withheld"])
+                self.assertTrue(r["matches"]["agree"], (s["id"], r["id"]))
+        # The released records differ only where the paper says: Scenario 2's symbolic SV records.
+        self.assertEqual({(s["id"], r["id"]) for s in scenarios for r in s["requesters"] if not r["records"]["agree"]},
+                         {("arm2", "cardio"), ("arm2", "biobank")})
+        layered = scenarios[3]
+        self.assertEqual([r["id"] for r in layered["rules"] if r["kind"] != "consent"],
+                         ["cohort", "outside_panel_1", "region_apoe", "variant_1"])
+        withheld = {r["id"]: {k: v["withheld"] for k, v in r["effects"].items() if v["withheld"]} for r in layered["requesters"]}
+        self.assertEqual(withheld["biobank"], {"cohort": 2513, "region_apoe": 6, "variant_1": 1})
+        self.assertEqual(withheld["own_physician"], {})
+        # The conventional workflow's version of each rule: its lines in the script that ran.
+        conventional = self.data["policies"]["conventional"]
+        lines = (build_site_data.ROOT / conventional["script"]).read_text(encoding="utf-8").splitlines()
+        self.assertEqual(set(conventional["code"]), {"purposes", "within", "overlaps", "consent", "cohort",
+                                                     "outside-panel", "region", "variant"})
+        for name, block in conventional["code"].items():
+            a, b = block["lines"]
+            self.assertEqual(block["text"], "\n".join(lines[a - 1:b]) + "\n", name)
+        self.assertIn("return False", conventional["code"]["variant"]["text"])
+        for s in scenarios:
+            self.assertGreater(s["costs"]["conventional"], 0, s["id"])
 
     def test_the_paper_names_fourteen_preflight_queries(self):
         """The site stars what the paper's validation paragraph names, and counts the preflight
@@ -137,6 +176,57 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual((real["shacl"]["status"], real["shacl"]["violations"]), ("PASS", 0))
         self.assertEqual((real["shacl"]["batches"], real["shacl"]["advisories"]), (117, 46))
 
+    def test_rq1_groups_match_both_manuscripts(self):
+        groups = self.data["fidelity"]["groups"]
+        self.assertEqual(list(groups), list("ABCDE"))
+        self.assertEqual(groups["B"], "Artifact decoding")
+        for label, title in groups.items():
+            self.assertEqual(self.data["facts"][f"fidelity{label}"], f"{label}. {title}")
+        # Once a manuscript names the groups, it names all five as the site does. (The
+        # committed manuscripts predate the groups; the revision that adds them is local.)
+        for name in ("current_short.tex", "supplementary.tex"):
+            source = (build_site_data.ROOT / "BioMedSem_2026" / "paper" / name).read_text()
+            named = [label for label, title in groups.items() if f"{label}: {title}" in source]
+            self.assertIn(named, ([], list(groups)), name)
+
+    def test_large_graph_answers_and_denominators(self):
+        rows = self.data["fidelity"]["largeGraphs"]["rows"]
+        self.assertEqual([(r["scale"], r["artifact"]) for r in rows],
+                         [("r1000000", "nt.gz"), ("whole", "cottas"), ("whole", "hdt"), ("whole", "nt.gz")])
+        self.assertEqual(sum(r["replicates"] * r["total"] for r in rows), 156)
+        for row in rows:
+            self.assertEqual((row["passed"], row["total"], row["replicates"]), (13, 13, 3))
+            self.assertEqual(row["triples"], 170_935_101 if row["scale"] == "r1000000" else 657_425_805)
+            for run in row["runs"]:
+                self.assertEqual(run["status"], "TIMING_ONLY")
+                self.assertTrue(run["answersAgree"])
+                self.assertTrue(all(run["queries"].values()))
+
+    def test_large_graph_changed_answer_is_not_hidden_by_success_status(self):
+        """One discrepant replicate must fail its question even if summary still says agreement."""
+        original_load = build_site_data.load
+        changed = False
+
+        def load_with_changed_answer(path):
+            nonlocal changed
+            data = original_load(path)
+            if path.name == "sparql.json" and not changed:
+                data["q01_record_density_1mb"] = [{"unexpected": "changed answer"}]
+                changed = True
+            return data
+
+        with patch.object(build_site_data, "load", side_effect=load_with_changed_answer):
+            rows = build_site_data.large_graph_agreement()["rows"]
+        self.assertTrue(changed)
+        self.assertEqual([r["passed"] for r in rows], [12, 13, 13, 13])
+
+    def test_native_timeout_is_not_counted_as_an_answer(self):
+        rows = self.data["retrieval"]["scale"]["rows"]
+        q5 = next(r for r in rows if r["engine"] == "hdt" and r["query"] == "q05_sample_genotype_counts")
+        self.assertEqual((q5["reportedStatus"], q5["status"], q5["seconds"]), ("PASS", "TIMEOUT", None))
+        self.assertEqual(self.data["facts"]["nativeHdtAnswered"], "four")
+        self.assertEqual(self.data["facts"]["nativeCottasAnswered"], "five")
+
     def test_use_case_carriers(self):
         arms = self.data["usecase"]["arms"]
         expected = {
@@ -158,6 +248,62 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         rare = arms["arm2"]["rare"]
         self.assertEqual([rare[r]["rdf"] for r in ("unrestricted", "clinical", "cardio", "biobank")],
                          [4154, 1621, 2198, 1144])
+
+    def test_scale_comparison_distinguishes_missing_runs_from_failures(self):
+        cells = self.data["retrieval"]["scaleComparison"]["cells"]
+        self.assertEqual(len(cells), 10)
+        for cell in cells:
+            self.assertEqual(len(cell["queries"]), 13)
+            if not cell["replicates"]:
+                self.assertIsNone(cell["completed"])
+                self.assertTrue(all(q["status"] == "NOT_RUN" and q["seconds"] is None and not q["sources"]
+                                    for q in cell["queries"]))
+            elif cell["engine"] == "qlever":
+                self.assertEqual((cell["replicates"], cell["completed"]), (3, 13))
+                self.assertTrue(all(q["answerAgrees"] for r in cell["runs"] for q in r["queries"]))
+        self.assertEqual({(c["scale"], c["engine"], c["artifact"]) for c in cells if not c["replicates"]},
+                         {("whole", "hdt", "hdt"), ("whole", "cottas", "cottas"),
+                          ("r1000000", "qlever", "hdt"), ("r1000000", "qlever", "cottas")})
+        hdt, cottas = [next(c for c in cells if c["scale"] == "r1000000" and c["engine"] == e)
+                      for e in ("hdt", "cottas")]
+        self.assertEqual([q["status"] for q in hdt["queries"]],
+                         ["PASS"] * 4 + ["TIMEOUT"] + ["ENDPOINT_UNAVAILABLE"] * 8)
+        self.assertEqual([q["status"] for q in cottas["queries"]],
+                         ["PASS"] * 5 + ["EXECUTION_FAILED"] + ["ENDPOINT_UNAVAILABLE"] * 7)
+        for cell, seconds in ((hdt, 8889.5), (cottas, 751.4)):
+            self.assertAlmostEqual(sum(q["seconds"] for q in cell["queries"] if q["status"] == "PASS"), seconds, delta=0.05)
+            self.assertTrue(all(q["answerAgrees"] for r in cell["runs"] for q in r["queries"] if q["status"] == "PASS"))
+        self.assertAlmostEqual(hdt["queries"][4]["seconds"], 3600.1, delta=0.05)
+        self.assertAlmostEqual(cottas["queries"][5]["seconds"], 437.3, delta=0.05)
+
+    def test_native_changed_answer_is_not_counted_as_agreement(self):
+        """Raw-response equality matters even when the process exit was successful."""
+        original_read = Path.read_text
+
+        def changed_answer(path, *args, **kwargs):
+            text = original_read(path, *args, **kwargs)
+            if "r1000000__hdt__hdt" in str(path) and path.name == "q03_titv.sparql.json":
+                text = text.replace('"877646"', '"877645"')
+            return text
+
+        with patch.object(Path, "read_text", changed_answer):
+            cells = build_site_data.scale_comparison()["cells"]
+        hdt = next(c for c in cells if c["scale"] == "r1000000" and c["engine"] == "hdt")
+        self.assertEqual((hdt["completed"], hdt["queries"][2]["status"]), (3, "MISMATCH"))
+
+    def test_whole_input_costs_follow_paper_aggregation(self):
+        comparison = self.data["retrieval"]["scaleComparison"]
+        self.assertEqual(len(comparison["wholeStages"]), 9)
+        expected = {"nt.gz": (186.6, 880.8, 646.4), "hdt": (971.2, 887.8, 644.8),
+                    "cottas": (603.3, 891.3, 643.9)}
+        for artifact, values in expected.items():
+            stages = [s for s in comparison["wholeStages"] if s["artifact"] == artifact]
+            self.assertEqual(tuple(round(s["seconds"], 1) for s in stages), values)
+            cell = next(c for c in comparison["cells"] if c["scale"] == "whole" and c["engine"] == "qlever" and c["artifact"] == artifact)
+            self.assertEqual(stages[-1]["seconds"], sum(q["seconds"] for q in cell["queries"]))
+            for stage in stages:
+                self.assertEqual((stage["replicates"], len(stage["sources"])), (3, 3))
+                self.assertTrue(all((build_site_data.ROOT / source).exists() for source in stage["sources"]))
 
     def test_use_case_records_and_costs(self):
         """Released records agree except Scenario 2's symbolic SVs; Scenario 4's once-per-scenario costs (Section S5.4)."""

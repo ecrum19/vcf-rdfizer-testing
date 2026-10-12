@@ -36,6 +36,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "benchmarks" / "query-catalog"
 SH = rdflib.Namespace("http://www.w3.org/ns/shacl#")
 
+from turtle_text import statement_text, turtle_statements  # noqa: E402  (scripts/ is on sys.path when run as a script)
+
 
 def git_show(repo: Path, rev: str, path: str) -> str:
     """The file at a tag or commit, read with git show, never from a checkout."""
@@ -97,45 +99,6 @@ def code_entries(item: dict, tool_repo: Path) -> list[dict]:
 
 
 # ---------- SHACL shapes ----------
-
-def turtle_statements(text: str) -> list[tuple[int, int]]:
-    """The 1-based (first, last) line of every top-level Turtle statement.
-
-    A statement ends at a '.' outside strings, IRIs, comments and brackets, so the
-    '.' in a SPARQL string, a comment or a decimal does not end one."""
-    spans, start, line, depth, i, n = [], None, 1, 0, 0, len(text)
-    while i < n:
-        c = text[i]
-        if c == "\n":
-            line += 1
-        elif c == "#":
-            while i < n and text[i] != "\n":
-                i += 1
-            continue
-        elif c in "\"'":
-            start = start or line
-            quote = c * 3 if text.startswith(c * 3, i) else c
-            i += len(quote)
-            while i < n and not text.startswith(quote, i):
-                line += text[i] == "\n"
-                i += 2 if text[i] == "\\" else 1
-            i += len(quote)
-            continue
-        elif c == "<":
-            start = start or line
-            i = text.index(">", i)
-        elif not c.isspace():
-            start = start or line
-            depth += c in "[("
-            depth -= c in "])"
-            if c == "." and depth == 0 and (i + 1 == n or text[i + 1].isspace()):
-                spans.append((start, line))
-                start = None
-        i += 1
-    if start is not None:
-        raise SystemExit(f"unterminated Turtle statement starting at line {start}")
-    return spans
-
 
 def term(g: rdflib.Graph, node) -> str:
     if isinstance(node, rdflib.Literal):
@@ -296,12 +259,11 @@ def shacl_group(group: dict, tool_repo: Path) -> dict:
         if len(shapes) > 1:
             raise SystemExit(f"{group['id']}: lines {first}-{last} declare {len(shapes)} shapes")
         shape = shapes[0]
-        while first > 1 and lines[first - 2].lstrip().startswith("#") and not lines[first - 2].lstrip().startswith("##"):
-            first -= 1  # a comment written directly above the shape belongs to it; a banner does not
+        first, text_with_comment = statement_text(lines, first, last)
         rows = constraint_rows(g, shape, statement)
         name = g.namespace_manager.compute_qname(shape)[2]
         items.append({"id": f"{group['id']}-{name}", "label": name, "summary": shape_summary(g, shape, rows),
-                      "constraints": rows, "text": "\n".join(lines[first - 1:last]) + "\n",
+                      "constraints": rows, "text": text_with_comment,
                       "from": [provenance("tool", rev, path, tool_repo, (first, last)) for rev in tags]})
     if not isomorphic(rebuilt, g):
         raise SystemExit(f"{group['id']}: the statements cut from {path} do not add up to its graph")

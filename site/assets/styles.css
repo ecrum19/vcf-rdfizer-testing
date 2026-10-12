@@ -360,3 +360,98 @@ pre.code {
   background: var(--panel-alt); border: 1px solid var(--grid); border-radius: 6px;
   font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.76rem; line-height: 1.4; white-space: pre;
 }
+
+/* Release policies (RQ2): segmented pickers, rule cards, purpose tree, a numbered walk-through. */
+.seg-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0; }
+button.seg { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; text-align: left;
+  border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.7rem; background: var(--panel); color: var(--text); font-weight: 600; }
+button.seg small { font-weight: 400; color: var(--muted); font-size: 0.78rem; }
+button.seg.on { background: var(--text); color: var(--panel); border-color: var(--text); }
+button.seg.on small { color: var(--panel); opacity: 0.8; }
+.policy-step { display: flex; align-items: center; gap: 0.5rem; margin: 1.2rem 0 0.4rem; font-size: 1rem; }
+.policy-step span { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+  background: var(--text); color: var(--panel); font-size: 0.8rem; }
+.policy-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 18rem); gap: 0.8rem; align-items: start; }
+@media (max-width: 760px) { .policy-grid { grid-template-columns: minmax(0, 1fr); } }
+.rule-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0.6rem; }
+.rule-card { border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.75rem; background: var(--panel); font-size: 0.88rem; }
+.rule-card.wide { grid-column: 1 / -1; }
+.rule-card h5 { margin: 0.2rem 0 0.35rem; font-size: 0.95rem; }
+.rule-card p { margin: 0.3rem 0; }
+.rule-plain { color: var(--muted); font-size: 0.84rem; }
+.rule-kind { margin: 0; }
+.rule-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+  border-radius: 4px; padding: 0.05rem 0.4rem; border: 1px solid var(--border); }
+.rule-badge.prohibition { background: var(--text); color: var(--panel); border-color: var(--text); }
+.rule-badge.permission { background: var(--panel-alt); color: var(--text); }
+.genes { display: inline; }
+.gene { display: inline-block; font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.74rem;
+  background: var(--panel-alt); border: 1px solid var(--grid); border-radius: 4px; padding: 0 0.25rem; margin: 0.08rem 0.12rem 0 0; }
+.consents { margin: 0.3rem 0; padding-left: 1.1rem; }
+.consents li { margin: 0.25rem 0; }
+.purposes { border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.75rem; background: var(--panel-alt); font-size: 0.86rem; }
+.purposes h5 { margin: 0 0 0.2rem; font-size: 0.95rem; }
+.purpose-tree, .purpose-tree ul { list-style: none; margin: 0.2rem 0; padding-left: 0.9rem; }
+.purpose-tree { padding-left: 0; }
+.purpose-tree ul { border-left: 1px solid var(--axis); }
+.purpose-tree li { margin: 0.3rem 0; }
+.purpose { font-weight: 600; }
+.who { display: inline-block; font-size: 0.74rem; border: 1px solid var(--border); border-radius: 999px; padding: 0 0.45rem; background: var(--panel); }
+ol.steps { list-style: none; counter-reset: step; margin: 0.4rem 0; padding: 0; }
+ol.steps > li { counter-increment: step; position: relative; padding: 0.1rem 0 0.6rem 2.1rem; border-left: 2px solid var(--grid); margin-left: 0.7rem; }
+ol.steps > li:last-child { border-left-color: transparent; }
+ol.steps > li::before { content: counter(step); position: absolute; left: -0.8rem; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+  display: grid; place-items: center; background: var(--panel); border: 2px solid var(--text); font-size: 0.78rem; font-weight: 700; }
+ol.steps h6 { margin: 0.1rem 0 0.2rem; font-size: 0.92rem; }
+ol.steps p { margin: 0.2rem 0; }
+.file-list, .rule-list { list-style: none; margin: 0.2rem 0; padding: 0; }
+.file-list li, .rule-list li { margin: 0.15rem 0; }
+.rule-list li.skips { color: var(--muted); }
+.mark { display: inline-block; width: 1.1rem; text-align: center; font-weight: 700; }
+.mark.yes { color: var(--good); }
+.mark.no { color: var(--critical); }
+.mark.na { color: var(--faint); }
+.release-bar { display: flex; height: 0.7rem; max-width: 34rem; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin: 0.3rem 0; }
+.release-bar .released { background: var(--text); }
+.release-bar .withheld { background: repeating-linear-gradient(135deg, var(--panel-alt) 0 4px, var(--grid) 4px 8px); }
+.policy-matrix th[scope="row"] { font-weight: 400; text-align: left; }
+.policy-matrix td.na { color: var(--faint); }
+.policy-matrix tr.total th, .policy-matrix tr.total td { font-weight: 700; }
+
+/* The two workflows: blue for RDF, orange for conventional, as in the paper's Figure 5.
+   The colour marks the lane; every lane also carries its name, and text stays in ink. */
+:root { --rdf: #2a78d6; --conv: #eb6834; }
+.lane-tag { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.lane-tag::before { content: ""; width: 0.7rem; height: 0.7rem; border-radius: 2px; background: var(--rdf); }
+.lane-tag.conv::before { background: var(--conv); }
+.lanes { display: grid; grid-template-columns: 8.5rem repeat(4, minmax(0, 1fr)); gap: 0.4rem; margin: 0.4rem 0 0.8rem; font-size: 0.84rem; }
+.lane-head { display: contents; }
+.lane-head span { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; padding: 0 0.2rem; }
+.lane-label { display: flex; align-items: center; }
+.lane-label.rdf { grid-row: 2; }
+.lane-label.conv { grid-row: 3; }
+.lane-cell { border: 1px solid var(--border); border-left: 4px solid var(--rdf); border-radius: 6px; padding: 0.4rem 0.55rem; background: var(--panel); }
+.lane-cell.conv { border-left-color: var(--conv); }
+.lane-cell.shared { grid-column: 2; grid-row: 2 / span 2; border-left: 4px solid var(--axis); background: var(--panel-alt); display: flex; align-items: center; }
+.lanes > .lane-cell.rdf { grid-row: 2; }
+.lanes > .lane-cell.conv { grid-row: 3; }
+.lanes > .lane-cell.lane-total { grid-row: 4; grid-column: 3 / span 3; padding: 0.2rem 0.55rem; }
+.lane-time, .lane-total { color: var(--muted); font-size: 0.78rem; margin: 0.3rem 0 0; font-variant-numeric: tabular-nums; }
+.lane-cell p { margin: 0.2rem 0; }
+@media (max-width: 760px) {
+  .lanes { grid-template-columns: minmax(0, 1fr); }
+  .lane-head { display: none; }
+  .lanes > *, .lanes > .lane-cell.rdf, .lanes > .lane-cell.conv, .lanes > .lane-cell.lane-total,
+  .lane-label.rdf, .lane-label.conv, .lane-cell.shared { grid-row: auto; grid-column: auto; }
+  .lane-cell.shared { order: -1; }
+}
+.step-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.5rem; }
+.step-heads { margin: 0.2rem 0 0.4rem 2.8rem; }
+@media (max-width: 760px) { .step-cols { grid-template-columns: minmax(0, 1fr); } .step-heads { display: none; } }
+.step-note { font-size: 0.82rem; color: var(--muted); margin: 0.4rem 0 0; }
+details.q-code.rdf > summary, details.q-code.conv > summary { display: flex; align-items: baseline; gap: 0.4rem; flex-wrap: wrap; }
+details.q-code.rdf > summary::after, details.q-code.conv > summary::after { content: none; }
+details.q-code.rdf { border-left: 3px solid var(--rdf); padding-left: 0.4rem; }
+details.q-code.conv { border-left: 3px solid var(--conv); padding-left: 0.4rem; }
+.code-list li { font-size: 0.86rem; }
+.policy-matrix .lane-tag { margin-right: 0.3rem; }

@@ -93,6 +93,26 @@ function table(columns, rows) {
   return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
+const ARTIFACT_LABEL = { "nt.gz": "N-Triples.gz", hdt: "HDT", cottas: "COTTAS" };
+const SCALE_OUTCOME = {
+  PASS: "Answer agrees", TIMEOUT: "Timeout", EXECUTION_FAILED: "Execution failed",
+  ENDPOINT_UNAVAILABLE: "Endpoint unavailable", NOT_RUN: "Not run", MISMATCH: "Answer differs", MIXED: "Mixed outcomes",
+};
+const scalePath = (cell) => cell.engine === "qlever" ? `QLever ← ${ARTIFACT_LABEL[cell.artifact]}` : `Native ${ARTIFACT_LABEL[cell.artifact]}`;
+const scaleGraph = (cell) => `${cell.scale === "whole" ? "Complete HG005" : "HG005 subset"} · ${num(cell.records)} records · ${millions(cell.triples)} triples`;
+function scaleQueryRows() {
+  return D.retrieval.scaleComparison.cells.flatMap((cell) => cell.queries.map((q) => ({
+    ...q, scale: cell.scale, engine: cell.engine, artifact: cell.artifact,
+    graph: scaleGraph(cell), path: scalePath(cell), replicates: cell.replicates,
+    completed: cell.completed == null ? "Not run" : `${cell.completed}/${cell.total}`,
+    question: q.label.split(" ")[0], outcome: SCALE_OUTCOME[q.status] || q.status,
+    symbol: { PASS: "✓", TIMEOUT: "T", EXECUTION_FAILED: "×", ENDPOINT_UNAVAILABLE: "–", NOT_RUN: "·" }[q.status] || "?",
+  })));
+}
+const archivedQueryLink = (r) => r.sources.length
+  ? r.sources.map((s, i) => `<a href="${REPO}/${s.endsWith('.json') ? 'blob' : 'tree'}/main/${esc(s)}" target="_blank" rel="noopener">Run ${i + 1}</a>`).join(" · ")
+  : "Not run";
+
 // --------------------------------------------------------------- charts
 // Each chart: title, help (the ⓘ), optional caption, spec(t) and rows() for its table.
 const CHARTS = {
@@ -557,6 +577,123 @@ const CHARTS = {
     },
   },
 
+  scaleCompletion: {
+    title: "Same questions, different engines: completion at scale",
+    help: "Each cell is one of the {questions} source-comparison questions. QLever cells combine all recorded replicates: an answer must match the source VCF in every run. Completed native answers are checked against the source-verified QLever answers. Native means Comunica over HDT or COTTAS (DuckDB). Hover for timings and open the table for raw responses.",
+    caption: "QLever decodes each input to N-Triples and builds its own index; native engines query the compressed stores directly. QLever: {scaleQleverRuns} runs per tested path; native engines: {scaleNativeRuns} each. A dash means the endpoint became unavailable; a dot means not run. The full validation suite was omitted.",
+    ownWidth: true,
+    rows: scaleQueryRows,
+    columns: [{ key: "graph", label: "Graph" }, { key: "path", label: "Engine ← input" },
+      { key: "label", label: "Question" }, { key: "outcome", label: "Outcome" },
+      { key: "replicates", label: "Runs", num: true }, { key: "completed", label: "Agreeing questions" },
+      { key: "seconds", label: "Median elapsed", num: true, format: (v) => secs(v) }, { label: "Raw responses", html: archivedQueryLink }],
+    spec(t, rows, width) {
+      const questions = [...new Set(rows.map((r) => r.question))];
+      const paths = [...new Set(rows.map((r) => r.path))];
+      const outcomes = Object.values(SCALE_OUTCOME).filter((o) => rows.some((r) => r.outcome === o));
+      const colors = { "Answer agrees": t.series[0], Timeout: t.series[3], "Execution failed": t.series[1],
+        "Endpoint unavailable": t.context, "Not run": t.grid, "Answer differs": t.series[1], "Mixed outcomes": t.series[3] };
+      return {
+        data: { values: rows }, spacing: 20,
+        facet: { row: { field: "graph", type: "nominal", sort: [...new Set(rows.map((r) => r.graph))], title: null,
+          header: { labelFontSize: 12, labelFontWeight: 600, labelColor: t.text, labelAnchor: "start", labelOrient: "top" } } },
+        spec: {
+          width: Math.max(questions.length * 24, width - 175), height: paths.length * 30,
+          encoding: {
+            y: { field: "path", type: "nominal", sort: paths, title: null, axis: { labelLimit: 160 } },
+            x: { field: "question", type: "nominal", sort: questions, title: null, axis: { orient: "top", labelAngle: 0 } },
+            tooltip: [{ field: "graph", title: "Graph" }, { field: "path", title: "Engine ← input" },
+              { field: "label", title: "Question" }, { field: "outcome", title: "Outcome" },
+              { field: "completed", title: "Agreeing questions" }, { field: "replicates", title: "Runs" },
+              { field: "seconds", title: "Median elapsed (s)", format: ".3f" }],
+          },
+          layer: [
+            { mark: { type: "rect", stroke: t.surface, strokeWidth: 2, cornerRadius: 3 },
+              encoding: { color: { field: "outcome", type: "nominal", title: null,
+                scale: { domain: outcomes, range: outcomes.map((o) => colors[o]) }, legend: { columns: 3 } } } },
+            { mark: { type: "text", fontSize: 14, fontWeight: 700 },
+              encoding: { text: { field: "symbol" }, color: { condition: { test: "datum.status == 'NOT_RUN'", value: t.muted }, value: t.text } } },
+          ],
+        },
+        resolve: { scale: { x: "shared", y: "shared" } },
+      };
+    },
+  },
+
+  nativeQueryCosts: {
+    title: "Time per question at {midTriples} triples",
+    help: "Same HG005 subset and same questions on vcf-bench-3. QLever points are medians with the replicate range; native engines have {scaleNativeRuns} run each, with a Node heap setting of {scaleNativeHeapMb} MB. Timeouts and failed executions show time spent without a complete answer. Indexing and decoding are excluded. Requests to an already unavailable endpoint are omitted from this timing plot.",
+    caption: "Circles are completed, agreeing answers; triangles are unsuccessful executions. HDT reaches the per-query time limit; COTTAS stops when its engine crashes. Subsequent questions have no usable endpoint. Partial native workloads must not be compared with a full-workload total.",
+    rows: () => scaleQueryRows().filter((r) => r.scale === "r1000000" && ["PASS", "TIMEOUT", "EXECUTION_FAILED", "MISMATCH"].includes(r.status))
+      .map((r) => ({ ...r, completion: r.status === "PASS" ? "Answered" : "No complete answer" })),
+    columns: [{ key: "label", label: "Question" }, { key: "path", label: "Engine ← input" },
+      { key: "outcome", label: "Outcome" }, { key: "seconds", label: "Elapsed", num: true, format: (v) => secs(v) },
+      { key: "minSeconds", label: "Minimum", num: true, format: (v) => secs(v) },
+      { key: "maxSeconds", label: "Maximum", num: true, format: (v) => secs(v) }, { label: "Raw responses", html: archivedQueryLink }],
+    spec(t, rows) {
+      return {
+        data: { values: rows }, height: 360,
+        encoding: {
+          y: { field: "label", type: "nominal", sort: D.retrieval.perQuestion.map((r) => r.label), title: null, axis: { labelLimit: 225 } },
+          x: { field: "seconds", type: "quantitative", scale: { type: "log" }, title: "Elapsed seconds (log scale)",
+            axis: { values: [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000], format: "~g" } },
+          color: { field: "path", type: "nominal", title: null, sort: [...new Set(rows.map((r) => r.path))] },
+          tooltip: [{ field: "label", title: "Question" }, { field: "path", title: "Engine ← input" },
+            { field: "outcome", title: "Outcome" }, { field: "seconds", title: "Elapsed (s)", format: ".3f" },
+            { field: "minSeconds", title: "Minimum (s)", format: ".3f" }, { field: "maxSeconds", title: "Maximum (s)", format: ".3f" }],
+        },
+        layer: [
+          { mark: { type: "rule", strokeWidth: 2 }, encoding: { x: { field: "minSeconds", type: "quantitative" }, x2: { field: "maxSeconds" } } },
+          { mark: { type: "point", opacity: 1, strokeWidth: 1 }, encoding: {
+            size: { condition: { test: "datum.status == 'PASS'", value: 70 }, value: 140 },
+            shape: { field: "completion", type: "nominal", title: null,
+              scale: { domain: ["Answered", "No complete answer"], range: ["circle", "triangle-up"] },
+              legend: { symbolFillColor: t.muted, symbolStrokeColor: t.muted } } } },
+        ],
+      };
+    },
+  },
+
+  wholeArtifactCosts: {
+    title: "Complete HG005: decoding, indexing and QLever queries",
+    help: "Same complete VCF and same {questions} queries, with each input format decoded to N-Triples before QLever indexing. Decoding and index construction are medians across the recorded runs; query time is the sum of per-question medians, as in the supplementary table. The stacked length is the sum of these summaries, not an observed single-run total. The table also gives each stage's observed run range.",
+    caption: "Input format mainly changes decoding cost. Indexed query totals differ by only {artifactSpread}. These times start from existing RDF artifacts and exclude their original construction, source-VCF parsing and other validation overhead.",
+    rows: () => D.retrieval.scaleComparison.wholeStages.map((r) => ({ ...r, input: ARTIFACT_LABEL[r.artifact], minutes: r.seconds / 60 })),
+    columns: [{ key: "input", label: "Input to QLever" }, { key: "stage", label: "Stage" },
+      { key: "seconds", label: "Reported time", num: true, format: (v) => secs(v) },
+      { key: "minSeconds", label: "Run minimum", num: true, format: (v) => secs(v) },
+      { key: "maxSeconds", label: "Run maximum", num: true, format: (v) => secs(v) },
+      { key: "replicates", label: "Runs", num: true }, { label: "Archived reports", html: archivedQueryLink }],
+    spec(t, rows) {
+      const stages = [...new Set(rows.map((r) => r.stage))];
+      const offsets = new Map();
+      const values = rows.map((r) => {
+        const start = offsets.get(r.input) || 0;
+        offsets.set(r.input, start + r.minutes);
+        return { ...r, order: stages.indexOf(r.stage), labelX: start + r.minutes / 2 };
+      });
+      return {
+        data: { values }, height: 170,
+        encoding: {
+          y: { field: "input", type: "nominal", sort: Object.values(ARTIFACT_LABEL), title: "Input to QLever" },
+          x: { field: "minutes", type: "quantitative", stack: "zero", title: "Minutes" },
+          color: { field: "stage", type: "nominal", title: null, scale: { domain: stages, range: [t.context, t.series[1], t.series[0]] } },
+          order: { field: "order", type: "quantitative" },
+          tooltip: [{ field: "input", title: "Input" }, { field: "stage", title: "Stage" },
+            { field: "seconds", title: "Reported time (s)", format: ".1f" },
+            { field: "minSeconds", title: "Run minimum (s)", format: ".1f" },
+            { field: "maxSeconds", title: "Run maximum (s)", format: ".1f" }],
+        },
+        layer: [
+          { mark: { type: "bar", height: 30, cornerRadiusEnd: 0 } },
+          { mark: { type: "text", color: t.text, fontWeight: 600 }, encoding: {
+            x: { field: "labelX", type: "quantitative", stack: null }, color: { value: t.text },
+            text: { field: "minutes", type: "quantitative", format: ".1f" } } },
+        ],
+      };
+    },
+  },
+
   regional: {
     title: "Regional queries: QLever and tabix-indexed VCF access",
     help: "Median over {regionalQuestions} regional questions of each question's median across {regionalWindows} windows ({regionalScanWindows} for full parses of the unindexed VCF) and {regionalReplicates} replicates. All execution paths apply the same POS-based selection; across both graphs, {regionalExecutions} executions produced {regionalFailures} failures and {regionalDisagreements} disagreements. Select a graph to compare the smaller fixture.",
@@ -639,7 +776,7 @@ function renderKpis() {
   const ownPassed = D.converters.questions.filter((q) => D.converters.outcomes
     .filter((o) => o.tool === "vcf-rdfizer" && o.question === q.id).every((o) => o.status === "PASS")).length;
   const kpis = [
-    ["RQ1", `${num(v.comparisons.PASS)} / ${num(v.comparisons.PASS)}`, fill("applicable SPARQL results agreed exactly with their source-derived counterparts; {comparisonsOther} more verified not applicable")],
+    ["RQ1", `${num(v.comparisons.PASS)} / ${num(applicableComparisons(v))}`, fill("applicable SPARQL results agreed exactly with their source-derived counterparts; {comparisonsOther} more verified not applicable")],
     ["RQ1", `${m.queries.detected} · ${m.core.detected} · ${m.full.detected}`, `of ${m.full.total} injected faults detected: source-comparison queries · with the default SHACL profile · with all shape profiles`],
     ["RQ2", `${agreeing} / ${arms.length} scenarios`, "with identical requester-specific match sets from the RDF and conventional workflows"],
     ["RQ3", `${ownPassed} / ${D.converters.questions.length}`, fill("content questions matched the source-derived oracle on both inputs; {converterAllPass} was the only converter to match all")],
@@ -650,30 +787,48 @@ function renderKpis() {
     .map(([tag, value, label]) => `<div class="kpi"><div class="kpi-tag">${esc(tag)}</div><div class="value">${esc(value)}</div><div class="label">${esc(label)}</div></div>`).join("");
 }
 
+// Not-applicable query slots are recorded separately from applicable comparisons.
+function applicableComparisons(v) {
+  return Object.entries(v.comparisons).filter(([status]) => !status.startsWith("NOT_APPLICABLE"))
+    .reduce((sum, [, n]) => sum + n, 0);
+}
+
 function renderEvidence() {
   const v = D.fidelity.validation;
-  const m = D.fidelity.mutation.scores;
   const total = (c) => Object.values(c).reduce((a, b) => a + b, 0);
   const rows = [
-    { check: "N-Triples syntax (rapper)", passed: `${v.rapper.PASS ?? 0} / ${total(v.rapper)}`, what: "The serialization is syntactically valid N-Triples" },
-    { check: `Source-comparison queries (${D.facts.qRange})`, passed: `${v.comparisons.PASS} / ${total(v.comparisons)}`, what: "Normalized SPARQL results equal the source-derived answers; the remainder are verified not applicable" },
-    { check: "Consistency invariants", passed: `${v.invariants.PASS} / ${total(v.invariants)}`, what: "Internal consistency checks, for example transitions plus transversions equal biallelic SNVs" },
-    { check: "Engines per validation run", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} runs with ${k}`).join(", "), what: "Cross-engine agreement is tested in the runs answered by several engines" },
-    { check: "Native decoding", passed: `${(v.decode["hdt:pass"] ?? 0) + (v.decode["cottas:pass"] ?? 0)} pass`, what: `${v.decode["hdt:pass"] ?? 0} HDT and ${v.decode["cottas:pass"] ?? 0} COTTAS artifacts decode to the triple count of the source graph` },
-    { check: "Default SHACL profile", passed: `${v.shacl.validations} runs, ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples, ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} per run` },
-    { check: "Injected faults (queries / + default profile / + all profiles)", passed: `${m.queries.detected} / ${m.core.detected} / ${m.full.detected} of ${m.full.total}`, what: "Sensitivity of the validation layer to deliberate corruptions" },
+    { check: "N-Triples syntax (rapper)", passed: `${num(v.rapper.PASS ?? 0)} / ${num(total(v.rapper))}`, what: "The serialization parses as N-Triples" },
+    { check: `Source-comparison queries (${D.facts.qRange})`, passed: `${num(v.comparisons.PASS)} / ${num(applicableComparisons(v))}`, what: fill("Applicable normalized answers agree; {comparisonsOther} further genotype comparisons are verified not applicable") },
+    { check: "Internal consistency", passed: `${num(v.invariants.PASS)} / ${num(total(v.invariants))}`, what: "For example, transitions plus transversions equal biallelic SNVs" },
+    { check: "Engines per validation run", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} runs with ${k}`).join("; "), what: "Every answering engine agrees; multiple-engine runs test agreement across engines" },
+    { check: "Default SHACL shapes", passed: `${v.shacl.validations} runs; ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples; ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} per run` },
   ];
   document.getElementById("evidenceTable").innerHTML = table(
-    [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "What it establishes" }], rows);
+    [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "Scope" }], rows);
+  document.getElementById("decodeTable").innerHTML = table(
+    [{ key: "artifact", label: "Artifact" }, { key: "passed", label: "Decoded count equals source count", num: true }],
+    ["hdt", "cottas"].map((kind) => ({ artifact: kind.toUpperCase(),
+      passed: `${num(v.decode[`${kind}:pass`] ?? 0)} / ${num(Object.entries(v.decode)
+        .filter(([k]) => k.startsWith(`${kind}:`)).reduce((n, [, count]) => n + count, 0))}` })));
   const real = D.fidelity.realGenome;
   const verdict = (s) => `<span class="status ${s === "PASS" ? "pass" : "fail"}">${esc(s === "PASS" ? "equal" : "mismatch")}</span>`;
   const sh = real.shacl;
   document.getElementById("realGenomeTable").innerHTML =
-    `<p class="table-meta">${num(real.triples)} triples, validated on QLever with the ${esc(D.facts.useCaseVersion)} validator. ` +
-    `Default shapes were validated in ${num(sh.batches)} record batches (${sh.minutes} min): ${num(sh.violations)} violations and ${num(sh.advisories)} non-blocking recommendations.</p>` +
+    `<p class="table-meta">${num(real.triples)} triples, queried on QLever with the ${esc(D.facts.useCaseVersion)} validator. ` +
+    `Default shapes: ${num(sh.batches)} record batches (${sh.minutes} min), ${num(sh.violations)} violations and ${num(sh.advisories)} non-blocking recommendations.</p>` +
     table([{ key: "query", label: "Question", format: (q) => pretty(q) },
       { key: "status", label: "SPARQL result and source-derived answer", html: (r) => verdict(r.status) }], real.queries);
-  document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, the core benchmark's validation reports and <code>08_robustness/mutation_score*</code>.`;
+  const large = D.fidelity.largeGraphs;
+  document.getElementById("largeGraphTable").innerHTML = table([
+    { key: "records", label: "HG005 records", format: (v) => num(v), num: true },
+    { key: "triples", label: "Triples", format: (v) => num(v), num: true },
+    { key: "artifact", label: "QLever input", format: (v) => v === "nt.gz" ? "N-Triples (gzip)" : v.toUpperCase() },
+    { key: "replicates", label: "Runs", num: true },
+    { key: "passed", label: "Queries agreeing in every run", format: (v, r) => `${v} / ${r.total}`, num: true },
+  ], large.rows);
+  const sources = [real.source, large.source, ...Object.values(D.fidelity.mutation.scores).map((s) => s.source)];
+  document.getElementById("fidelitySource").innerHTML = `Sources: the core benchmark's validation and compression reports; ` +
+    sources.map((source) => `<a href="https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/${esc(source)}"><code>${esc(source)}</code></a>`).join("; ") + ".";
 }
 
 function renderLinking() {
@@ -834,7 +989,7 @@ async function revealHashTarget() {
     // One query or shape: render the section that holds it first.
     const catalog = await loadQueryCatalog().catch(() => null);
     const group = catalog?.groups.find((g) => g.items.some((item) => itemAnchor(g, item) === id));
-    const host = group && [...document.querySelectorAll("details.query-catalog")].find((h) => h.dataset.groups.split(" ").includes(group.id));
+    const host = group && [...document.querySelectorAll("details.query-catalog[data-groups]")].find((h) => h.dataset.groups.split(" ").includes(group.id));
     if (!host) return;
     await fillCatalog(host);
     target = document.getElementById(id);
@@ -939,9 +1094,331 @@ function renderQueryGroups(host, catalog) {
 }
 
 function wireQueryCatalogs() {
-  for (const host of document.querySelectorAll("details.query-catalog")) {
+  for (const host of document.querySelectorAll("details.query-catalog[data-groups]")) {
     host.addEventListener("toggle", () => { if (host.open) fillCatalog(host); });
   }
+}
+
+// --------------------------------------------------------------- release policies (RQ2)
+// policies.json is fetched when the section opens. For each scenario it holds the ODRL rules
+// (as data and as the Turtle that ran), and for each requester which rules applied and how
+// many records each one withheld, from the release view's own report.
+let policyRequest = null;
+const policyState = { scenario: "arm4", requester: {} };
+
+function loadPolicies() {
+  if (!policyRequest) {
+    policyRequest = fetch("./data/policies.json").then((r) => {
+      if (!r.ok) throw new Error(`policies.json: HTTP ${r.status}`);
+      return r.json();
+    });
+    policyRequest.catch(() => { policyRequest = null; });
+  }
+  return policyRequest;
+}
+
+const curie = (iri) => iri.replace("http://purl.obolibrary.org/obo/DUO_", "DUO:").replace(/^https?:\/\/example\.org\/purpose\//, "");
+const requesterLabel = (r) => REQUESTER_LABEL[r.id] || r.label;
+const listWords = (items) => items.length < 3 ? items.join(" and ") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+
+function purposeLabel(scenario, iri) {
+  return scenario.purposes.find((p) => p.iri === iri)?.label || curie(iri);
+}
+
+// When a rule applies, in words: the engine's two tests, assignee and purpose.
+function ruleCondition(scenario, rule) {
+  const labels = listWords(rule.purposes.map((p) => `“${purposeLabel(scenario, p)}”`));
+  const who = rule.assignees.length
+    ? `the requester is the ${listWords(rule.assignees.map((a) => a.split("/").pop().replace(/-/g, " ")))}, whatever the purpose` : "";
+  const why = !rule.operator ? "" : rule.operator === "isAnyOf"
+    ? `the purpose is ${labels} or narrower` : `the purpose is not ${labels} (or narrower)`;
+  return [who, why].filter(Boolean).join(", and ") || "every request";
+}
+
+function ruleTitle(scenario, rule) {
+  const t = rule.target;
+  if (rule.id === "cohort") return `Cancer-predisposition genes: ${purposeLabel(scenario, rule.purposes[0])} only`;
+  if (t.kind === "outside-panel") return `Outside a ${num(t.genes.length)}-gene panel: withheld from ${purposeLabel(scenario, rule.purposes[0])}`;
+  if (t.kind === "region") return `${t.name} region: ${purposeLabel(scenario, rule.purposes[0])} only`;
+  if (t.kind === "variant") return `${t.name}: never released to the ${listWords(rule.assignees.map((a) => a.split("/").pop().replace(/-/g, " ")))}`;
+  return rule.id;
+}
+
+function ruleTarget(rule) {
+  const t = rule.target;
+  if (t.kind === "genes" || t.kind === "outside-panel") {
+    const genes = t.genes.map((g) => `<span class="gene">${esc(g)}</span>`).join("");
+    return `${t.kind === "genes" ? "Records whose call overlaps one of" : "Every record outside"} these ${num(t.genes.length)} genes (by gene link): <span class="genes">${genes}</span>`;
+  }
+  if (t.kind === "region") return `Records with POS in ${esc(t.chrom)}:${num(t.start)}–${num(t.end)} (${esc(t.source)})`;
+  if (t.kind === "variant") return `The one record linked to the variant identity <code>${esc(t.spdi)}</code>, whatever the file calls the contig`;
+  return "";
+}
+
+function policySource(scenario, rule) {
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  return rule.lines.map(([a, b]) => `<a href="${REPO}/blob/${esc(commit)}/${esc(scenario.policyFile)}#L${a}-L${b}">lines ${a}–${b}</a>`).join(", ");
+}
+
+function ruleCard(scenario, rule, conventional) {
+  return `<article class="rule-card">
+      <p class="rule-kind"><span class="rule-badge ${rule.kind}">${rule.kind === "prohibition" ? "Prohibition" : "Permission"}</span></p>
+      <h5>${esc(ruleTitle(scenario, rule))}</h5>
+      <p><strong>Selects:</strong> ${ruleTarget(rule)}</p>
+      <p><strong>Applies when</strong> ${esc(ruleCondition(scenario, rule))}.</p>
+      <p class="rule-plain">${esc(rule.rule)}</p>
+      <details class="q-code rdf"><summary>RDF workflow: the rule as ODRL, as run (${policySource(scenario, rule)})</summary><pre class="code">${esc(rule.turtle)}</pre></details>
+      ${conventionalCode(conventional, CONVENTIONAL_BLOCK[rule.target.kind], "the same rule in Python")}
+    </article>`;
+}
+
+// The conventional workflow writes each rule as code in baseline_carriers.py's released();
+// the gene and panel rules also use its overlaps() test of the record's REF extent.
+const CONVENTIONAL_BLOCK = { genes: ["cohort", "overlaps"], "outside-panel": ["outside-panel", "overlaps"],
+  region: ["region"], variant: ["variant"], file: ["consent"], purposes: ["purposes", "within"] };
+
+function conventionalCode(conventional, blocks, what) {
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  const parts = blocks.map((b) => conventional.code[b]);
+  const links = parts.map((c) => `<a href="${REPO}/blob/${esc(commit)}/${esc(conventional.script)}#L${c.lines[0]}-L${c.lines[1]}">lines ${c.lines[0]}–${c.lines[1]}</a>`).join(", ");
+  return `<details class="q-code conv"><summary>Conventional workflow: ${esc(what)} (<code>${esc(conventional.script.split("/").pop())}</code>, ${links})</summary>
+      <pre class="code">${parts.map((c) => esc(c.text)).join("\n…\n\n")}</pre></details>`;
+}
+
+// Consents differ only in whose file and which purposes, so they are grouped by what they permit.
+function consentCard(scenario, conventional) {
+  const consents = scenario.rules.filter((r) => r.kind === "consent");
+  const groups = new Map();
+  for (const c of consents) {
+    const key = `${c.purposes.join(" ")}|${c.withdrawn}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(c);
+  }
+  const rows = [...groups.values()].sort((a, b) => b.length - a.length).map((group) => {
+    const c = group[0];
+    const who = group.length === 1 ? esc(c.target.participant) : `${num(group.length)} participants`;
+    const permits = listWords(c.purposes.map((p) => `“${esc(purposeLabel(scenario, p))}”`));
+    return `<li>${who}: permits ${permits}${c.withdrawn ? " — <strong>withdrawn</strong>: a prohibition on the whole file overrides the permission" : ""}
+      <details class="q-code rdf"><summary>RDF workflow: the consent as ODRL, as run${group.length > 1 ? `, for ${esc(c.target.participant)}` : ""} (${policySource(scenario, c)})</summary><pre class="code">${esc(c.turtle)}</pre></details></li>`;
+  }).join("");
+  return `<article class="rule-card wide">
+      <p class="rule-kind"><span class="rule-badge permission">Permission</span></p>
+      <h5>Each participant's consent (simulated)</h5>
+      <p><strong>Selects:</strong> that participant's whole file. <strong>Applies when</strong> the request's purpose is one the consent permits, or narrower.
+        A file no consent covers for the purpose is withheld: the engine denies by default.</p>
+      <ul class="consents">${rows}</ul>
+      ${conventionalCode(conventional, CONVENTIONAL_BLOCK.file, "the consent check in Python, the same for every participant")}
+    </article>`;
+}
+
+// The purpose vocabulary as a tree: a request satisfies a term when its purpose is that term or narrower.
+function purposeTree(scenario) {
+  const known = new Set(scenario.purposes.map((p) => p.iri));
+  const askedBy = (iri) => scenario.requesters.filter((r) => r.purpose === iri).map((r) => `<span class="who">${esc(requesterLabel(r))}</span>`).join(" ");
+  const node = (p) => {
+    const children = scenario.purposes.filter((c) => c.broader === p.iri);
+    return `<li><span class="purpose">${esc(p.label)}</span> <code>${esc(curie(p.iri))}</code> ${askedBy(p.iri)}${children.length ? `<ul>${children.map(node).join("")}</ul>` : ""}</li>`;
+  };
+  return `<ul class="purpose-tree">${scenario.purposes.filter((p) => !known.has(p.broader)).map(node).join("")}</ul>`;
+}
+
+// The two workflows as two lanes over the same four stages, each with its measured time.
+function workflowLanes(scenario, conventional) {
+  const c = scenario.costs;
+  const per = Object.values(c.requesters);
+  const range = (key) => {
+    const values = per.map((r) => r[key]).filter((v) => v != null);
+    if (!values.length) return "N/A";
+    const lo = Math.min(...values), hi = Math.max(...values);
+    return lo === hi || secs(lo) === secs(hi) ? secs(lo) : `${secs(lo)}–${secs(hi)}`;
+  };
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  const file = (path) => `<a href="${REPO}/blob/${esc(commit)}/${esc(path)}"><code>${esc(path.split("/").pop())}</code></a>`;
+  const cell = (cls, body, time = "") => `<div class="lane-cell ${cls}">${body}${time ? `<p class="lane-time">${time}</p>` : ""}</div>`;
+  return `<div class="lanes" role="table" aria-label="The RDF and conventional workflows, stage by stage">
+      <div class="lane-head" role="row"><span></span><span>Prepare the inputs</span><span>Connect the sources</span><span>Apply the release rules</span><span>Answer the question</span></div>
+      <div class="lane-label rdf"><span class="lane-tag rdf">RDF workflow</span></div>
+      <div class="lane-cell shared">Both workflows start from the same derived files: ${file(conventional.derive)} restricts each VCF to the
+        gene spans and normalizes it with bcftools.</div>
+      ${cell("rdf", "VCF-RDFizer converts each VCF to RDF; linkers connect its records to SPDI variant identities, Ensembl genes and ClinVar.",
+        `once: convert ${secs(c.convert)}, link ${secs(c.link)}`)}
+      ${cell("rdf", `The rules are <strong>data</strong>: ${file(scenario.policyFile)} (ODRL). A generic engine writes one release view per requester, which is checked and indexed.`,
+        `per requester: write ${range("view")}, index ${range("index")}`)}
+      ${cell("rdf", "One SPARQL query per requester, run on that requester's view (QLever).", `per requester: ${range("query")}`)}
+      <div class="lane-label conv"><span class="lane-tag conv">Conventional workflow</span></div>
+      ${cell("conv", `${file(conventional.driver)}: bcftools renames contigs, annotates each VCF with ClinVar (exact CHROM, POS, REF and ALT) and keeps PASS records with an ALT genotype.`)}
+      ${cell("conv", `The rules are <strong>code</strong>: <code>released()</code> in ${file(conventional.script)}, hand-written Python that reads the same case file and decides each record.`)}
+      ${cell("conv", "The script lists each requester's carrier rows.")}
+      <div class="lane-cell conv lane-total">All four stages, for every requester, in one run: ${secs(c.conventional)}</div>
+    </div>`;
+}
+
+function releaseBar(released, withheld) {
+  const total = released + withheld;
+  const share = total ? (100 * released) / total : 0;
+  return `<div class="release-bar" role="img" aria-label="${num(released)} of ${num(total)} records released">
+      <span class="released" style="width:${share}%"></span><span class="withheld" style="width:${100 - share}%"></span></div>`;
+}
+
+// The conventional workflow applies the same rules to the VCF; RQ2's findings explain where it differs.
+function recordsVersusConventional(requester) {
+  const r = requester.records;
+  if (r.agree) return `The conventional workflow released the same ${num(r.baseline)} records.`;
+  const extra = r.rdf - r.baseline;
+  return `The RDF view released ${num(Math.abs(extra))} ${extra > 0 ? "more" : "fewer"} records than the conventional workflow:
+    symbolic structural-variant records in cancer-predisposition genes. The ODRL rule selects records by their gene link,
+    and VCF-RDFizer ${esc(D.facts.useCaseVersion)} links no symbolic allele to a gene, so the rule could not select them;
+    the conventional script tests each record's REF extent against the gene spans, so it withheld them
+    (see the findings below). No match changed.`;
+}
+
+function stepThrough(scenario, requester, conventional) {
+  const rules = scenario.rules.filter((r) => r.kind !== "consent");
+  const effect = (id) => requester.effects[id] || { released: 0, withheld: 0 };
+  const files = requester.files;
+  const fileWord = (n) => `${num(n)} file${n === 1 ? "" : "s"}`;
+  const consentLine = files.length <= 8
+    ? `<ul class="file-list">${files.map((f) => {
+      const why = f.released ? "consent covers this purpose" : f.rule === "no-permission" ? "no consent covers this purpose"
+        : "consent withdrawn";
+      return `<li><span class="mark ${f.released ? "yes" : "no"}">${f.released ? "✓" : "✗"}</span> ${esc(f.participant)}: ${why}</li>`;
+    }).join("")}</ul>`
+    : (() => {
+      const released = files.filter((f) => f.released).length;
+      const withdrawn = files.filter((f) => !f.released && f.rule !== "no-permission").length;
+      const uncovered = files.length - released - withdrawn;
+      return `<p>${fileWord(released)} of ${num(files.length)} released: the participant's consent covers this purpose.
+        ${uncovered ? `${fileWord(uncovered)} withheld: no consent covers it.` : ""} ${withdrawn ? `${fileWord(withdrawn)} withheld: consent withdrawn.` : ""}</p>`;
+    })();
+  const defaultDeny = effect("no-permission").withheld;
+  const withdrawals = scenario.rules.filter((r) => r.kind === "consent").reduce((n, r) => n + effect(r.id).withheld, 0);
+  const ruleRows = rules.map((rule) => {
+    const applies = requester.applies[rule.id];
+    const withheld = effect(rule.id).withheld;
+    const outcome = !applies ? "does not apply" : withheld ? `withheld ${num(withheld)} record${withheld === 1 ? "" : "s"}`
+      : "applies; withheld nothing more (any records it selects were already withheld)";
+    return `<li class="${applies ? "applies" : "skips"}"><span class="mark ${applies ? "no" : "na"}">${applies ? "✗" : "–"}</span>
+      ${esc(ruleTitle(scenario, rule))}: <strong>${outcome}</strong></li>`;
+  }).join("");
+  const m = requester.matches;
+  const r = requester.records;
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  const codeLink = (block) => {
+    const c = conventional.code[block];
+    return `<a href="${REPO}/blob/${esc(commit)}/${esc(conventional.script)}#L${c.lines[0]}-L${c.lines[1]}">lines ${c.lines[0]}–${c.lines[1]}</a>`;
+  };
+  const both = (rdf, conv) => `<div class="step-cols"><div class="lane-cell rdf">${rdf}</div><div class="lane-cell conv">${conv}</div></div>`;
+  const agree = (ok, yes, no) => `<span class="status ${ok ? "pass" : "fail"}">${ok ? yes : no}</span>`;
+  const ruleCode = rules.map((rule) => `<li>${esc(ruleTitle(scenario, rule))}: ${codeLink(CONVENTIONAL_BLOCK[rule.target.kind][0])}</li>`).join("");
+  return `<div class="step-cols step-heads"><span class="lane-tag rdf">RDF workflow</span><span class="lane-tag conv">Conventional workflow</span></div>
+    <ol class="steps">
+      <li><h6>The request</h6>${both(
+        `<p><strong>${esc(requesterLabel(requester))}</strong> (<code>${esc(requester.assignee.split("/").pop())}</code>)
+          asks to read the data for <strong>“${esc(purposeLabel(scenario, requester.purpose))}”</strong> <code>${esc(curie(requester.purpose))}</code>:
+          an ODRL request the engine evaluates against the policy.</p>`,
+        `<p>The script's <code>released()</code> is called for every record with the same purpose and assignee, read from the case file.</p>`)}</li>
+      <li><h6>Consent decides which files</h6>${both(
+        `${consentLine}${defaultDeny || withdrawals ? `<p class="table-meta">Records withheld at this step: ${num(defaultDeny + withdrawals)}.</p>` : ""}`,
+        `<p>The first test in <code>released()</code> (${codeLink("consent")}): a withdrawn consent, or one that does not cover the purpose,
+          withholds every record of that participant's file. The purpose hierarchy is written into the script (${codeLink("purposes")}).</p>`)}</li>
+      <li><h6>Record rules</h6>${both(
+        `<ul class="rule-list">${ruleRows}</ul>
+          <p class="table-meta">A record withheld by several rules is counted once, under the rule the release report names.</p>`,
+        rules.length ? `<p>Each rule is an <code>if</code> in <code>released()</code>, tested record by record:</p><ul class="rule-list code-list">${ruleCode}</ul>
+          <p class="table-meta">The script counts only what it releases, not which rule withheld each record.</p>` : "<p>No record rules.</p>")}</li>
+      <li><h6>What is released</h6>${both(
+        `${releaseBar(requester.released, requester.withheld)}
+          <p><strong>${num(requester.released)}</strong> records in the release view, ${num(requester.withheld)} withheld
+          (${num(requester.triplesReleased)} triples).</p>`,
+        `${releaseBar(r.baseline, requester.released + requester.withheld - r.baseline)}
+          <p><strong>${num(r.baseline)}</strong> records the script releases. ${agree(r.agree, "Same as the RDF view", `${num(Math.abs(r.rdf - r.baseline))} ${r.rdf > r.baseline ? "fewer" : "more"} than the RDF view`)}</p>`)}
+        ${r.agree ? "" : `<p class="step-note">${recordsVersusConventional(requester)}</p>`}</li>
+      <li><h6>What the query returns</h6>${both(
+        `<p>The ClinVar-match SPARQL query on this view returns <strong>${num(m.rdf)}</strong> matches (${num(scenario.withoutPolicy.rdf)} without any policy).</p>`,
+        `<p>The script lists <strong>${num(m.baseline)}</strong> carrier matches (${num(scenario.withoutPolicy.baseline)} without any policy).
+          ${agree(m.agree, "The same participant–variant–gene tuples", "Different tuples")}</p>`)}</li>
+    </ol>`;
+}
+
+function policyMatrix(scenario) {
+  const rs = scenario.requesters;
+  const cell = (r, id) => {
+    if (!r.applies[id]) return `<td class="num na" title="does not apply">–</td>`;
+    const n = r.effects[id]?.withheld || 0;
+    return `<td class="num">${n ? `−${num(n)}` : "0"}</td>`;
+  };
+  const rows = scenario.rules.filter((r) => r.kind !== "consent").map((rule) =>
+    `<tr><th scope="row">${esc(ruleTitle(scenario, rule))}</th>${rs.map((r) => cell(r, rule.id)).join("")}</tr>`).join("");
+  const consents = scenario.rules.filter((r) => r.kind === "consent");
+  const filesRow = `<tr><th scope="row">Files released by consent</th>${rs.map((r) =>
+    `<td class="num">${num(r.files.filter((f) => f.released).length)} of ${num(r.files.length)}</td>`).join("")}</tr>`;
+  const uncovered = `<tr><th scope="row">No consent covers the purpose, or withdrawn</th>${rs.map((r) =>
+    `<td class="num">${(() => { const n = (r.effects["no-permission"]?.withheld || 0) + consents.reduce((t, c) => t + (r.effects[c.id]?.withheld || 0), 0); return n ? `−${num(n)}` : "0"; })()}</td>`).join("")}</tr>`;
+  return `<div class="table-wrap"><table class="policy-matrix">
+      <thead><tr><th>Records withheld by</th>${rs.map((r) => `<th class="num">${esc(requesterLabel(r))}</th>`).join("")}</tr></thead>
+      <tbody>${filesRow}${uncovered}${rows}
+        <tr class="total"><th scope="row"><span class="lane-tag rdf">RDF</span> Records released</th>${rs.map((r) => `<td class="num">${num(r.records.rdf)}</td>`).join("")}</tr>
+        <tr class="total"><th scope="row"><span class="lane-tag conv">Conventional</span> Records released</th>${rs.map((r) => {
+          const extra = r.records.rdf - r.records.baseline;
+          return `<td class="num">${num(r.records.baseline)}${r.records.agree ? "" : ` <span class="status fail">RDF ${extra > 0 ? "+" : "−"}${num(Math.abs(extra))}</span>`}</td>`;
+        }).join("")}</tr>
+        <tr class="total"><th scope="row"><span class="lane-tag rdf">RDF</span> ClinVar matches (without a policy: ${num(scenario.withoutPolicy.rdf)})</th>${rs.map((r) => `<td class="num">${num(r.matches.rdf)}</td>`).join("")}</tr>
+        <tr class="total"><th scope="row"><span class="lane-tag conv">Conventional</span> ClinVar matches</th>${rs.map((r) =>
+          `<td class="num">${num(r.matches.baseline)} <span class="status ${r.matches.agree ? "pass" : "fail"}">${r.matches.agree ? "same" : "differ"}</span></td>`).join("")}</tr>
+      </tbody></table></div>
+    <p class="table-meta">“–”: the rule does not apply to that request. Per-rule counts exist for the RDF workflow only: the conventional script counts what it releases. RDF records released and withheld are from each release view's own report
+      (<code>${esc(rs[0].source.replace(/govern__[^/]+/, "govern__*"))}/summary.json</code>).</p>`;
+}
+
+function renderPolicyView(host, data) {
+  const scenario = data.scenarios.find((s) => s.id === policyState.scenario) || data.scenarios.at(-1);
+  const requester = scenario.requesters.find((r) => r.id === policyState.requester[scenario.id]) || scenario.requesters.at(-1);
+  const tabs = data.scenarios.map((s) => `<button type="button" class="seg${s.id === scenario.id ? " on" : ""}" data-scenario="${s.id}"
+      aria-pressed="${s.id === scenario.id}">Scenario ${s.number}<small>${esc(s.title)}</small></button>`).join("");
+  const picks = scenario.requesters.map((r) => `<button type="button" class="seg${r.id === requester.id ? " on" : ""}" data-requester="${r.id}"
+      aria-pressed="${r.id === requester.id}">${esc(requesterLabel(r))}</button>`).join("");
+  const rules = scenario.rules.filter((r) => r.kind !== "consent");
+  host.querySelector(".policy-body").innerHTML = `
+    <div class="seg-row" role="group" aria-label="Scenario">${tabs}</div>
+    <p class="table-meta">Policy file <a href="${REPO}/blob/${esc(D.campaign?.meta?.repoCommit || "main")}/${esc(scenario.policyFile)}"><code>${esc(scenario.policyFile)}</code></a>:
+      the file the release views ran with (its SHA-256 matches every view's manifest). Consents are simulated.</p>
+    <h4 class="policy-step"><span>1</span> Two workflows, one question</h4>
+    ${workflowLanes(scenario, data.conventional)}
+    <h4 class="policy-step"><span>2</span> How the rules are written</h4>
+    <div class="policy-grid">
+      <div class="rule-cards">${consentCard(scenario, data.conventional)}${rules.map((r) => ruleCard(scenario, r, data.conventional)).join("")}</div>
+      <aside class="purposes"><h5>Purposes</h5>
+        <p class="table-meta">A request satisfies a term when its purpose is that term or narrower.</p>${purposeTree(scenario)}
+        ${conventionalCode(data.conventional, CONVENTIONAL_BLOCK.purposes, "the hierarchy written into the script")}</aside>
+    </div>
+    <h4 class="policy-step"><span>3</span> What they do to one request</h4>
+    <div class="seg-row" role="group" aria-label="Requester">${picks}</div>
+    ${stepThrough(scenario, requester, data.conventional)}
+    <h4 class="policy-step"><span>4</span> Every requester at once</h4>
+    ${policyMatrix(scenario)}`;
+}
+
+function wirePolicyView() {
+  const host = document.getElementById("rq2-policies");
+  if (!host) return;
+  let data = null;
+  const show = async () => {
+    if (!host.open) return;
+    try {
+      data = data || await loadPolicies();
+      renderPolicyView(host, data);
+    } catch (error) {
+      host.querySelector(".policy-body").textContent = `Could not load the policies: ${error.message}`;
+    }
+  };
+  host.addEventListener("toggle", show);
+  host.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-scenario], button[data-requester]");
+    if (!button || !data) return;
+    if (button.dataset.scenario) policyState.scenario = button.dataset.scenario;
+    else policyState.requester[policyState.scenario] = button.dataset.requester;
+    renderPolicyView(host, data);
+  });
 }
 
 // --------------------------------------------------------------- modal
@@ -993,8 +1470,11 @@ async function main() {
     "N-Triples-only rerun (vcf-bench-2/nt-only); 14_regional_access and 16_scale_retrieval from the v3.3.1 rerun.";
   wireModal();
   wireQueryCatalogs();
+  wirePolicyView();
   addSectionLinks();
   await renderAllCharts();
+  // Charts above an anchor change its position after the browser's initial scroll.
+  document.getElementById(location.hash.slice(1))?.scrollIntoView();
   darkQuery.addEventListener("change", renderAllCharts);
   // After the charts, so the layout above the target has settled before scrolling.
   revealHashTarget();
