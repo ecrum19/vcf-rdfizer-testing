@@ -49,6 +49,16 @@ class SiteDataMatchesThePaper(unittest.TestCase):
                 if group["id"] != "preflight":
                     self.assertTrue(item["oracleCode"] and all(c["text"].strip() for c in item["oracleCode"]), item["id"])
 
+    def test_the_paper_names_fourteen_preflight_queries(self):
+        """The site stars what the paper's validation paragraph names, and counts the preflight
+        queries the way app.js does (one per query file): eight checks, fourteen queries."""
+        groups = {g["id"]: g for g in self.data["queries"]["groups"]}
+        preflight = groups["preflight"]["items"]
+        files = [len({Path(q["from"][0]["path"]).name for q in item["sparql"]}) for item in preflight]
+        self.assertEqual((len(preflight), sum(files)), (8, 14))
+        self.assertEqual({k for k, g in groups.items() if g.get("paper")},
+                         {"preflight", "shacl-core", "shacl-consistency", "shacl-sparql"})
+
     def test_every_shape_shows_its_constraints_and_text(self):
         """Every node shape of the three profiles the validator runs, each with its exact
         Turtle text and line range at both releases."""

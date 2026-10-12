@@ -880,13 +880,17 @@ function sourceLink(from) {
   return `<a href="${base}/blob/${esc(from.commit)}/${esc(from.path)}${lines}">${esc(from.source)} ${esc(from.rev)}: <code>${esc(from.path)}</code>${range}</a>`;
 }
 
-function itemSummary(item, group) {
+function itemSummary(item, group, star = "") {
   const id = itemAnchor(group, item);
   return `<details class="query" id="${esc(id)}"><summary><span class="q-label">${esc(item.label)}</span> ` +
-    `<span class="q-summary">${esc(item.summary)}</span>${anchorLink(id)}</summary>`;
+    `${star ? `<span class="paper-star">${esc(star)}</span> ` : ""}<span class="q-summary">${esc(item.summary)}</span>${anchorLink(id)}</summary>`;
 }
 
-function renderQueryItem(item, group) {
+// ★ marks what the paper names: a group carries the paper's wording, with {queries} standing
+// for its query count, which is counted here, one per query file, so it cannot drift.
+const queryFiles = (item) => new Set(item.sparql.map((q) => q.from[0].path.split("/").pop())).size;
+
+function renderQueryItem(item, group, star = "") {
   const sparql = item.sparql.map((q) =>
     `<p class="q-sub">${esc(q.label)} <span class="q-from">(${q.from.map(sourceLink).join("; ")})</span></p>` +
     `<pre class="code">${esc(q.text)}</pre>`).join("");
@@ -899,7 +903,7 @@ function renderQueryItem(item, group) {
   const code = item.oracleCode.length ? `<details class="q-code"><summary>Exact ${esc(group.oracleLabel.toLowerCase())} code (${item.oracleCode.length} excerpt${item.oracleCode.length === 1 ? "" : "s"})</summary>` +
     item.oracleCode.map((c) => `<p class="q-sub">${esc(c.note)} <span class="q-from">(${sourceLink(c.from)})</span></p><pre class="code">${esc(c.text)}</pre>`).join("") +
     `</details>` : "";
-  return itemSummary(item, group) +
+  return itemSummary(item, group, star) +
     `<div class="q-body"><h5>Query</h5>${sparql}<h5>${esc(group.oracleLabel)}, as pseudo-code</h5><pre class="code">${esc(item.pseudo)}</pre>${extra}${code}</div></details>`;
 }
 
@@ -920,11 +924,17 @@ function renderShapeItem(item, group) {
 }
 
 function renderQueryGroups(host, catalog) {
-  const wanted = host.dataset.groups.split(" ");
-  host.querySelector(".query-groups").innerHTML = catalog.groups.filter((g) => wanted.includes(g.id)).map((g) => {
+  const groups = catalog.groups.filter((g) => host.dataset.groups.split(" ").includes(g.id));
+  const legend = groups.some((g) => g.paper)
+    ? `<p class="paper-legend"><span class="paper-star">★</span> marks what the paper's validation paragraph names.</p>` : "";
+  host.querySelector(".query-groups").innerHTML = legend + groups.map((g) => {
+    const total = g.kind === "shacl" ? 0 : g.items.reduce((sum, item) => sum + queryFiles(item), 0);
+    const counted = g.paper?.includes("{queries}");
+    const star = (item) => counted ? `★ ${queryFiles(item)} of the ${total}` : "";
+    const paper = g.paper ? ` <span class="paper-star">★ In the paper: ${esc(g.paper.replace("{queries}", total))}</span>` : "";
     const file = g.kind === "shacl" ? ` Shapes file: ${g.file.map(sourceLink).join("; ")}.` : "";
-    const items = g.items.map((item) => g.kind === "shacl" ? renderShapeItem(item, g) : renderQueryItem(item, g)).join("");
-    return `<div class="query-group"><h4>${esc(g.title)}</h4><p class="table-meta">${esc(g.intro)}${file}</p>${items}</div>`;
+    const items = g.items.map((item) => g.kind === "shacl" ? renderShapeItem(item, g) : renderQueryItem(item, g, star(item))).join("");
+    return `<div class="query-group"><h4>${esc(g.title)}${paper}</h4><p class="table-meta">${esc(g.intro)}${file}</p>${items}</div>`;
   }).join("");
 }
 

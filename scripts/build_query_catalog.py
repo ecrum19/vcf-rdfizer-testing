@@ -307,7 +307,7 @@ def shacl_group(group: dict, tool_repo: Path) -> dict:
         raise SystemExit(f"{group['id']}: the statements cut from {path} do not add up to its graph")
     if len(items) != len(set(g.subjects(RDF.type, SH.NodeShape))):
         raise SystemExit(f"{group['id']}: found {len(items)} of {len(set(g.subjects(RDF.type, SH.NodeShape)))} shapes")
-    return {key: group[key] for key in ("id", "rq", "title", "intro", "kind")} | {
+    return {key: group[key] for key in ("id", "rq", "title", "intro", "kind", "paper") if key in group} | {
         "file": [provenance("tool", rev, path, tool_repo) for rev in tags], "items": items}
 
 
@@ -331,7 +331,8 @@ def main() -> None:
             built["sparql"] = sparql_entries(item, args.tool_repo)
             built["oracleCode"] = code_entries(item, args.tool_repo)
             items.append(built)
-        groups.append({key: group[key] for key in ("id", "rq", "title", "intro", "oracleLabel")} | {"items": items})
+        groups.append({key: group[key] for key in ("id", "rq", "title", "intro", "oracleLabel", "paper") if key in group}
+                      | {"items": items})
     out = {"groups": groups, "builtFrom": {"notes": "benchmarks/query-catalog/notes.json",
                                            "testingCommit": rev_commit(ROOT, "HEAD")}}
     (CATALOG / "catalog.json").write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n")

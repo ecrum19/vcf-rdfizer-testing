@@ -2161,8 +2161,9 @@
    "id": "preflight",
    "rq": "RQ1",
    "title": "Preflight checks",
-   "intro": "Integrity checks run before the comparisons. They assert properties of the graph rather than comparing with the VCF: most expect no anomalies, and two compare with counts the oracle takes from the VCF.",
+   "intro": "Integrity checks run before the comparisons. They assert properties of the graph rather than comparing with the VCF: most expect no anomalies, and two compare with counts the oracle takes from the VCF. The paper counts queries, not checks: each check runs one listing query, and six of them also run a companion that counts every anomaly once the listing reaches its limit of 100 rows.",
    "oracleLabel": "Check",
+   "paper": "the {queries} preflight queries",
    "items": [
     {
      "id": "preflight_record_cardinality",
@@ -3321,6 +3322,7 @@
    "title": "SHACL shapes: the default profile (core)",
    "intro": "Run whenever shapes are enabled: in the core benchmark, the consumer WGS validation rerun, and fault injection. Each shape judges one resource from its own properties (cardinality, datatype, pattern, class), so v3.3.1 validates a large graph a batch of records at a time. Shapes check the graph against the VCF Core vocabulary's rules, not against the source VCF. A violation blocks the run; a warning is reported only. The shapes are vendored from the VCF Core vocabulary and are identical in v3.1.0 and v3.3.1.",
    "kind": "shacl",
+   "paper": "the default SHACL profile",
    "file": [
     {
      "source": "VCF-RDFizer",
@@ -5963,6 +5965,7 @@
    "title": "SHACL shapes: the consistency profile (deeper)",
    "intro": "Checks that related values agree, for example GT text with ploidy and called alleles, or REF and ALT text with their allele resources. With the core and vocabulary-sparql profiles it forms the full set (--shacl-profile full), run in fault injection on small fixtures only: each constraint is a SPARQL query, which the validator runs on the whole graph, and the cost grows faster than the graph.",
    "kind": "shacl",
+   "paper": "one of the two deeper SHACL profiles",
    "file": [
     {
      "source": "VCF-RDFizer",
@@ -6898,6 +6901,7 @@
    "title": "SHACL shapes: the vocabulary-sparql profile (deeper)",
    "intro": "Checks properties across a file, such as unique header-line, record and sample indices, unique record IDs, nondecreasing positions within each contig, and that a graph does not mix the expanded and condensed sample representations. Part of the full set, run in fault injection on small fixtures only. The vocabulary keeps these SPARQL constraints apart so that validators without SPARQL support can apply the core profile.",
    "kind": "shacl",
+   "paper": "one of the two deeper SHACL profiles",
    "file": [
     {
      "source": "VCF-RDFizer",
@@ -9848,6 +9852,6 @@
  ],
  "builtFrom": {
   "notes": "benchmarks/query-catalog/notes.json",
-  "testingCommit": "a434888d"
+  "testingCommit": "b20cc32a"
  }
 }
