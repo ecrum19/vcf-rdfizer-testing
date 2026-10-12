@@ -346,6 +346,12 @@ details.query[open] > summary { border-radius: 8px 8px 0 0; border-bottom: 1px s
 .q-constraints { margin: 0.2rem 0 0.4rem; padding-left: 1.1rem; font-size: 0.84rem; }
 .q-constraints li { margin: 0.15rem 0; overflow-wrap: anywhere; }
 .q-msg { font-style: italic; }
+/* ★ what the paper names: ink, not a series colour, with a soft fill so it reads as a tag. */
+.paper-star { display: inline-block; font-size: 0.78rem; font-weight: 600; color: var(--text); background: var(--accent-soft);
+  border: 1px solid var(--border); border-radius: 999px; padding: 0 0.5rem; white-space: nowrap; vertical-align: 0.08em; }
+.query-group h4 .paper-star { margin-left: 0.35rem; }
+.paper-legend { font-size: 0.85rem; color: var(--muted); margin: 0.2rem 0 0.4rem; }
+.paper-legend .paper-star { padding: 0 0.35rem; }
 .q-tag { color: var(--muted); border: 1px solid var(--grid); border-radius: 4px; padding: 0 0.3rem; font-size: 0.76rem; white-space: nowrap; }
 details.q-code { margin-top: 0.6rem; }
 details.q-code > summary { color: var(--muted); font-size: 0.84rem; }
