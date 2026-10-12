@@ -295,4 +295,27 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 .focus-chart .chart { min-height: 240px; }
 
 /* Archive paths are long; let them wrap rather than widen the page. */
-.source code, .table-meta code, td code { overflow-wrap: anywhere; }
+.source code, .table-meta code, td code, .q-from code, .q-from a { overflow-wrap: anywhere; }
+
+/* Queries and oracles: collapsed per query; code scrolls inside its box. */
+details.query-catalog { margin: 0.9rem 0 0.4rem; border-top: 1px solid var(--grid); padding-top: 0.6rem; }
+details.query-catalog > summary { cursor: pointer; font-weight: 600; }
+.query-group { margin: 0.6rem 0 1rem; }
+.query-group h4 { margin: 0.6rem 0 0.2rem; font-size: 0.98rem; }
+details.query { border: 1px solid var(--grid); border-radius: 8px; margin: 0.35rem 0; background: var(--panel); }
+details.query > summary { cursor: pointer; padding: 0.45rem 0.65rem; }
+details.query[open] > summary { border-bottom: 1px solid var(--grid); }
+.q-label { font-weight: 600; margin-right: 0.35rem; }
+.q-summary { color: var(--muted); }
+.q-body { padding: 0.3rem 0.75rem 0.7rem; }
+.q-body h5 { margin: 0.7rem 0 0.25rem; font-size: 0.86rem; }
+.q-sub { margin: 0.45rem 0 0.2rem; font-size: 0.82rem; }
+.q-from { color: var(--muted); }
+.q-note { font-size: 0.84rem; margin: 0.4rem 0; }
+details.q-code { margin-top: 0.6rem; }
+details.q-code > summary { cursor: pointer; color: var(--muted); font-size: 0.84rem; }
+pre.code {
+  margin: 0; padding: 0.5rem 0.7rem; overflow: auto; max-height: 26rem;
+  background: var(--panel-alt); border: 1px solid var(--grid); border-radius: 6px;
+  font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.76rem; line-height: 1.4; white-space: pre;
+}

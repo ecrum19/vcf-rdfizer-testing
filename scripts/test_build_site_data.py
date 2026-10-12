@@ -29,7 +29,22 @@ class SiteDataMatchesThePaper(unittest.TestCase):
 
     def test_every_dataset_is_written(self):
         self.assertEqual(self.files, ["campaign.json", "converters.json", "facts.json", "fidelity.json",
-                                      "retrieval.json", "scaling.json", "usecase.json"])
+                                      "queries.json", "retrieval.json", "scaling.json", "usecase.json"])
+
+    def test_every_query_shows_its_query_and_oracle(self):
+        """Each query has its exact text, a pseudo-code oracle, and the exact oracle code;
+        preflight checks assert graph properties and may have no oracle code."""
+        groups = {g["id"]: g for g in self.data["queries"]["groups"]}
+        self.assertEqual(set(groups), {"validation", "preflight", "usecase", "converters", "regional"})
+        self.assertEqual(len(groups["validation"]["items"]), 13)
+        self.assertEqual(len(groups["converters"]["items"]), 8)
+        self.assertEqual(len(groups["regional"]["items"]), 5)
+        for group in groups.values():
+            for item in group["items"]:
+                self.assertTrue(item["summary"] and item["pseudo"].strip(), item["id"])
+                self.assertTrue(item["sparql"] and all(q["text"].strip() for q in item["sparql"]), item["id"])
+                if group["id"] != "preflight":
+                    self.assertTrue(item["oracleCode"] and all(c["text"].strip() for c in item["oracleCode"]), item["id"])
 
     def test_campaign(self):
         totals = self.data["campaign"]["totals"]

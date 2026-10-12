@@ -791,6 +791,62 @@ function renderHosts() {
 }
 
 // --------------------------------------------------------------- modal
+// ---------- Queries and oracles ----------
+// queries.json is fetched the first time a "Queries and oracles" section opens:
+// it holds the exact query and oracle code, which most readers never need.
+const TOOL_REPO = "https://github.com/ecrum19/VCF-RDFizer";
+let queryCatalog = null;
+
+function sourceLink(from) {
+  const base = from.source === "VCF-RDFizer" ? TOOL_REPO : REPO;
+  const lines = from.lines ? `#L${from.lines[0]}-L${from.lines[1]}` : "";
+  const range = from.lines ? `, lines ${from.lines[0]}–${from.lines[1]}` : "";
+  return `<a href="${base}/blob/${esc(from.commit)}/${esc(from.path)}${lines}">${esc(from.source)} ${esc(from.rev)}: <code>${esc(from.path)}</code>${range}</a>`;
+}
+
+function renderQueryItem(item, group) {
+  const sparql = item.sparql.map((q) =>
+    `<p class="q-sub">${esc(q.label)} <span class="q-from">(${q.from.map(sourceLink).join("; ")})</span></p>` +
+    `<pre class="code">${esc(q.text)}</pre>`).join("");
+  const extra = [
+    item.notes ? `<p class="q-note">${esc(item.notes)}</p>` : "",
+    item.differences ? `<p class="q-note"><strong>Between releases:</strong> ${esc(item.differences)}</p>` : "",
+    (item.not_represented || []).length ? `<p class="q-note"><strong>Not represented:</strong> ${item.not_represented
+      .map((n) => `${esc(n.converter)}, ${esc(n.reason)}`).join("; ")}</p>` : "",
+  ].join("");
+  const code = item.oracleCode.length ? `<details class="q-code"><summary>Exact ${esc(group.oracleLabel.toLowerCase())} code (${item.oracleCode.length} excerpt${item.oracleCode.length === 1 ? "" : "s"})</summary>` +
+    item.oracleCode.map((c) => `<p class="q-sub">${esc(c.note)} <span class="q-from">(${sourceLink(c.from)})</span></p><pre class="code">${esc(c.text)}</pre>`).join("") +
+    `</details>` : "";
+  return `<details class="query"><summary><span class="q-label">${esc(item.label)}</span> <span class="q-summary">${esc(item.summary)}</span></summary>` +
+    `<div class="q-body"><h5>Query</h5>${sparql}<h5>${esc(group.oracleLabel)}, as pseudo-code</h5><pre class="code">${esc(item.pseudo)}</pre>${extra}${code}</div></details>`;
+}
+
+function renderQueryGroups(host) {
+  const wanted = host.dataset.groups.split(" ");
+  host.querySelector(".query-groups").innerHTML = queryCatalog.groups.filter((g) => wanted.includes(g.id)).map((g) =>
+    `<div class="query-group"><h4>${esc(g.title)}</h4><p class="table-meta">${esc(g.intro)}</p>${g.items.map((item) => renderQueryItem(item, g)).join("")}</div>`).join("");
+}
+
+function wireQueryCatalogs() {
+  for (const host of document.querySelectorAll("details.query-catalog")) {
+    host.addEventListener("toggle", async () => {
+      if (!host.open || host.dataset.loaded) return;
+      host.dataset.loaded = "1";
+      const target = host.querySelector(".query-groups");
+      try {
+        queryCatalog = queryCatalog || await fetch("./data/queries.json").then((r) => {
+          if (!r.ok) throw new Error(`queries.json: HTTP ${r.status}`);
+          return r.json();
+        });
+        renderQueryGroups(host);
+      } catch (error) {
+        target.textContent = `Could not load the queries: ${error.message}`;
+        delete host.dataset.loaded;
+      }
+    });
+  }
+}
+
 function wireModal() {
   const modal = document.getElementById("focusModal");
   const content = document.getElementById("focusContent");
@@ -838,6 +894,7 @@ async function main() {
     "03_sample_representation, 01_storage_mode and 05_corpus_breadth, through scripts/figure_data.py; 13_query_cost and the " +
     "N-Triples-only rerun (vcf-bench-2/nt-only); 14_regional_access and 16_scale_retrieval from the v3.3.1 rerun.";
   wireModal();
+  wireQueryCatalogs();
   await renderAllCharts();
   darkQuery.addEventListener("change", renderAllCharts);
 }

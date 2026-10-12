@@ -769,6 +769,13 @@ def git_commit() -> str | None:
         return None
 
 
+def queries() -> dict:
+    """Every query with its oracle, as scripts/build_query_catalog.py copied them from the
+    pinned VCF-RDFizer tags and this repository; CI has no VCF-RDFizer clone to read."""
+    catalog = load(ROOT / "benchmarks" / "query-catalog" / "catalog.json")
+    return {"groups": catalog["groups"], "source": rel(ROOT / "benchmarks" / "query-catalog")}
+
+
 def build(out: Path) -> dict[str, dict]:
     datasets = {
         "campaign": campaign(),
@@ -780,6 +787,7 @@ def build(out: Path) -> dict[str, dict]:
         "converters": converters(),
     }
     datasets["facts"] = facts(datasets)
+    datasets["queries"] = queries()
     meta = {"builtAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "repoCommit": git_commit()}
     out.mkdir(parents=True, exist_ok=True)
