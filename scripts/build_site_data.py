@@ -6,7 +6,8 @@
 Standard library only, and no network: everything is read from
 benchmark-results/ and benchmarks/use_case/acmg, which hold only the reported
 runs: the v3.1.0 core benchmark, the additional v3.1.0 runs, and the v3.3.1 rerun.
-Superseded, stalled and failed attempts are on the repository's legacy branch. The
+Superseded attempts are on the repository's legacy branch; reported execution
+failures remain alongside the successful runs. The
 values behind the paper's figures come from the same module make_figures.py
 uses (scripts/figure_data.py), so the site and the paper cannot
 compute them differently.
@@ -24,6 +25,7 @@ import subprocess
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,6 +111,49 @@ def campaign() -> dict:
 # ---------------------------------------------------------------------------
 # Fidelity
 # ---------------------------------------------------------------------------
+FIDELITY_GROUPS = {
+    "A": "Core benchmark validation",
+    "B": "Artifact decoding",
+    "C": "Consumer WGS validation",
+    "D": "Large-graph query agreement",
+    "E": "Fault-injection sensitivity",
+}
+
+
+def large_graph_agreement() -> dict:
+    """RQ1 D: compare saved normalized answers, not execution PASS alone.
+
+    These retrieval runs are TIMING_ONLY: Q1--Q13 were compared with the VCF,
+    but preflight and SHACL were omitted. Count a question once per input path
+    only if it agrees in every recorded replicate; retain failures explicitly.
+    """
+    root = V331["vcf-bench-3"] / "16_scale_retrieval"
+    groups = defaultdict(list)
+    for cell in sorted(root.glob("*__qlever__*")):
+        reports = list(cell.glob("out/run_metrics/*/reports/validation/*/summary.json"))
+        if len(reports) != 1:
+            raise ValueError(f"Expected one retrieval report in {cell}, got {len(reports)}")
+        report = reports[0].parent
+        summary = load(reports[0])
+        parser, sparql = load(report / "parser.json"), load(report / "sparql.json")
+        queries = {q: q in parser and q in sparql and parser[q] == sparql[q] for q in fd.QIDS}
+        groups[(cell.name.split("__")[0], summary["sourceFormat"])].append({
+            "source": rel(report), "records": summary["recordCount"],
+            "status": summary["status"], "answersAgree": summary["answersAgree"],
+            "queries": queries,
+        })
+    rows = []
+    for (scale_id, artifact), runs in sorted(groups.items()):
+        manifest = load(RESULTS / "vcf-bench-3" / "scale-store-manifests" / f"{scale_id}.manifest.json")
+        questions = [{"query": q, "status": "PASS" if all(r["queries"][q] for r in runs) else "FAIL"}
+                     for q in fd.QIDS]
+        rows.append({"scale": scale_id, "artifact": artifact, "records": runs[0]["records"],
+                     "triples": manifest["triples"], "replicates": len(runs), "queries": questions,
+                     "passed": sum(q["status"] == "PASS" for q in questions),
+                     "total": len(questions), "runs": runs})
+    return {"rows": rows, "source": rel(root)}
+
+
 def validation_counts() -> dict:
     """Pass/total for every layer of the core benchmark's validation evidence."""
     comparisons, invariants, rapper, engines = Counter(), Counter(), Counter(), Counter()
@@ -291,13 +336,149 @@ def scale() -> dict:
     path = V331["vcf-bench-3"] / "16_scale_retrieval" / "retrieval.csv"
     rows = []
     for row in fd.tidy(path):
+        status = row["statuses"]
+        # A successful wrapper exit need not be a completed query response.
+        # In particular, native HDT Q5 left a truncated !TIMEDOUT! response.
+        if row["engine"] != "qlever" and status == "PASS":
+            responses = list(path.parent.glob(
+                f"{row['scale']}__{row['engine']}__*/out/run_metrics/*/reports/validation/*/raw/"
+                f"{row['engine']}/{row['query_id']}.sparql.json"))
+            if len(responses) != int(row["replicates"]):
+                raise ValueError(f"Missing native query response: {row['engine']} {row['query_id']}")
+            for response in responses:
+                raw = response.read_text(encoding="utf-8")
+                try:
+                    json.loads(raw)["results"]["bindings"]
+                except (json.JSONDecodeError, KeyError):
+                    status = "TIMEOUT" if "!TIMEDOUT!" in raw else "INVALID_RESULT"
         rows.append({
             "scale": row["scale"], "engine": row["engine"], "artifact": row["artifact"],
-            "query": row["query_id"], "status": row["statuses"],
-            "seconds": float(row["median_query_seconds"]) if row["median_query_seconds"] else None,
+            "query": row["query_id"], "status": status, "reportedStatus": row["statuses"],
+            "seconds": float(row["median_query_seconds"]) if row["median_query_seconds"] and status == "PASS" else None,
             "setup": float(row["median_setup_seconds"]) if row["median_setup_seconds"] else None,
         })
     return {"rows": rows, "source": rel(path)}
+
+
+def sparql_binding_multiset(result: dict) -> Counter:
+    """Compare raw answers without row-order or numeric datatype differences.
+
+    Native runs that stop early have no consolidated sparql.json. Their complete
+    raw answers can still be compared with a QLever run whose normalized answers
+    were checked against the source VCF. Preserve duplicate rows and RDF terms.
+    """
+    numeric = {"integer", "int", "long", "decimal", "double", "float", "nonNegativeInteger",
+               "positiveInteger", "unsignedInt", "unsignedLong", "short", "byte"}
+
+    def term(value):
+        datatype = value.get("datatype", "")
+        if datatype.startswith("http://www.w3.org/2001/XMLSchema#") and datatype.split("#")[-1] in numeric:
+            return ("number", Decimal(value["value"]))
+        return (value["type"], value["value"], value.get("xml:lang", ""), datatype)
+
+    return Counter(tuple(sorted((key, term(value)) for key, value in row.items()))
+                   for row in result["results"]["bindings"])
+
+
+def scale_comparison() -> dict:
+    """Per-query completion and stage costs, directly from the scale run reports.
+
+    Missing engine/scale combinations are explicitly unmeasured, never zero-time
+    successes or failures. Query totals follow the paper's sum-of-medians rule;
+    decoding and indexing use separate replicate medians (not a single timed run).
+    """
+    root = V331["vcf-bench-3"] / "16_scale_retrieval"
+    groups = defaultdict(list)
+    references = {}
+    for cell in sorted(root.glob("*__qlever__nt_gz__*")):
+        report = next(cell.glob("out/run_metrics/*/reports/validation/*/summary.json")).parent
+        references.setdefault(cell.name.split("__")[0], report)
+    for cell in sorted(root.glob("*__*__core__r*")):
+        scale_id, engine, artifact_id, _, _ = cell.name.split("__")
+        artifact = {"nt_gz": "nt.gz"}.get(artifact_id, artifact_id)
+        report = next(cell.glob("out/run_metrics/*/reports/validation/*/summary.json")).parent
+        summary = load(report / "summary.json")
+        bench = load(cell / "bench.json")
+        command = bench["command"]
+        timings = {r["query_id"]: r for r in fd.tidy(report / "benchmark.csv") if r["engine"] == engine}
+        parser = load(report / "parser.json")
+        normalized = load(report / "sparql.json") if engine == "qlever" else None
+        reference = references[scale_id]
+        reference_parser = load(reference / "parser.json")
+        reference_answers = load(reference / "sparql.json")
+        queries = []
+        for q, label in fd.QUERIES:
+            execution = summary.get("queryExecutions", {}).get(q, {})
+            timing = timings[q]
+            error = execution.get("error", "")
+            response = report / "raw" / engine / f"{q}.sparql.json"
+            raw = response.read_text(encoding="utf-8")
+            agrees = None
+            if "!TIMEDOUT!" in raw:
+                status = "TIMEOUT"
+            elif "Connection refused" in error or "Connection reset by peer" in error:
+                status = "ENDPOINT_UNAVAILABLE"
+            elif timing["status"] != "PASS":
+                status = "EXECUTION_FAILED"
+            else:
+                # Parsing must succeed even when the wrapper reports PASS.
+                answer = sparql_binding_multiset(json.loads(raw))
+                if engine == "qlever":
+                    agrees = q in normalized and q in parser and normalized[q] == parser[q]
+                else:
+                    reference_raw = load(reference / "raw" / "qlever" / f"{q}.sparql.json")
+                    agrees = (answer == sparql_binding_multiset(reference_raw)
+                              and parser[q] == reference_parser[q] == reference_answers[q])
+                status = "PASS" if agrees else "MISMATCH"
+            queries.append({"query": q, "label": label, "status": status,
+                            "reportedStatus": timing["status"], "answerAgrees": agrees,
+                            "seconds": float(timing["wall_seconds"]), "error": error,
+                            "source": rel(response)})
+        groups[(scale_id, engine, artifact)].append({
+            "source": rel(report), "status": summary["status"],
+            "host": bench["host"], "image": bench["image_ref"],
+            "nodeHeapMb": int(command[command.index("--node-heap-mb") + 1]) if "--node-heap-mb" in command else None,
+            "records": parser["totalRecords"], "queries": queries,
+            "decodeSeconds": load(report / "materialization.json")["wallSeconds"],
+            "indexSeconds": summary["benchmark"]["engineSetupSeconds"][engine],
+        })
+
+    paths = [("qlever", "nt.gz"), ("qlever", "hdt"), ("qlever", "cottas"),
+             ("hdt", "hdt"), ("cottas", "cottas")]
+    cells, stages, graphs = [], [], []
+    for scale_id in ("r1000000", "whole"):
+        manifest = load(RESULTS / "vcf-bench-3" / "scale-store-manifests" / f"{scale_id}.manifest.json")
+        records = groups[(scale_id, "qlever", "nt.gz")][0]["records"]
+        graphs.append({"scale": scale_id, "records": records, "triples": manifest["triples"]})
+        for engine, artifact in paths:
+            runs = groups[(scale_id, engine, artifact)]
+            questions = []
+            for i, (q, label) in enumerate(fd.QUERIES):
+                measured = [r["queries"][i] for r in runs]
+                statuses = {m["status"] for m in measured}
+                status = next(iter(statuses)) if len(statuses) == 1 else "MIXED" if statuses else "NOT_RUN"
+                values = [m["seconds"] for m in measured]
+                questions.append({"query": q, "label": label, "status": status,
+                                  "seconds": st.median(values) if values else None,
+                                  "minSeconds": min(values) if values else None,
+                                  "maxSeconds": max(values) if values else None,
+                                  "sources": [m["source"] for m in measured]})
+            cells.append({"scale": scale_id, "engine": engine, "artifact": artifact,
+                          "records": records, "triples": manifest["triples"], "replicates": len(runs),
+                          "completed": sum(q["status"] == "PASS" for q in questions) if runs else None,
+                          "total": len(questions), "queries": questions, "runs": runs})
+            if scale_id == "whole" and engine == "qlever":
+                for stage, values in (("Decode to N-Triples", [r["decodeSeconds"] for r in runs]),
+                                      ("Build QLever index", [r["indexSeconds"] for r in runs]),
+                                      ("Run all queries", [sum(q["seconds"] for q in r["queries"]) for r in runs])):
+                    if not all(q["status"] == "PASS" for q in questions):
+                        raise ValueError(f"Incomplete QLever workload: {scale_id} {artifact}")
+                    seconds = (sum(q["seconds"] for q in questions) if stage == "Run all queries"
+                               else st.median(values))
+                    stages.append({"artifact": artifact, "stage": stage, "seconds": seconds,
+                                   "minSeconds": min(values), "maxSeconds": max(values),
+                                   "replicates": len(runs), "sources": [r["source"] for r in runs]})
+    return {"cells": cells, "graphs": graphs, "wholeStages": stages, "source": rel(root)}
 
 
 def qlever_cost_by_size() -> list[dict]:
@@ -347,6 +528,7 @@ def retrieval() -> dict:
         "artifacts": {t: st.mean(v) for t, v in data["per_target"].items()},
         "regional": regional(),
         "scale": scale(),
+        "scaleComparison": scale_comparison(),
         "costBySize": qlever_cost_by_size(),
         "breakEven": {k: v for k, v in fd.breakeven().items() if k != "conversion_runs"},
     }
@@ -625,6 +807,8 @@ def facts(d: dict) -> dict[str, str]:
     out["realTriples"] = millions(real["triples"])
     out["validations"] = words(v["validations"]) if v["validations"] < len(WORDS) else str(v["validations"])
     out["invariants"] = f"{v['invariants'].get('PASS', 0):,}"
+    for label, title in FIDELITY_GROUPS.items():
+        out[f"fidelity{label}"] = f"{label}. {title}"
 
     # Use case
     sources = Counter(p["source"].split()[0] for p in study["participants"])
@@ -750,6 +934,10 @@ def facts(d: dict) -> dict[str, str]:
     out["engineArtifacts"] = words(len(retrieval["artifacts"]))
     out["engineReplicates"] = words(engines["qlever"]["runs"] // len(retrieval["artifacts"]))
     out["engineFold"] = span([e["mean"] / engines["qlever"]["mean"] for k, e in engines.items() if k != "qlever"], 0)
+    scale_cells = retrieval["scaleComparison"]["cells"]
+    out["scaleQleverRuns"] = listing(sorted({words(c["replicates"]) for c in scale_cells if c["engine"] == "qlever" and c["replicates"]}))
+    out["scaleNativeRuns"] = listing(sorted({words(c["replicates"]) for c in scale_cells if c["engine"] != "qlever" and c["replicates"]}))
+    out["scaleNativeHeapMb"] = listing(sorted({f"{r['nodeHeapMb']:,}" for c in scale_cells if c["engine"] != "qlever" for r in c["runs"]}))
     rows = retrieval["scale"]["rows"]
     per_artifact = defaultdict(float)
     for r in rows:
@@ -762,6 +950,8 @@ def facts(d: dict) -> dict[str, str]:
     out["inPlaceFailed"] = listing([words(n) for n in sorted(failed)])
     answered = {n for (_, ok), n in in_place.items() if ok}
     out["nativeAnswered"] = listing([words(n) for n in sorted(answered)])
+    out["nativeHdtAnswered"] = words(in_place[("hdt", True)])
+    out["nativeCottasAnswered"] = words(in_place[("cottas", True)])
     regional = retrieval["regional"]
     first = next(iter(regional.values()))
     out["regionalQuestions"] = words(first["questions"])
@@ -793,8 +983,9 @@ def queries() -> dict:
 def build(out: Path) -> dict[str, dict]:
     datasets = {
         "campaign": campaign(),
-        "fidelity": {"validation": validation_counts(), "mutation": mutation_profiles(),
-                     "realGenome": real_genome()},
+        "fidelity": {"groups": FIDELITY_GROUPS, "validation": validation_counts(),
+                     "mutation": mutation_profiles(), "realGenome": real_genome(),
+                     "largeGraphs": large_graph_agreement()},
         "scaling": scaling(),
         "retrieval": retrieval(),
         "usecase": usecase(),

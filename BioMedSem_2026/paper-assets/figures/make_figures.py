@@ -949,14 +949,14 @@ def fig_validation() -> None:
     # A validation that stopped before any engine answered compared nothing.
     completed = sum(n for engines, n in v["enginesAnswering"].items() if engines != "0")
     valid = [
-        ("Core benchmark: query comparisons", f"{completed} validation runs, up to 17.1M triples",
+        ("A: Core benchmark: query comparisons", f"{completed} validation runs, up to 17.1M triples",
          v["comparisons"]["PASS"],
          sum(n for status, n in v["comparisons"].items() if not status.startswith("NOT_APPLICABLE"))),
-        ("HDT and COTTAS decoding", "decoded triple count of each artifact", decoded, decode_total),
-        ("Complete HG005 VCF retrieval", f"3.86M records, {millions(whole_triples)} triples",
-         sum(r["status"] == "PASS" for r in whole), len(whole)),
-        ("Consumer WGS VCF validation", f"NG131FQA1I, 250k records, {millions(real['triples'])} triples",
+        ("B: HDT and COTTAS decoding", "decoded triple count of each artifact", decoded, decode_total),
+        ("C: Consumer WGS VCF validation", f"NG131FQA1I, 250k records, {millions(real['triples'])} triples",
          real_equal, len(real["queries"])),
+        ("D: Complete HG005 VCF retrieval", f"3.86M records, {millions(whole_triples)} triples",
+         sum(r["status"] == "PASS" for r in whole), len(whole)),
     ]
     faults = [
         ("Source-comparison queries", scores["queries"]),
@@ -995,12 +995,12 @@ def fig_validation() -> None:
 
     ax = fig.add_subplot(gs[0])
     track(ax, valid, BLUE, "{} mismatches")
-    ax.set_title("(a) Agreement with the source VCF on valid inputs", x=-0.47)
+    ax.set_title("(a) Agreement with the source VCF on valid inputs (A-D)", x=-0.47)
     ax.set_xlabel("Results equal to the source-derived result")
 
     ax = fig.add_subplot(gs[1])
     track(ax, [(name, "", s["detected"], s["total"]) for name, s in faults], ORANGE, "{} undetected")
-    ax.set_title(f"(b) Detection of {faults[0][1]['total']} injected faults", x=-0.47)
+    ax.set_title("(b) Fault-injection Detection (E)", x=-0.47)
     ax.set_xlabel("Injected faults detected")
 
     fig.savefig(OUT / "fig-validation.pdf", metadata=PDF_METADATA)

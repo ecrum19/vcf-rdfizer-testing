@@ -93,6 +93,26 @@ function table(columns, rows) {
   return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
+const ARTIFACT_LABEL = { "nt.gz": "N-Triples.gz", hdt: "HDT", cottas: "COTTAS" };
+const SCALE_OUTCOME = {
+  PASS: "Answer agrees", TIMEOUT: "Timeout", EXECUTION_FAILED: "Execution failed",
+  ENDPOINT_UNAVAILABLE: "Endpoint unavailable", NOT_RUN: "Not run", MISMATCH: "Answer differs", MIXED: "Mixed outcomes",
+};
+const scalePath = (cell) => cell.engine === "qlever" ? `QLever ← ${ARTIFACT_LABEL[cell.artifact]}` : `Native ${ARTIFACT_LABEL[cell.artifact]}`;
+const scaleGraph = (cell) => `${cell.scale === "whole" ? "Complete HG005" : "HG005 subset"} · ${num(cell.records)} records · ${millions(cell.triples)} triples`;
+function scaleQueryRows() {
+  return D.retrieval.scaleComparison.cells.flatMap((cell) => cell.queries.map((q) => ({
+    ...q, scale: cell.scale, engine: cell.engine, artifact: cell.artifact,
+    graph: scaleGraph(cell), path: scalePath(cell), replicates: cell.replicates,
+    completed: cell.completed == null ? "Not run" : `${cell.completed}/${cell.total}`,
+    question: q.label.split(" ")[0], outcome: SCALE_OUTCOME[q.status] || q.status,
+    symbol: { PASS: "✓", TIMEOUT: "T", EXECUTION_FAILED: "×", ENDPOINT_UNAVAILABLE: "–", NOT_RUN: "·" }[q.status] || "?",
+  })));
+}
+const archivedQueryLink = (r) => r.sources.length
+  ? r.sources.map((s, i) => `<a href="${REPO}/${s.endsWith('.json') ? 'blob' : 'tree'}/main/${esc(s)}" target="_blank" rel="noopener">Run ${i + 1}</a>`).join(" · ")
+  : "Not run";
+
 // --------------------------------------------------------------- charts
 // Each chart: title, help (the ⓘ), optional caption, spec(t) and rows() for its table.
 const CHARTS = {
@@ -557,6 +577,123 @@ const CHARTS = {
     },
   },
 
+  scaleCompletion: {
+    title: "Same questions, different engines: completion at scale",
+    help: "Each cell is one of the {questions} source-comparison questions. QLever cells combine all recorded replicates: an answer must match the source VCF in every run. Completed native answers are checked against the source-verified QLever answers. Native means Comunica over HDT or COTTAS (DuckDB). Hover for timings and open the table for raw responses.",
+    caption: "QLever decodes each input to N-Triples and builds its own index; native engines query the compressed stores directly. QLever: {scaleQleverRuns} runs per tested path; native engines: {scaleNativeRuns} each. A dash means the endpoint became unavailable; a dot means not run. The full validation suite was omitted.",
+    ownWidth: true,
+    rows: scaleQueryRows,
+    columns: [{ key: "graph", label: "Graph" }, { key: "path", label: "Engine ← input" },
+      { key: "label", label: "Question" }, { key: "outcome", label: "Outcome" },
+      { key: "replicates", label: "Runs", num: true }, { key: "completed", label: "Agreeing questions" },
+      { key: "seconds", label: "Median elapsed", num: true, format: (v) => secs(v) }, { label: "Raw responses", html: archivedQueryLink }],
+    spec(t, rows, width) {
+      const questions = [...new Set(rows.map((r) => r.question))];
+      const paths = [...new Set(rows.map((r) => r.path))];
+      const outcomes = Object.values(SCALE_OUTCOME).filter((o) => rows.some((r) => r.outcome === o));
+      const colors = { "Answer agrees": t.series[0], Timeout: t.series[3], "Execution failed": t.series[1],
+        "Endpoint unavailable": t.context, "Not run": t.grid, "Answer differs": t.series[1], "Mixed outcomes": t.series[3] };
+      return {
+        data: { values: rows }, spacing: 20,
+        facet: { row: { field: "graph", type: "nominal", sort: [...new Set(rows.map((r) => r.graph))], title: null,
+          header: { labelFontSize: 12, labelFontWeight: 600, labelColor: t.text, labelAnchor: "start", labelOrient: "top" } } },
+        spec: {
+          width: Math.max(questions.length * 24, width - 175), height: paths.length * 30,
+          encoding: {
+            y: { field: "path", type: "nominal", sort: paths, title: null, axis: { labelLimit: 160 } },
+            x: { field: "question", type: "nominal", sort: questions, title: null, axis: { orient: "top", labelAngle: 0 } },
+            tooltip: [{ field: "graph", title: "Graph" }, { field: "path", title: "Engine ← input" },
+              { field: "label", title: "Question" }, { field: "outcome", title: "Outcome" },
+              { field: "completed", title: "Agreeing questions" }, { field: "replicates", title: "Runs" },
+              { field: "seconds", title: "Median elapsed (s)", format: ".3f" }],
+          },
+          layer: [
+            { mark: { type: "rect", stroke: t.surface, strokeWidth: 2, cornerRadius: 3 },
+              encoding: { color: { field: "outcome", type: "nominal", title: null,
+                scale: { domain: outcomes, range: outcomes.map((o) => colors[o]) }, legend: { columns: 3 } } } },
+            { mark: { type: "text", fontSize: 14, fontWeight: 700 },
+              encoding: { text: { field: "symbol" }, color: { condition: { test: "datum.status == 'NOT_RUN'", value: t.muted }, value: t.text } } },
+          ],
+        },
+        resolve: { scale: { x: "shared", y: "shared" } },
+      };
+    },
+  },
+
+  nativeQueryCosts: {
+    title: "Time per question at {midTriples} triples",
+    help: "Same HG005 subset and same questions on vcf-bench-3. QLever points are medians with the replicate range; native engines have {scaleNativeRuns} run each, with a Node heap setting of {scaleNativeHeapMb} MB. Timeouts and failed executions show time spent without a complete answer. Indexing and decoding are excluded. Requests to an already unavailable endpoint are omitted from this timing plot.",
+    caption: "Circles are completed, agreeing answers; triangles are unsuccessful executions. HDT reaches the per-query time limit; COTTAS stops when its engine crashes. Subsequent questions have no usable endpoint. Partial native workloads must not be compared with a full-workload total.",
+    rows: () => scaleQueryRows().filter((r) => r.scale === "r1000000" && ["PASS", "TIMEOUT", "EXECUTION_FAILED", "MISMATCH"].includes(r.status))
+      .map((r) => ({ ...r, completion: r.status === "PASS" ? "Answered" : "No complete answer" })),
+    columns: [{ key: "label", label: "Question" }, { key: "path", label: "Engine ← input" },
+      { key: "outcome", label: "Outcome" }, { key: "seconds", label: "Elapsed", num: true, format: (v) => secs(v) },
+      { key: "minSeconds", label: "Minimum", num: true, format: (v) => secs(v) },
+      { key: "maxSeconds", label: "Maximum", num: true, format: (v) => secs(v) }, { label: "Raw responses", html: archivedQueryLink }],
+    spec(t, rows) {
+      return {
+        data: { values: rows }, height: 360,
+        encoding: {
+          y: { field: "label", type: "nominal", sort: D.retrieval.perQuestion.map((r) => r.label), title: null, axis: { labelLimit: 225 } },
+          x: { field: "seconds", type: "quantitative", scale: { type: "log" }, title: "Elapsed seconds (log scale)",
+            axis: { values: [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000], format: "~g" } },
+          color: { field: "path", type: "nominal", title: null, sort: [...new Set(rows.map((r) => r.path))] },
+          tooltip: [{ field: "label", title: "Question" }, { field: "path", title: "Engine ← input" },
+            { field: "outcome", title: "Outcome" }, { field: "seconds", title: "Elapsed (s)", format: ".3f" },
+            { field: "minSeconds", title: "Minimum (s)", format: ".3f" }, { field: "maxSeconds", title: "Maximum (s)", format: ".3f" }],
+        },
+        layer: [
+          { mark: { type: "rule", strokeWidth: 2 }, encoding: { x: { field: "minSeconds", type: "quantitative" }, x2: { field: "maxSeconds" } } },
+          { mark: { type: "point", opacity: 1, strokeWidth: 1 }, encoding: {
+            size: { condition: { test: "datum.status == 'PASS'", value: 70 }, value: 140 },
+            shape: { field: "completion", type: "nominal", title: null,
+              scale: { domain: ["Answered", "No complete answer"], range: ["circle", "triangle-up"] },
+              legend: { symbolFillColor: t.muted, symbolStrokeColor: t.muted } } } },
+        ],
+      };
+    },
+  },
+
+  wholeArtifactCosts: {
+    title: "Complete HG005: decoding, indexing and QLever queries",
+    help: "Same complete VCF and same {questions} queries, with each input format decoded to N-Triples before QLever indexing. Decoding and index construction are medians across the recorded runs; query time is the sum of per-question medians, as in the supplementary table. The stacked length is the sum of these summaries, not an observed single-run total. The table also gives each stage's observed run range.",
+    caption: "Input format mainly changes decoding cost. Indexed query totals differ by only {artifactSpread}. These times start from existing RDF artifacts and exclude their original construction, source-VCF parsing and other validation overhead.",
+    rows: () => D.retrieval.scaleComparison.wholeStages.map((r) => ({ ...r, input: ARTIFACT_LABEL[r.artifact], minutes: r.seconds / 60 })),
+    columns: [{ key: "input", label: "Input to QLever" }, { key: "stage", label: "Stage" },
+      { key: "seconds", label: "Reported time", num: true, format: (v) => secs(v) },
+      { key: "minSeconds", label: "Run minimum", num: true, format: (v) => secs(v) },
+      { key: "maxSeconds", label: "Run maximum", num: true, format: (v) => secs(v) },
+      { key: "replicates", label: "Runs", num: true }, { label: "Archived reports", html: archivedQueryLink }],
+    spec(t, rows) {
+      const stages = [...new Set(rows.map((r) => r.stage))];
+      const offsets = new Map();
+      const values = rows.map((r) => {
+        const start = offsets.get(r.input) || 0;
+        offsets.set(r.input, start + r.minutes);
+        return { ...r, order: stages.indexOf(r.stage), labelX: start + r.minutes / 2 };
+      });
+      return {
+        data: { values }, height: 170,
+        encoding: {
+          y: { field: "input", type: "nominal", sort: Object.values(ARTIFACT_LABEL), title: "Input to QLever" },
+          x: { field: "minutes", type: "quantitative", stack: "zero", title: "Minutes" },
+          color: { field: "stage", type: "nominal", title: null, scale: { domain: stages, range: [t.context, t.series[1], t.series[0]] } },
+          order: { field: "order", type: "quantitative" },
+          tooltip: [{ field: "input", title: "Input" }, { field: "stage", title: "Stage" },
+            { field: "seconds", title: "Reported time (s)", format: ".1f" },
+            { field: "minSeconds", title: "Run minimum (s)", format: ".1f" },
+            { field: "maxSeconds", title: "Run maximum (s)", format: ".1f" }],
+        },
+        layer: [
+          { mark: { type: "bar", height: 30, cornerRadiusEnd: 0 } },
+          { mark: { type: "text", color: t.text, fontWeight: 600 }, encoding: {
+            x: { field: "labelX", type: "quantitative", stack: null }, color: { value: t.text },
+            text: { field: "minutes", type: "quantitative", format: ".1f" } } },
+        ],
+      };
+    },
+  },
+
   regional: {
     title: "Regional queries: QLever and tabix-indexed VCF access",
     help: "Median over {regionalQuestions} regional questions of each question's median across {regionalWindows} windows ({regionalScanWindows} for full parses of the unindexed VCF) and {regionalReplicates} replicates. All execution paths apply the same POS-based selection; across both graphs, {regionalExecutions} executions produced {regionalFailures} failures and {regionalDisagreements} disagreements. Select a graph to compare the smaller fixture.",
@@ -639,7 +776,7 @@ function renderKpis() {
   const ownPassed = D.converters.questions.filter((q) => D.converters.outcomes
     .filter((o) => o.tool === "vcf-rdfizer" && o.question === q.id).every((o) => o.status === "PASS")).length;
   const kpis = [
-    ["RQ1", `${num(v.comparisons.PASS)} / ${num(v.comparisons.PASS)}`, fill("applicable SPARQL results agreed exactly with their source-derived counterparts; {comparisonsOther} more verified not applicable")],
+    ["RQ1", `${num(v.comparisons.PASS)} / ${num(applicableComparisons(v))}`, fill("applicable SPARQL results agreed exactly with their source-derived counterparts; {comparisonsOther} more verified not applicable")],
     ["RQ1", `${m.queries.detected} · ${m.core.detected} · ${m.full.detected}`, `of ${m.full.total} injected faults detected: source-comparison queries · with the default SHACL profile · with all shape profiles`],
     ["RQ2", `${agreeing} / ${arms.length} scenarios`, "with identical requester-specific match sets from the RDF and conventional workflows"],
     ["RQ3", `${ownPassed} / ${D.converters.questions.length}`, fill("content questions matched the source-derived oracle on both inputs; {converterAllPass} was the only converter to match all")],
@@ -650,30 +787,48 @@ function renderKpis() {
     .map(([tag, value, label]) => `<div class="kpi"><div class="kpi-tag">${esc(tag)}</div><div class="value">${esc(value)}</div><div class="label">${esc(label)}</div></div>`).join("");
 }
 
+// Not-applicable query slots are recorded separately from applicable comparisons.
+function applicableComparisons(v) {
+  return Object.entries(v.comparisons).filter(([status]) => !status.startsWith("NOT_APPLICABLE"))
+    .reduce((sum, [, n]) => sum + n, 0);
+}
+
 function renderEvidence() {
   const v = D.fidelity.validation;
-  const m = D.fidelity.mutation.scores;
   const total = (c) => Object.values(c).reduce((a, b) => a + b, 0);
   const rows = [
-    { check: "N-Triples syntax (rapper)", passed: `${v.rapper.PASS ?? 0} / ${total(v.rapper)}`, what: "The serialization is syntactically valid N-Triples" },
-    { check: `Source-comparison queries (${D.facts.qRange})`, passed: `${v.comparisons.PASS} / ${total(v.comparisons)}`, what: "Normalized SPARQL results equal the source-derived answers; the remainder are verified not applicable" },
-    { check: "Consistency invariants", passed: `${v.invariants.PASS} / ${total(v.invariants)}`, what: "Internal consistency checks, for example transitions plus transversions equal biallelic SNVs" },
-    { check: "Engines per validation run", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} runs with ${k}`).join(", "), what: "Cross-engine agreement is tested in the runs answered by several engines" },
-    { check: "Native decoding", passed: `${(v.decode["hdt:pass"] ?? 0) + (v.decode["cottas:pass"] ?? 0)} pass`, what: `${v.decode["hdt:pass"] ?? 0} HDT and ${v.decode["cottas:pass"] ?? 0} COTTAS artifacts decode to the triple count of the source graph` },
-    { check: "Default SHACL profile", passed: `${v.shacl.validations} runs, ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples, ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} per run` },
-    { check: "Injected faults (queries / + default profile / + all profiles)", passed: `${m.queries.detected} / ${m.core.detected} / ${m.full.detected} of ${m.full.total}`, what: "Sensitivity of the validation layer to deliberate corruptions" },
+    { check: "N-Triples syntax (rapper)", passed: `${num(v.rapper.PASS ?? 0)} / ${num(total(v.rapper))}`, what: "The serialization parses as N-Triples" },
+    { check: `Source-comparison queries (${D.facts.qRange})`, passed: `${num(v.comparisons.PASS)} / ${num(applicableComparisons(v))}`, what: fill("Applicable normalized answers agree; {comparisonsOther} further genotype comparisons are verified not applicable") },
+    { check: "Internal consistency", passed: `${num(v.invariants.PASS)} / ${num(total(v.invariants))}`, what: "For example, transitions plus transversions equal biallelic SNVs" },
+    { check: "Engines per validation run", passed: Object.entries(v.enginesAnswering).map(([k, n]) => `${n} runs with ${k}`).join("; "), what: "Every answering engine agrees; multiple-engine runs test agreement across engines" },
+    { check: "Default SHACL shapes", passed: `${v.shacl.validations} runs; ${v.shacl.violations} violations`, what: `On graphs up to ${D.facts.shaclMaxTriples} triples; ${secs(v.shacl.seconds[0])}–${secs(v.shacl.seconds[1])} per run` },
   ];
   document.getElementById("evidenceTable").innerHTML = table(
-    [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "What it establishes" }], rows);
+    [{ key: "check", label: "Check" }, { key: "passed", label: "Result", num: true }, { key: "what", label: "Scope" }], rows);
+  document.getElementById("decodeTable").innerHTML = table(
+    [{ key: "artifact", label: "Artifact" }, { key: "passed", label: "Decoded count equals source count", num: true }],
+    ["hdt", "cottas"].map((kind) => ({ artifact: kind.toUpperCase(),
+      passed: `${num(v.decode[`${kind}:pass`] ?? 0)} / ${num(Object.entries(v.decode)
+        .filter(([k]) => k.startsWith(`${kind}:`)).reduce((n, [, count]) => n + count, 0))}` })));
   const real = D.fidelity.realGenome;
   const verdict = (s) => `<span class="status ${s === "PASS" ? "pass" : "fail"}">${esc(s === "PASS" ? "equal" : "mismatch")}</span>`;
   const sh = real.shacl;
   document.getElementById("realGenomeTable").innerHTML =
-    `<p class="table-meta">${num(real.triples)} triples, validated on QLever with the ${esc(D.facts.useCaseVersion)} validator. ` +
-    `Default shapes were validated in ${num(sh.batches)} record batches (${sh.minutes} min): ${num(sh.violations)} violations and ${num(sh.advisories)} non-blocking recommendations.</p>` +
+    `<p class="table-meta">${num(real.triples)} triples, queried on QLever with the ${esc(D.facts.useCaseVersion)} validator. ` +
+    `Default shapes: ${num(sh.batches)} record batches (${sh.minutes} min), ${num(sh.violations)} violations and ${num(sh.advisories)} non-blocking recommendations.</p>` +
     table([{ key: "query", label: "Question", format: (q) => pretty(q) },
       { key: "status", label: "SPARQL result and source-derived answer", html: (r) => verdict(r.status) }], real.queries);
-  document.getElementById("fidelitySource").innerHTML = `Sources: <code>${esc(real.source)}</code>, the core benchmark's validation reports and <code>08_robustness/mutation_score*</code>.`;
+  const large = D.fidelity.largeGraphs;
+  document.getElementById("largeGraphTable").innerHTML = table([
+    { key: "records", label: "HG005 records", format: (v) => num(v), num: true },
+    { key: "triples", label: "Triples", format: (v) => num(v), num: true },
+    { key: "artifact", label: "QLever input", format: (v) => v === "nt.gz" ? "N-Triples (gzip)" : v.toUpperCase() },
+    { key: "replicates", label: "Runs", num: true },
+    { key: "passed", label: "Queries agreeing in every run", format: (v, r) => `${v} / ${r.total}`, num: true },
+  ], large.rows);
+  const sources = [real.source, large.source, ...Object.values(D.fidelity.mutation.scores).map((s) => s.source)];
+  document.getElementById("fidelitySource").innerHTML = `Sources: the core benchmark's validation and compression reports; ` +
+    sources.map((source) => `<a href="https://github.com/ecrum19/vcf-rdfizer-testing/tree/main/${esc(source)}"><code>${esc(source)}</code></a>`).join("; ") + ".";
 }
 
 function renderLinking() {
@@ -995,6 +1150,8 @@ async function main() {
   wireQueryCatalogs();
   addSectionLinks();
   await renderAllCharts();
+  // Charts above an anchor change its position after the browser's initial scroll.
+  document.getElementById(location.hash.slice(1))?.scrollIntoView();
   darkQuery.addEventListener("change", renderAllCharts);
   // After the charts, so the layout above the target has settled before scrolling.
   revealHashTarget();
