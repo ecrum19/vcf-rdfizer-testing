@@ -76,6 +76,17 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         withheld = {r["id"]: {k: v["withheld"] for k, v in r["effects"].items() if v["withheld"]} for r in layered["requesters"]}
         self.assertEqual(withheld["biobank"], {"cohort": 2513, "region_apoe": 6, "variant_1": 1})
         self.assertEqual(withheld["own_physician"], {})
+        # The conventional workflow's version of each rule: its lines in the script that ran.
+        conventional = self.data["policies"]["conventional"]
+        lines = (build_site_data.ROOT / conventional["script"]).read_text(encoding="utf-8").splitlines()
+        self.assertEqual(set(conventional["code"]), {"purposes", "within", "overlaps", "consent", "cohort",
+                                                     "outside-panel", "region", "variant"})
+        for name, block in conventional["code"].items():
+            a, b = block["lines"]
+            self.assertEqual(block["text"], "\n".join(lines[a - 1:b]) + "\n", name)
+        self.assertIn("return False", conventional["code"]["variant"]["text"])
+        for s in scenarios:
+            self.assertGreater(s["costs"]["conventional"], 0, s["id"])
 
     def test_the_paper_names_fourteen_preflight_queries(self):
         """The site stars what the paper's validation paragraph names, and counts the preflight

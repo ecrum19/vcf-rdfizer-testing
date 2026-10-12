@@ -1160,19 +1160,33 @@ function policySource(scenario, rule) {
   return rule.lines.map(([a, b]) => `<a href="${REPO}/blob/${esc(commit)}/${esc(scenario.policyFile)}#L${a}-L${b}">lines ${a}–${b}</a>`).join(", ");
 }
 
-function ruleCard(scenario, rule) {
+function ruleCard(scenario, rule, conventional) {
   return `<article class="rule-card">
       <p class="rule-kind"><span class="rule-badge ${rule.kind}">${rule.kind === "prohibition" ? "Prohibition" : "Permission"}</span></p>
       <h5>${esc(ruleTitle(scenario, rule))}</h5>
       <p><strong>Selects:</strong> ${ruleTarget(rule)}</p>
       <p><strong>Applies when</strong> ${esc(ruleCondition(scenario, rule))}.</p>
       <p class="rule-plain">${esc(rule.rule)}</p>
-      <details class="q-code"><summary>ODRL, as run (${policySource(scenario, rule)})</summary><pre class="code">${esc(rule.turtle)}</pre></details>
+      <details class="q-code rdf"><summary>RDF workflow: the rule as ODRL, as run (${policySource(scenario, rule)})</summary><pre class="code">${esc(rule.turtle)}</pre></details>
+      ${conventionalCode(conventional, CONVENTIONAL_BLOCK[rule.target.kind], "the same rule in Python")}
     </article>`;
 }
 
+// The conventional workflow writes each rule as code in baseline_carriers.py's released();
+// the gene and panel rules also use its overlaps() test of the record's REF extent.
+const CONVENTIONAL_BLOCK = { genes: ["cohort", "overlaps"], "outside-panel": ["outside-panel", "overlaps"],
+  region: ["region"], variant: ["variant"], file: ["consent"], purposes: ["purposes", "within"] };
+
+function conventionalCode(conventional, blocks, what) {
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  const parts = blocks.map((b) => conventional.code[b]);
+  const links = parts.map((c) => `<a href="${REPO}/blob/${esc(commit)}/${esc(conventional.script)}#L${c.lines[0]}-L${c.lines[1]}">lines ${c.lines[0]}–${c.lines[1]}</a>`).join(", ");
+  return `<details class="q-code conv"><summary>Conventional workflow: ${esc(what)} (<code>${esc(conventional.script.split("/").pop())}</code>, ${links})</summary>
+      <pre class="code">${parts.map((c) => esc(c.text)).join("\n…\n\n")}</pre></details>`;
+}
+
 // Consents differ only in whose file and which purposes, so they are grouped by what they permit.
-function consentCard(scenario) {
+function consentCard(scenario, conventional) {
   const consents = scenario.rules.filter((r) => r.kind === "consent");
   const groups = new Map();
   for (const c of consents) {
@@ -1185,7 +1199,7 @@ function consentCard(scenario) {
     const who = group.length === 1 ? esc(c.target.participant) : `${num(group.length)} participants`;
     const permits = listWords(c.purposes.map((p) => `“${esc(purposeLabel(scenario, p))}”`));
     return `<li>${who}: permits ${permits}${c.withdrawn ? " — <strong>withdrawn</strong>: a prohibition on the whole file overrides the permission" : ""}
-      <details class="q-code"><summary>ODRL, as run${group.length > 1 ? `, for ${esc(c.target.participant)}` : ""} (${policySource(scenario, c)})</summary><pre class="code">${esc(c.turtle)}</pre></details></li>`;
+      <details class="q-code rdf"><summary>RDF workflow: the consent as ODRL, as run${group.length > 1 ? `, for ${esc(c.target.participant)}` : ""} (${policySource(scenario, c)})</summary><pre class="code">${esc(c.turtle)}</pre></details></li>`;
   }).join("");
   return `<article class="rule-card wide">
       <p class="rule-kind"><span class="rule-badge permission">Permission</span></p>
@@ -1193,6 +1207,7 @@ function consentCard(scenario) {
       <p><strong>Selects:</strong> that participant's whole file. <strong>Applies when</strong> the request's purpose is one the consent permits, or narrower.
         A file no consent covers for the purpose is withheld: the engine denies by default.</p>
       <ul class="consents">${rows}</ul>
+      ${conventionalCode(conventional, CONVENTIONAL_BLOCK.file, "the consent check in Python, the same for every participant")}
     </article>`;
 }
 
@@ -1207,6 +1222,37 @@ function purposeTree(scenario) {
   return `<ul class="purpose-tree">${scenario.purposes.filter((p) => !known.has(p.broader)).map(node).join("")}</ul>`;
 }
 
+// The two workflows as two lanes over the same four stages, each with its measured time.
+function workflowLanes(scenario, conventional) {
+  const c = scenario.costs;
+  const per = Object.values(c.requesters);
+  const range = (key) => {
+    const values = per.map((r) => r[key]).filter((v) => v != null);
+    if (!values.length) return "N/A";
+    const lo = Math.min(...values), hi = Math.max(...values);
+    return lo === hi || secs(lo) === secs(hi) ? secs(lo) : `${secs(lo)}–${secs(hi)}`;
+  };
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  const file = (path) => `<a href="${REPO}/blob/${esc(commit)}/${esc(path)}"><code>${esc(path.split("/").pop())}</code></a>`;
+  const cell = (cls, body, time = "") => `<div class="lane-cell ${cls}">${body}${time ? `<p class="lane-time">${time}</p>` : ""}</div>`;
+  return `<div class="lanes" role="table" aria-label="The RDF and conventional workflows, stage by stage">
+      <div class="lane-head" role="row"><span></span><span>Prepare the inputs</span><span>Connect the sources</span><span>Apply the release rules</span><span>Answer the question</span></div>
+      <div class="lane-label rdf"><span class="lane-tag rdf">RDF workflow</span></div>
+      <div class="lane-cell shared">Both workflows start from the same derived files: ${file(conventional.derive)} restricts each VCF to the
+        gene spans and normalizes it with bcftools.</div>
+      ${cell("rdf", "VCF-RDFizer converts each VCF to RDF; linkers connect its records to SPDI variant identities, Ensembl genes and ClinVar.",
+        `once: convert ${secs(c.convert)}, link ${secs(c.link)}`)}
+      ${cell("rdf", `The rules are <strong>data</strong>: ${file(scenario.policyFile)} (ODRL). A generic engine writes one release view per requester, which is checked and indexed.`,
+        `per requester: write ${range("view")}, index ${range("index")}`)}
+      ${cell("rdf", "One SPARQL query per requester, run on that requester's view (QLever).", `per requester: ${range("query")}`)}
+      <div class="lane-label conv"><span class="lane-tag conv">Conventional workflow</span></div>
+      ${cell("conv", `${file(conventional.driver)}: bcftools renames contigs, annotates each VCF with ClinVar (exact CHROM, POS, REF and ALT) and keeps PASS records with an ALT genotype.`)}
+      ${cell("conv", `The rules are <strong>code</strong>: <code>released()</code> in ${file(conventional.script)}, hand-written Python that reads the same case file and decides each record.`)}
+      ${cell("conv", "The script lists each requester's carrier rows.")}
+      <div class="lane-cell conv lane-total">All four stages, for every requester, in one run: ${secs(c.conventional)}</div>
+    </div>`;
+}
+
 function releaseBar(released, withheld) {
   const total = released + withheld;
   const share = total ? (100 * released) / total : 0;
@@ -1219,13 +1265,14 @@ function recordsVersusConventional(requester) {
   const r = requester.records;
   if (r.agree) return `The conventional workflow released the same ${num(r.baseline)} records.`;
   const extra = r.rdf - r.baseline;
-  return `The conventional workflow released ${num(r.baseline)}: the RDF view released ${num(Math.abs(extra))} ${extra > 0 ? "more" : "fewer"},
-    symbolic structural-variant records in cancer-predisposition genes. The cancer-gene rule selects records by their gene link,
-    and VCF-RDFizer ${esc(D.facts.useCaseVersion)} links no symbolic allele to a gene, so the rule could not select them
+  return `The RDF view released ${num(Math.abs(extra))} ${extra > 0 ? "more" : "fewer"} records than the conventional workflow:
+    symbolic structural-variant records in cancer-predisposition genes. The ODRL rule selects records by their gene link,
+    and VCF-RDFizer ${esc(D.facts.useCaseVersion)} links no symbolic allele to a gene, so the rule could not select them;
+    the conventional script tests each record's REF extent against the gene spans, so it withheld them
     (see the findings below). No match changed.`;
 }
 
-function stepThrough(scenario, requester) {
+function stepThrough(scenario, requester, conventional) {
   const rules = scenario.rules.filter((r) => r.kind !== "consent");
   const effect = (id) => requester.effects[id] || { released: 0, withheld: 0 };
   const files = requester.files;
@@ -1254,19 +1301,42 @@ function stepThrough(scenario, requester) {
       ${esc(ruleTitle(scenario, rule))}: <strong>${outcome}</strong></li>`;
   }).join("");
   const m = requester.matches;
-  return `<ol class="steps">
-      <li><h6>The request</h6><p><strong>${esc(requesterLabel(requester))}</strong> (<code>${esc(requester.assignee.split("/").pop())}</code>)
-        asks to read the data for <strong>“${esc(purposeLabel(scenario, requester.purpose))}”</strong> <code>${esc(curie(requester.purpose))}</code>.</p></li>
-      <li><h6>Consent decides which files</h6>${consentLine}
-        ${defaultDeny || withdrawals ? `<p class="table-meta">Records withheld at this step: ${num(defaultDeny + withdrawals)}.</p>` : ""}</li>
-      <li><h6>Record rules</h6><ul class="rule-list">${ruleRows}</ul>
-        <p class="table-meta">A record withheld by several rules is counted once, under the rule the release report names.</p></li>
-      <li><h6>The release view</h6>${releaseBar(requester.released, requester.withheld)}
-        <p><strong>${num(requester.released)}</strong> records released, ${num(requester.withheld)} withheld
-        (${num(requester.triplesReleased)} triples released). ${recordsVersusConventional(requester)}</p></li>
-      <li><h6>What the query returns</h6><p>The ClinVar-match query on this view returns <strong>${num(m.rdf)}</strong> matches,
-        of ${num(scenario.withoutPolicy.rdf)} without any policy. The conventional workflow returned ${num(m.baseline)}:
-        <span class="status ${m.agree ? "pass" : "fail"}">${m.agree ? "the same set" : "a different set"}</span>.</p></li>
+  const r = requester.records;
+  const commit = D.campaign?.meta?.repoCommit || "main";
+  const codeLink = (block) => {
+    const c = conventional.code[block];
+    return `<a href="${REPO}/blob/${esc(commit)}/${esc(conventional.script)}#L${c.lines[0]}-L${c.lines[1]}">lines ${c.lines[0]}–${c.lines[1]}</a>`;
+  };
+  const both = (rdf, conv) => `<div class="step-cols"><div class="lane-cell rdf">${rdf}</div><div class="lane-cell conv">${conv}</div></div>`;
+  const agree = (ok, yes, no) => `<span class="status ${ok ? "pass" : "fail"}">${ok ? yes : no}</span>`;
+  const ruleCode = rules.map((rule) => `<li>${esc(ruleTitle(scenario, rule))}: ${codeLink(CONVENTIONAL_BLOCK[rule.target.kind][0])}</li>`).join("");
+  return `<div class="step-cols step-heads"><span class="lane-tag rdf">RDF workflow</span><span class="lane-tag conv">Conventional workflow</span></div>
+    <ol class="steps">
+      <li><h6>The request</h6>${both(
+        `<p><strong>${esc(requesterLabel(requester))}</strong> (<code>${esc(requester.assignee.split("/").pop())}</code>)
+          asks to read the data for <strong>“${esc(purposeLabel(scenario, requester.purpose))}”</strong> <code>${esc(curie(requester.purpose))}</code>:
+          an ODRL request the engine evaluates against the policy.</p>`,
+        `<p>The script's <code>released()</code> is called for every record with the same purpose and assignee, read from the case file.</p>`)}</li>
+      <li><h6>Consent decides which files</h6>${both(
+        `${consentLine}${defaultDeny || withdrawals ? `<p class="table-meta">Records withheld at this step: ${num(defaultDeny + withdrawals)}.</p>` : ""}`,
+        `<p>The first test in <code>released()</code> (${codeLink("consent")}): a withdrawn consent, or one that does not cover the purpose,
+          withholds every record of that participant's file. The purpose hierarchy is written into the script (${codeLink("purposes")}).</p>`)}</li>
+      <li><h6>Record rules</h6>${both(
+        `<ul class="rule-list">${ruleRows}</ul>
+          <p class="table-meta">A record withheld by several rules is counted once, under the rule the release report names.</p>`,
+        rules.length ? `<p>Each rule is an <code>if</code> in <code>released()</code>, tested record by record:</p><ul class="rule-list code-list">${ruleCode}</ul>
+          <p class="table-meta">The script counts only what it releases, not which rule withheld each record.</p>` : "<p>No record rules.</p>")}</li>
+      <li><h6>What is released</h6>${both(
+        `${releaseBar(requester.released, requester.withheld)}
+          <p><strong>${num(requester.released)}</strong> records in the release view, ${num(requester.withheld)} withheld
+          (${num(requester.triplesReleased)} triples).</p>`,
+        `${releaseBar(r.baseline, requester.released + requester.withheld - r.baseline)}
+          <p><strong>${num(r.baseline)}</strong> records the script releases. ${agree(r.agree, "Same as the RDF view", `${num(Math.abs(r.rdf - r.baseline))} ${r.rdf > r.baseline ? "fewer" : "more"} than the RDF view`)}</p>`)}
+        ${r.agree ? "" : `<p class="step-note">${recordsVersusConventional(requester)}</p>`}</li>
+      <li><h6>What the query returns</h6>${both(
+        `<p>The ClinVar-match SPARQL query on this view returns <strong>${num(m.rdf)}</strong> matches (${num(scenario.withoutPolicy.rdf)} without any policy).</p>`,
+        `<p>The script lists <strong>${num(m.baseline)}</strong> carrier matches (${num(scenario.withoutPolicy.baseline)} without any policy).
+          ${agree(m.agree, "The same participant–variant–gene tuples", "Different tuples")}</p>`)}</li>
     </ol>`;
 }
 
@@ -1287,16 +1357,16 @@ function policyMatrix(scenario) {
   return `<div class="table-wrap"><table class="policy-matrix">
       <thead><tr><th>Records withheld by</th>${rs.map((r) => `<th class="num">${esc(requesterLabel(r))}</th>`).join("")}</tr></thead>
       <tbody>${filesRow}${uncovered}${rows}
-        <tr class="total"><th scope="row">Records released</th>${rs.map((r) => `<td class="num">${num(r.released)}</td>`).join("")}</tr>
-        <tr><th scope="row">Conventional workflow released the same records</th>${rs.map((r) => {
+        <tr class="total"><th scope="row"><span class="lane-tag rdf">RDF</span> Records released</th>${rs.map((r) => `<td class="num">${num(r.records.rdf)}</td>`).join("")}</tr>
+        <tr class="total"><th scope="row"><span class="lane-tag conv">Conventional</span> Records released</th>${rs.map((r) => {
           const extra = r.records.rdf - r.records.baseline;
-          return `<td class="num"><span class="status ${r.records.agree ? "pass" : "fail"}">${r.records.agree ? "yes" : `no: RDF ${extra > 0 ? "+" : "−"}${num(Math.abs(extra))}`}</span></td>`;
+          return `<td class="num">${num(r.records.baseline)}${r.records.agree ? "" : ` <span class="status fail">RDF ${extra > 0 ? "+" : "−"}${num(Math.abs(extra))}</span>`}</td>`;
         }).join("")}</tr>
-        <tr class="total"><th scope="row">ClinVar matches returned (without a policy: ${num(scenario.withoutPolicy.rdf)})</th>${rs.map((r) => `<td class="num">${num(r.matches.rdf)}</td>`).join("")}</tr>
-        <tr><th scope="row">Conventional workflow returned the same matches</th>${rs.map((r) =>
-          `<td class="num"><span class="status ${r.matches.agree ? "pass" : "fail"}">${r.matches.agree ? "yes" : "no"}</span></td>`).join("")}</tr>
+        <tr class="total"><th scope="row"><span class="lane-tag rdf">RDF</span> ClinVar matches (without a policy: ${num(scenario.withoutPolicy.rdf)})</th>${rs.map((r) => `<td class="num">${num(r.matches.rdf)}</td>`).join("")}</tr>
+        <tr class="total"><th scope="row"><span class="lane-tag conv">Conventional</span> ClinVar matches</th>${rs.map((r) =>
+          `<td class="num">${num(r.matches.baseline)} <span class="status ${r.matches.agree ? "pass" : "fail"}">${r.matches.agree ? "same" : "differ"}</span></td>`).join("")}</tr>
       </tbody></table></div>
-    <p class="table-meta">“–”: the rule does not apply to that request. Records released and withheld are from each release view's own report
+    <p class="table-meta">“–”: the rule does not apply to that request. Per-rule counts exist for the RDF workflow only: the conventional script counts what it releases. RDF records released and withheld are from each release view's own report
       (<code>${esc(rs[0].source.replace(/govern__[^/]+/, "govern__*"))}/summary.json</code>).</p>`;
 }
 
@@ -1312,16 +1382,19 @@ function renderPolicyView(host, data) {
     <div class="seg-row" role="group" aria-label="Scenario">${tabs}</div>
     <p class="table-meta">Policy file <a href="${REPO}/blob/${esc(D.campaign?.meta?.repoCommit || "main")}/${esc(scenario.policyFile)}"><code>${esc(scenario.policyFile)}</code></a>:
       the file the release views ran with (its SHA-256 matches every view's manifest). Consents are simulated.</p>
-    <h4 class="policy-step"><span>1</span> How the policy is written</h4>
+    <h4 class="policy-step"><span>1</span> Two workflows, one question</h4>
+    ${workflowLanes(scenario, data.conventional)}
+    <h4 class="policy-step"><span>2</span> How the rules are written</h4>
     <div class="policy-grid">
-      <div class="rule-cards">${consentCard(scenario)}${rules.map((r) => ruleCard(scenario, r)).join("")}</div>
+      <div class="rule-cards">${consentCard(scenario, data.conventional)}${rules.map((r) => ruleCard(scenario, r, data.conventional)).join("")}</div>
       <aside class="purposes"><h5>Purposes</h5>
-        <p class="table-meta">A request satisfies a term when its purpose is that term or narrower.</p>${purposeTree(scenario)}</aside>
+        <p class="table-meta">A request satisfies a term when its purpose is that term or narrower.</p>${purposeTree(scenario)}
+        ${conventionalCode(data.conventional, CONVENTIONAL_BLOCK.purposes, "the hierarchy written into the script")}</aside>
     </div>
-    <h4 class="policy-step"><span>2</span> What it does to one request</h4>
+    <h4 class="policy-step"><span>3</span> What they do to one request</h4>
     <div class="seg-row" role="group" aria-label="Requester">${picks}</div>
-    ${stepThrough(scenario, requester)}
-    <h4 class="policy-step"><span>3</span> Every requester at once</h4>
+    ${stepThrough(scenario, requester, data.conventional)}
+    <h4 class="policy-step"><span>4</span> Every requester at once</h4>
     ${policyMatrix(scenario)}`;
 }
 

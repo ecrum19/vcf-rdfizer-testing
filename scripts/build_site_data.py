@@ -888,10 +888,49 @@ def release_outcome(cell: Path, rules: list[dict], digest: str) -> dict:
             "effects": dict(effects), "files": files, "source": rel(cell / "out")}
 
 
+#: The conventional workflow's version of each piece of the policy, as blocks of
+#: baseline_carriers.py found by their own comments and definitions (start, end exclusive),
+#: so a shifted line cannot misplace them.
+CONVENTIONAL_BLOCKS = {
+    "purposes": ("# DUO: disease-specific research (DS)", "COLUMNS = ["),
+    "within": ("def within(", "def classification("),
+    "overlaps": ("def overlaps(", "def carriers("),
+    "consent": ('    consent = policy["consents"][carrier["participant"]]', "    # The secondary-findings rule"),
+    "cohort": ("    # The secondary-findings rule", "    # Arm 4: a purpose limited to a gene panel"),
+    "outside-panel": ("    # Arm 4: a purpose limited to a gene panel", "    # A region is coordinates"),
+    "region": ("    # A region is coordinates", "    # A named variant"),
+    "variant": ("    # A named variant", "    return True"),
+}
+
+
+def conventional_code() -> dict:
+    """Each rule as the conventional workflow's hand-written Python applies it (baseline_carriers.py's
+    released()), with the lines the page links to. The script reads the same case file as
+    generate.py, never the RDF or the policy."""
+    path = ACMG / "baseline_carriers.py"
+    lines = path.read_text(encoding="utf-8").splitlines()
+
+    def find(marker: str, after: int = 0) -> int:
+        found = [i for i, line in enumerate(lines) if i >= after and line.startswith(marker)]
+        if not found:
+            raise ValueError(f"{rel(path)}: no line starts with {marker!r}")
+        return found[0]
+
+    code = {}
+    for name, (start_marker, end_marker) in CONVENTIONAL_BLOCKS.items():
+        start = find(start_marker)
+        end = find(end_marker, start + 1)
+        while not lines[end - 1].strip():
+            end -= 1
+        code[name] = {"lines": [start + 1, end], "text": "\n".join(lines[start:end]) + "\n"}
+    return {"script": rel(path), "driver": rel(ACMG / "baseline.sh"), "derive": rel(ACMG / "derive.sh"), "code": code}
+
+
 def policies() -> dict:
     """For each scenario: its purposes, its rules (as data and as the Turtle that ran), and for
     each requester which rules applied and what each one withheld, through to the ClinVar
-    matches the requester's query returned. Checked against the engine's own records."""
+    matches the requester's query returned. Checked against the engine's own records.
+    Alongside: the conventional workflow's version of each rule, and both routes' stage times."""
     import hashlib
     scenarios = []
     for arm_id, case_path in POLICY_CASES.items():
@@ -940,8 +979,9 @@ def policies() -> dict:
             "purposeFile": rel(case_path.parent / "purposes.ttl") if case.get("purposes") else None,
             "rules": rules, "requesters": requesters,
             "withoutPolicy": {k: comparison["unrestricted"][k] for k in ("rdf", "baseline", "agree")},
+            "costs": stage_cost_table(arm),
         })
-    return {"scenarios": scenarios, "source": rel(ACMG)}
+    return {"scenarios": scenarios, "conventional": conventional_code(), "source": rel(ACMG)}
 
 
 # ---------------------------------------------------------------------------

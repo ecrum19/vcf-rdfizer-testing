@@ -417,3 +417,41 @@ ol.steps p { margin: 0.2rem 0; }
 .policy-matrix th[scope="row"] { font-weight: 400; text-align: left; }
 .policy-matrix td.na { color: var(--faint); }
 .policy-matrix tr.total th, .policy-matrix tr.total td { font-weight: 700; }
+
+/* The two workflows: blue for RDF, orange for conventional, as in the paper's Figure 5.
+   The colour marks the lane; every lane also carries its name, and text stays in ink. */
+:root { --rdf: #2a78d6; --conv: #eb6834; }
+.lane-tag { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.lane-tag::before { content: ""; width: 0.7rem; height: 0.7rem; border-radius: 2px; background: var(--rdf); }
+.lane-tag.conv::before { background: var(--conv); }
+.lanes { display: grid; grid-template-columns: 8.5rem repeat(4, minmax(0, 1fr)); gap: 0.4rem; margin: 0.4rem 0 0.8rem; font-size: 0.84rem; }
+.lane-head { display: contents; }
+.lane-head span { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; padding: 0 0.2rem; }
+.lane-label { display: flex; align-items: center; }
+.lane-label.rdf { grid-row: 2; }
+.lane-label.conv { grid-row: 3; }
+.lane-cell { border: 1px solid var(--border); border-left: 4px solid var(--rdf); border-radius: 6px; padding: 0.4rem 0.55rem; background: var(--panel); }
+.lane-cell.conv { border-left-color: var(--conv); }
+.lane-cell.shared { grid-column: 2; grid-row: 2 / span 2; border-left: 4px solid var(--axis); background: var(--panel-alt); display: flex; align-items: center; }
+.lanes > .lane-cell.rdf { grid-row: 2; }
+.lanes > .lane-cell.conv { grid-row: 3; }
+.lanes > .lane-cell.lane-total { grid-row: 4; grid-column: 3 / span 3; padding: 0.2rem 0.55rem; }
+.lane-time, .lane-total { color: var(--muted); font-size: 0.78rem; margin: 0.3rem 0 0; font-variant-numeric: tabular-nums; }
+.lane-cell p { margin: 0.2rem 0; }
+@media (max-width: 760px) {
+  .lanes { grid-template-columns: minmax(0, 1fr); }
+  .lane-head { display: none; }
+  .lanes > *, .lanes > .lane-cell.rdf, .lanes > .lane-cell.conv, .lanes > .lane-cell.lane-total,
+  .lane-label.rdf, .lane-label.conv, .lane-cell.shared { grid-row: auto; grid-column: auto; }
+  .lane-cell.shared { order: -1; }
+}
+.step-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.5rem; }
+.step-heads { margin: 0.2rem 0 0.4rem 2.8rem; }
+@media (max-width: 760px) { .step-cols { grid-template-columns: minmax(0, 1fr); } .step-heads { display: none; } }
+.step-note { font-size: 0.82rem; color: var(--muted); margin: 0.4rem 0 0; }
+details.q-code.rdf > summary, details.q-code.conv > summary { display: flex; align-items: baseline; gap: 0.4rem; flex-wrap: wrap; }
+details.q-code.rdf > summary::after, details.q-code.conv > summary::after { content: none; }
+details.q-code.rdf { border-left: 3px solid var(--rdf); padding-left: 0.4rem; }
+details.q-code.conv { border-left: 3px solid var(--conv); padding-left: 0.4rem; }
+.code-list li { font-size: 0.86rem; }
+.policy-matrix .lane-tag { margin-right: 0.3rem; }
