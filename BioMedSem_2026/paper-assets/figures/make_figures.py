@@ -1033,21 +1033,35 @@ def checked_usecase() -> dict:
     return arms
 
 
-def match_legend(include_unrestricted: bool = False) -> list:
-    handles = [plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF release view"),
-               plt.Line2D([], [], marker="o", linestyle="", color=ORANGE, markeredgecolor="white",
-                          markersize=5, label="Conventional workflow")]
+def match_legend(include_unrestricted: bool = False, paired: bool = False) -> list:
+    conventional = (plt.Rectangle((0, 0), 1, 1, color=ORANGE, label="Conventional workflow") if paired else
+                    plt.Line2D([], [], marker="o", linestyle="", color=ORANGE, markeredgecolor="white",
+                               markersize=5, label="Conventional workflow"))
+    handles = [plt.Rectangle((0, 0), 1, 1, color=BLUE, label="RDF release view"), conventional]
     if include_unrestricted:
         handles.insert(0, plt.Rectangle((0, 0), 1, 1, color=GRAY, label="RDF, no policy"))
     return handles
 
 
-def match_bars(ax, counts: dict, requesters: list[str]) -> None:
-    """One row per requester; dots retain the independent comparison result."""
+def match_bars(ax, counts: dict, requesters: list[str], paired: bool = False) -> None:
+    """One row per requester; dots retain the independent comparison result.
+
+    With `paired`, the conventional workflow's count is a bar of its own beside the RDF
+    one, each labelled, so equal results read as two bars of equal length."""
     style_axes(ax, "x")
     top = max(counts[key]["rdf"] for key in requesters)
     for y, key in enumerate(reversed(requesters)):
         c = counts[key]
+        if paired:
+            rdf_colour = GRAY if key == "unrestricted" else BLUE
+            for offset, value, colour in ((0.19, c["rdf"], rdf_colour), (-0.19, c["baseline"], ORANGE)):
+                ax.barh(y + offset, value, height=0.34, color=colour, zorder=2)
+            # Equal counts share one label between the bars; unequal ones are labelled apart.
+            labels = [(y, c["rdf"])] if c["rdf"] == c["baseline"] else [(y + 0.19, c["rdf"]), (y - 0.19, c["baseline"])]
+            for at, value in labels:
+                ax.annotate(f"{value:,}", (max(c["rdf"], c["baseline"]), at), xytext=(4, 0),
+                            textcoords="offset points", color=INK_2, fontsize=8.5, va="center")
+            continue
         ax.barh(y, c["rdf"], height=0.55, color=GRAY if key == "unrestricted" else BLUE, zorder=2)
         dot(ax, c["baseline"], y, ORANGE, size=4.8, zorder=4, clip_on=False)
         ax.annotate(f"{c['rdf']:,}", (c["rdf"], y), xytext=(5, 0), textcoords="offset points",
@@ -1072,74 +1086,86 @@ def minutes_label(seconds: float) -> str:
     return str((Decimal(str(seconds)) / 60).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
+#: Figure 5 is drawn at 90% of the text width and included at that width, so it takes less of
+#: the page; its type follows the other figures' (fig_validation): 7.5 pt bold panel titles,
+#: 6.6 pt labels in INK, 5.8 pt notes in MUTED, 6.5 pt ticks and legend.
+USECASE_FIG_WIDTH = 0.9
+LABEL, NOTE = 6.6, 5.8
+
+
 def fig_usecase_matches() -> None:
     """Two release-backed examples and a compact third panel for selected stage times.
 
     Conversion/linking are summed once per scenario, including public annotation
     inputs. Query timings are medians of three executions. Indexing and view
     checking remain in the full stage-cost table rather than this selected summary.
+    Panel (a) is a compact band: the diagram only has to show that three sources
+    meet in one SPDI join, so it gets less of the figure than the measured panels.
     """
     arms = checked_usecase()
     cohort, policy = arms["arm2"], arms["arm4"]
-    fig = plt.figure(figsize=(WIDTH_IN, 4.0))
-    fig.text(0.035, 0.964, "(a) Linking three sources", fontsize=9.5, weight="bold")
-    fig.text(0.965, 0.964, "Scenario 2", fontsize=8.5, color=INK_2, ha="right")
+    fig = plt.figure(figsize=(USECASE_FIG_WIDTH * WIDTH_IN, 3.0))
 
-    ax = fig.add_axes([0.035, 0.66, 0.93, 0.276])
+    def title(y, text):
+        fig.text(0.02, y, text, fontsize=plt.rcParams["axes.titlesize"], weight="bold", color=INK, va="baseline")
+
+    title(0.96, "(a) Scenario 2: one query across three linked sources")
+    ax = fig.add_axes([0.02, 0.757, 0.96, 0.17])
     ax.set(xlim=(0, 1), ylim=(0, 1))
     ax.axis("off")
     labels = [f"{cohort['inputs']['genomes']['files']} participant VCFs", "ClinVar", "Panel frequencies"]
-    for y, label in zip((0.82, 0.50, 0.18), labels):
-        ax.add_patch(plt.Rectangle((0, y - 0.12), 0.32, 0.24,
-                                   facecolor="#f4f7fb", edgecolor=AXIS, linewidth=0.7))
-        ax.text(0.16, y, label, fontsize=8.5, color=INK_2, ha="center", va="center")
-        ax.plot([0.32, 0.40], [y, y], color=INK_2, linewidth=0.9)
-    ax.plot([0.40, 0.40], [0.18, 0.82], color=INK_2, linewidth=0.9)
-    ax.annotate("", (0.56, 0.50), (0.40, 0.50),
-                arrowprops={"arrowstyle": "->", "color": INK_2, "lw": 0.9})
-    ax.text(0.465, 0.65, "SPDI join", fontsize=8.5, ha="center", color=INK_2)
-    ax.text(0.78, 0.67, f"{cohort['rare']['unrestricted']['rdf']:,}", fontsize=19,
-            ha="center", va="center", weight="bold", color=BLUE)
-    ax.text(0.78, 0.39, "matches at AF < 1%", fontsize=9, ha="center", color=INK_2)
-    ax.text(0.78, 0.17, f"of {cohort['carriers']['unrestricted']['rdf']:,} ClinVar matches",
-            fontsize=8, ha="center", color=INK_2)
+    for y, label in zip((0.84, 0.50, 0.16), labels):
+        ax.add_patch(plt.Rectangle((0.02, y - 0.13), 0.26, 0.26,
+                                   facecolor="#f4f7fb", edgecolor=AXIS, linewidth=0.6))
+        ax.text(0.15, y, label, fontsize=LABEL, color=INK, ha="center", va="center")
+        ax.plot([0.28, 0.33], [y, y], color=INK_2, linewidth=0.7)
+    ax.plot([0.33, 0.33], [0.16, 0.84], color=INK_2, linewidth=0.7)
+    ax.annotate("", (0.46, 0.50), (0.33, 0.50), arrowprops={"arrowstyle": "->", "color": INK_2, "lw": 0.7})
+    ax.text(0.395, 0.60, "SPDI join", fontsize=NOTE, ha="center", color=MUTED)
+    ax.text(0.49, 0.62, f"{cohort['rare']['unrestricted']['rdf']:,}", fontsize=10,
+            ha="left", va="center", weight="bold", color=BLUE)
+    ax.text(0.585, 0.62, "matches with panel AF < 1%", fontsize=LABEL, ha="left", va="center", color=INK)
+    ax.text(0.49, 0.28, f"of {cohort['carriers']['unrestricted']['rdf']:,} ClinVar matches",
+            fontsize=NOTE, ha="left", va="center", color=MUTED)
 
-    fig.text(0.035, 0.608, "(b) Policy-aware answers", fontsize=9.5, weight="bold")
-    fig.text(0.965, 0.608, "Scenario 4", fontsize=8.5, color=INK_2, ha="right")
-    fig.text(0.035, 0.567, f"One VCF: {policy['inputs']['genomes']['records']:,} source records",
-             fontsize=8.5, color=INK_2)
-    ax = fig.add_axes([0.255, 0.319, 0.385, 0.2125])
+    title(0.69, "(b) Scenario 4: what each requester receives from one VCF")
+    fig.text(0.02, 0.655, f"{policy['inputs']['genomes']['records']:,} source records",
+             fontsize=NOTE, color=MUTED, va="baseline")
+    ax = fig.add_axes([0.265, 0.385, 0.415, 0.235])
     requesters = [k for k, _ in REQUESTERS if k != "unrestricted"]
-    match_bars(ax, policy["carriers"], requesters)
-    ax.set_xlabel("Matches", fontsize=8.5, labelpad=2)
-    ax.text(1.52, 1.07, "Released records", transform=ax.transAxes, fontsize=8.5, ha="center", color=INK_2)
+    match_bars(ax, policy["carriers"], requesters, paired=True)
+    for text in ax.texts:  # match_bars sizes its labels for the supplement's wider figure
+        text.set_fontsize(LABEL)
+    ax.tick_params(axis="y", labelsize=LABEL, pad=56)
+    ax.tick_params(axis="x", labelsize=plt.rcParams["xtick.labelsize"])
+    ax.set_xlabel("Matches", labelpad=2)
+    ax.text(1.38, 1.1, "Released records", transform=ax.transAxes, fontsize=NOTE, ha="center", color=MUTED)
     for y, key in enumerate(reversed(requesters)):
-        ax.text(1.52, y, f"{policy['records'][key]['rdf']:,}", transform=ax.get_yaxis_transform(),
-                ha="center", va="center", fontsize=8.5, color=INK_2)
-    fig.legend(handles=match_legend(), loc="center", ncol=2, bbox_to_anchor=(0.5, 0.212),
-               handlelength=1.4, columnspacing=1.7, fontsize=8)
+        ax.text(1.38, y, f"{policy['records'][key]['rdf']:,}", transform=ax.get_yaxis_transform(),
+                ha="center", va="center", fontsize=LABEL, color=INK)
+    fig.legend(handles=match_legend(paired=True), loc="center", ncol=2, bbox_to_anchor=(0.465, 0.243),
+               handlelength=1.3, columnspacing=1.6, borderaxespad=0)
 
-    # Panel (c) occupies less than half the former timing table's area.
-    # Repetition (once / requester / query) is defined in the caption.
-    fig.text(0.035, 0.13, "(c) Stage times", fontsize=9.5, weight="bold")
-    ax = fig.add_axes([0.275, 0.02, 0.69, 0.12])
+    # The selected stage times; repetition (once / requester / query) is in the caption.
+    title(0.16, "(c) Time spent in each workflow stage, Scenarios 2 and 4")
+    ax = fig.add_axes([0.02, 0.01, 0.96, 0.125])
     ax.set(xlim=(0, 1), ylim=(0, 1))
     ax.axis("off")
-    xs = (0.045, 0.265, 0.46, 0.69, 0.925)
-    for x, label in zip(xs, ("Scenario", "Convert (min)", "Link (min)", "View (min)", "Query (s)")):
-        ax.text(x, 0.89, label, ha="center", fontsize=6.5, color=INK_2)
-    ax.plot([0, 1], [0.74, 0.74], color=AXIS, linewidth=0.5)
+    xs = (0.06, 0.27, 0.47, 0.68, 0.89)
+    for x, label in zip(xs, ("Scenario", "Convert (min)", "Link (min)", "Write view (min)", "Query (s)")):
+        ax.text(x, 0.78, label, ha="center", fontsize=NOTE, color=MUTED)
+    ax.plot([0, 1], [0.68, 0.68], color=AXIS, linewidth=0.5)
     views = [c["view"] / 60 for c in policy["costs"]["requesters"].values()]
     queries = [c["query"] for c in policy["costs"]["requesters"].values()]
     rows = [
         ("2", minutes_label(cohort["costs"]["convert"]), minutes_label(cohort["costs"]["link"]),
          "Not needed", f"{st.median(cohort['queries']['unrestricted']['replicates']['rare']):.0f}"),
         ("4", minutes_label(policy["costs"]["convert"]), minutes_label(policy["costs"]["link"]),
-         f"{min(views):.1f}-{max(views):.1f}", f"{min(queries):.0f}-{max(queries):.0f}"),
+         f"{min(views):.1f}\u2013{max(views):.1f}", f"{min(queries):.0f}\u2013{max(queries):.0f}"),
     ]
-    for y, row in zip((0.43, 0.05), rows):
+    for y, row in zip((0.36, 0.04), rows):
         for x, value in zip(xs, row):
-            ax.text(x, y, value, ha="center", va="bottom", fontsize=7, color=INK_2)
+            ax.text(x, y, value, ha="center", va="bottom", fontsize=LABEL, color=INK)
     fig.savefig(OUT / "fig-usecase-matches.pdf", metadata=PDF_METADATA)
     plt.close(fig)
     print("usecase focused: Scenario 2 rare matches", cohort["rare"]["unrestricted"]["rdf"],
@@ -1153,7 +1179,7 @@ def fig_usecase_overview() -> None:
               ("arm2", f"{arms['arm2']['inputs']['genomes']['files']}-participant cohort"),
               ("arm3", "Complete HG005 VCF"), ("arm4", "Complete NB72462M VCF")]
     fig = plt.figure(figsize=(SUPP_WIDTH_IN, 4.15))
-    fig.legend(handles=match_legend(True), loc="upper center", ncol=3, bbox_to_anchor=(0.52, 1.01),
+    fig.legend(handles=match_legend(True, paired=True), loc="upper center", ncol=3, bbox_to_anchor=(0.52, 1.01),
                handlelength=1.4, fontsize=8)
     for i, (key, title) in enumerate(panels):
         arm = arms[key]
@@ -1162,7 +1188,7 @@ def fig_usecase_overview() -> None:
         width = 0.17 if arm["rare"] else 0.27
         ax = fig.add_axes([left + 0.125, bottom, width, 0.265])
         requesters = [k for k, _ in REQUESTERS if k in arm["carriers"]]
-        match_bars(ax, arm["carriers"], requesters)
+        match_bars(ax, arm["carriers"], requesters, paired=True)
         ax.set_xlabel("Matches", fontsize=8.5, labelpad=3)
         genome = arm["inputs"]["genomes"]
         fig.text(left, bottom + 0.355, f"({'abcd'[i]}) Scenario {i + 1}: {title}",
