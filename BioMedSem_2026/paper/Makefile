@@ -3,7 +3,7 @@
 # A distributed source bundle carries its figures inside this directory.
 
 # The main text's source name; package.py reads it from here.
-PAPER     = current_short
+PAPER     = submitted
 BUILD_DIR = .build/$(PAPER)
 LATEXMK   = latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error
 FIGURE_DIR = $(if $(wildcard figures),figures,../paper-assets)
