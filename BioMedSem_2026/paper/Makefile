@@ -10,7 +10,7 @@ FIGURE_DIR = $(if $(wildcard figures),figures,../paper-assets)
 # Main text: vcf-core-minimal, vcf2rdf-v3, fig-validation, fig-usecase-matches, fig-converters, and
 # fig-regional; the rest are the supplement's.
 FIGURES = $(addprefix $(FIGURE_DIR)/,vcf2rdf-v3.pdf vcf-core-minimal.pdf fig-validation.pdf fig-converters.pdf fig-usecase-matches.pdf \
-	fig-usecase-overview.pdf fig-usecase-costs.pdf fig-samples.pdf fig-retrieval.pdf fig-regional.pdf \
+	fig-usecase-overview.pdf fig-query-oracle.pdf fig-usecase-costs.pdf fig-samples.pdf fig-retrieval.pdf fig-regional.pdf \
 	vcf-core-classes.pdf fig-linking-framework.pdf fig-scaling.pdf fig-representations.pdf \
 	fig-retrieval-detail.pdf)
 SOURCES   = $(PAPER).tex supplementary.tex reference.bib template/sn-jnl.cls \
