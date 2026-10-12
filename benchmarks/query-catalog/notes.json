@@ -1778,6 +1778,42 @@
    ]
   },
   {
+   "id": "shacl-core",
+   "rq": "RQ1",
+   "kind": "shacl",
+   "tags": [
+    "v3.1.0",
+    "v3.3.1"
+   ],
+   "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+   "title": "SHACL shapes: the default profile (core)",
+   "intro": "Run whenever shapes are enabled: in the core benchmark, the consumer WGS validation rerun, and fault injection. Each shape judges one resource from its own properties (cardinality, datatype, pattern, class), so v3.3.1 validates a large graph a batch of records at a time. Shapes check the graph against the VCF Core vocabulary's rules, not against the source VCF. A violation blocks the run; a warning is reported only. The shapes are vendored from the VCF Core vocabulary and are identical in v3.1.0 and v3.3.1."
+  },
+  {
+   "id": "shacl-consistency",
+   "rq": "RQ1",
+   "kind": "shacl",
+   "tags": [
+    "v3.1.0",
+    "v3.3.1"
+   ],
+   "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+   "title": "SHACL shapes: the consistency profile (deeper)",
+   "intro": "Checks that related values agree, for example GT text with ploidy and called alleles, or REF and ALT text with their allele resources. With the core and vocabulary-sparql profiles it forms the full set (--shacl-profile full), run in fault injection on small fixtures only: each constraint is a SPARQL query, which the validator runs on the whole graph, and the cost grows faster than the graph."
+  },
+  {
+   "id": "shacl-sparql",
+   "rq": "RQ1",
+   "kind": "shacl",
+   "tags": [
+    "v3.1.0",
+    "v3.3.1"
+   ],
+   "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+   "title": "SHACL shapes: the vocabulary-sparql profile (deeper)",
+   "intro": "Checks properties across a file, such as unique header-line, record and sample indices, unique record IDs, nondecreasing positions within each contig, and that a graph does not mix the expanded and condensed sample representations. Part of the full set, run in fault injection on small fixtures only. The vocabulary keeps these SPARQL constraints apart so that validators without SPARQL support can apply the core profile."
+  },
+  {
    "id": "usecase",
    "rq": "RQ2",
    "title": "Linked-workflow queries",

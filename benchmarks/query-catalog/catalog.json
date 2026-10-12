@@ -3316,6 +3316,3914 @@
    ]
   },
   {
+   "id": "shacl-core",
+   "rq": "RQ1",
+   "title": "SHACL shapes: the default profile (core)",
+   "intro": "Run whenever shapes are enabled: in the core benchmark, the consumer WGS validation rerun, and fault injection. Each shape judges one resource from its own properties (cardinality, datatype, pattern, class), so v3.3.1 validates a large graph a batch of records at a time. Shapes check the graph against the VCF Core vocabulary's rules, not against the source VCF. A violation blocks the run; a warning is reported only. The shapes are vendored from the VCF Core vocabulary and are identical in v3.1.0 and v3.3.1.",
+   "kind": "shacl",
+   "file": [
+    {
+     "source": "VCF-RDFizer",
+     "rev": "v3.1.0",
+     "commit": "d3b34d5",
+     "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl"
+    },
+    {
+     "source": "VCF-RDFizer",
+     "rev": "v3.3.1",
+     "commit": "b25fb7b",
+     "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl"
+    }
+   ],
+   "items": [
+    {
+     "id": "shacl-core-VCFFileShape",
+     "label": "VCFFileShape",
+     "summary": "Each vcfc:VCFFile: exactly one hasHeader, fileFormat and representationProfile; any number of referenceGenome, fileDate and hasRecord; at most one hasSampleSet",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:hasHeader",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:VCFHeader"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fileFormat",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^VCFv4\\.[0-5]$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:referenceGenome",
+       "count": "any number",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fileDate",
+       "count": "any number",
+       "checks": [
+        "datatype xsd:date"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:representationProfile",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:RepresentationProfile"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasSampleSet",
+       "count": "at most one",
+       "checks": [
+        "class vcfc:SampleSet"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasRecord",
+       "count": "any number",
+       "checks": [
+        "class vcfc:VCFRecord"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VCFFileShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFFile ;\n\n  sh:property [\n    sh:path vcfc:hasHeader ;\n    sh:minCount 1 ;\n    sh:maxCount 1 ;\n    sh:class vcfc:VCFHeader ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:fileFormat ;\n    sh:minCount 1 ; sh:maxCount 1 ;\n    sh:datatype xsd:string ; sh:pattern \"^VCFv4\\\\.[0-5]$\" ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:referenceGenome ;\n    sh:minCount 0 ;\n    sh:datatype xsd:string ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:fileDate ;\n    sh:minCount 0 ;\n    sh:datatype xsd:date ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:representationProfile ;\n    sh:minCount 1 ;\n    sh:maxCount 1 ;\n    sh:class vcfc:RepresentationProfile ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:hasSampleSet ;\n    sh:minCount 0 ;\n    sh:maxCount 1 ;\n    sh:class vcfc:SampleSet ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:hasRecord ;\n    sh:minCount 0 ;\n    sh:class vcfc:VCFRecord ;\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        15,
+        61
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        15,
+        61
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VCF45ConformanceShape",
+     "label": "VCF45ConformanceShape",
+     "summary": "Each vcfc:VCF45File: VCF 4.5 conformance requires fileFormat VCFv4.5.",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fileFormat",
+       "count": "exactly one",
+       "checks": [
+        "value \"VCFv4.5\""
+       ],
+       "message": "VCF 4.5 conformance requires fileFormat VCFv4.5.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "# Apply the VCF 4.5 version gate only when a producer explicitly opts into\n# this profile.  Generic vcfc:VCFFile resources can represent other VCF\n# versions without being rejected by the VCF 4.5 vocabulary.\nvcfc:VCF45ConformanceShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCF45File ;\n  sh:property [\n    sh:path vcfc:fileFormat ;\n    sh:minCount 1 ;\n    sh:maxCount 1 ;\n    sh:hasValue \"VCFv4.5\" ;\n    sh:message \"VCF 4.5 conformance requires fileFormat VCFv4.5.\"@en\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        63,
+        74
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        63,
+        74
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VCFHeaderShape",
+     "label": "VCFHeaderShape",
+     "summary": "Each vcfc:VCFHeader: exactly one hasColumnHeader and hasHeaderLine with class vcfc:FileFormatHeaderLine; at least one hasHeaderLine",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:hasColumnHeader",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:ColumnHeaderLine"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasHeaderLine",
+       "count": "at least one",
+       "checks": [
+        "class vcfc:HeaderLine"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasHeaderLine with class vcfc:FileFormatHeaderLine",
+       "count": "exactly one",
+       "checks": [],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VCFHeaderShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFHeader ;\n  sh:property [ sh:path vcfc:hasColumnHeader ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vcfc:ColumnHeaderLine ] ;\n  sh:property [ sh:path vcfc:hasHeaderLine ; sh:qualifiedValueShape [ sh:class vcfc:FileFormatHeaderLine ] ; sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ] ;\n\n  sh:property [\n    sh:path vcfc:hasHeaderLine ;\n    sh:minCount 1 ;\n    sh:class vcfc:HeaderLine ;\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        80,
+        89
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        80,
+        89
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-InfoFieldDefinitionShape",
+     "label": "InfoFieldDefinitionShape",
+     "summary": "Each vcfc:InfoFieldDefinition: exactly one fieldId, fieldNumber and fieldType; any number of fieldArity; at least one fieldDescription; plus a condition across properties",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldId",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^([A-Za-z_][0-9A-Za-z_.]*|1000G)$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldNumber",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^([0-9]+|A|R|G|LA|LR|LG|P|M|[.])$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldArity",
+       "count": "any number",
+       "checks": [
+        "one of vcfc:ArityPerAlt, vcfc:ArityPerAllele, vcfc:ArityPerGenotype, vcfc:ArityVariable, vcfc:ArityPerLocalAlt, vcfc:ArityPerLocalAllele, vcfc:ArityPerLocalGenotype, vcfc:ArityPerGTAllele, vcfc:ArityPerBaseModification"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldType",
+       "count": "exactly one",
+       "checks": [
+        "one of vcfc:IntegerType, vcfc:FloatType, vcfc:FlagType, vcfc:CharacterType, vcfc:StringType"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldDescription",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: vcfc:fieldType: not: value vcfc:FlagType | vcfc:fieldNumber: value \"0\"; vcfc:fieldType: value vcfc:FlagType"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:InfoFieldDefinitionShape a sh:NodeShape ;\n  sh:targetClass vcfc:InfoFieldDefinition ;\n\n  sh:property [ sh:path vcfc:fieldId ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^([A-Za-z_][0-9A-Za-z_.]*|1000G)$\" ] ;\n  sh:property [ sh:path vcfc:fieldNumber ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^([0-9]+|A|R|G|LA|LR|LG|P|M|[.])$\" ] ;\n  sh:property [ sh:path vcfc:fieldArity ; sh:minCount 0 ; sh:in (vcfc:ArityPerAlt vcfc:ArityPerAllele vcfc:ArityPerGenotype vcfc:ArityVariable vcfc:ArityPerLocalAlt vcfc:ArityPerLocalAllele vcfc:ArityPerLocalGenotype vcfc:ArityPerGTAllele vcfc:ArityPerBaseModification) ] ;\n  sh:property [ sh:path vcfc:fieldType ; sh:minCount 1 ; sh:maxCount 1 ; sh:in (vcfc:IntegerType vcfc:FloatType vcfc:FlagType vcfc:CharacterType vcfc:StringType) ] ;\n  sh:property [ sh:path vcfc:fieldDescription ; sh:minCount 1 ; sh:datatype xsd:string ] ;\n  sh:or (\n    [ sh:property [ sh:path vcfc:fieldType ; sh:not [ sh:hasValue vcfc:FlagType ] ] ]\n    [ sh:property [ sh:path vcfc:fieldType ; sh:hasValue vcfc:FlagType ] ; sh:property [ sh:path vcfc:fieldNumber ; sh:hasValue \"0\" ] ]\n  ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        95,
+        106
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        95,
+        106
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-InfoHeaderLineRecommendedShape",
+     "label": "InfoHeaderLineRecommendedShape",
+     "summary": "Each vcfc:INFOHeaderLine: VCF 4.5 recommends Source on INFO declarations. VCF 4.5 recommends Version on INFO declarations. (warning only)",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldSource",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "message": "VCF 4.5 recommends Source on INFO declarations.",
+       "severity": "Warning"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldVersion",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "message": "VCF 4.5 recommends Version on INFO declarations.",
+       "severity": "Warning"
+      }
+     ],
+     "text": "# Source and Version are recommendations for a concrete INFO declaration, not\n# for every reusable registry definition.\nvcfc:InfoHeaderLineRecommendedShape a sh:NodeShape ;\n  sh:targetClass vcfc:INFOHeaderLine ;\n  sh:property [ sh:path vcfc:fieldSource ; sh:minCount 1 ; sh:datatype xsd:string ; sh:severity sh:Warning ; sh:message \"VCF 4.5 recommends Source on INFO declarations.\"@en ] ;\n  sh:property [ sh:path vcfc:fieldVersion ; sh:minCount 1 ; sh:datatype xsd:string ; sh:severity sh:Warning ; sh:message \"VCF 4.5 recommends Version on INFO declarations.\"@en ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        108,
+        113
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        108,
+        113
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FormatFieldDefinitionShape",
+     "label": "FormatFieldDefinitionShape",
+     "summary": "Each vcfc:FormatFieldDefinition: exactly one fieldNumber and fieldType; any number of fieldArity; at least one fieldDescription; plus a condition across properties",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldNumber",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^([0-9]+|A|R|G|LA|LR|LG|P|M|[.])$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldArity",
+       "count": "any number",
+       "checks": [
+        "one of vcfc:ArityPerAlt, vcfc:ArityPerAllele, vcfc:ArityPerGenotype, vcfc:ArityVariable, vcfc:ArityPerLocalAlt, vcfc:ArityPerLocalAllele, vcfc:ArityPerLocalGenotype, vcfc:ArityPerGTAllele, vcfc:ArityPerBaseModification"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldType",
+       "count": "exactly one",
+       "checks": [
+        "one of vcfc:IntegerType, vcfc:FloatType, vcfc:CharacterType, vcfc:StringType",
+        "not: value vcfc:FlagType"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldDescription",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: vcfc:fieldId: exactly one, datatype xsd:string, pattern ^[A-Za-z_][0-9A-Za-z_.]*$ | vcfc:keyPattern: exactly one, datatype xsd:string, pattern ^(M|DPM|ADM)\\[0-9\\]\\+\\[ACGTUN\\]$"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FormatFieldDefinitionShape a sh:NodeShape ;\n  sh:targetClass vcfc:FormatFieldDefinition ;\n\n  # VCF 4.5's M, DPM, and ADM field families are pattern-defined registry\n  # rows, rather than a single concrete field ID.\n  sh:or (\n    [ sh:property [ sh:path vcfc:fieldId ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^[A-Za-z_][0-9A-Za-z_.]*$\" ] ]\n    [ sh:property [ sh:path vcfc:keyPattern ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^(M|DPM|ADM)\\\\[0-9\\\\]\\\\+\\\\[ACGTUN\\\\]$\" ] ]\n  ) ;\n  sh:property [ sh:path vcfc:fieldNumber ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^([0-9]+|A|R|G|LA|LR|LG|P|M|[.])$\" ] ;\n  sh:property [ sh:path vcfc:fieldArity ; sh:minCount 0 ; sh:in (vcfc:ArityPerAlt vcfc:ArityPerAllele vcfc:ArityPerGenotype vcfc:ArityVariable vcfc:ArityPerLocalAlt vcfc:ArityPerLocalAllele vcfc:ArityPerLocalGenotype vcfc:ArityPerGTAllele vcfc:ArityPerBaseModification) ] ;\n  sh:property [ sh:path vcfc:fieldType ; sh:minCount 1 ; sh:maxCount 1 ; sh:in (vcfc:IntegerType vcfc:FloatType vcfc:CharacterType vcfc:StringType) ; sh:not [ sh:hasValue vcfc:FlagType ] ] ;\n  sh:property [ sh:path vcfc:fieldDescription ; sh:minCount 1 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        115,
+        127
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        115,
+        127
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VCFRecordShape",
+     "label": "VCFRecordShape",
+     "summary": "Each vcfc:VCFRecord: exactly one chrom, pos and ref; at least one alt; any number of hasCall and asSequenceAlteration",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:chrom",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:pos",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:ref",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^[ACGTNacgtn]+$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:alt",
+       "count": "at least one",
+       "checks": [
+        "one of: datatype xsd:string | datatype vcfc:Null"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasCall",
+       "count": "any number",
+       "checks": [
+        "class vcfc:VariantCall"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:asSequenceAlteration",
+       "count": "any number",
+       "checks": [
+        "class <http://purl.obolibrary.org/obo/SO_0001059>"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VCFRecordShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFRecord ;\n\n  sh:property [ sh:path vcfc:chrom ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:pos ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:node vcfc:IntegerLiteralShape ] ;\n  sh:property [ sh:path vcfc:ref ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^[ACGTNacgtn]+$\" ] ;\n  # VCF 4.5 fixed field 5: \"If there are no alternative alleles, then the\n  # MISSING value must be used.\" Such a record carries \".\"^^vcfc:Null, so the\n  # datatype must be a disjunction -- requiring xsd:string here rejected every\n  # REF-only and gVCF-style record.\n  sh:property [\n    sh:path vcfc:alt ;\n    sh:minCount 1 ;\n    sh:or (\n      [ sh:datatype xsd:string ]\n      [ sh:datatype vcfc:Null ]\n    ) ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:hasCall ;\n    sh:minCount 0 ;\n    sh:class vcfc:VariantCall ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:asSequenceAlteration ;\n    sh:minCount 0 ;\n    sh:class so:0001059 ;\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        133,
+        162
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        133,
+        162
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VariantCallShape",
+     "label": "VariantCallShape",
+     "summary": "Each vcfc:VariantCall: at most one qual; any number of filter, hasInfoValue, hasSampleCall and hasCallMatrix",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:qual",
+       "count": "at most one",
+       "checks": [
+        "one of: datatype vcfc:VCFFloat; pattern ^([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?|[-+]?(INF|INFINITY|NAN))$ (flags i) | datatype xsd:decimal | datatype xsd:double | datatype xsd:float | datatype vcfc:Null | datatype xsd:string; pattern ^[-+]?(INF|INFINITY|NAN)$ (flags i)"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:filter",
+       "count": "any number",
+       "checks": [
+        "one of: datatype xsd:string | datatype vcfc:Null"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasInfoValue",
+       "count": "any number",
+       "checks": [
+        "class vcfc:InfoFieldValue"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasSampleCall",
+       "count": "any number",
+       "checks": [
+        "class vcfc:SampleCall"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasCallMatrix",
+       "count": "any number",
+       "checks": [
+        "class vcfc:CohortCallMatrix"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VariantCallShape a sh:NodeShape ;\n  sh:targetClass vcfc:VariantCall ;\n\n  # VCF 4.5 data types: a Float matches ^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$\n  # or ^[-+]?(INF|INFINITY|NAN)$ case-insensitively. xsd:double covers the\n  # numeric forms plus INF/-INF/NaN; the final branch covers the INFINITY and\n  # case-variant spellings that no XSD numeric datatype accepts.\n  #\n  # Because several datatypes conform, two correct producers can serialize the\n  # same QUAL differently -- vcf-core's own materializer writes vcfc:VCFFloat,\n  # VCF-RDFizer writes xsd:decimal, and both pass this shape. Producers SHOULD\n  # write vcfc:VCFFloat, the only branch that also carries INF/INFINITY/NAN.\n  # Consumers MUST NOT branch on DATATYPE(?qual): compare the lexical value, or\n  # accept the alternatives explicitly. Kept here rather than as an\n  # rdfs:comment because assess.py hashes ontology/*.ttl, so editing a comment\n  # there would invalidate every recorded review acceptance.\n  sh:property [\n    sh:path vcfc:qual ;\n    sh:minCount 0 ; sh:maxCount 1 ;\n    sh:or (\n      [ sh:datatype vcfc:VCFFloat ; sh:pattern \"^([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?|[-+]?(INF|INFINITY|NAN))$\" ; sh:flags \"i\" ]\n      [ sh:datatype xsd:decimal ]\n      [ sh:datatype xsd:double ]\n      [ sh:datatype xsd:float ]\n      [ sh:datatype vcfc:Null ]\n      [ sh:datatype xsd:string ; sh:pattern \"^[-+]?(INF|INFINITY|NAN)$\" ; sh:flags \"i\" ]\n    ) ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:filter ;\n    sh:minCount 0 ;\n    sh:or (\n      [ sh:datatype xsd:string ]\n      [ sh:datatype vcfc:Null ]\n    ) ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:hasInfoValue ;\n    sh:minCount 0 ;\n    sh:class vcfc:InfoFieldValue ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:hasSampleCall ;\n    sh:minCount 0 ;\n    sh:class vcfc:SampleCall ;\n  ] ;\n\n  sh:property [\n    sh:path vcfc:hasCallMatrix ;\n    sh:minCount 0 ;\n    sh:class vcfc:CohortCallMatrix ;\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        164,
+        218
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        164,
+        218
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-SampleCallShape",
+     "label": "SampleCallShape",
+     "summary": "Each vcfc:SampleCall: at least one sampleId; at most one forSample; any number of hasFormatValue",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:sampleId",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:forSample",
+       "count": "at most one",
+       "checks": [
+        "class vcfc:VCFSample"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasFormatValue",
+       "count": "any number",
+       "checks": [
+        "class vcfc:FormatFieldValue"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:SampleCallShape a sh:NodeShape ;\n  sh:targetClass vcfc:SampleCall ;\n\n  sh:property [ sh:path vcfc:sampleId ; sh:minCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:forSample ; sh:minCount 0 ; sh:maxCount 1 ; sh:class vcfc:VCFSample ] ;\n  sh:property [ sh:path vcfc:hasFormatValue ; sh:minCount 0 ; sh:class vcfc:FormatFieldValue ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        224,
+        229
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        224,
+        229
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VCFSampleShape",
+     "label": "VCFSampleShape",
+     "summary": "Each vcfc:VCFSample: exactly one sampleName and sampleIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:sampleName",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:sampleIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VCFSampleShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFSample ;\n\n  sh:property [ sh:path vcfc:sampleName ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:sampleIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        235,
+        239
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        235,
+        239
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-SampleSetShape",
+     "label": "SampleSetShape",
+     "summary": "Each vcfc:SampleSet: at least one hasSample",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:hasSample",
+       "count": "at least one",
+       "checks": [
+        "class vcfc:VCFSample"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:SampleSetShape a sh:NodeShape ;\n  sh:targetClass vcfc:SampleSet ;\n\n  sh:property [ sh:path vcfc:hasSample ; sh:minCount 1 ; sh:class vcfc:VCFSample ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        241,
+        244
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        241,
+        244
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-CohortCallMatrixShape",
+     "label": "CohortCallMatrixShape",
+     "summary": "Each vcfc:CohortCallMatrix: exactly one appliesToSampleSet; at least one hasFormatValueVector; any number of sampleDataRaw",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:appliesToSampleSet",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:SampleSet"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasFormatValueVector",
+       "count": "at least one",
+       "checks": [
+        "class vcfc:FormatValueVector"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:sampleDataRaw",
+       "count": "any number",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:CohortCallMatrixShape a sh:NodeShape ;\n  sh:targetClass vcfc:CohortCallMatrix ;\n\n  sh:property [ sh:path vcfc:appliesToSampleSet ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vcfc:SampleSet ] ;\n  sh:property [ sh:path vcfc:hasFormatValueVector ; sh:minCount 1 ; sh:class vcfc:FormatValueVector ] ;\n  sh:property [ sh:path vcfc:sampleDataRaw ; sh:minCount 0 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        246,
+        251
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        246,
+        251
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FormatValueVectorShape",
+     "label": "FormatValueVectorShape",
+     "summary": "Each vcfc:FormatValueVector: exactly one declaredBy, valueEncoding and encodedValues",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:declaredBy",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:FormatFieldDefinition"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:valueEncoding",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:VectorEncoding"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:encodedValues",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FormatValueVectorShape a sh:NodeShape ;\n  sh:targetClass vcfc:FormatValueVector ;\n\n  sh:property [ sh:path vcfc:declaredBy ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vcfc:FormatFieldDefinition ] ;\n  sh:property [ sh:path vcfc:valueEncoding ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vcfc:VectorEncoding ] ;\n  sh:property [ sh:path vcfc:encodedValues ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        253,
+        258
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        253,
+        258
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-InfoFieldValueShape",
+     "label": "InfoFieldValueShape",
+     "summary": "Each vcfc:InfoFieldValue: any number of fieldValue and declaredBy",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldValue",
+       "count": "any number",
+       "checks": [
+        "one of: datatype xsd:string | datatype vcfc:Null"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:declaredBy",
+       "count": "any number",
+       "checks": [
+        "class vcfc:InfoFieldDefinition"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:InfoFieldValueShape a sh:NodeShape ;\n  sh:targetClass vcfc:InfoFieldValue ;\n\n  sh:property [\n    sh:path vcfc:fieldValue ;\n    sh:minCount 0 ;\n    sh:or (\n      [ sh:datatype xsd:string ]\n      [ sh:datatype vcfc:Null ]\n    ) ;\n  ] ;\n  sh:property [ sh:path vcfc:declaredBy ; sh:minCount 0 ; sh:class vcfc:InfoFieldDefinition ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        264,
+        275
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        264,
+        275
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FormatFieldValueShape",
+     "label": "FormatFieldValueShape",
+     "summary": "Each vcfc:FormatFieldValue: any number of fieldValue and declaredBy",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldValue",
+       "count": "any number",
+       "checks": [
+        "one of: datatype xsd:string | datatype vcfc:Null"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:declaredBy",
+       "count": "any number",
+       "checks": [
+        "class vcfc:FormatFieldDefinition"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FormatFieldValueShape a sh:NodeShape ;\n  sh:targetClass vcfc:FormatFieldValue ;\n\n  sh:property [\n    sh:path vcfc:fieldValue ;\n    sh:minCount 0 ;\n    sh:or (\n      [ sh:datatype xsd:string ]\n      [ sh:datatype vcfc:Null ]\n    ) ;\n  ] ;\n  sh:property [ sh:path vcfc:declaredBy ; sh:minCount 0 ; sh:class vcfc:FormatFieldDefinition ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        277,
+        288
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        277,
+        288
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-HeaderLineShape",
+     "label": "HeaderLineShape",
+     "summary": "Each vcfc:HeaderLine: exactly one headerKey and lineIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:headerKey",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:lineIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:HeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:HeaderLine ;\n  sh:property [ sh:path vcfc:headerKey ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:lineIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        294,
+        297
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        294,
+        297
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-StructuredHeaderLineShape",
+     "label": "StructuredHeaderLineShape",
+     "summary": "Each vcfc:StructuredHeaderLine: at least one hasAttribute",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:hasAttribute",
+       "count": "at least one",
+       "checks": [
+        "class vcfc:HeaderAttribute"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:StructuredHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:StructuredHeaderLine ;\n  sh:property [ sh:path vcfc:hasAttribute ; sh:minCount 1 ; sh:class vcfc:HeaderAttribute ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        299,
+        301
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        299,
+        301
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-UnstructuredHeaderLineShape",
+     "label": "UnstructuredHeaderLineShape",
+     "summary": "Each vcfc:UnstructuredHeaderLine: at least one headerValue",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:headerValue",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^[^<].*$"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:UnstructuredHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:UnstructuredHeaderLine ;\n  sh:property [ sh:path vcfc:headerValue ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern \"^[^<].*$\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        303,
+        305
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        303,
+        305
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-HeaderAttributeShape",
+     "label": "HeaderAttributeShape",
+     "summary": "Each vcfc:HeaderAttribute: exactly one attributeKey, attributeValue and attributeIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:attributeKey",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:attributeValue",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:attributeIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:HeaderAttributeShape a sh:NodeShape ;\n  sh:targetClass vcfc:HeaderAttribute ;\n  sh:property [ sh:path vcfc:attributeKey ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:attributeValue ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:attributeIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        307,
+        311
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        307,
+        311
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-ColumnHeaderLineShape",
+     "label": "ColumnHeaderLineShape",
+     "summary": "Each vcfc:ColumnHeaderLine: any number of hasGenotypeColumns",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:hasGenotypeColumns",
+       "count": "any number",
+       "checks": [
+        "class vcfc:VCFSample"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ColumnHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:ColumnHeaderLine ;\n  sh:property [ sh:path vcfc:hasGenotypeColumns ; sh:minCount 0 ; sh:class vcfc:VCFSample ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        313,
+        315
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        313,
+        315
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FileFormatHeaderLineShape",
+     "label": "FileFormatHeaderLineShape",
+     "summary": "Each vcfc:FileFormatHeaderLine: any number of headerKey; exactly one headerValue",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:headerKey",
+       "count": "any number",
+       "checks": [
+        "value \"fileformat\""
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:headerValue",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FileFormatHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:FileFormatHeaderLine ;\n  sh:property [ sh:path vcfc:headerKey ; sh:hasValue \"fileformat\" ] ;\n  sh:property [ sh:path vcfc:headerValue ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        317,
+        320
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        317,
+        320
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-ContigHeaderLineShape",
+     "label": "ContigHeaderLineShape",
+     "summary": "Each vcfc:ContigHeaderLine: exactly one contigId; at most one contigUrl",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:contigId",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^[0-9A-Za-z!#$%&+./:;?@^_|~-][0-9A-Za-z!#$%&*+./:;=?@^_|~-]*$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:contigUrl",
+       "count": "at most one",
+       "checks": [
+        "datatype xsd:anyURI"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ContigHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:ContigHeaderLine ;\n  sh:property [ sh:path vcfc:contigId ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^[0-9A-Za-z!#$%&+./:;?@^_|~-][0-9A-Za-z!#$%&*+./:;=?@^_|~-]*$\" ] ;\n  sh:property [ sh:path vcfc:contigUrl ; sh:minCount 0 ; sh:maxCount 1 ; sh:datatype xsd:anyURI ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        322,
+        325
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        322,
+        325
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FilterDefinitionShape",
+     "label": "FilterDefinitionShape",
+     "summary": "Each vcfc:FilterDefinition: exactly one filterId; at least one fieldDescription",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:filterId",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "not: value \"0\""
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldDescription",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FilterDefinitionShape a sh:NodeShape ;\n  sh:targetClass vcfc:FilterDefinition ;\n  sh:property [ sh:path vcfc:filterId ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:not [ sh:hasValue \"0\" ] ] ;\n  sh:property [ sh:path vcfc:fieldDescription ; sh:minCount 1 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        327,
+        330
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        327,
+        330
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-AltDefinitionShape",
+     "label": "AltDefinitionShape",
+     "summary": "Each vcfc:AltDefinition: exactly one altId; at least one fieldDescription",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:altId",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldDescription",
+       "count": "at least one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AltDefinitionShape a sh:NodeShape ;\n  sh:targetClass vcfc:AltDefinition ;\n  sh:property [ sh:path vcfc:altId ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:fieldDescription ; sh:minCount 1 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        332,
+        335
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        332,
+        335
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-MetaDefinitionShape",
+     "label": "MetaDefinitionShape",
+     "summary": "Each vcfc:MetaDefinition: exactly one fieldId, fieldNumber and fieldType",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldId",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldNumber",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "pattern ^([0-9]+|A|R|G|LA|LR|LG|P|M|[.])$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:fieldType",
+       "count": "exactly one",
+       "checks": [
+        "one of vcfc:IntegerType, vcfc:FloatType, vcfc:CharacterType, vcfc:StringType"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:MetaDefinitionShape a sh:NodeShape ;\n  sh:targetClass vcfc:MetaDefinition ;\n  sh:property [ sh:path vcfc:fieldId ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;\n  sh:property [ sh:path vcfc:fieldNumber ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^([0-9]+|A|R|G|LA|LR|LG|P|M|[.])$\" ] ;\n  sh:property [ sh:path vcfc:fieldType ; sh:minCount 1 ; sh:maxCount 1 ; sh:in (vcfc:IntegerType vcfc:FloatType vcfc:CharacterType vcfc:StringType) ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        337,
+        341
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        337,
+        341
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-SampleHeaderLineShape",
+     "label": "SampleHeaderLineShape",
+     "summary": "Each vcfc:SampleHeaderLine: at most one declaresSample",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:declaresSample",
+       "count": "at most one",
+       "checks": [
+        "class vcfc:SampleDeclaration"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:SampleHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:SampleHeaderLine ;\n  sh:property [ sh:path vcfc:declaresSample ; sh:minCount 0 ; sh:maxCount 1 ; sh:class vcfc:SampleDeclaration ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        343,
+        345
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        343,
+        345
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-PedigreeHeaderLineShape",
+     "label": "PedigreeHeaderLineShape",
+     "summary": "Each vcfc:PedigreeHeaderLine: any number of pedigreeAncestor",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:pedigreeAncestor",
+       "count": "any number",
+       "checks": [
+        "class vcfc:SampleDeclaration"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:PedigreeHeaderLineShape a sh:NodeShape ;\n  sh:targetClass vcfc:PedigreeHeaderLine ;\n  sh:property [ sh:path vcfc:pedigreeAncestor ; sh:minCount 0 ; sh:class vcfc:SampleDeclaration ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        347,
+        349
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        347,
+        349
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VCFRecordOrderShape",
+     "label": "VCFRecordOrderShape",
+     "summary": "Each vcfc:VCFRecord: exactly one recordIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:recordIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VCFRecordOrderShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFRecord ;\n  sh:property [ sh:path vcfc:recordIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        351,
+        353
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        351,
+        353
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-AlleleShape",
+     "label": "AlleleShape",
+     "summary": "Each vcfc:Allele: exactly one alleleIndex, alleleValue and alleleKind",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:alleleIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:alleleValue",
+       "count": "exactly one",
+       "checks": [],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:alleleKind",
+       "count": "exactly one",
+       "checks": [
+        "one of vcfc:BaseSequenceAllele, vcfc:OverlappingDeletionAllele, vcfc:MissingAllele, vcfc:SymbolicAllele, vcfc:UnspecifiedAllele, vcfc:BreakendAllele"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AlleleShape a sh:NodeShape ;\n  sh:targetClass vcfc:Allele ;\n  sh:property [ sh:path vcfc:alleleIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] ;\n  sh:property [ sh:path vcfc:alleleValue ; sh:minCount 1 ; sh:maxCount 1 ] ;\n  sh:property [ sh:path vcfc:alleleKind ; sh:minCount 1 ; sh:maxCount 1 ; sh:in (vcfc:BaseSequenceAllele vcfc:OverlappingDeletionAllele vcfc:MissingAllele vcfc:SymbolicAllele vcfc:UnspecifiedAllele vcfc:BreakendAllele) ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        355,
+        359
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        355,
+        359
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-ReferenceAlleleShape",
+     "label": "ReferenceAlleleShape",
+     "summary": "Each vcfc:ReferenceAllele: any number of alleleIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:alleleIndex",
+       "count": "any number",
+       "checks": [
+        "≤ 0",
+        "≥ 0"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ReferenceAlleleShape a sh:NodeShape ;\n  sh:targetClass vcfc:ReferenceAllele ;\n  sh:property [ sh:path vcfc:alleleIndex ; sh:minInclusive 0 ; sh:maxInclusive 0 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        361,
+        363
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        361,
+        363
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-AltAlleleShape",
+     "label": "AltAlleleShape",
+     "summary": "Each vcfc:AltAllele: any number of alleleIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:alleleIndex",
+       "count": "any number",
+       "checks": [
+        "≥ 1"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AltAlleleShape a sh:NodeShape ;\n  sh:targetClass vcfc:AltAllele ;\n  sh:property [ sh:path vcfc:alleleIndex ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        365,
+        367
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        365,
+        367
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FieldValueItemShape",
+     "label": "FieldValueItemShape",
+     "summary": "Each vcfc:FieldValueItem: exactly one valueIndex and itemValue; at most one tupleArity",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:valueIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:itemValue",
+       "count": "exactly one",
+       "checks": [],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:tupleArity",
+       "count": "at most one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FieldValueItemShape a sh:NodeShape ;\n  sh:targetClass vcfc:FieldValueItem ;\n  sh:property [ sh:path vcfc:valueIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] ;\n  sh:property [ sh:path vcfc:itemValue ; sh:minCount 1 ; sh:maxCount 1 ] ;\n  sh:property [ sh:path vcfc:tupleArity ; sh:minCount 0 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        369,
+        373
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        369,
+        373
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-GenotypeShape",
+     "label": "GenotypeShape",
+     "summary": "Each vcfc:Genotype: exactly one genotypeString and ploidy; at least one hasAlleleCall",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:genotypeString",
+       "count": "exactly one",
+       "checks": [
+        "datatype vcfc:GenotypeString",
+        "pattern ^[|/]?([0-9]+|[.])([|/]([0-9]+|[.]))*$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:ploidy",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:hasAlleleCall",
+       "count": "at least one",
+       "checks": [
+        "class vcfc:GenotypeAlleleCall"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:GenotypeShape a sh:NodeShape ;\n  sh:targetClass vcfc:Genotype ;\n  sh:property [ sh:path vcfc:genotypeString ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype vcfc:GenotypeString ; sh:pattern \"^[|/]?([0-9]+|[.])([|/]([0-9]+|[.]))*$\" ] ;\n  sh:property [ sh:path vcfc:ploidy ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] ;\n  sh:property [ sh:path vcfc:hasAlleleCall ; sh:minCount 1 ; sh:class vcfc:GenotypeAlleleCall ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        375,
+        379
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        375,
+        379
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-GenotypeAlleleCallShape",
+     "label": "GenotypeAlleleCallShape",
+     "summary": "Each vcfc:GenotypeAlleleCall: exactly one callIndex and isNoCall; at most one calledAllele",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:callIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:isNoCall",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:boolean"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:calledAllele",
+       "count": "at most one",
+       "checks": [
+        "class vcfc:Allele"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:GenotypeAlleleCallShape a sh:NodeShape ;\n  sh:targetClass vcfc:GenotypeAlleleCall ;\n  sh:property [ sh:path vcfc:callIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] ;\n  sh:property [ sh:path vcfc:isNoCall ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;\n  sh:property [ sh:path vcfc:calledAllele ; sh:minCount 0 ; sh:maxCount 1 ; sh:class vcfc:Allele ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        381,
+        385
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        381,
+        385
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-PhaseSetShape",
+     "label": "PhaseSetShape",
+     "summary": "Each vcfc:PhaseSet: one of: vcfc:phaseSetId: at least one, datatype xsd:string | vcfc:phaseSetName: at least one, datatype xsd:string",
+     "constraints": [
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: vcfc:phaseSetId: at least one, datatype xsd:string | vcfc:phaseSetName: at least one, datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:PhaseSetShape a sh:NodeShape ;\n  sh:targetClass vcfc:PhaseSet ;\n  sh:or (\n    [ sh:property [ sh:path vcfc:phaseSetId ; sh:minCount 1 ; sh:datatype xsd:string ] ]\n    [ sh:property [ sh:path vcfc:phaseSetName ; sh:minCount 1 ; sh:datatype xsd:string ] ]\n  ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        387,
+        392
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        387,
+        392
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-LocalAlleleSetShape",
+     "label": "LocalAlleleSetShape",
+     "summary": "Each vcfc:LocalAlleleSet: any number of hasLocalAllele",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:hasLocalAllele",
+       "count": "any number",
+       "checks": [
+        "class vcfc:AltAllele"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:LocalAlleleSetShape a sh:NodeShape ;\n  sh:targetClass vcfc:LocalAlleleSet ;\n  sh:property [ sh:path vcfc:hasLocalAllele ; sh:minCount 0 ; sh:class vcfc:AltAllele ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        394,
+        396
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        394,
+        396
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-SymbolicAlleleTypeShape",
+     "label": "SymbolicAlleleTypeShape",
+     "summary": "Each vcfc:SymbolicAlleleType: exactly one svTypeCode",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:svTypeCode",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:SymbolicAlleleTypeShape a sh:NodeShape ;\n  sh:targetClass vcfc:SymbolicAlleleType ;\n  sh:property [ sh:path vcfc:svTypeCode ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        398,
+        400
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        398,
+        400
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-BreakendShape",
+     "label": "BreakendShape",
+     "summary": "Each vcfc:Breakend: one of: vcfc:isSingleBreakend: value true; vcfc:mateBreakend: exactly zero | vcfc:breakendOrientation: exactly one, class vcfc:BreakendOrientation",
+     "constraints": [
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: vcfc:isSingleBreakend: value true; vcfc:mateBreakend: exactly zero | vcfc:breakendOrientation: exactly one, class vcfc:BreakendOrientation"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:BreakendShape a sh:NodeShape ;\n  sh:targetClass vcfc:Breakend ;\n  sh:or ( [ sh:property [ sh:path vcfc:isSingleBreakend ; sh:hasValue true ] ; sh:property [ sh:path vcfc:mateBreakend ; sh:maxCount 0 ] ] [ sh:property [ sh:path vcfc:breakendOrientation ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vcfc:BreakendOrientation ] ] ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        402,
+        404
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        402,
+        404
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-VariantEventShape",
+     "label": "VariantEventShape",
+     "summary": "Each vcfc:VariantEvent: at most one eventType",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:eventType",
+       "count": "at most one",
+       "checks": [
+        "class vcfc:EventType"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VariantEventShape a sh:NodeShape ;\n  sh:targetClass vcfc:VariantEvent ;\n  sh:property [ sh:path vcfc:eventType ; sh:minCount 0 ; sh:maxCount 1 ; sh:class vcfc:EventType ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        406,
+        408
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        406,
+        408
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-ConfidenceIntervalShape",
+     "label": "ConfidenceIntervalShape",
+     "summary": "Each vcfc:ConfidenceInterval: exactly one ciLower and ciUpper",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:ciLower",
+       "count": "exactly one",
+       "checks": [
+        "lessThanOrEquals vcfc:ciUpper",
+        "conforms to vcfc:NumericLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:ciUpper",
+       "count": "exactly one",
+       "checks": [
+        "conforms to vcfc:NumericLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ConfidenceIntervalShape a sh:NodeShape ;\n  sh:targetClass vcfc:ConfidenceInterval ;\n  sh:property [ sh:path vcfc:ciLower ; sh:minCount 1 ; sh:maxCount 1 ; sh:lessThanOrEquals vcfc:ciUpper ; sh:node vcfc:NumericLiteralShape ] ;\n  sh:property [ sh:path vcfc:ciUpper ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:NumericLiteralShape ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        410,
+        413
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        410,
+        413
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-TandemRepeatAlleleShape",
+     "label": "TandemRepeatAlleleShape",
+     "summary": "Each vcfc:TandemRepeatAllele: exactly one repeatSequenceCount",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:repeatSequenceCount",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:TandemRepeatAlleleShape a sh:NodeShape ;\n  sh:targetClass vcfc:TandemRepeatAllele ;\n  sh:property [ sh:path vcfc:repeatSequenceCount ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        415,
+        417
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        415,
+        417
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-RepeatSequenceShape",
+     "label": "RepeatSequenceShape",
+     "summary": "Each vcfc:RepeatSequence: exactly one repeatSequenceIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:repeatSequenceIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:RepeatSequenceShape a sh:NodeShape ;\n  sh:targetClass vcfc:RepeatSequence ;\n  sh:property [ sh:path vcfc:repeatSequenceIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        419,
+        421
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        419,
+        421
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-ReferenceBlockShape",
+     "label": "ReferenceBlockShape",
+     "summary": "Each vcfc:ReferenceBlock: exactly one referenceBlockLength",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:referenceBlockLength",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ReferenceBlockShape a sh:NodeShape ;\n  sh:targetClass vcfc:ReferenceBlock ;\n  sh:property [ sh:path vcfc:referenceBlockLength ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        423,
+        425
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        423,
+        425
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-BaseModificationShape",
+     "label": "BaseModificationShape",
+     "summary": "Each vcfc:BaseModification: exactly one modifiedResidue and modifiedBaseOffset",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:modifiedResidue",
+       "count": "exactly one",
+       "checks": [],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:modifiedBaseOffset",
+       "count": "exactly one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:BaseModificationShape a sh:NodeShape ;\n  sh:targetClass vcfc:BaseModification ;\n  sh:property [ sh:path vcfc:modifiedResidue ; sh:minCount 1 ; sh:maxCount 1 ] ;\n  sh:property [ sh:path vcfc:modifiedBaseOffset ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        427,
+        430
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        427,
+        430
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-RepresentationProfileShape",
+     "label": "RepresentationProfileShape",
+     "summary": "Each vcfc:VCFFile: exactly one of: vcfc:representationProfile: exactly one, value vcfc:ExpandedRepresentation | vcfc:representationProfile: exactly one, value vcfc:CondensedRepresentation",
+     "constraints": [
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "exactly one of: vcfc:representationProfile: exactly one, value vcfc:ExpandedRepresentation | vcfc:representationProfile: exactly one, value vcfc:CondensedRepresentation"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:RepresentationProfileShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFFile ;\n  sh:xone (\n    [ sh:property [ sh:path vcfc:representationProfile ; sh:hasValue vcfc:ExpandedRepresentation ; sh:minCount 1 ; sh:maxCount 1 ] ]\n    [ sh:property [ sh:path vcfc:representationProfile ; sh:hasValue vcfc:CondensedRepresentation ; sh:minCount 1 ; sh:maxCount 1 ] ]\n  ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        432,
+        437
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        432,
+        437
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-IntegerLiteralShape",
+     "label": "IntegerLiteralShape",
+     "summary": "Used by other shapes through sh:node; each value: one of: datatype xsd:integer | datatype xsd:nonNegativeInteger | datatype xsd:positiveInteger | datatype xsd:nonPositiveInteger | datatype xsd:negativeInteger | datatype xsd:long | datatype xsd:int | datatype xsd:short | datatype xsd:byte | datatype xsd:unsignedLong | datatype xsd:unsignedInt | datatype xsd:unsignedShort | datatype xsd:unsignedByte",
+     "constraints": [
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: datatype xsd:integer | datatype xsd:nonNegativeInteger | datatype xsd:positiveInteger | datatype xsd:nonPositiveInteger | datatype xsd:negativeInteger | datatype xsd:long | datatype xsd:int | datatype xsd:short | datatype xsd:byte | datatype xsd:unsignedLong | datatype xsd:unsignedInt | datatype xsd:unsignedShort | datatype xsd:unsignedByte"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "# Integer-derived RDF datatypes share their numeric value space.\nvcfc:IntegerLiteralShape a sh:NodeShape ; sh:or ( [ sh:datatype xsd:integer ] [ sh:datatype xsd:nonNegativeInteger ] [ sh:datatype xsd:positiveInteger ] [ sh:datatype xsd:nonPositiveInteger ] [ sh:datatype xsd:negativeInteger ] [ sh:datatype xsd:long ] [ sh:datatype xsd:int ] [ sh:datatype xsd:short ] [ sh:datatype xsd:byte ] [ sh:datatype xsd:unsignedLong ] [ sh:datatype xsd:unsignedInt ] [ sh:datatype xsd:unsignedShort ] [ sh:datatype xsd:unsignedByte ] ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        439,
+        440
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        439,
+        440
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-NumericLiteralShape",
+     "label": "NumericLiteralShape",
+     "summary": "Used by other shapes through sh:node; each value: one of: conforms to vcfc:IntegerLiteralShape | datatype xsd:decimal | datatype xsd:float | datatype xsd:double",
+     "constraints": [
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: conforms to vcfc:IntegerLiteralShape | datatype xsd:decimal | datatype xsd:float | datatype xsd:double"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:NumericLiteralShape a sh:NodeShape ;\n  sh:or ( [ sh:node vcfc:IntegerLiteralShape ] [ sh:datatype xsd:decimal ] [ sh:datatype xsd:float ] [ sh:datatype xsd:double ] ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        442,
+        443
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        442,
+        443
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-NullLiteralShape",
+     "label": "NullLiteralShape",
+     "summary": "Each object of vcfc:fieldValue: one of: not: datatype vcfc:Null | datatype vcfc:Null; pattern ^[.]$",
+     "constraints": [
+      {
+       "kind": "node",
+       "path": "",
+       "count": "",
+       "checks": [
+        "one of: not: datatype vcfc:Null | datatype vcfc:Null; pattern ^[.]$"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:NullLiteralShape a sh:NodeShape ;\n  sh:targetObjectsOf vcfc:fieldValue, vcfc:alt, vcfc:qual, vcfc:recordId, vcfc:filter, vcfc:itemValue ;\n  sh:or ( [ sh:not [ sh:datatype vcfc:Null ] ] [ sh:datatype vcfc:Null ; sh:pattern \"^[.]$\" ] ) .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        444,
+        446
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        444,
+        446
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FixedArityShape",
+     "label": "FixedArityShape",
+     "summary": "Each vcfc:FieldDefinition: at most one fieldNumberInteger",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:fieldNumberInteger",
+       "count": "at most one",
+       "checks": [
+        "≥ 0",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FixedArityShape a sh:NodeShape ; sh:targetClass vcfc:FieldDefinition ;\n  sh:property [ sh:path vcfc:fieldNumberInteger ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 0 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        447,
+        448
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        447,
+        448
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-RecordIdentifierShape",
+     "label": "RecordIdentifierShape",
+     "summary": "Each vcfc:RecordIdentifier: exactly one identifierValue and componentIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:identifierValue",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "not: one of \".\"",
+        "pattern ^[^; \t\r\n]+$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:componentIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:RecordIdentifierShape a sh:NodeShape ; sh:targetClass vcfc:RecordIdentifier ;\n  sh:property [ sh:path vcfc:identifierValue ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^[^; \\t\\r\\n]+$\" ; sh:not [ sh:in (\".\") ] ] ;\n  sh:property [ sh:path vcfc:componentIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        450,
+        452
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        450,
+        452
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-FilterCodeShape",
+     "label": "FilterCodeShape",
+     "summary": "Each vcfc:FilterCode: exactly one filterCodeValue and componentIndex",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:filterCodeValue",
+       "count": "exactly one",
+       "checks": [
+        "datatype xsd:string",
+        "not: one of \"0\", \".\", \"PASS\"",
+        "pattern ^[^; \t\r\n]+$"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:componentIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FilterCodeShape a sh:NodeShape ; sh:targetClass vcfc:FilterCode ;\n  sh:property [ sh:path vcfc:filterCodeValue ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern \"^[^; \\t\\r\\n]+$\" ; sh:not [ sh:in (\"0\" \".\" \"PASS\") ] ] ;\n  sh:property [ sh:path vcfc:componentIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        453,
+        455
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        453,
+        455
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-LocalAlleleMembershipShape",
+     "label": "LocalAlleleMembershipShape",
+     "summary": "Each vcfc:LocalAlleleMembership: exactly one localIndex and localAllele",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:localIndex",
+       "count": "exactly one",
+       "checks": [
+        "≥ 1",
+        "conforms to vcfc:IntegerLiteralShape"
+       ],
+       "severity": "Violation"
+      },
+      {
+       "kind": "property",
+       "path": "vcfc:localAllele",
+       "count": "exactly one",
+       "checks": [
+        "class vcfc:AltAllele"
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:LocalAlleleMembershipShape a sh:NodeShape ; sh:targetClass vcfc:LocalAlleleMembership ;\n  sh:property [ sh:path vcfc:localIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vcfc:IntegerLiteralShape ; sh:minInclusive 1 ] ;\n  sh:property [ sh:path vcfc:localAllele ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vcfc:AltAllele ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        456,
+        458
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        456,
+        458
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-core-AllelePhaseIndicatorShape",
+     "label": "AllelePhaseIndicatorShape",
+     "summary": "Each vcfc:GenotypeAlleleCall: at most one phaseIndicator",
+     "constraints": [
+      {
+       "kind": "property",
+       "path": "vcfc:phaseIndicator",
+       "count": "at most one",
+       "checks": [
+        "one of \"/\", \"|\""
+       ],
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AllelePhaseIndicatorShape a sh:NodeShape ; sh:targetClass vcfc:GenotypeAlleleCall ;\n  sh:property [ sh:path vcfc:phaseIndicator ; sh:maxCount 1 ; sh:in (\"/\" \"|\") ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        459,
+        460
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary.shacl.ttl",
+       "lines": [
+        459,
+        460
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shacl-consistency",
+   "rq": "RQ1",
+   "title": "SHACL shapes: the consistency profile (deeper)",
+   "intro": "Checks that related values agree, for example GT text with ploidy and called alleles, or REF and ALT text with their allele resources. With the core and vocabulary-sparql profiles it forms the full set (--shacl-profile full), run in fault injection on small fixtures only: each constraint is a SPARQL query, which the validator runs on the whole graph, and the cost grows faster than the graph.",
+   "kind": "shacl",
+   "file": [
+    {
+     "source": "VCF-RDFizer",
+     "rev": "v3.1.0",
+     "commit": "d3b34d5",
+     "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl"
+    },
+    {
+     "source": "VCF-RDFizer",
+     "rev": "v3.3.1",
+     "commit": "b25fb7b",
+     "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl"
+    }
+   ],
+   "items": [
+    {
+     "id": "shacl-consistency-HeaderVersionAgreementShape",
+     "label": "HeaderVersionAgreementShape",
+     "summary": "Each vcfc:VCFFile: File and fileformat header versions must agree.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "File and fileformat header versions must agree.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:HeaderVersionAgreementShape a sh:NodeShape ; sh:targetClass vcfc:VCFFile ;\n  sh:sparql [ sh:message \"File and fileformat header versions must agree.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:fileFormat ?version ; vcfc:hasHeader/vcfc:hasHeaderLine ?line .\n?line a vcfc:FileFormatHeaderLine ; vcfc:headerValue ?value . FILTER (?value != ?version)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        6,
+        13
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        6,
+        13
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-HeaderDeclarationAgreementShape",
+     "label": "HeaderDeclarationAgreementShape",
+     "summary": "Each vcfc:StructuredHeaderLine: Header attributes must agree with their parsed declaration properties.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Header attributes must agree with their parsed declaration properties.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:HeaderDeclarationAgreementShape a sh:NodeShape ; sh:targetClass vcfc:StructuredHeaderLine ;\n  sh:sparql [ sh:message \"Header attributes must agree with their parsed declaration properties.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:hasAttribute ?a . ?a vcfc:attributeKey ?key ; vcfc:attributeValue ?value .\nOPTIONAL { $this vcfc:fieldId ?fieldId }\nOPTIONAL { $this vcfc:contigId ?contigId }\nOPTIONAL { $this vcfc:filterId ?filterId }\nOPTIONAL { $this vcfc:altId ?altId }\nOPTIONAL { $this vcfc:fieldNumber ?number }\nOPTIONAL { $this vcfc:fieldType ?type }\nFILTER ((?key=\"ID\" && ((BOUND(?fieldId) && ?value!=?fieldId) || (BOUND(?contigId) && ?value!=?contigId) || (BOUND(?filterId) && ?value!=?filterId) || (BOUND(?altId) && ?value!=?altId))) ||\n(?key=\"Number\" && BOUND(?number) && ?value!=?number) ||\n(?key=\"Type\" && BOUND(?type) && ?value!=REPLACE(STRAFTER(STR(?type),\"#\"),\"Type$\",\"\")))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        15,
+        30
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        15,
+        30
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-FixedArityAgreementShape",
+     "label": "FixedArityAgreementShape",
+     "summary": "Each vcfc:FieldDefinition: Fixed Number and fieldNumberInteger must agree.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Fixed Number and fieldNumberInteger must agree.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FixedArityAgreementShape a sh:NodeShape ; sh:targetClass vcfc:FieldDefinition ;\n  sh:sparql [ sh:message \"Fixed Number and fieldNumberInteger must agree.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:fieldNumber ?number ; vcfc:fieldNumberInteger ?integer .\nFILTER(!REGEX(?number,\"^[0-9]+$\") || xsd:integer(?number) != ?integer)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        32,
+        39
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        32,
+        39
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-AlleleRawAgreementShape",
+     "label": "AlleleRawAgreementShape",
+     "summary": "Each vcfc:VCFRecord: REF/ALT components must agree with their raw columns and indices.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "REF/ALT components must agree with their raw columns and indices.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AlleleRawAgreementShape a sh:NodeShape ; sh:targetClass vcfc:VCFRecord ;\n  sh:sparql [ sh:message \"REF/ALT components must agree with their raw columns and indices.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:ref ?ref ; vcfc:alt ?alt .\n{ $this vcfc:ref ?ref ; vcfc:hasReferenceAllele ?a . ?a vcfc:alleleValue ?value . FILTER(STR(?value)!=STR(?ref)) }\nUNION { $this vcfc:alt ?alt ; vcfc:hasAltAllele ?a . ?a vcfc:alleleIndex ?index ; vcfc:alleleValue ?value .\nBIND(REPLACE(STR(?alt),CONCAT(\"^([^,]*,){\",STR(?index-1),\"}([^,]*).*$\"),\"$2\") AS ?token)\nFILTER(STR(?value)!=?token || STR(?alt)=\".\" || ?index > (STRLEN(STR(?alt)) - STRLEN(REPLACE(STR(?alt), \",\", \"\")) + 1)) }\nUNION { $this vcfc:hasAltAllele ?a,?b . ?a vcfc:alleleIndex ?idx . ?b vcfc:alleleIndex ?idx . FILTER(?a!=?b) }\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        41,
+        52
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        41,
+        52
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-AlleleCountAgreementShape",
+     "label": "AlleleCountAgreementShape",
+     "summary": "Each vcfc:VCFRecord: A materialized ALT collection must contain every ALT allele.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A materialized ALT collection must contain every ALT allele.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AlleleCountAgreementShape a sh:NodeShape ; sh:targetClass vcfc:VCFRecord ;\n  sh:sparql [ sh:message \"A materialized ALT collection must contain every ALT allele.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:alt ?raw . FILTER EXISTS { $this vcfc:hasAltAllele ?any }\n{ SELECT $this (COUNT(DISTINCT ?a) AS ?n) WHERE { $this vcfc:alt ?raw . OPTIONAL { $this vcfc:hasAltAllele ?a } } GROUP BY $this }\nFILTER(?n != IF(STR(?raw)=\".\",0,(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \",\", \"\")) + 1)))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        54,
+        62
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        54,
+        62
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-GenotypeCallAgreementShape",
+     "label": "GenotypeCallAgreementShape",
+     "summary": "Each vcfc:Genotype: GT text, ploidy, call indices and called alleles must agree.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "GT text, ploidy, call indices and called alleles must agree.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:GenotypeCallAgreementShape a sh:NodeShape ; sh:targetClass vcfc:Genotype ;\n  sh:sparql [ sh:message \"GT text, ploidy, call indices and called alleles must agree.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:genotypeString ?raw ; vcfc:ploidy ?ploidy .\nBIND(REPLACE(STR(?raw),\"^[|/]\",\"\") AS ?gt)\n{ SELECT $this (COUNT(DISTINCT ?call) AS ?n) WHERE { $this vcfc:genotypeString ?raw . OPTIONAL { $this vcfc:hasAlleleCall ?call } } GROUP BY $this }\nFILTER (?ploidy != ?n || ?ploidy != (STRLEN(STR(?gt)) - STRLEN(REPLACE(STR(?gt), \"[|/]\", \"\")) + 1))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        64,
+        73
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        64,
+        73
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-GenotypeAlleleAgreementShape",
+     "label": "GenotypeAlleleAgreementShape",
+     "summary": "Each vcfc:Genotype: Each parsed GT allele and phase indicator must match its source position.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Each parsed GT allele and phase indicator must match its source position.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:GenotypeAlleleAgreementShape a sh:NodeShape ; sh:targetClass vcfc:Genotype ;\n  sh:sparql [ sh:message \"Each parsed GT allele and phase indicator must match its source position.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:genotypeString ?raw ; vcfc:hasAlleleCall ?call .\n?call vcfc:callIndex ?index ; vcfc:isNoCall ?missing .\nBIND(REPLACE(STR(?raw),\"^[|/]\",\"\") AS ?gt)\nBIND(REPLACE(?gt,CONCAT(\"^([^|/]*[|/]){\",STR(?index),\"}([^|/]*).*$\"),\"$2\") AS ?token)\nOPTIONAL { ?call vcfc:calledAllele/vcfc:alleleIndex ?allele }\nOPTIONAL { ?call vcfc:phaseIndicator ?phase }\nBIND(IF(?index=0,IF(REGEX(STR(?raw),\"^[|/]\"),SUBSTR(STR(?raw),1,1),IF(CONTAINS(STR(?raw),\"/\"),\"/\",\"|\")),REPLACE(?gt,CONCAT(\"^([^|/]*[|/]){\",STR(?index-1),\"}[^|/]*([|/]).*$\"),\"$2\")) AS ?expectedPhase)\nFILTER (?missing != (?token=\".\") || (?missing && BOUND(?allele)) || (!?missing && (!BOUND(?allele) || STR(?allele)!=?token)) || (BOUND(?phase) && ?phase!=?expectedPhase) || ?index >= (STRLEN(STR(?gt)) - STRLEN(REPLACE(STR(?gt), \"[|/]\", \"\")) + 1))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        75,
+        88
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        75,
+        88
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-GenotypeIndexUniqueShape",
+     "label": "GenotypeIndexUniqueShape",
+     "summary": "Each vcfc:Genotype: GT call indices must be unique.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "GT call indices must be unique.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:GenotypeIndexUniqueShape a sh:NodeShape ; sh:targetClass vcfc:Genotype ;\n  sh:sparql [ sh:message \"GT call indices must be unique.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:hasAlleleCall ?a,?b . ?a vcfc:callIndex ?i . ?b vcfc:callIndex ?i . FILTER(?a!=?b)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        90,
+        96
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        90,
+        96
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-ValueItemRawAgreementShape",
+     "label": "ValueItemRawAgreementShape",
+     "summary": "Each vcfc:FieldValueItem: Value items must agree with raw field tokens and contiguous zero-based indices.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Value items must agree with raw field tokens and contiguous zero-based indices.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ValueItemRawAgreementShape a sh:NodeShape ; sh:targetClass vcfc:FieldValueItem ;\n  sh:sparql [ sh:message \"Value items must agree with raw field tokens and contiguous zero-based indices.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?field vcfc:hasValueItem $this ; vcfc:fieldValue ?raw .\n$this vcfc:valueIndex ?idx ; vcfc:itemValue ?value .\nBIND(REPLACE(STR(?raw),CONCAT(\"^([^,]*,){\",STR(?idx),\"}([^,]*).*$\"),\"$2\") AS ?token)\nFILTER (?idx >= (STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \",\", \"\")) + 1) || (STR(?value)!=?token && !(isNumeric(?value) && xsd:double(?value)=xsd:double(?token))))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        98,
+        107
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        98,
+        107
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-ValueItemCountShape",
+     "label": "ValueItemCountShape",
+     "summary": "Each vcfc:FieldValueItem: A materialized field list must contain each source item exactly once.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A materialized field list must contain each source item exactly once.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ValueItemCountShape a sh:NodeShape ; sh:targetClass vcfc:FieldValueItem ;\n  sh:sparql [ sh:message \"A materialized field list must contain each source item exactly once.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?field vcfc:hasValueItem $this ; vcfc:fieldValue ?raw .\n{ SELECT $this ?field (COUNT(DISTINCT ?item) AS ?n) (COUNT(DISTINCT ?idx) AS ?indices) WHERE { ?field vcfc:hasValueItem ?item . ?item vcfc:valueIndex ?idx } GROUP BY $this ?field }\nFILTER(?n != ?indices || ?n != IF(STR(?raw)=\"\",0,(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \",\", \"\")) + 1)))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        109,
+        117
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        109,
+        117
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-InfoFieldValueLexicalShape",
+     "label": "InfoFieldValueLexicalShape",
+     "summary": "Each vcfc:InfoFieldValue: Field values must match their declared VCF type.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Field values must match their declared VCF type.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:InfoFieldValueLexicalShape a sh:NodeShape ; sh:targetClass vcfc:InfoFieldValue ;\n  sh:sparql [ sh:message \"Field values must match their declared VCF type.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:declaredBy/vcfc:fieldType ?type ; vcfc:fieldValue ?raw .\nFILTER(STR(?raw)!=\".\")\nFILTER((?type=vcfc:IntegerType && !REGEX(STR(?raw),\"^([+-]?[0-9]+|[.])(,([+-]?[0-9]+|[.]))*$\")) ||\n(?type=vcfc:FloatType && !REGEX(STR(?raw),\"^([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?|[-+]?(INF|INFINITY|NAN)|[.])(,([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?|[-+]?(INF|INFINITY|NAN)|[.]))*$\",\"i\")) ||\n(?type=vcfc:CharacterType && !REGEX(STR(?raw),\"^([^,]|(%[0-9A-Fa-f]{2})+)(,([^,]|(%[0-9A-Fa-f]{2})+))*$\")) || ?type=vcfc:FlagType)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        119,
+        129
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        119,
+        129
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-InfoFieldValueCardinalityShape",
+     "label": "InfoFieldValueCardinalityShape",
+     "summary": "Each vcfc:InfoFieldValue: Field cardinality must agree with Number, alleles and ploidy.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Field cardinality must agree with Number, alleles and ploidy.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:InfoFieldValueCardinalityShape a sh:NodeShape ; sh:targetClass vcfc:InfoFieldValue ;\n  sh:sparql [ sh:message \"Field cardinality must agree with Number, alleles and ploidy.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:declaredBy ?d ; vcfc:fieldValue ?raw . ?d vcfc:fieldNumber ?number .\n?record vcfc:hasCall ?c ; vcfc:alt ?alt .\n{ ?c vcfc:hasInfoValue $this }\nUNION { ?c vcfc:hasSampleCall ?sample . ?sample vcfc:hasFormatValue $this }\nBIND(IF(STR(?alt)=\".\",0,(STRLEN(STR(?alt)) - STRLEN(REPLACE(STR(?alt), \",\", \"\")) + 1)) AS ?n)\nOPTIONAL { ?sample vcfc:hasGenotype/vcfc:ploidy ?ploidy }\nOPTIONAL { ?sample vcfc:hasFormatValue ?laa . ?laa vcfc:declaredBy/vcfc:fieldId \"LAA\" ; vcfc:fieldValue ?local }\nBIND(COALESCE(?ploidy,2) AS ?p)\nBIND(IF(!BOUND(?local) || STR(?local)=\".\" || STR(?local)=\"\",0,(STRLEN(STR(?local)) - STRLEN(REPLACE(STR(?local), \",\", \"\")) + 1)) AS ?l)\nBIND(IF(?number=\"LG\",?l+1,?n+1) AS ?alleleN)\nBIND(IF(REGEX(?number,\"^[0-9]+$\"),xsd:integer(?number),IF(?number=\"A\",?n,IF(?number=\"R\",?n+1,IF(?number=\"P\",?p,IF(?number=\"LA\",?l,IF(?number=\"LR\",?l+1,IF(?number IN (\"G\",\"LG\"),IF(?p=1,((?alleleN + 0))/1,IF(?p=2,((?alleleN + 0) * (?alleleN + 1))/2,IF(?p=3,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2))/6,IF(?p=4,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3))/24,IF(?p=5,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4))/120,IF(?p=6,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4) * (?alleleN + 5))/720,IF(?p=7,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4) * (?alleleN + 5) * (?alleleN + 6))/5040,IF(?p=8,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4) * (?alleleN + 5) * (?alleleN + 6) * (?alleleN + 7))/40320,-1)))))))),-1))))))) AS ?expected)\nBIND(IF(STR(?raw)=\"\",0,(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \",\", \"\")) + 1)) AS ?actual)\nFILTER(STR(?raw)!=\".\" && ?expected>=0 && ?expected!=?actual)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        131,
+        149
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        131,
+        149
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-FormatFieldValueLexicalShape",
+     "label": "FormatFieldValueLexicalShape",
+     "summary": "Each vcfc:FormatFieldValue: Field values must match their declared VCF type.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Field values must match their declared VCF type.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FormatFieldValueLexicalShape a sh:NodeShape ; sh:targetClass vcfc:FormatFieldValue ;\n  sh:sparql [ sh:message \"Field values must match their declared VCF type.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:declaredBy/vcfc:fieldType ?type ; vcfc:fieldValue ?raw .\nFILTER(STR(?raw)!=\".\")\nFILTER((?type=vcfc:IntegerType && !REGEX(STR(?raw),\"^([+-]?[0-9]+|[.])(,([+-]?[0-9]+|[.]))*$\")) ||\n(?type=vcfc:FloatType && !REGEX(STR(?raw),\"^([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?|[-+]?(INF|INFINITY|NAN)|[.])(,([-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?|[-+]?(INF|INFINITY|NAN)|[.]))*$\",\"i\")) ||\n(?type=vcfc:CharacterType && !REGEX(STR(?raw),\"^([^,]|(%[0-9A-Fa-f]{2})+)(,([^,]|(%[0-9A-Fa-f]{2})+))*$\")) || ?type=vcfc:FlagType)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        151,
+        161
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        151,
+        161
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-FormatFieldValueCardinalityShape",
+     "label": "FormatFieldValueCardinalityShape",
+     "summary": "Each vcfc:FormatFieldValue: Field cardinality must agree with Number, alleles and ploidy.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Field cardinality must agree with Number, alleles and ploidy.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FormatFieldValueCardinalityShape a sh:NodeShape ; sh:targetClass vcfc:FormatFieldValue ;\n  sh:sparql [ sh:message \"Field cardinality must agree with Number, alleles and ploidy.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:declaredBy ?d ; vcfc:fieldValue ?raw . ?d vcfc:fieldNumber ?number .\n?record vcfc:hasCall ?c ; vcfc:alt ?alt .\n{ ?c vcfc:hasInfoValue $this }\nUNION { ?c vcfc:hasSampleCall ?sample . ?sample vcfc:hasFormatValue $this }\nBIND(IF(STR(?alt)=\".\",0,(STRLEN(STR(?alt)) - STRLEN(REPLACE(STR(?alt), \",\", \"\")) + 1)) AS ?n)\nOPTIONAL { ?sample vcfc:hasGenotype/vcfc:ploidy ?ploidy }\nOPTIONAL { ?sample vcfc:hasFormatValue ?laa . ?laa vcfc:declaredBy/vcfc:fieldId \"LAA\" ; vcfc:fieldValue ?local }\nBIND(COALESCE(?ploidy,2) AS ?p)\nBIND(IF(!BOUND(?local) || STR(?local)=\".\" || STR(?local)=\"\",0,(STRLEN(STR(?local)) - STRLEN(REPLACE(STR(?local), \",\", \"\")) + 1)) AS ?l)\nBIND(IF(?number=\"LG\",?l+1,?n+1) AS ?alleleN)\nBIND(IF(REGEX(?number,\"^[0-9]+$\"),xsd:integer(?number),IF(?number=\"A\",?n,IF(?number=\"R\",?n+1,IF(?number=\"P\",?p,IF(?number=\"LA\",?l,IF(?number=\"LR\",?l+1,IF(?number IN (\"G\",\"LG\"),IF(?p=1,((?alleleN + 0))/1,IF(?p=2,((?alleleN + 0) * (?alleleN + 1))/2,IF(?p=3,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2))/6,IF(?p=4,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3))/24,IF(?p=5,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4))/120,IF(?p=6,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4) * (?alleleN + 5))/720,IF(?p=7,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4) * (?alleleN + 5) * (?alleleN + 6))/5040,IF(?p=8,((?alleleN + 0) * (?alleleN + 1) * (?alleleN + 2) * (?alleleN + 3) * (?alleleN + 4) * (?alleleN + 5) * (?alleleN + 6) * (?alleleN + 7))/40320,-1)))))))),-1))))))) AS ?expected)\nBIND(IF(STR(?raw)=\"\",0,(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \",\", \"\")) + 1)) AS ?actual)\nFILTER(STR(?raw)!=\".\" && ?expected>=0 && ?expected!=?actual)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        163,
+        181
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        163,
+        181
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-TypedFieldIntegerBoundsShape",
+     "label": "TypedFieldIntegerBoundsShape",
+     "summary": "Each vcfc:FieldValueItem: VCF Integer values must fit the permitted signed 32-bit range.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "VCF Integer values must fit the permitted signed 32-bit range.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:TypedFieldIntegerBoundsShape a sh:NodeShape ; sh:targetClass vcfc:FieldValueItem ;\n  sh:sparql [ sh:message \"VCF Integer values must fit the permitted signed 32-bit range.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?field vcfc:hasValueItem $this ; vcfc:declaredBy/vcfc:fieldType vcfc:IntegerType .\n$this vcfc:itemValue ?v . FILTER(STR(?v)!=\".\" && (xsd:integer(?v) < -2147483640 || xsd:integer(?v)>2147483647))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        183,
+        190
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        183,
+        190
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-MatrixDimensionShape",
+     "label": "MatrixDimensionShape",
+     "summary": "Each vcfc:FormatValueVector: VCFTextVector must have exactly one position per sample.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "VCFTextVector must have exactly one position per sample.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:MatrixDimensionShape a sh:NodeShape ; sh:targetClass vcfc:FormatValueVector ;\n  sh:sparql [ sh:message \"VCFTextVector must have exactly one position per sample.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:valueEncoding vcfc:VCFTextVector ; (vcfc:encodedValues) ?raw .\n?matrix vcfc:hasFormatValueVector $this ; vcfc:appliesToSampleSet ?set .\n{ SELECT $this ?set (COUNT(DISTINCT ?sample) AS ?n) WHERE { ?set vcfc:hasSample ?sample } GROUP BY $this ?set }\nFILTER((STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \"\\\\t\", \"\")) + 1) != ?n)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        192,
+        201
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        192,
+        201
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-ComponentIdentifierShape",
+     "label": "ComponentIdentifierShape",
+     "summary": "Each vcfc:VCFFile: Individual record identifiers must be unique across records.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Individual record identifiers must be unique across records.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ComponentIdentifierShape a sh:NodeShape ; sh:targetClass vcfc:VCFFile ;\n  sh:sparql [ sh:message \"Individual record identifiers must be unique across records.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:hasRecord ?a,?b .\n?a vcfc:hasIdentifier/vcfc:identifierValue ?id . ?b vcfc:hasIdentifier/vcfc:identifierValue ?id . FILTER(?a!=?b)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        203,
+        210
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        203,
+        210
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-IdentifierRawShape",
+     "label": "IdentifierRawShape",
+     "summary": "Each vcfc:RecordIdentifier: Parsed ID components must agree with their raw ID column.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Parsed ID components must agree with their raw ID column.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:IdentifierRawShape a sh:NodeShape ; sh:targetClass vcfc:RecordIdentifier ;\n  sh:sparql [ sh:message \"Parsed ID components must agree with their raw ID column.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?record vcfc:hasIdentifier $this ; vcfc:recordId ?raw . $this vcfc:componentIndex ?i ; vcfc:identifierValue ?v .\nBIND(REPLACE(STR(?raw),CONCAT(\"^([^;]*;){\",STR(?i-1),\"}([^;]*).*$\"),\"$2\") AS ?expected)\nFILTER(STR(?raw)=\".\" || ?v!=?expected || ?i>(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \";\", \"\")) + 1))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        212,
+        220
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        212,
+        220
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-FilterRawShape",
+     "label": "FilterRawShape",
+     "summary": "Each vcfc:FilterCode: Parsed filter failures must agree with FILTER or FT.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Parsed filter failures must agree with FILTER or FT.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FilterRawShape a sh:NodeShape ; sh:targetClass vcfc:FilterCode ;\n  sh:sparql [ sh:message \"Parsed filter failures must agree with FILTER or FT.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?parent vcfc:hasFilterCode $this . { ?parent vcfc:filter ?raw } UNION { ?parent vcfc:sampleFilter ?raw }\n$this vcfc:componentIndex ?i ; vcfc:filterCodeValue ?v .\nBIND(REPLACE(STR(?raw),CONCAT(\"^([^;]*;){\",STR(?i-1),\"}([^;]*).*$\"),\"$2\") AS ?expected)\nFILTER(STR(?raw) IN (\".\",\"PASS\") || ?v!=?expected || ?i>(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \";\", \"\")) + 1))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        222,
+        231
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        222,
+        231
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-LocalMembershipShape",
+     "label": "LocalMembershipShape",
+     "summary": "Each vcfc:LocalAlleleSet: Local membership order must agree with sample LAA and record-global ALT indices.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Local membership order must agree with sample LAA and record-global ALT indices.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:LocalMembershipShape a sh:NodeShape ; sh:targetClass vcfc:LocalAlleleSet ;\n  sh:sparql [ sh:message \"Local membership order must agree with sample LAA and record-global ALT indices.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?sample vcfc:hasGenotype/vcfc:hasLocalAlleleSet $this ; vcfc:hasFormatValue ?fv . ?fv vcfc:declaredBy/vcfc:fieldId \"LAA\" ; vcfc:fieldValue ?raw .\n$this vcfc:hasLocalAlleleMembership ?member . ?member vcfc:localIndex ?i ; vcfc:localAllele/vcfc:alleleIndex ?a .\nBIND(REPLACE(STR(?raw),CONCAT(\"^([^,]*,){\",STR(?i-1),\"}([^,]*).*$\"),\"$2\") AS ?expected)\nFILTER(STR(?a)!=?expected || ?i>(STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \",\", \"\")) + 1))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        233,
+        242
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        233,
+        242
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-ReferenceBlockExtentShape",
+     "label": "ReferenceBlockExtentShape",
+     "summary": "Each vcfc:ReferenceBlock: A sample reference block must agree with FORMAT LEN and record POS.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A sample reference block must agree with FORMAT LEN and record POS.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:ReferenceBlockExtentShape a sh:NodeShape ; sh:targetClass vcfc:ReferenceBlock ;\n  sh:sparql [ sh:message \"A sample reference block must agree with FORMAT LEN and record POS.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?sample vcfc:hasReferenceBlock $this ; vcfc:hasFormatValue ?fv . ?fv vcfc:declaredBy/vcfc:fieldId \"LEN\" ; vcfc:fieldValue ?raw .\n?record vcfc:pos ?pos ; vcfc:hasCall/vcfc:hasSampleCall ?sample .\n$this vcfc:referenceBlockLength ?length ; vcfc:endPosition ?end . FILTER(?length!=xsd:integer(?raw) || ?end!=?pos+?length-1)\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        244,
+        252
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        244,
+        252
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-FormatKeyRawAgreementShape",
+     "label": "FormatKeyRawAgreementShape",
+     "summary": "Each vcfc:FormatKey: Declared FORMAT keys must agree with the FORMAT column order.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Declared FORMAT keys must agree with the FORMAT column order.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FormatKeyRawAgreementShape a sh:NodeShape ; sh:targetClass vcfc:FormatKey ;\n  sh:sparql [ sh:message \"Declared FORMAT keys must agree with the FORMAT column order.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?call vcfc:hasFormatKey $this ; vcfc:formatRaw ?raw .\n$this vcfc:fieldIndex ?i ; vcfc:declaredBy/vcfc:fieldId ?key .\nBIND(REPLACE(STR(?raw),CONCAT(\"^([^:]*:){\",STR(?i-1),\"}([^:]*).*$\"),\"$2\") AS ?expected)\nFILTER(?key != ?expected || ?i > (STRLEN(STR(?raw)) - STRLEN(REPLACE(STR(?raw), \":\", \"\")) + 1))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        254,
+        263
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        254,
+        263
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-AssemblyContigAgreementShape",
+     "label": "AssemblyContigAgreementShape",
+     "summary": "Each vcfc:VCFRecord: A bracketed CHROM must agree with its parsed assembly contig and must not also name a declared contig.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A bracketed CHROM must agree with its parsed assembly contig and must not also name a declared contig.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:AssemblyContigAgreementShape a sh:NodeShape ; sh:targetClass vcfc:VCFRecord ;\n  sh:sparql [ sh:message \"A bracketed CHROM must agree with its parsed assembly contig and must not also name a declared contig.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n$this vcfc:chrom ?chrom .\nOPTIONAL { $this vcfc:chromAssemblyContig/vcfc:assemblyContigId ?parsed }\nOPTIONAL { $this vcfc:chromosome ?declared }\nBIND(REGEX(STR(?chrom),\"^<[^<>,\\\\\\\\s]+>$\") AS ?bracketed)\nFILTER((?bracketed && (!BOUND(?parsed) || CONCAT(\"<\",?parsed,\">\") != STR(?chrom) || BOUND(?declared)))\n    || (!?bracketed && BOUND(?parsed)))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        265,
+        276
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        265,
+        276
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-consistency-PaddingInterpretationAgreementShape",
+     "label": "PaddingInterpretationAgreementShape",
+     "summary": "Each vcfc:PaddingInterpretation: A padding interpretation must agree with its rule, and its anchor must follow from POS and side.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A padding interpretation must agree with its rule, and its anchor must follow from POS and side.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:PaddingInterpretationAgreementShape a sh:NodeShape ; sh:targetClass vcfc:PaddingInterpretation ;\n  sh:sparql [ sh:message \"A padding interpretation must agree with its rule, and its anchor must follow from POS and side.\" ;\n    sh:select \"\"\"PREFIX vcfc: <https://w3id.org/vcf-core/vocab#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT $this WHERE {\n?record vcfc:hasPaddingInterpretation $this ; vcfc:pos ?pos ; vcfc:ref ?ref .\n$this vcfc:paddingRule ?rule ; vcfc:paddingBaseCount ?count .\nOPTIONAL { $this vcfc:paddingSide ?side }\nOPTIONAL { $this vcfc:paddingAnchorPosition ?anchor }\nBIND(?rule IN (vcfc:SimpleIndelPadding, vcfc:SymbolicAllelePadding, vcfc:PositionOnePadding) AS ?determined)\nBIND(IF(?side = vcfc:PaddingBefore, ?pos, ?pos + STRLEN(STR(?ref)) - 1) AS ?expected)\nFILTER((?determined && (?count != 1 || !BOUND(?side) || !BOUND(?anchor) || ?anchor != ?expected))\n    || (!?determined && (?count != 0 || BOUND(?side) || BOUND(?anchor)))\n    || (?rule = vcfc:PositionOnePadding && (?side != vcfc:PaddingAfter || ?pos != 1)))\n}\"\"\" ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        278,
+        292
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-consistency.shacl.ttl",
+       "lines": [
+        278,
+        292
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shacl-sparql",
+   "rq": "RQ1",
+   "title": "SHACL shapes: the vocabulary-sparql profile (deeper)",
+   "intro": "Checks properties across a file, such as unique header-line, record and sample indices, unique record IDs, nondecreasing positions within each contig, and that a graph does not mix the expanded and condensed sample representations. Part of the full set, run in fault injection on small fixtures only. The vocabulary keeps these SPARQL constraints apart so that validators without SPARQL support can apply the core profile.",
+   "kind": "shacl",
+   "file": [
+    {
+     "source": "VCF-RDFizer",
+     "rev": "v3.1.0",
+     "commit": "d3b34d5",
+     "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl"
+    },
+    {
+     "source": "VCF-RDFizer",
+     "rev": "v3.3.1",
+     "commit": "b25fb7b",
+     "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl"
+    }
+   ],
+   "items": [
+    {
+     "id": "shacl-sparql-HeaderOrderingSparqlShape",
+     "label": "HeaderOrderingSparqlShape",
+     "summary": "Each vcfc:VCFHeader: Header-line indices must be unique within a VCF header. The fileformat header line must have lineIndex 1. Structured header-line ID attributes must be unique within their header type.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Header-line indices must be unique within a VCF header.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "The fileformat header line must have lineIndex 1.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Structured header-line ID attributes must be unique within their header type.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:HeaderOrderingSparqlShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFHeader ;\n  sh:sparql [\n    sh:message \"Header-line indices must be unique within a VCF header.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasHeaderLine ?left, ?right .\n        ?left vcfc:lineIndex ?index .\n        ?right vcfc:lineIndex ?index .\n        FILTER (?left != ?right)\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"The fileformat header line must have lineIndex 1.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasHeaderLine ?line .\n        ?line a vcfc:FileFormatHeaderLine ; vcfc:lineIndex ?index .\n        FILTER (?index != 1)\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"Structured header-line ID attributes must be unique within their header type.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasHeaderLine ?left, ?right .\n        ?left a ?type ; vcfc:hasAttribute ?leftAttribute .\n        ?right a ?type ; vcfc:hasAttribute ?rightAttribute .\n        ?leftAttribute vcfc:attributeKey \"ID\" ; vcfc:attributeValue ?id .\n        ?rightAttribute vcfc:attributeKey \"ID\" ; vcfc:attributeValue ?id .\n        FILTER (?left != ?right)\n        FILTER (?type IN (vcfc:INFOHeaderLine, vcfc:FORMATHeaderLine,\n                          vcfc:FILTERHeaderLine, vcfc:ALTHeaderLine,\n                          vcfc:MetaHeaderLine, vcfc:SampleHeaderLine,\n                          vcfc:PedigreeHeaderLine, vcfc:ContigHeaderLine))\n      }\n    \"\"\"\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        11,
+        50
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        11,
+        50
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-sparql-VCFFileOrderingSparqlShape",
+     "label": "VCFFileOrderingSparqlShape",
+     "summary": "Each vcfc:VCFFile: Record indices must be unique within a VCF file. Sample names and sample indices must be unique within a VCF file's SampleSet. Non-missing record ID strings must be unique within a VCF file. Record positions must be nondecreasing within a CHROM block. Records for one CHROM must form a contiguous record-index block. A VCF RDF graph must not mix expanded sample calls and condensed call matrices. GT must be the first FORMAT key when it is present.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Record indices must be unique within a VCF file.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Sample names and sample indices must be unique within a VCF file's SampleSet.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Non-missing record ID strings must be unique within a VCF file.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Record positions must be nondecreasing within a CHROM block.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "Records for one CHROM must form a contiguous record-index block.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A VCF RDF graph must not mix expanded sample calls and condensed call matrices.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "GT must be the first FORMAT key when it is present.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:VCFFileOrderingSparqlShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFFile ;\n  sh:sparql [\n    sh:message \"Record indices must be unique within a VCF file.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord ?left, ?right .\n        ?left vcfc:recordIndex ?index .\n        ?right vcfc:recordIndex ?index .\n        FILTER (?left != ?right)\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"Sample names and sample indices must be unique within a VCF file's SampleSet.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasSampleSet ?set .\n        ?set vcfc:hasSample ?left, ?right .\n        FILTER (?left != ?right)\n        { ?left vcfc:sampleName ?name . ?right vcfc:sampleName ?name }\n        UNION\n        { ?left vcfc:sampleIndex ?index . ?right vcfc:sampleIndex ?index }\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"Non-missing record ID strings must be unique within a VCF file.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord ?left, ?right .\n        ?left vcfc:recordId ?id .\n        ?right vcfc:recordId ?id .\n        FILTER (?left != ?right && STR(?id) != \".\")\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"Record positions must be nondecreasing within a CHROM block.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord ?earlier, ?later .\n        ?earlier vcfc:chrom ?chrom ; vcfc:recordIndex ?earlierIndex ; vcfc:pos ?earlierPos .\n        ?later vcfc:chrom ?chrom ; vcfc:recordIndex ?laterIndex ; vcfc:pos ?laterPos .\n        FILTER (?earlierIndex < ?laterIndex && ?earlierPos > ?laterPos)\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"Records for one CHROM must form a contiguous record-index block.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord ?first, ?middle, ?last .\n        ?first vcfc:chrom ?chrom ; vcfc:recordIndex ?firstIndex .\n        ?middle vcfc:chrom ?otherChrom ; vcfc:recordIndex ?middleIndex .\n        ?last vcfc:chrom ?chrom ; vcfc:recordIndex ?lastIndex .\n        FILTER (?chrom != ?otherChrom)\n        FILTER (?firstIndex < ?middleIndex && ?middleIndex < ?lastIndex)\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"A VCF RDF graph must not mix expanded sample calls and condensed call matrices.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord/vcfc:hasCall ?expandedCall, ?condensedCall .\n        ?expandedCall vcfc:hasSampleCall ?sampleCall .\n        ?condensedCall vcfc:hasCallMatrix ?matrix .\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"GT must be the first FORMAT key when it is present.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord/vcfc:hasCall ?call .\n        ?call vcfc:formatRaw ?format .\n        FILTER (REGEX(STR(?format), \"(^|:)GT(:|$)\") && !REGEX(STR(?format), \"^GT(:|$)\"))\n      }\n    \"\"\"\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        52,
+        132
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        52,
+        132
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-sparql-RecommendedHeaderSparqlShape",
+     "label": "RecommendedHeaderSparqlShape",
+     "summary": "Each vcfc:VCFFile: VCF 4.5 recommends contig declarations for files with records. VCF 4.5 recommends reference metadata for files with records. (warning only)",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "VCF 4.5 recommends contig declarations for files with records.",
+       "severity": "Warning"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "VCF 4.5 recommends reference metadata for files with records.",
+       "severity": "Warning"
+      }
+     ],
+     "text": "vcfc:RecommendedHeaderSparqlShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFFile ;\n  sh:severity sh:Warning ;\n  sh:sparql [\n    sh:message \"VCF 4.5 recommends contig declarations for files with records.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord ?record .\n        FILTER NOT EXISTS {\n          $this vcfc:hasHeader/vcfc:hasHeaderLine ?contig .\n          ?contig a vcfc:ContigHeaderLine .\n        }\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"VCF 4.5 recommends reference metadata for files with records.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasRecord ?record .\n        FILTER NOT EXISTS { $this vcfc:referenceGenome ?reference }\n      }\n    \"\"\"\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        134,
+        157
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        134,
+        157
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-sparql-RecordContigBoundSparqlShape",
+     "label": "RecordContigBoundSparqlShape",
+     "summary": "Each vcfc:VCFRecord: POS must not exceed the declared contig length plus one.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "POS must not exceed the declared contig length plus one.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:RecordContigBoundSparqlShape a sh:NodeShape ;\n  sh:targetClass vcfc:VCFRecord ;\n  sh:sparql [\n    sh:message \"POS must not exceed the declared contig length plus one.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:pos ?pos ; vcfc:chromosome ?contig .\n        ?contig vcfc:contigLength ?length .\n        FILTER (?pos > ?length + 1)\n      }\n    \"\"\"\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        159,
+        170
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        159,
+        170
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-sparql-SampleCallLocalAlleleSparqlShape",
+     "label": "SampleCallLocalAlleleSparqlShape",
+     "summary": "Each vcfc:SampleCall: A local-allele FORMAT key requires LAA, positioned after GT when GT is present. PS and PSL must not both be populated for the same sample call.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "A local-allele FORMAT key requires LAA, positioned after GT when GT is present.",
+       "severity": "Violation"
+      },
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "PS and PSL must not both be populated for the same sample call.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:SampleCallLocalAlleleSparqlShape a sh:NodeShape ;\n  sh:targetClass vcfc:SampleCall ;\n  sh:sparql [\n    sh:message \"A local-allele FORMAT key requires LAA, positioned after GT when GT is present.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this ^vcfc:hasSampleCall/vcfc:formatRaw ?format .\n        FILTER (REGEX(STR(?format), \"(^|:)(LAD|LADF|LADR|LEC|LGL|LGP|LPL|LPP)(:|$)\") &&\n                (!REGEX(STR(?format), \"(^|:)LAA(:|$)\") ||\n                 (!REGEX(STR(?format), \"(^|:)GT(:|$)\") && !REGEX(STR(?format), \"^LAA(:|$)\")) ||\n                 (REGEX(STR(?format), \"(^|:)GT(:|$)\") && !REGEX(STR(?format), \"^GT:LAA(:|$)\"))))\n      }\n    \"\"\"\n  ] ;\n  sh:sparql [\n    sh:message \"PS and PSL must not both be populated for the same sample call.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:hasFormatValue ?ps, ?psl .\n        ?ps vcfc:declaredBy/vcfc:fieldId \"PS\" ; vcfc:fieldValue ?psValue .\n        FILTER (STR(?psValue) != \".\")\n        ?psl vcfc:declaredBy/vcfc:fieldId \"PSL\" ; vcfc:fieldValue ?pslValue .\n        FILTER (STR(?pslValue) != \".\")\n      }\n    \"\"\"\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        174,
+        199
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        174,
+        199
+       ]
+      }
+     ]
+    },
+    {
+     "id": "shacl-sparql-FieldAritySparqlShape",
+     "label": "FieldAritySparqlShape",
+     "summary": "Each vcfc:FieldDefinition: fieldArity must agree with the lossless fieldNumber token.",
+     "constraints": [
+      {
+       "kind": "sparql",
+       "path": "",
+       "count": "",
+       "checks": [],
+       "message": "fieldArity must agree with the lossless fieldNumber token.",
+       "severity": "Violation"
+      }
+     ],
+     "text": "vcfc:FieldAritySparqlShape a sh:NodeShape ;\n  sh:targetClass vcfc:FieldDefinition ;\n  sh:sparql [\n    sh:message \"fieldArity must agree with the lossless fieldNumber token.\"@en ;\n    sh:select \"\"\"\n      SELECT $this WHERE {\n        $this vcfc:fieldArity ?arity ; vcfc:fieldNumber ?number .\n        ?arity vcfc:arityCode ?code .\n        FILTER (STR(?number) != STR(?code))\n      }\n    \"\"\"\n  ] .\n",
+     "from": [
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.1.0",
+       "commit": "d3b34d5",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        201,
+        212
+       ]
+      },
+      {
+       "source": "VCF-RDFizer",
+       "rev": "v3.3.1",
+       "commit": "b25fb7b",
+       "path": "vcf_rdfizer_data/shacl/vcf-core-vocabulary-sparql.shacl.ttl",
+       "lines": [
+        201,
+        212
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "usecase",
    "rq": "RQ2",
    "title": "Linked-workflow queries",
@@ -5940,6 +9848,6 @@
  ],
  "builtFrom": {
   "notes": "benchmarks/query-catalog/notes.json",
-  "testingCommit": "47f1e942"
+  "testingCommit": "a434888d"
  }
 }

@@ -108,7 +108,7 @@ code { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.9
   color: var(--panel); background: var(--text);
   border-radius: 6px; padding: 0.08rem 0.4rem;
 }
-details.collapsible > summary .rq-tag { font-size: 0.85rem; vertical-align: 0.15em; margin-right: 0.3rem; }
+details.collapsible > summary .rq-tag { font-size: 0.85rem; margin-right: 0.3rem; vertical-align: 0.15em; }
 .finding { margin: 0.55rem 0 0; font-size: 1.05rem; font-weight: 600; }
 .rq-sub { margin: 1.4rem 0 0.2rem; font-size: 1.12rem; padding-top: 0.9rem; border-top: 1px solid var(--grid); }
 .rq-nav .section-nav { margin-top: 0.2rem; }
@@ -123,15 +123,42 @@ details.collapsible > summary .rq-tag { font-size: 0.85rem; vertical-align: 0.15
 }
 .section-nav a:hover { background: var(--accent-soft); }
 
-details.collapsible > summary {
-  cursor: pointer;
-  font-size: 1.25rem;
-  font-weight: 700;
-  list-style: none;
+/* Expandable sections. Every summary has a chevron that turns when it opens; the panels
+   and the query sections also carry a Show/Hide control on the right and highlight on
+   hover, so they read as expandable at a glance. */
+details > summary { cursor: pointer; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: ""; display: inline-block;
+  width: 0.42em; height: 0.42em; margin: 0 0.6em 0.14em 0.1em;
+  border-right: 0.13em solid var(--muted); border-bottom: 0.13em solid var(--muted);
+  transform: rotate(-45deg); transition: transform 0.15s ease;
 }
-details.collapsible > summary::-webkit-details-marker { display: none; }
-details.collapsible > summary::before { content: "▸ "; color: var(--faint); }
-details.collapsible[open] > summary::before { content: "▾ "; }
+details[open] > summary::before { transform: rotate(45deg); }
+/* The pill sits in the summary's right padding, so a long title wraps across the full width. */
+details.collapsible > summary, details.query-catalog > summary { position: relative; padding-right: 4.6rem; }
+details.collapsible > summary::after, details.query-catalog > summary::after {
+  content: "Show"; position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  font-size: 0.78rem; font-weight: 600; line-height: 1.4; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 999px; padding: 0.08rem 0.65rem;
+}
+details.collapsible[open] > summary::after, details.query-catalog[open] > summary::after { content: "Hide"; }
+details.collapsible > summary {
+  font-size: 1.25rem; font-weight: 700;
+  margin: -0.35rem -0.5rem; padding: 0.35rem 4.6rem 0.35rem 0.5rem; border-radius: 8px;
+}
+details.collapsible > summary:hover, details.query-catalog > summary:hover { background: var(--accent-soft); }
+@media (max-width: 600px) { details.collapsible > summary { font-size: 1.1rem; } }
+
+/* A "#" beside each section's title links to it (and copies the address). */
+.anchor-link {
+  margin-left: 0.35rem; padding: 0 0.25rem; border-radius: 4px;
+  color: var(--faint); font-size: 0.85em; font-weight: 400; text-decoration: none;
+  opacity: 0; transition: opacity 0.15s ease;
+}
+summary:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible, .anchor-link.copied { opacity: 1; }
+.anchor-link:hover { color: var(--link); background: var(--accent-soft); }
+@media (hover: none) { .anchor-link { opacity: 0.7; } }
 
 .section-intro { color: var(--muted); margin: 0.5rem 0 0.8rem; }
 .subhead { margin: 1rem 0 0.4rem; font-size: 1.05rem; }
@@ -256,7 +283,7 @@ body #vg-tooltip-element table tr td.value { display: table-cell; font-variant-n
 
 .table-meta { color: var(--muted); font-size: 0.85rem; margin: 0.3rem 0; }
 details.data-table { margin-top: 0.4rem; }
-details.data-table > summary { cursor: pointer; color: var(--muted); font-size: 0.84rem; }
+details.data-table > summary { color: var(--muted); font-size: 0.84rem; }
 
 .status { display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 600; }
 .status::before { content: ""; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--faint); }
@@ -298,13 +325,17 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 .source code, .table-meta code, td code, .q-from code, .q-from a { overflow-wrap: anywhere; }
 
 /* Queries and oracles: collapsed per query; code scrolls inside its box. */
-details.query-catalog { margin: 0.9rem 0 0.4rem; border-top: 1px solid var(--grid); padding-top: 0.6rem; }
-details.query-catalog > summary { cursor: pointer; font-weight: 600; }
+details.query-catalog { margin: 0.9rem 0 0.4rem; }
+details.query-catalog > summary {
+  font-weight: 600; padding: 0.5rem 4.6rem 0.5rem 0.75rem;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--panel-alt);
+}
 .query-group { margin: 0.6rem 0 1rem; }
 .query-group h4 { margin: 0.6rem 0 0.2rem; font-size: 0.98rem; }
 details.query { border: 1px solid var(--grid); border-radius: 8px; margin: 0.35rem 0; background: var(--panel); }
-details.query > summary { cursor: pointer; padding: 0.45rem 0.65rem; }
-details.query[open] > summary { border-bottom: 1px solid var(--grid); }
+details.query > summary { padding: 0.45rem 0.65rem; border-radius: 8px; }
+details.query > summary:hover { background: var(--accent-soft); }
+details.query[open] > summary { border-radius: 8px 8px 0 0; border-bottom: 1px solid var(--grid); }
 .q-label { font-weight: 600; margin-right: 0.35rem; }
 .q-summary { color: var(--muted); }
 .q-body { padding: 0.3rem 0.75rem 0.7rem; }
@@ -312,8 +343,12 @@ details.query[open] > summary { border-bottom: 1px solid var(--grid); }
 .q-sub { margin: 0.45rem 0 0.2rem; font-size: 0.82rem; }
 .q-from { color: var(--muted); }
 .q-note { font-size: 0.84rem; margin: 0.4rem 0; }
+.q-constraints { margin: 0.2rem 0 0.4rem; padding-left: 1.1rem; font-size: 0.84rem; }
+.q-constraints li { margin: 0.15rem 0; overflow-wrap: anywhere; }
+.q-msg { font-style: italic; }
+.q-tag { color: var(--muted); border: 1px solid var(--grid); border-radius: 4px; padding: 0 0.3rem; font-size: 0.76rem; white-space: nowrap; }
 details.q-code { margin-top: 0.6rem; }
-details.q-code > summary { cursor: pointer; color: var(--muted); font-size: 0.84rem; }
+details.q-code > summary { color: var(--muted); font-size: 0.84rem; }
 pre.code {
   margin: 0; padding: 0.5rem 0.7rem; overflow: auto; max-height: 26rem;
   background: var(--panel-alt); border: 1px solid var(--grid); border-radius: 6px;

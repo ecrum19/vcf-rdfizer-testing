@@ -1,0 +1,17 @@
+{
+ "host": "vcf-bench-3",
+ "captured_utc": "2026-10-12T06:35:56Z",
+ "how": "Read over ssh without changing the host: nproc, /proc/cpuinfo, /proc/meminfo, swapon --show, uname -r, /etc/os-release, docker --version, python3 --version, uptime -s, df /, and the install dates in /var/log/dpkg.log*.",
+ "applies_to_runs": "The harness wrote no environment record on this host, so this was captured after its runs. The running kernel booted at 2026-09-25T07:46:07Z, and Docker 29.8.1 was installed at 2026-09-25T07:53:40Z and not upgraded since. Both precede the first vcf-bench-3 cell (15_scale_prepare r1000000, started 2026-09-25T08:19:35Z), so every archived cell on this host ran on this kernel and Docker. The host's clock is CEST; the times here are UTC.",
+ "platform": {
+  "cpu_count": 8,
+  "cpu_model": "Intel(R) Xeon(R) Silver 4309Y CPU @ 2.80GHz",
+  "docker": "Docker version 29.8.1, build 4a63305",
+  "kernel": "5.15.0-1067-kvm",
+  "mem_total_kb": "32870360",
+  "python": "Python 3.10.12",
+  "os": "Ubuntu 22.04.5 LTS",
+  "swap_devices": 0,
+  "root_filesystem_bytes": 203053957120
+ }
+}

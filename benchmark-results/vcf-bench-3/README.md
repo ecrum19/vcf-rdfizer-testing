@@ -9,6 +9,7 @@ from the v3.3.1 rerun on those graphs (Figure 4a, Table S17).
 | --- | --- |
 | `benchmarks_outputs/15_scale_prepare/` | The two graph builds, with their wrapper records |
 | `scale-store-manifests/` | The graphs' manifests |
+| `00_environment/platform.json` | The host's CPU, memory, kernel, OS and Docker, captured read-only after the runs, with why it applies to them |
 | [`v331-rerun/`](v331-rerun/README.md) | The reported retrieval, with VCF-RDFizer v3.3.1: driver, logs, and per-cell records in `results/16_scale_retrieval/` |
 
 The first retrieval runs, on pre-release runners, and the two cells that

@@ -35,16 +35,56 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         """Each query has its exact text, a pseudo-code oracle, and the exact oracle code;
         preflight checks assert graph properties and may have no oracle code."""
         groups = {g["id"]: g for g in self.data["queries"]["groups"]}
-        self.assertEqual(set(groups), {"validation", "preflight", "usecase", "converters", "regional"})
+        self.assertEqual(set(groups), {"validation", "preflight", "usecase", "converters", "regional",
+                                       "shacl-core", "shacl-consistency", "shacl-sparql"})
         self.assertEqual(len(groups["validation"]["items"]), 13)
         self.assertEqual(len(groups["converters"]["items"]), 8)
         self.assertEqual(len(groups["regional"]["items"]), 5)
         for group in groups.values():
+            if group.get("kind") == "shacl":
+                continue
             for item in group["items"]:
                 self.assertTrue(item["summary"] and item["pseudo"].strip(), item["id"])
                 self.assertTrue(item["sparql"] and all(q["text"].strip() for q in item["sparql"]), item["id"])
                 if group["id"] != "preflight":
                     self.assertTrue(item["oracleCode"] and all(c["text"].strip() for c in item["oracleCode"]), item["id"])
+
+    def test_every_shape_shows_its_constraints_and_text(self):
+        """Every node shape of the three profiles the validator runs, each with its exact
+        Turtle text and line range at both releases."""
+        groups = {g["id"]: g for g in self.data["queries"]["groups"] if g.get("kind") == "shacl"}
+        self.assertEqual({k: len(g["items"]) for k, g in groups.items()},
+                         {"shacl-core": 53, "shacl-consistency": 24, "shacl-sparql": 6})
+        for group in groups.values():
+            self.assertEqual([f["rev"] for f in group["file"]], ["v3.1.0", "v3.3.1"])
+            for item in group["items"]:
+                self.assertIn(item["label"], item["text"], item["id"])
+                self.assertTrue(item["summary"] and item["constraints"], item["id"])
+                self.assertTrue(all(f["lines"][0] <= f["lines"][1] for f in item["from"]), item["id"])
+
+    def test_paper_links_land_on_a_section(self):
+        """Every #section the paper or supplement links to exists: a section id in the page,
+        or a query or shape anchor built the way app.js's itemAnchor() builds it."""
+        page = (build_site_data.ROOT / "site" / "index.html").read_text(encoding="utf-8")
+        ids = re.findall(r'\sid="([^"]+)"', page)
+        self.assertEqual(len(ids), len(set(ids)), "duplicate ids in index.html")
+        for section in ("rq1-queries", "rq1-checks", "rq2-queries", "rq3-queries", "notes"):
+            self.assertIn(section, ids)
+        items = {f"{g['rq'].lower()}-{re.sub(r'[^a-z0-9]+', '-', item['id'].lower())}"
+                 for g in self.data["queries"]["groups"] for item in g["items"]}
+        self.assertFalse(items & set(ids), "a query anchor collides with a section id")
+        papers = (build_site_data.ROOT / "BioMedSem_2026" / "paper").glob("*.tex")
+        linked = {m for tex in papers for m in re.findall(r"vcf-rdfizer-testing/\\?#([\w-]+)", tex.read_text(encoding="utf-8"))}
+        self.assertEqual(linked - set(ids) - items, set())
+
+    def test_every_host_has_its_record(self):
+        """Each host behind a reported result is listed, with the record its details come from."""
+        hosts = self.data["campaign"]["hostRecords"]
+        self.assertEqual([h["host"] for h in hosts], ["vcf-bench-1", "vcf-bench-2", "vcf-bench-3"])
+        for host in hosts:
+            path = build_site_data.ROOT / host["record"].split("/blob/main/", 1)[1]
+            self.assertTrue(path.is_file(), path)
+            self.assertTrue(host["cpu_model"] and host["kernel"] and host["docker"] and host["mem_total_kb"], host["host"])
 
     def test_campaign(self):
         totals = self.data["campaign"]["totals"]
