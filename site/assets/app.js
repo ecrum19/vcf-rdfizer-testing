@@ -68,7 +68,7 @@ const fill = (text) => text.replace(/\{(\w+)\}/g, (_, key) => D.facts[key] ?? "N
 const pretty = (id) => id.replace(/^q(\d+)_/, "Q$1 ").replace(/_/g, " ");
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-// The paper's requester abbreviations (Figure 4): own physician (OP), clinical care (CC),
+// The paper's requester abbreviations (Figure 5): own physician (OP), clinical care (CC),
 // disease-specific research (DS), general research use (GRU).
 const REQUESTERS = [
   ["unrestricted", "All (no policy)"], ["own_physician", "Own physician (OP)"], ["clinical", "Clinical care (CC)"],
@@ -179,7 +179,7 @@ const CHARTS = {
     columns: [{ key: "arm", label: "Scenario" }, { key: "requester", label: "Requester" }, { key: "matches", label: "RDF workflow", num: true, format: (v) => num(v) },
       { key: "conventional", label: "Conventional workflow", num: true, format: (v) => num(v) }, { key: "agree", label: "Match sets" }],
     spec(t, rows, width) {
-      // A phone gets the paper's short labels (Figure 4) and counts only, so the five columns stay legible.
+      // A phone gets the paper's short labels (Figure 5) and counts only, so the five columns stay legible.
       const narrow = width < 600;
       return {
         data: { values: rows }, height: 240,

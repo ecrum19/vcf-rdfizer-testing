@@ -3,7 +3,7 @@
 The mutation score of `08_robustness`, rerun outside the 143-cell core benchmark with
 the default (`core`) shape profile, on the core benchmark's own release: VCF-RDFizer
 v3.1.0 (commit `d3b34d5`, image `ecrum19/vcf-rdfizer:3.1.0`, `sha256:1904e96d…34aa`).
-It is the middle bar of Figure 3b; the other two come from `08_robustness` in
+It is the middle bar of Figure 4b; the other two come from `08_robustness` in
 `vcf-bench-1/benchmarks_outputs/`.
 
 | Directory | What | Result |

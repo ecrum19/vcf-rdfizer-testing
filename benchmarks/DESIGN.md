@@ -109,7 +109,7 @@ layer detects:
 These cells run the tool's test suite on the host, not in the conversion
 container, so they record the harness commit rather than an image.
 
-**Reported in** Figure 3b, Table S6 and Section S4.3.
+**Reported in** Figure 4b, Table S6 and Section S4.3.
 
 ### 1.4 Determinism, round trip, index idempotence (`08`)
 
@@ -202,11 +202,11 @@ its artifacts:
   with v3.3.1 on QLever. Default shapes are checked in record batches, 117
   batches on four workers. It is the driver `run_v331.sh`'s job `consumer_wgs`.
   The v3.1.0 runs on the same slice, which the supplement cites for the oracle's
-  corrections, are on the repository's `legacy` branch. Reported in Figure 3a
+  corrections, are on the repository's `legacy` branch. Reported in Figure 4a
   and Section S4.2.
 - **Large graphs.** Large-graph retrieval (§3.10) compares the thirteen answers
   with cyvcf2, without SHACL, on graphs of 170.9M and 657.4M triples. Reported in
-  Figure 3a.
+  Figure 4a.
 
 ---
 
@@ -273,7 +273,7 @@ view releases with the count the conventional workflow releases to that requeste
 Release and querying run on QLever, never on an in-memory graph. Scenario 4's graph
 alone holds 1.2 billion triples, so an in-memory graph could not hold every scenario.
 
-**Reported in** Section 3.2, Figure 4 and Tables S8–S9.
+**Reported in** Section 3.2, Figure 5 and Tables S8–S9.
 
 ### 2.5 Authoring effort (`use_case/acmg/effort.py`)
 
@@ -327,7 +327,7 @@ graph lacks the information. Conversion time, peak memory and output size use
 three replicates. [`converters/README.md`](converters/README.md) gives the
 versions, commands and ports.
 
-**Reported in** Figure 5, Section S2 and Tables S2–S3.
+**Reported in** Figure 6, Section S2 and Tables S2–S3.
 
 ### 3.2 Record scaling (`04`)
 
@@ -485,7 +485,7 @@ turns that into the experiment, with three replicates at two scales and no SHACL
   replicates) converts the same slice to gzip-framed N-Triples only, then indexes
   and queries it on QLever. That gives the minimal setup in the crossover.
 
-**Reported in** Section 3.3, Figures 6a, 6d, S7 and S8c, and Sections S9.3–S9.4.
+**Reported in** Section 3.3, Figures 7a, 7d, S7 and S8c, and Sections S9.3–S9.4.
 
 ### 3.9 Regional access (`14`)
 
@@ -510,7 +510,7 @@ The cells run the regional runner inside the v3.3.1 image directly, since the
 tool's command line has no mode for it. They ran from the v3.3.1 rerun:
 11,160 executions in all, every answer compared.
 
-**Reported in** Section 3.3, Figures 6c and S8a–b, and Table S18.
+**Reported in** Section 3.3, Figures 7c and S8a–b, and Table S18.
 
 ### 3.10 Large-graph retrieval (`15`, `16`)
 
@@ -537,7 +537,7 @@ tool's command line has no mode for it. They ran from the v3.3.1 rerun:
   (`BM_SCALE_MEMORY_ENGINE_MAX_TRIPLES`), and the refusal is recorded. The
   reported run did not request it.
 
-**Reported in** Figure 3a and Table S17.
+**Reported in** Figure 4a and Table S17.
 
 ### 3.11 Index storage (`19`)
 
@@ -563,7 +563,7 @@ deleted after measuring.
 its tabix index for the slice (214.5 MB against 3.5 MB), and 57.5 times for the
 complete VCF (8.1 GB against 140.9 MB).
 
-**Reported in** Section 3.3, Figure 6b, and Section S9.3.
+**Reported in** Section 3.3, Figure 7b, and Section S9.3.
 
 ---
 

@@ -339,7 +339,7 @@ def retrieval() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Shared-input converter comparison (experiment 18; Figure 5, Section S2)
+# Shared-input converter comparison (experiment 18; Figure 6, Section S2)
 # ---------------------------------------------------------------------------
 CONVERTERS = RESULTS / "vcf-bench-1" / "18_converter_comparison"
 CONVERTER_NAMES = {"vcf-rdfizer": "VCF-RDFizer", "jvarkit": "JVarkit", "togovar": "TogoVar",

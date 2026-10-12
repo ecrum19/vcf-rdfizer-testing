@@ -129,7 +129,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual(arms["arm1"]["linking"]["clinvar"]["spdi"]["linked"], 331413)
 
     def test_use_case_figure_inputs_and_timings(self):
-        """Figure 4 uses release conversions, with shared annotations counted once."""
+        """Figure 5 uses release conversions, with shared annotations counted once."""
         arms = self.data["usecase"]["arms"]
         self.assertEqual(self.data["usecase"]["convertImages"], ["ecrum19/vcf-rdfizer:3.3.1"])
         cohort = arms["arm2"]
@@ -185,7 +185,7 @@ class SiteDataMatchesThePaper(unittest.TestCase):
         self.assertEqual((round(min(b["per_question"].values())), round(max(b["per_question"].values()))), (10, 17))
 
     def test_converters(self):
-        """Only VCF-RDFizer answers all eight content questions as the oracle does, on both inputs (Figure 5)."""
+        """Only VCF-RDFizer answers all eight content questions as the oracle does, on both inputs (Figure 6)."""
         c = self.data["converters"]
         self.assertEqual(len(c["questions"]), 8)
         passed = {}

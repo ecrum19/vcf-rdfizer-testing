@@ -19,12 +19,12 @@ which reads every value through
 [`scripts/build_site_data.py`](../scripts/build_site_data.py), the results site's
 builder. The paper and the site therefore cannot compute a value differently.
 The diagrams are standalone TikZ sources beside their PDFs.
-Figure 4 focuses on the Scenario 2 shared-frequency join and Scenario 4 policy views;
+Figure 5 focuses on the Scenario 2 shared-frequency join and Scenario 4 policy views;
 Figure S3 expands the comparison to all four scenarios and every requester. Both
 read the v3.3.1 reruns through the same reader as the results site. Input records
 and triples come from final conversion-stage reports; link counts, exact match-set
 comparisons, released-record counts, and timing replicates come from the corresponding
-link, comparison, policy, and query records. Figure 4 shows selected stage costs;
+link, comparison, policy, and query records. Figure 5 shows selected stage costs;
 Figure S4 and Table S11 report the full breakdown. No repeated-INFO counterfactual
 is used.
 
